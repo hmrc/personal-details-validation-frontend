@@ -19,11 +19,21 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 import javax.inject.Inject
 
 import play.api.Configuration
+import uk.gov.hmrc.play.config.{AssetsConfig, OptimizelyConfig}
 
-class ViewConfig @Inject()(protected val configuration: Configuration) extends BaseConfig {
+class ViewConfig @Inject()(protected val configuration: Configuration)
+  extends AssetsConfig
+    with OptimizelyConfig
+    with BaseConfig {
 
-  private val contactHost = configuration.loadMandatory[Host]("contact-frontend")
-  private val contactFormServiceIdentifier = "personal-details-validation-frontend"
+  override lazy val assetsUrl: String = configuration.loadMandatory("assets.url")
+  override lazy val assetsVersion: String = configuration.loadMandatory("assets.version")
+
+  override lazy val optimizelyBaseUrl: String = configuration.load("optimizely.url", "")
+  override lazy val optimizelyProjectId: Option[String] = configuration.loadOptional("optimizely.projectId")
+
+  private lazy val contactHost = configuration.loadMandatory[Host]("contact-frontend")
+  private lazy val contactFormServiceIdentifier = "personal-details-validation-frontend"
   lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 
