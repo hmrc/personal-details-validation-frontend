@@ -19,32 +19,45 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalamock.scalatest.MockFactory
-import play.api.Configuration
+import play.api.i18n.{Lang, Messages}
+import play.api.mvc.{AnyContentAsEmpty, Request}
+import play.api.test.FakeRequest
+import play.api.{Application, Configuration}
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 
 import scala.language.implicitConversions
 
-trait ViewSetup extends MockFactory {
+abstract class ViewSetup(implicit app: Application) extends MockFactory {
+  implicit val viewConfig: ViewConfig = ViewConfigMockFactory()
+
+  implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
+  implicit val lang: Lang = Lang("en")
+  implicit val messages: Messages = Messages.Implicits.applicationMessages
 
   implicit def asDocument(html: Html): Document = Jsoup.parse(html.toString())
-
-  implicit val viewConfig: ViewConfig = ViewConfigMockFactory()
 }
 
 private object ViewConfigMockFactory extends MockFactory {
 
-  private val configuration: Configuration = mock[Configuration]
-  (configuration.getString _).expects("assets.url", *).returning(Some("assets-url"))
-  (configuration.getString _).expects("assets.version", *).returning(Some("assets-version"))
-  (configuration.getString _).expects("optimizely.url", *).returning(None)
-  (configuration.getString _).expects("optimizely.projectId", *).returning(None)
-  (configuration.getString _).expects("google-analytics.token", *).returning(Some("ga-token"))
-  (configuration.getString _).expects("google-analytics.host", *).returning(Some("ga-host"))
-  (configuration.getString _).expects("microservice.services.protocol", *).returning(Some("http"))
-  (configuration.getString _).expects("microservice.services.contact-frontend.protocol", *).returning(Some("http"))
-  (configuration.getString _).expects("microservice.services.contact-frontend.host", *).returning(Some("contant-frontend-host"))
-  (configuration.getInt _).expects("microservice.services.contact-frontend.port").returning(Some(4444))
+  private def configuration: Configuration = {
+    val configMock = mock[Configuration]
 
-  def apply(): ViewConfig = new ViewConfig(configuration)
+    (configMock.getString _).expects("assets.url", *).returning(Some("assets-url"))
+    (configMock.getString _).expects("assets.version", *).returning(Some("assets-version"))
+    (configMock.getString _).expects("optimizely.url", *).returning(None)
+    (configMock.getString _).expects("optimizely.projectId", *).returning(None)
+    (configMock.getString _).expects("google-analytics.token", *).returning(Some("ga-token"))
+    (configMock.getString _).expects("google-analytics.host", *).returning(Some("ga-host"))
+    (configMock.getString _).expects("microservice.services.protocol", *).returning(Some("http"))
+    (configMock.getString _).expects("microservice.services.contact-frontend.protocol", *).returning(Some("http"))
+    (configMock.getString _).expects("microservice.services.contact-frontend.host", *).returning(Some("contant-frontend-host"))
+    (configMock.getInt _).expects("microservice.services.contact-frontend.port").returning(Some(4444))
+
+    configMock
+  }
+
+  def apply(): ViewConfig = {
+    new ViewConfig(configuration)
+  }
 }

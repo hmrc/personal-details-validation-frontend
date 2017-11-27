@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
-@import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.main_template
+package uk.gov.hmrc.personaldetailsvalidationfrontend.helloworld
 
-@()(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
+import org.jsoup.nodes.Document
+import org.scalatestplus.play.OneAppPerSuite
+import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewSetup
+import uk.gov.hmrc.play.test.UnitSpec
 
-@main_template(title = "Hello from personal-details-validation-frontend", bodyClasses = None) {
-    <h1>Hello from personal-details-validation-frontend !</h1>
+class HelloWorldPageSpec extends UnitSpec with OneAppPerSuite {
+
+  "render" should {
+
+    "return a H1 with a 'hello world' message" in new ViewSetup {
+      val page: Document = html.hello_world()
+
+      page.select("h1").text() shouldBe "Hello from personal-details-validation-frontend!"
+    }
+  }
 }

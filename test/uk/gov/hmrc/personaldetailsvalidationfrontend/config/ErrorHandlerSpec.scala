@@ -18,8 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 
 import org.jsoup.nodes.Document
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.i18n._
-import play.api.test.FakeRequest
+import play.api.i18n.MessagesApi
 import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewSetup
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -39,8 +38,6 @@ class ErrorHandlerSpec
   }
 
   private trait Setup extends ViewSetup {
-    val request = FakeRequest()
-
     implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
     val errorHandler: ErrorHandler = new ErrorHandler()

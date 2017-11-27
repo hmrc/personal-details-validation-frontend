@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.helloworld
+@import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+@import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.main_template
 
-import play.api.i18n.Messages
-import play.api.mvc.Request
-import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+@()(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
-class HelloWorldPage() {
-
-  def render(implicit request: Request[_],
-             messages: Messages,
-             viewConfig: ViewConfig): Html =
-    html.hello_world()
+@main_template(title = "Hello from personal-details-validation-frontend", bodyClasses = None) {
+    <h1>Hello from personal-details-validation-frontend!</h1>
 }
