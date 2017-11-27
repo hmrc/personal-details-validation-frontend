@@ -14,8 +14,11 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+@import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.main_template
 
-@uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.main_template(title = "Hello from personal-details-validation-frontend", bodyClasses = None) {
+@()(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
+
+@main_template(title = "Hello from personal-details-validation-frontend", bodyClasses = None) {
     <h1>Hello from personal-details-validation-frontend !</h1>
 }

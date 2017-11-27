@@ -16,18 +16,21 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.controllers
 
+import javax.inject.Inject
+
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
 
+class HelloWorld @Inject()(val messagesApi: MessagesApi)
+                          (implicit viewConfig: ViewConfig)
+  extends FrontendController
+    with I18nSupport {
 
-object HelloWorld extends HelloWorld
-
-trait HelloWorld extends FrontendController {
   val helloWorld = Action.async { implicit request =>
-		Future.successful(Ok(uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.hello_world()(request, applicationMessages)))
+    Future.successful(Ok(uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.hello_world()))
   }
 }

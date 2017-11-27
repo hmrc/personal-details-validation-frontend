@@ -13,7 +13,10 @@ object FrontendBuild extends Build with MicroService {
 
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "frontend-bootstrap" % "8.11.0"
+    "uk.gov.hmrc" %% "bootstrap-play-25" % "1.0.0",
+    "uk.gov.hmrc" %% "govuk-template" % "5.15.0" withSources(),
+    "uk.gov.hmrc" %% "play-ui" % "7.9.0" withSources(),
+    "uk.gov.hmrc" %% "valuetype" % "1.1.0"
   )
 
   def test(scope: String = "test") = Seq(
@@ -23,5 +26,4 @@ object FrontendBuild extends Build with MicroService {
     "org.jsoup" % "jsoup" % "1.8.1" % scope,
     "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
   )
-
 }
