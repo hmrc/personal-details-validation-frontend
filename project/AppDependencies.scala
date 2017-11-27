@@ -1,11 +1,9 @@
 import play.sbt.PlayImport._
 import sbt._
 
-object FrontendBuild extends Build with MicroService {
+object AppDependencies {
 
-  val appName = "personal-details-validation-frontend"
-
-  override lazy val appDependencies: Seq[ModuleID] = compile ++ test()
+  def apply(): Seq[ModuleID] = compile ++ test()
 
   val compile = Seq(
     ws,
