@@ -4,9 +4,18 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "personal-details-validation-frontend"
 
+lazy val playSettings: Seq[Setting[_]] = Seq(
+  routesImport ++= Seq(
+    "uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId",
+    "uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId._"
+  ),
+  generateReverseRouter := true
+)
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin): _*)
   .settings(scalaSettings: _*)
+  .settings(playSettings: _*)
   .settings(publishingSettings: _*)
   .settings(defaultSettings(): _*)
   .settings(

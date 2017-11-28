@@ -14,51 +14,43 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.helloworld
+package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
-import akka.stream.Materializer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
-import play.api.http.Status
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{AnyContentAsEmpty, Request, RequestHeader}
-import play.api.test.FakeRequest
+import play.api.i18n.Messages
+import play.api.mvc.Request
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
+import uk.gov.hmrc.personaldetailsvalidationfrontend.test.controllers.EndpointWithBodySetup
 import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 
-class HelloWorldEndpointSpec
+class PersonalDetailsCollectionControllerSpec
   extends UnitSpec
     with MockFactory
     with ScalaFutures {
 
-  "hello-world" should {
-    "return OK with page body returned from the given Page" in new Setup {
+  "show" should {
+    "return OK with body rendered using PersonalDetailsPage" in new Setup {
       (page.render(_: Request[_], _: Messages, _: ViewConfig))
         .expects(request, messages, viewConfig)
         .returning(Html("content"))
 
-      val result = endpoint.helloWorld(request)
+      val result = endpoint.show(journeyId)(request)
 
-      status(result) shouldBe Status.OK
-      contentType(result) shouldBe Some("text/html")
+      status(result) shouldBe OK
+      contentType(result) shouldBe Some(HTML)
       charset(result) shouldBe Some("utf-8")
       bodyOf(result).futureValue shouldBe "content"
     }
   }
 
-  private trait Setup {
-    private implicit val messagesApi: MessagesApi = mock[MessagesApi]
-    implicit val messages: Messages = mock[Messages]
-    implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest("GET", "/")
-    (messagesApi.preferred(_: RequestHeader)).expects(request).returning(messages)
-
-    implicit val viewConfig: ViewConfig = mock[ViewConfig]
-    implicit val materializer: Materializer = mock[Materializer]
-
-    val page: HelloWorldPage = mock[HelloWorldPage]
-
-    val endpoint = new HelloWorldEndpoint(page)
+  private trait Setup extends EndpointWithBodySetup {
+    val journeyId = journeyIds.generateOne
+    val page: PersonalDetailsPage = mock[PersonalDetailsPage]
+    val endpoint = new PersonalDetailsCollectionController(page)
   }
 }

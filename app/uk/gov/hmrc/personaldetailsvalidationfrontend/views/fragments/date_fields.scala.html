@@ -1,0 +1,80 @@
+@*
+ * Copyright 2017 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.play.views.html.helpers._
+
+@(form: Form[_],
+  fieldName: String,
+  labelPrefix: String,
+  hintSuffix: Option[String] = None)(
+  implicit request: Request[_],
+  messages: Messages)
+
+@dateErrors = @{
+    form(fieldName).errors
+}
+
+<div id="@fieldName" class="form-group @if(dateErrors.nonEmpty) {error}">
+
+    <fieldset class="form-date fieldset-inline ">
+
+        <legend class="form-label-bold">@messages(s"$labelPrefix.$fieldName")</legend>
+
+        @dateErrors.map(err => (err.message, err.args)).distinct.map { case (msg, args) =>
+            <p class="error-message">@messages(msg, args: _*)</p>
+        }
+
+        @hintSuffix.map { key =>
+            <span class="form-hint">@messages(s"$labelPrefix.$fieldName.$key")</span>
+        }
+
+        <div class="form-group form-group-year">
+            @input(
+                field = form(s"$fieldName.day"),
+                '_label -> messages(s"$labelPrefix.$fieldName.day"),
+                '_type -> "number",
+                '_labelClass -> "form-field--inline",
+                '_showConstraints -> false,
+                '_showErrors -> false,
+                '_inputClass -> "form-control input--xsmall"
+            )
+        </div>
+
+        <div class="form-group form-group-year">
+            @input(
+                field = form(s"$fieldName.month"),
+                '_label -> messages(s"$labelPrefix.$fieldName.month"),
+                '_type -> "number",
+                '_labelClass -> "form-field--inline",
+                '_showConstraints -> false,
+                '_showErrors -> false,
+                '_inputClass -> "form-control input--xsmall"
+            )
+        </div>
+
+        <div class="form-group form-group-year">
+            @input(
+                field = form(s"$fieldName.year"),
+                '_label -> messages(s"$labelPrefix.$fieldName.year"),
+                '_type -> "number",
+                '_labelClass -> "form-field--inline",
+                '_showConstraints -> false,
+                '_showErrors -> false,
+                '_inputClass -> "form-control input--xsmall"
+            )
+        </div>
+    </fieldset>
+</div>

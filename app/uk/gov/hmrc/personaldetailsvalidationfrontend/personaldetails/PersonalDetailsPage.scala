@@ -14,17 +14,31 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.helloworld
+package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
+import javax.inject.Singleton
+
+import play.api.data.Form
+import play.api.data.Forms.mapping
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 
-class HelloWorldPage() {
+@Singleton
+class PersonalDetailsPage {
+
+  import uk.gov.hmrc.personaldetailsvalidationfrontend.mappings.Mappings._
+
+  private val form: Form[PersonalDetails] = Form(mapping(
+    "firstName" -> mandatoryText(???),
+    "lastName" -> mandatoryText(???),
+    "nino" -> mandatoryText(???),
+    "dateOfBirth" -> mandatoryLocalDate(???)
+  )(PersonalDetails.apply)(PersonalDetails.unapply))
 
   def render(implicit request: Request[_],
              messages: Messages,
              viewConfig: ViewConfig): Html =
-    html.hello_world()
+    views.html.personal_details(form.withError("firstname", "errror"))
 }

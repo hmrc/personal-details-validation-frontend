@@ -1,0 +1,14 @@
+personal-details.title=Enter your details - Confirm your identity
+personal-details.faded-heading=Confirm your identity
+personal-details.header=Enter your details
+personal-details.paragraph=This is to help us confirm who you are, so we know what questions to ask you.
+personal-details.firstname=First name
+personal-details.lastname=Last name
+personal-details.nino=National Insurance number
+personal-details.nino.hint=It''s on your National Insurance card, benefit letter, payslip or P60.
+personal-details.nino.hint.example=For example, QQ123456C
+personal-details.dateOfBirth=Date of birth
+personal-details.dateOfBirth.hint=For example, 31 3 1980
+personal-details.dateOfBirth.day=Day
+personal-details.dateOfBirth.month=Month
+personal-details.dateOfBirth.year=Year

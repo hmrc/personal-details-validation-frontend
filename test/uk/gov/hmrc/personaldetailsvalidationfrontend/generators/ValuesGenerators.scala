@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
-@import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.main_template
+package uk.gov.hmrc.personaldetailsvalidationfrontend.generators
 
-@()(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
+import org.scalacheck.Gen
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
 
-@main_template(title = "Hello from personal-details-validation-frontend", bodyClasses = None) {
-    <h1>Hello from personal-details-validation-frontend!</h1>
+object ValuesGenerators {
+  implicit val journeyIds: Gen[JourneyId] = Gen.uuid.map(_.toString).map(JourneyId.apply)
 }

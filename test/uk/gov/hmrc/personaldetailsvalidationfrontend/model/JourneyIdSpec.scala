@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.helloworld
+package uk.gov.hmrc.personaldetailsvalidationfrontend.model
 
-import org.jsoup.nodes.Document
-import org.scalatestplus.play.OneAppPerSuite
-import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewSetup
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators._
 import uk.gov.hmrc.play.test.UnitSpec
 
-class HelloWorldPageSpec extends UnitSpec with OneAppPerSuite {
+class JourneyIdSpec extends UnitSpec with GeneratorDrivenPropertyChecks {
 
-  "render" should {
+  "JourneyId" should {
 
-    "return a H1 with a 'hello world' message" in new ViewSetup {
-      val page: Document = html.hello_world()
+    "be instantiatable for any non-empty string" in {
+      forAll(nonEmptyStrings) { value =>
+        JourneyId(value).toString() shouldBe value
+      }
+    }
 
-      page.select("h1").text() shouldBe "Hello from personal-details-validation-frontend!"
+    "throw an exception for an empty string" in {
+      an[IllegalArgumentException] should be thrownBy JourneyId("")
     }
   }
 }
