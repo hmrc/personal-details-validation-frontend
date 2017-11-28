@@ -16,28 +16,32 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 
+import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
 import play.api.Configuration
 import uk.gov.hmrc.play.test.UnitSpec
 
-class ViewConfigSpec extends UnitSpec {
+class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks {
 
-  Seq(
-    TestDefinition("analyticsHost", (config: ViewConfig) => config.analyticsHost, "google-analytics.host"),
-    TestDefinition("analyticsToken", (config: ViewConfig) => config.analyticsToken, "google-analytics.token"),
-    TestDefinition("assetsUrl", (config: ViewConfig) => config.assetsUrl, "assets.url"),
-    TestDefinition("assetsVersion", (config: ViewConfig) => config.assetsVersion, "assets.version")
-  ) foreach { data =>
-    s"${data.propertyName}" should {
+  private val scenarios = Tables.Table(
+    ("propertyName",   "propertyAccessor",                            "configKey"),
+    ("analyticsHost",  (config: ViewConfig) => config.analyticsHost,  "google-analytics.host"),
+    ("analyticsToken", (config: ViewConfig) => config.analyticsToken, "google-analytics.token"),
+    ("assetsUrl",      (config: ViewConfig) => config.assetsUrl,      "assets.url"),
+    ("assetsVersion",  (config: ViewConfig) => config.assetsVersion,  "assets.version")
+  )
 
-      s"return value associated with '${data.configKey}'" in new Setup {
-        whenConfigEntriesExists(data.configKey -> "some-value") { config =>
-          data.propertyAccessor(config) shouldBe "some-value"
+  forAll(scenarios) { (propertyName, propertyAccessor, configKey) =>
+    s"$propertyName" should {
+
+      s"return value associated with '$configKey'" in new Setup {
+        whenConfigEntriesExists(configKey -> "some-value") { config =>
+          propertyAccessor(config) shouldBe "some-value"
         }
       }
 
-      s"throw a runtime exception when there's no value for '${data.configKey}'" in new Setup {
+      s"throw a runtime exception when there's no value for '$configKey'" in new Setup {
         whenConfigEntriesExists() { config =>
-          a[RuntimeException] should be thrownBy data.propertyAccessor(config)
+          a[RuntimeException] should be thrownBy propertyAccessor(config)
         }
       }
     }
@@ -147,10 +151,6 @@ class ViewConfigSpec extends UnitSpec {
     }
   }
 
-
-  private case class TestDefinition(propertyName: String,
-                                    propertyAccessor: ViewConfig => String,
-                                    configKey: String)
   private trait Setup {
 
     def whenConfigEntriesExists(entries: (String, String)*)
