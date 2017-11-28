@@ -49,7 +49,7 @@ trait BaseConfig {
                        (implicit find: String => Option[A]): Option[A] =
       find(key)
 
-    def load[A](key: String, default: A)
+    def load[A](key: String, default: => A)
                (implicit find: String => Option[A]): A =
       find(key).getOrElse(default)
   }
