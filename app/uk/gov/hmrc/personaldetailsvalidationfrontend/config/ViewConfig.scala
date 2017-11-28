@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import play.api.Configuration
 import uk.gov.hmrc.play.config.{AssetsConfig, OptimizelyConfig}
 
+@Singleton
 class ViewConfig @Inject()(protected val configuration: Configuration)
   extends AssetsConfig
     with OptimizelyConfig
