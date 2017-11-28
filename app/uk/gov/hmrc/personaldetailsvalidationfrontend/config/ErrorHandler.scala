@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import play.api.i18n.MessagesApi
 import play.api.mvc.Request
@@ -24,6 +24,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.error_template
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
+@Singleton
 class ErrorHandler @Inject()()(implicit val messagesApi: MessagesApi,
                                viewConfig: ViewConfig) extends FrontendErrorHandler {
 
