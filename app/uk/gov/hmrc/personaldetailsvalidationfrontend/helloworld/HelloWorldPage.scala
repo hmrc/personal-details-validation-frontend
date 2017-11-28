@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.controllers
+package uk.gov.hmrc.personaldetailsvalidationfrontend.helloworld
 
-import play.api.mvc._
-import play.api.Play.current
-import play.api.i18n.Messages.Implicits._
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import play.api.i18n.Messages
+import play.api.mvc.Request
+import play.twirl.api.Html
+import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 
-import scala.concurrent.Future
+class HelloWorldPage() {
 
-
-object HelloWorld extends HelloWorld
-
-trait HelloWorld extends FrontendController {
-  val helloWorld = Action.async { implicit request =>
-		Future.successful(Ok(uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.hello_world()(request, applicationMessages)))
-  }
+  def render(implicit request: Request[_],
+             messages: Messages,
+             viewConfig: ViewConfig): Html =
+    html.hello_world()
 }

@@ -14,8 +14,9 @@
  * limitations under the License.
  *@
 
-@(appConfig: uk.gov.hmrc.personaldetailsvalidationfrontend.config.AppConfig,
-  title: String,
+@import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+
+@(title: String,
   mainClass: Option[String] = None,
   mainDataAttributes: Option[Html] = None,
   bodyClasses: Option[String] = None,
@@ -23,7 +24,11 @@
   contentHeader: Option[Html] = None,
   mainContent: Html = HtmlFormat.empty,
   serviceInfoContent: Html = HtmlFormat.empty,
-  scriptElem: Option[Html] = None)(implicit request: Request[_], messages: Messages)
+  scriptElem: Option[Html] = None)(
+  implicit request: Request[_],
+  messages: Messages,
+  viewConfig: ViewConfig
+)
 
 @import layouts.{govuk_template => hmrcGovUkTemplate}
 @import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
@@ -50,8 +55,8 @@
 
 @bodyEnd = {
     @uiLayouts.footer(
-      analyticsToken = Some(appConfig.analyticsToken),
-      analyticsHost = appConfig.analyticsHost,
+      analyticsToken = Some(viewConfig.analyticsToken),
+      analyticsHost = viewConfig.analyticsHost,
       ssoUrl = None,
       scriptElem = scriptElem,
       gaCalls = None)
@@ -73,7 +78,10 @@
     }
 }
 
-@getHelpForm = @{uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)}
+@getHelpForm = @{uiHelpers.reportAProblemLink(
+    ajaxFormPartialUrl = "/contact/problem_reports_ajax?service=personal-details-validation-frontend",
+    nonJSFormPageUrl = "/contact/problem_reports_nonjs?service=personal-details-validation-frontend"
+)}
 
 @content = {
     @uiLayouts.main_content(
