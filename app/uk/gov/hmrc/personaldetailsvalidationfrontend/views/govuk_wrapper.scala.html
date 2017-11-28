@@ -78,7 +78,10 @@
     }
 }
 
-@getHelpForm = @{uiHelpers.reportAProblemLink(viewConfig.reportAProblemPartialUrl, viewConfig.reportAProblemNonJSUrl)}
+@getHelpForm = @{uiHelpers.reportAProblemLink(
+    ajaxFormPartialUrl = "/contact/problem_reports_ajax?service=personal-details-validation-frontend",
+    nonJSFormPageUrl = "/contact/problem_reports_nonjs?service=personal-details-validation-frontend"
+)}
 
 @content = {
     @uiLayouts.main_content(

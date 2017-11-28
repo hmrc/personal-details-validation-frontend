@@ -33,11 +33,6 @@ class ViewConfig @Inject()(protected val configuration: Configuration)
   override lazy val optimizelyBaseUrl: String = configuration.load("optimizely.url", "")
   override lazy val optimizelyProjectId: Option[String] = configuration.loadOptional("optimizely.projectId")
 
-  private lazy val contactHost = configuration.loadMandatory[Host]("contact-frontend")
-  private lazy val contactFormServiceIdentifier = "personal-details-validation-frontend"
-  lazy val reportAProblemPartialUrl: String = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  lazy val reportAProblemNonJSUrl: String = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-
   lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
   lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
 }

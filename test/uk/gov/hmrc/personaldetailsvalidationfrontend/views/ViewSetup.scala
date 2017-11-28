@@ -49,10 +49,6 @@ private object ViewConfigMockFactory extends MockFactory {
     (configMock.getString _).expects("optimizely.projectId", *).returning(None)
     (configMock.getString _).expects("google-analytics.token", *).returning(Some("ga-token"))
     (configMock.getString _).expects("google-analytics.host", *).returning(Some("ga-host"))
-    (configMock.getString _).expects("microservice.services.protocol", *).returning(Some("http"))
-    (configMock.getString _).expects("microservice.services.contact-frontend.protocol", *).returning(Some("http"))
-    (configMock.getString _).expects("microservice.services.contact-frontend.host", *).returning(Some("contant-frontend-host"))
-    (configMock.getInt _).expects("microservice.services.contact-frontend.port").returning(Some(4444))
 
     configMock
   }
