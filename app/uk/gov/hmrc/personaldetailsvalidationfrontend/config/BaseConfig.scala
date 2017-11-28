@@ -25,13 +25,13 @@ trait BaseConfig {
 
   protected case class Host(value: String) extends StringValue
 
-  protected implicit lazy val stringKeyFinder: String => Option[String] = configuration.getString(_)
-  protected implicit lazy val intKeyFinder: String => Option[Int] = configuration.getInt
+  protected implicit lazy val stringValueFinder: String => Option[String] = configuration.getString(_)
+  protected implicit lazy val intValueFinder: String => Option[Int] = configuration.getInt
 
   private lazy val servicesKey = "microservice.services"
   private lazy val defaultProtocol: String = configuration.load(s"$servicesKey.protocol", "http")
 
-  protected implicit lazy val hostKeyFinder: String => Option[Host] = serviceName => for {
+  protected implicit lazy val hostValueFinder: String => Option[Host] = serviceName => for {
     host <- configuration.loadOptional[String](s"$servicesKey.$serviceName.host")
     port <- configuration.loadOptional[Int](s"$servicesKey.$serviceName.port")
   } yield {
