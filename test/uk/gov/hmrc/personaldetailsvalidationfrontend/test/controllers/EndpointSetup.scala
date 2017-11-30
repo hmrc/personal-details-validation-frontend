@@ -19,20 +19,22 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.test.controllers
 import akka.stream.Materializer
 import org.scalamock.scalatest.MockFactory
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{AnyContentAsEmpty, Request, RequestHeader}
+import play.api.mvc.{AnyContentAsEmpty, RequestHeader}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfigMockFactory
 
 trait EndpointSetup extends MockFactory {
   protected implicit val messagesApi: MessagesApi = mock[MessagesApi]
   protected implicit val messages: Messages = mock[Messages]
 
-  protected implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
+  protected implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   (messagesApi.preferred(_: RequestHeader)).expects(request).returning(messages)
+
+  protected implicit val viewConfig: ViewConfig = ViewConfigMockFactory()
 }
 
-trait EndpointWithBodySetup extends EndpointSetup {
-  protected implicit val viewConfig: ViewConfig = mock[ViewConfig]
+trait EndpointRequiringBodySetup extends EndpointSetup {
   protected implicit val materializer: Materializer = mock[Materializer]
 }

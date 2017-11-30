@@ -18,12 +18,15 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 
 import javax.inject.{Inject, Singleton}
 
+import com.google.inject.ImplementedBy
 import play.api.Configuration
+import play.api.i18n.Lang
 import uk.gov.hmrc.play.config.{AssetsConfig, OptimizelyConfig}
 
 @Singleton
 class ViewConfig @Inject()(protected val configuration: Configuration)
-  extends AssetsConfig
+  extends LanguagesConfig
+    with AssetsConfig
     with OptimizelyConfig
     with BaseConfig {
 
@@ -35,4 +38,22 @@ class ViewConfig @Inject()(protected val configuration: Configuration)
 
   lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
   lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
+}
+
+@ImplementedBy(classOf[ViewConfig])
+trait LanguagesConfig {
+  self: BaseConfig =>
+
+  private val availableLangs = Map(
+    "en" -> "english",
+    "cy" -> "cymraeg"
+  )
+
+  lazy val languagesMap: Map[String, Lang] =
+    configuration.loadMandatory[Seq[String]]("play.i18n.langs")
+      .map(toLangNameAndLangTuples)
+      .toMap
+
+  private def toLangNameAndLangTuples(code: String): (String, Lang) =
+    availableLangs(code) -> Lang(code)
 }

@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+@import uk.gov.hmrc.personaldetailsvalidationfrontend.language.routes.ChangeLanguageEndpoint
 
 @(title: String,
   mainClass: Option[String] = None,
@@ -75,6 +76,13 @@
 @mainContentHeader = {
     @if(contentHeader.isDefined) {
         @uiLayouts.main_content_header(contentHeader = contentHeader.get)
+    }
+    @if(viewConfig.languagesMap.size > 1) {
+        @views.html.language_selection(
+            viewConfig.languagesMap,
+            ChangeLanguageEndpoint.switchTo,
+            customClass = Some("label--inline-right")
+        )
     }
 }
 

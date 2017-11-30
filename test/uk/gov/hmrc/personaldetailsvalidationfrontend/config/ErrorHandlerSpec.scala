@@ -33,7 +33,7 @@ class ErrorHandlerSpec
 
       html.title() shouldBe "title"
       html.select("header h1").text() shouldBe "heading"
-      html.select("header ~ p").first().text() shouldBe "error-message"
+      html.select("header ~ p").get(1).text() shouldBe "error-message"
     }
   }
 

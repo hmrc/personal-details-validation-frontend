@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
-import uk.gov.hmrc.personaldetailsvalidationfrontend.test.controllers.EndpointWithBodySetup
+import uk.gov.hmrc.personaldetailsvalidationfrontend.test.controllers.EndpointRequiringBodySetup
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 
@@ -39,7 +39,7 @@ class PersonalDetailsCollectionControllerSpec
         .expects(request, messages, viewConfig)
         .returning(Html("content"))
 
-      val result = endpoint.show(journeyId)(request)
+      val result = contoller.show(journeyId)(request)
 
       status(result) shouldBe OK
       contentType(result) shouldBe Some(HTML)
@@ -48,9 +48,9 @@ class PersonalDetailsCollectionControllerSpec
     }
   }
 
-  private trait Setup extends EndpointWithBodySetup {
+  private trait Setup extends EndpointRequiringBodySetup {
     val journeyId = journeyIds.generateOne
     val page: PersonalDetailsPage = mock[PersonalDetailsPage]
-    val endpoint = new PersonalDetailsCollectionController(page)
+    val contoller = new PersonalDetailsCollectionController(page)
   }
 }

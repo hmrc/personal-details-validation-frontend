@@ -25,7 +25,7 @@ class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
 
   "render" should {
 
-    "return a personal details page" in new Setup {
+    "return a personal details page containing first name, last name, nino and date of birth controls" in new Setup {
       html.title() shouldBe messages("personal-details.title")
 
       html.select(".faded-text strong").text() shouldBe messages("personal-details.faded-heading")

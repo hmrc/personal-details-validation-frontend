@@ -18,6 +18,8 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 
 import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
 import play.api.Configuration
+import play.api.i18n.Lang
+import uk.gov.hmrc.personaldetailsvalidationfrontend.test.configs.ConfigSetup
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks {
@@ -77,10 +79,31 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks {
     }
   }
 
-  private trait Setup {
+  "languagesMap" should {
 
-    def whenConfigEntriesExists(entries: (String, String)*)
-                               (testBody: ViewConfig => Unit): Unit =
-      testBody(new ViewConfig(Configuration.from(entries.toMap)))
+    "return a map of language descriptions associated with Lang objects" in new Setup {
+      whenConfigEntriesExists("play.i18n.langs" -> List("en", "cy")) { config =>
+        config.languagesMap shouldBe Map(
+          "english" -> Lang("en"),
+          "cymraeg" -> Lang("cy")
+        )
+      }
+    }
+
+    "throw a runtime exception when there's no value for 'play.i18n.langs'" in new Setup {
+      whenConfigEntriesExists() { config =>
+        a[RuntimeException] should be thrownBy config.languagesMap
+      }
+    }
+
+    "throw a runtime exception when there's unknown language code defined in 'play.i18n.langs'" in new Setup {
+      whenConfigEntriesExists("play.i18n.langs" -> List("en", "cy", "pl")) { config =>
+        a[RuntimeException] should be thrownBy config.languagesMap
+      }
+    }
+  }
+
+  private trait Setup extends ConfigSetup[ViewConfig] {
+    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_)
   }
 }

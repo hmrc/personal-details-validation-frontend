@@ -1,3 +1,5 @@
 # microservice specific routes
 
-GET    /show        uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.PersonalDetailsCollectionController.show(journeyId: JourneyId)
+GET     /language/:language        uk.gov.hmrc.personaldetailsvalidationfrontend.language.ChangeLanguageEndpoint.switchTo(language: String)
+
+GET    /show                       uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.PersonalDetailsCollectionController.show(journeyId: JourneyId)
