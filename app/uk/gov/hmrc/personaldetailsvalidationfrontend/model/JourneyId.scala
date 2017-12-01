@@ -16,29 +16,8 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.model
 
-import play.api.mvc.QueryStringBindable
 import uk.gov.voa.valuetype.StringValue
-
-import scala.util.{Success, Try}
 
 case class JourneyId(value: String) extends StringValue {
   require(value.nonEmpty)
-}
-
-object JourneyId {
-
-  implicit val journeyIdQueryBindable: QueryStringBindable[JourneyId] = new QueryStringBindable[JourneyId] {
-
-    override def bind(key: String,
-                      params: Map[String, Seq[String]]): Option[Either[String, JourneyId]] = {
-      Try {
-        params.get(key).map(_.head).map(JourneyId.apply)
-      } match {
-        case Success(Some(journeyId)) => Some(Right(journeyId))
-        case _ => Some(Left("Invalid journeyId"))
-      }
-    }
-
-    override def unbind(key: String, value: JourneyId): String = value.toString()
-  }
 }

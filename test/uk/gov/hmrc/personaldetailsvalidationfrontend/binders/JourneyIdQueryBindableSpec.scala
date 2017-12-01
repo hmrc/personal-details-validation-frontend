@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.model
+package uk.gov.hmrc.personaldetailsvalidationfrontend.binders
 
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.play.test.UnitSpec
 
 class JourneyIdQueryBindableSpec extends UnitSpec {
-
-  import JourneyId._
 
   "journeyIdQueryBindable.bind" should {
 
