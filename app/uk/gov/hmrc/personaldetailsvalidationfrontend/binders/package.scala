@@ -24,6 +24,8 @@ import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyIdValueValidat
 
 package object binders {
 
+  val bindingError: String = "binding-error: "
+
   implicit val journeyIdQueryBindable: QueryStringBindable[JourneyId] = new QueryStringBindable[JourneyId] {
 
     override def bind(key: String,
@@ -34,7 +36,7 @@ package object binders {
         .map(toErrorMessageOrJourneyId)
 
     private val toErrorMessageOrJourneyId: Validated[IllegalArgumentException, String] => Either[String, JourneyId] = _.toEither.bimap(
-      exception => exception.getMessage,
+      exception => bindingError + exception.getMessage,
       validated => JourneyId(validated)
     )
 

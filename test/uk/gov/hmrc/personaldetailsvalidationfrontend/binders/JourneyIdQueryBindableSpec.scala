@@ -17,6 +17,7 @@
 package uk.gov.hmrc.personaldetailsvalidationfrontend.binders
 
 import org.scalacheck.Gen
+import org.scalacheck.Gen.alphaStr
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.play.test.UnitSpec
@@ -26,15 +27,23 @@ class JourneyIdQueryBindableSpec extends UnitSpec {
   "journeyIdQueryBindable.bind" should {
 
     "return Some JourneyId if 'journeyId' is present in params" in {
-      journeyIdQueryBindable.bind("journeyId", Map("journeyId" -> Seq(journeyIds.generateOne.toString)))
+      val journeyId = journeyIds.generateOne
+
+      val result = journeyIdQueryBindable.bind("journeyId", Map("journeyId" -> Seq(journeyId.toString)))
+
+      result shouldBe Some(Right(journeyId))
     }
 
     "return Left with error if 'journeyId' is non-uuid" in {
-      journeyIdQueryBindable.bind("journeyId", Map("journeyId" -> Seq(Gen.alphaStr.generateOne)))
+      val invalidJourneyId = alphaStr.generateOne
+
+      val result = journeyIdQueryBindable.bind("journeyId", Map("journeyId" -> Seq(invalidJourneyId)))
+
+      result shouldBe Some(Left(s"${bindingError}Invalid UUID string: $invalidJourneyId"))
     }
 
     "return Left with error if 'journeyId' is not given" in {
-      journeyIdQueryBindable.bind("journeyId", Map.empty)
+      journeyIdQueryBindable.bind("journeyId", Map.empty) shouldBe None
     }
   }
 
