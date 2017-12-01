@@ -22,9 +22,9 @@ import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import play.api.data.FormError
 import play.api.data.Forms.mapping
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators._
+import uk.gov.hmrc.play.test.UnitSpec
 
 class MappingsSpec
   extends UnitSpec

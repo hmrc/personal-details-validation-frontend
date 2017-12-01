@@ -16,8 +16,24 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.model
 
+import java.util.UUID
+
+import cats.data.Validated
 import uk.gov.voa.valuetype.StringValue
 
-case class JourneyId(value: String) extends StringValue {
-  require(value.nonEmpty)
+case class JourneyId(value: String)
+                    (implicit validate: JourneyIdValueValidator) extends StringValue {
+  validate(value).leftMap(throw _)
+}
+
+class JourneyIdValueValidator extends ((String) => Validated[IllegalArgumentException, String]) {
+  def apply(value: String): Validated[IllegalArgumentException, String] =
+    Validated.catchOnly[IllegalArgumentException] {
+      UUID.fromString(value)
+      value
+    }
+}
+
+object JourneyIdValueValidator {
+  implicit val validator: JourneyIdValueValidator = new JourneyIdValueValidator()
 }

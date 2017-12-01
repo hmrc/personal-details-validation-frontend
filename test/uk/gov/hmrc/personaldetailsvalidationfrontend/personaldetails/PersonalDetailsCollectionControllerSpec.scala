@@ -23,10 +23,10 @@ import play.api.mvc.Request
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.personaldetailsvalidationfrontend.test.controllers.EndpointRequiringBodySetup
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 
 class PersonalDetailsCollectionControllerSpec
   extends UnitSpec

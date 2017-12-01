@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.model
 
+import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators._
 import uk.gov.hmrc.play.test.UnitSpec
@@ -25,8 +26,14 @@ class JourneyIdSpec extends UnitSpec with GeneratorDrivenPropertyChecks {
   "JourneyId" should {
 
     "be instantiatable for any non-empty string" in {
-      forAll(nonEmptyStrings) { value =>
+      forAll(Gen.uuid.map(_.toString)) { value =>
         JourneyId(value).toString() shouldBe value
+      }
+    }
+
+    "throw an exception for a non-uuid string" in {
+      forAll(nonEmptyStrings) { value =>
+        an[IllegalArgumentException] should be thrownBy JourneyId("")
       }
     }
 

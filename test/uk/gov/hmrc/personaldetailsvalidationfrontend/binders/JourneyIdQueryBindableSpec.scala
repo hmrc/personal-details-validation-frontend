@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.binders
 
+import org.scalacheck.Gen
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.play.test.UnitSpec
@@ -28,8 +29,8 @@ class JourneyIdQueryBindableSpec extends UnitSpec {
       journeyIdQueryBindable.bind("journeyId", Map("journeyId" -> Seq(journeyIds.generateOne.toString)))
     }
 
-    "return Left with error if 'journeyId' is empty" in {
-      journeyIdQueryBindable.bind("journeyId", Map("journeyId" -> Nil))
+    "return Left with error if 'journeyId' is non-uuid" in {
+      journeyIdQueryBindable.bind("journeyId", Map("journeyId" -> Seq(Gen.alphaStr.generateOne)))
     }
 
     "return Left with error if 'journeyId' is not given" in {
