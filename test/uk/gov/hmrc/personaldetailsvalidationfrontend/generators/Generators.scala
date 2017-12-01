@@ -16,11 +16,15 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.generators
 
+import java.time.{Instant, LocalDate, ZoneId, ZonedDateTime}
+
 import org.scalacheck.{Arbitrary, Gen}
 
 import scala.language.implicitConversions
 
 trait Generators {
+
+  import DatesAndTimes._
 
   implicit val booleans: Gen[Boolean] = Gen.oneOf(true, false)
 
@@ -46,6 +50,10 @@ trait Generators {
     length <- Gen.chooseNum(1, 1000)
     chars <- Gen.listOfN(length, Gen.alphaNumChar)
   } yield chars.mkString
+
+  implicit val instants: Gen[Instant] = Gen.choose(minTimestamp, maxTimestamp).map(Instant.ofEpochMilli)
+
+  implicit val localDates: Gen[LocalDate] = instants.map(toDate)
 
   object Implicits {
 
@@ -88,6 +96,16 @@ trait Generators {
           }
         }
     }
+  }
+
+  private object DatesAndTimes {
+
+    private val EuropeLondon = ZoneId.of("Europe/London")
+
+    val minTimestamp = Instant.parse("1900-01-01T00:00:00.000Z").toEpochMilli
+    val maxTimestamp = Instant.parse("2100-01-01T00:00:00.000Z").toEpochMilli
+
+    def toDate(i: Instant) = ZonedDateTime.ofInstant(i, EuropeLondon).toLocalDate
   }
 }
 
