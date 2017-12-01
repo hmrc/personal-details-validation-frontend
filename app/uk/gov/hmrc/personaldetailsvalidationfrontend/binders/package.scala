@@ -16,24 +16,27 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend
 
+import cats.data.Validated
+import cats.implicits._
 import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
-
-import scala.util.{Success, Try}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyIdValueValidator.validate
 
 package object binders {
 
   implicit val journeyIdQueryBindable: QueryStringBindable[JourneyId] = new QueryStringBindable[JourneyId] {
 
     override def bind(key: String,
-                      params: Map[String, Seq[String]]): Option[Either[String, JourneyId]] = {
-      Try {
-        params.get(key).map(_.head).map(JourneyId.apply)
-      } match {
-        case Success(Some(journeyId)) => Some(Right(journeyId))
-        case _ => Some(Left("Invalid journeyId"))
-      }
-    }
+                      params: Map[String, Seq[String]]): Option[Either[String, JourneyId]] =
+      params.get(key)
+        .map(_.head)
+        .map(validate)
+        .map(toErrorMessageOrJourneyId)
+
+    private val toErrorMessageOrJourneyId: Validated[IllegalArgumentException, String] => Either[String, JourneyId] = _.toEither.bimap(
+      exception => exception.getMessage,
+      validated => JourneyId(validated)
+    )
 
     override def unbind(key: String, value: JourneyId): String = value.toString()
   }

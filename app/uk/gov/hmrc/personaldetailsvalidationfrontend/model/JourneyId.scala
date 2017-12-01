@@ -35,5 +35,5 @@ class JourneyIdValueValidator extends ((String) => Validated[IllegalArgumentExce
 }
 
 object JourneyIdValueValidator {
-  implicit val validator: JourneyIdValueValidator = new JourneyIdValueValidator()
+  implicit val validate: JourneyIdValueValidator = new JourneyIdValueValidator()
 }
