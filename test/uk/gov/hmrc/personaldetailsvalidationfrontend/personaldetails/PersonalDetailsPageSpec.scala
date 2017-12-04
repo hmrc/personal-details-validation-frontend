@@ -51,7 +51,7 @@ class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
       val dateFieldset = fieldsets.next().select("div fieldset")
       dateFieldset.select(".form-label-bold").text() shouldBe messages("personal-details.dateOfBirth")
       dateFieldset.select(".form-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
-      val dateElementDivs = dateFieldset.select("div")
+      val dateElementDivs = dateFieldset.select(".form-date .form-group")
       val dayElement = dateElementDivs.first()
       dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
       dayElement.select("label[for=dateOfBirth.day] input[type=number][name=dateOfBirth.day]").isEmpty shouldBe false

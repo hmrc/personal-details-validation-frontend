@@ -28,10 +28,8 @@
 }
 
 <div id="@fieldName" class="form-group @if(dateErrors.nonEmpty) {error}">
-
-    <fieldset class="form-date fieldset-inline ">
-
-        <legend class="form-label-bold">@messages(s"$labelPrefix.$fieldName")</legend>
+    <fieldset>
+        <legend><span class="form-label-bold">@messages(s"$labelPrefix.$fieldName")</span></legend>
 
         @dateErrors.map(err => (err.message, err.args)).distinct.map { case (msg, args) =>
             <p class="error-message">@messages(msg, args: _*)</p>
@@ -41,40 +39,51 @@
             <span class="form-hint">@messages(s"$labelPrefix.$fieldName.$key")</span>
         }
 
-        <div class="form-group form-group-year">
-            @input(
-                field = form(s"$fieldName.day"),
-                '_label -> messages(s"$labelPrefix.$fieldName.day"),
-                '_type -> "number",
-                '_labelClass -> "form-field--inline",
-                '_showConstraints -> false,
-                '_showErrors -> false,
-                '_inputClass -> "form-control input--xsmall"
-            )
-        </div>
+        <div class="form-date">
+            <div class="form-group form-group-day">
+                @input(
+                    field = form(s"$fieldName.day"),
+                    '_label -> messages(s"$labelPrefix.$fieldName.day"),
+                    '_type -> "number",
+                    '_labelClass -> "form-label",
+                    '_pattern -> "[0-9]*",
+                    '_min -> "0",
+                    '_max -> "31",
+                    '_showConstraints -> false,
+                    '_showErrors -> false,
+                    '_inputClass -> "form-control"
+                )
+            </div>
 
-        <div class="form-group form-group-year">
-            @input(
-                field = form(s"$fieldName.month"),
-                '_label -> messages(s"$labelPrefix.$fieldName.month"),
-                '_type -> "number",
-                '_labelClass -> "form-field--inline",
-                '_showConstraints -> false,
-                '_showErrors -> false,
-                '_inputClass -> "form-control input--xsmall"
-            )
-        </div>
+            <div class="form-group form-group-month">
+                @input(
+                    field = form(s"$fieldName.month"),
+                    '_label -> messages(s"$labelPrefix.$fieldName.month"),
+                    '_type -> "number",
+                    '_labelClass -> "form-label",
+                    '_showConstraints -> false,
+                    '_showErrors -> false,
+                    '_pattern -> "[0-9]*",
+                    '_min -> "0",
+                    '_max -> "12",
+                    '_inputClass -> "form-control"
+                )
+            </div>
 
-        <div class="form-group form-group-year">
-            @input(
-                field = form(s"$fieldName.year"),
-                '_label -> messages(s"$labelPrefix.$fieldName.year"),
-                '_type -> "number",
-                '_labelClass -> "form-field--inline",
-                '_showConstraints -> false,
-                '_showErrors -> false,
-                '_inputClass -> "form-control input--xsmall"
-            )
+            <div class="form-group form-group-year">
+                @input(
+                    field = form(s"$fieldName.year"),
+                    '_label -> messages(s"$labelPrefix.$fieldName.year"),
+                    '_type -> "number",
+                    '_labelClass -> "form-label",
+                    '_showConstraints -> false,
+                    '_showErrors -> false,
+                    '_pattern -> "[0-9]*",
+                    '_min -> "0",
+                    '_max -> "2120",
+                    '_inputClass -> "form-control"
+                )
+            </div>
         </div>
     </fieldset>
 </div>
