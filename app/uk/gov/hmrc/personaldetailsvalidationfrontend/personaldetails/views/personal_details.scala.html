@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 @import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.PersonalDetails
-@import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.fragments.date_fields
+@import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.components.date
 @import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.main_template
 @import uk.gov.hmrc.play.views.html.helpers._
 
@@ -65,7 +65,7 @@
             )
         </fieldset>
         <fieldset class="form-field-group">
-            @date_fields(
+            @date(
                 pageForm,
                 fieldName = "dateOfBirth",
                 labelPrefix = "personal-details",
