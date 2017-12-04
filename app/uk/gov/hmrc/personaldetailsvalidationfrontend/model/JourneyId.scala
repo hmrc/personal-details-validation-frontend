@@ -21,19 +21,19 @@ import java.util.UUID
 import cats.data.Validated
 import uk.gov.voa.valuetype.StringValue
 
-case class JourneyId(value: String)
-                    (implicit validate: JourneyIdValueValidator) extends StringValue {
-  validate(value).leftMap(throw _)
+case class JourneyId private(validated: Validated[IllegalArgumentException, String])
+  extends StringValue {
+  override val value: String = validated.fold(throw _, identity)
 }
 
-class JourneyIdValueValidator extends ((String) => Validated[IllegalArgumentException, String]) {
+object JourneyId {
+  def apply(value: String): JourneyId = JourneyId(JourneyIdValueValidator(value))
+}
+
+object JourneyIdValueValidator extends ((String) => Validated[IllegalArgumentException, String]) {
   def apply(value: String): Validated[IllegalArgumentException, String] =
     Validated.catchOnly[IllegalArgumentException] {
       UUID.fromString(value)
       value
     }
-}
-
-object JourneyIdValueValidator {
-  implicit val validate: JourneyIdValueValidator = new JourneyIdValueValidator()
 }

@@ -20,7 +20,7 @@ import cats.data.Validated
 import cats.implicits._
 import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
-import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyIdValueValidator.validate
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyIdValueValidator => toValidated}
 
 package object binders {
 
@@ -32,7 +32,7 @@ package object binders {
                       params: Map[String, Seq[String]]): Option[Either[String, JourneyId]] =
       params.get(key)
         .map(_.head)
-        .map(validate)
+        .map(toValidated)
         .map(toErrorMessageOrJourneyId)
 
     private val toErrorMessageOrJourneyId: Validated[IllegalArgumentException, String] => Either[String, JourneyId] = _.toEither.bimap(
