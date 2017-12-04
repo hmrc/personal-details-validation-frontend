@@ -31,7 +31,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage)
   extends FrontendController
     with I18nSupport {
 
-  def show(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
+  def showPage(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(page.render))
   }
 }

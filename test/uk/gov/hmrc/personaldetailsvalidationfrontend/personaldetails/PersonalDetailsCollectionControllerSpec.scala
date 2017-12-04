@@ -39,7 +39,7 @@ class PersonalDetailsCollectionControllerSpec
         .expects(request, messages, viewConfig)
         .returning(Html("content"))
 
-      val result = contoller.show(journeyId)(request)
+      val result = contoller.showPage(journeyId)(request)
 
       status(result) shouldBe OK
       contentType(result) shouldBe Some(HTML)
