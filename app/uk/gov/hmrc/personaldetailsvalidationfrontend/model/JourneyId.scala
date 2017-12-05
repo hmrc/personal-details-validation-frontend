@@ -18,22 +18,6 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.model
 
 import java.util.UUID
 
-import cats.data.Validated
-import uk.gov.voa.valuetype.StringValue
+import uk.gov.voa.valuetype.ValueType
 
-case class JourneyId private(validated: Validated[IllegalArgumentException, String])
-  extends StringValue {
-  override val value: String = validated.fold(throw _, identity)
-}
-
-object JourneyId {
-  def apply(value: String): JourneyId = JourneyId(JourneyIdValueValidator(value))
-}
-
-object JourneyIdValueValidator extends ((String) => Validated[IllegalArgumentException, String]) {
-  def apply(value: String): Validated[IllegalArgumentException, String] =
-    Validated.catchOnly[IllegalArgumentException] {
-      UUID.fromString(value)
-      value
-    }
-}
+case class JourneyId(value: UUID) extends ValueType[UUID]

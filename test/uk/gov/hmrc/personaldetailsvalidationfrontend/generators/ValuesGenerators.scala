@@ -20,5 +20,5 @@ import org.scalacheck.Gen
 import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
 
 object ValuesGenerators {
-  implicit val journeyIds: Gen[JourneyId] = Gen.uuid.map(_.toString).map(JourneyId.apply)
+  implicit val journeyIds: Gen[JourneyId] = Gen.uuid.map(JourneyId.apply)
 }

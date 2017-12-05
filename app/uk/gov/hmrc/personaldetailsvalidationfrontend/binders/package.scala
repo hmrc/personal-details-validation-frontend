@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend
 
+import java.util.UUID
+
 import cats.data.Validated
 import cats.implicits._
 import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
-import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyIdValueValidator => toValidated}
 
 package object binders {
 
@@ -35,10 +36,16 @@ package object binders {
         .map(toValidated)
         .map(toErrorMessageOrJourneyId)
 
-    private val toErrorMessageOrJourneyId: Validated[IllegalArgumentException, String] => Either[String, JourneyId] = _.toEither.bimap(
-      exception => bindingError + exception.getMessage,
-      validated => JourneyId(validated)
-    )
+    private def toValidated(v: String): Validated[IllegalArgumentException, JourneyId] =
+      Validated.catchOnly[IllegalArgumentException] {
+        JourneyId(UUID.fromString(v))
+      }
+
+    private def toErrorMessageOrJourneyId(validated: Validated[IllegalArgumentException, JourneyId]): Either[String, JourneyId] =
+      validated.toEither.bimap(
+        exception => bindingError + exception.getMessage,
+        identity
+      )
 
     override def unbind(key: String, value: JourneyId): String = value.toString()
   }
