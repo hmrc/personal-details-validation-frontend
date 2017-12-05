@@ -8,8 +8,7 @@ lazy val playSettings: Seq[Setting[_]] = Seq(
   routesImport ++= Seq(
     "uk.gov.hmrc.personaldetailsvalidationfrontend.binders._",
     "uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId"
-  ),
-  generateReverseRouter := true
+  )
 )
 
 lazy val microservice = Project(appName, file("."))
