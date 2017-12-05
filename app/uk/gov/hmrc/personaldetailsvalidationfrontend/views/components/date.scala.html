@@ -18,8 +18,8 @@
 
 @(form: Form[_],
   fieldName: String,
-  labelPrefix: String,
-  hintSuffix: Option[String] = None)(
+  labelKeyPrefix: String,
+  hintKeySuffix: Option[String] = None)(
   implicit request: Request[_],
   messages: Messages)
 
@@ -29,21 +29,21 @@
 
 <div id="@fieldName" class="form-group @if(dateErrors.nonEmpty) {error}">
     <fieldset>
-        <legend><span class="form-label-bold">@messages(s"$labelPrefix.$fieldName")</span></legend>
+        <legend><span class="form-label-bold">@messages(s"$labelKeyPrefix.$fieldName")</span></legend>
 
         @dateErrors.map(err => (err.message, err.args)).distinct.map { case (msg, args) =>
             <p class="error-message">@messages(msg, args: _*)</p>
         }
 
-        @hintSuffix.map { key =>
-            <span class="form-hint">@messages(s"$labelPrefix.$fieldName.$key")</span>
+        @hintKeySuffix.map { key =>
+            <span class="form-hint">@messages(s"$labelKeyPrefix.$fieldName.$key")</span>
         }
 
         <div class="form-date">
             <div class="form-group form-group-day">
                 @input(
                     field = form(s"$fieldName.day"),
-                    '_label -> messages(s"$labelPrefix.$fieldName.day"),
+                    '_label -> messages(s"$labelKeyPrefix.$fieldName.day"),
                     '_type -> "number",
                     '_labelClass -> "form-label",
                     '_pattern -> "[0-9]*",
@@ -58,7 +58,7 @@
             <div class="form-group form-group-month">
                 @input(
                     field = form(s"$fieldName.month"),
-                    '_label -> messages(s"$labelPrefix.$fieldName.month"),
+                    '_label -> messages(s"$labelKeyPrefix.$fieldName.month"),
                     '_type -> "number",
                     '_labelClass -> "form-label",
                     '_showConstraints -> false,
@@ -73,7 +73,7 @@
             <div class="form-group form-group-year">
                 @input(
                     field = form(s"$fieldName.year"),
-                    '_label -> messages(s"$labelPrefix.$fieldName.year"),
+                    '_label -> messages(s"$labelKeyPrefix.$fieldName.year"),
                     '_type -> "number",
                     '_labelClass -> "form-label",
                     '_showConstraints -> false,
