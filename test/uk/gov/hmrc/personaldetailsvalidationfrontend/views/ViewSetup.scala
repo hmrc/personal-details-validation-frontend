@@ -20,7 +20,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalamock.scalatest.MockFactory
 import play.api.Application
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
@@ -30,6 +30,7 @@ import scala.language.implicitConversions
 
 abstract class ViewSetup(implicit app: Application) extends MockFactory {
   implicit val viewConfig: ViewConfig = ViewConfigMockFactory()
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
   implicit val lang: Lang = Lang("en")

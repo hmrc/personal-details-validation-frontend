@@ -21,8 +21,6 @@ import org.scalamock.scalatest.MockFactory
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, RequestHeader}
 import play.api.test.FakeRequest
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
-import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfigMockFactory
 
 trait EndpointSetup extends MockFactory {
   protected implicit val messagesApi: MessagesApi = mock[MessagesApi]
@@ -31,8 +29,6 @@ trait EndpointSetup extends MockFactory {
   protected implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
   (messagesApi.preferred(_: RequestHeader)).expects(request).returning(messages)
-
-  protected implicit val viewConfig: ViewConfig = ViewConfigMockFactory()
 }
 
 trait EndpointRequiringBodySetup extends EndpointSetup {

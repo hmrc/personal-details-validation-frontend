@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.binders
 
-import org.scalacheck.Gen
 import org.scalacheck.Gen.alphaStr
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds

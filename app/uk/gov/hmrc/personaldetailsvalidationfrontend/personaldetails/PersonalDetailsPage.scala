@@ -16,17 +16,19 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 import play.api.data.Form
 import play.api.data.Forms.mapping
-import play.api.i18n.Messages
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 
 @Singleton
-class PersonalDetailsPage {
+class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,
+                                    viewConfig: ViewConfig)
+  extends I18nSupport {
 
   import uk.gov.hmrc.personaldetailsvalidationfrontend.mappings.Mappings._
 
@@ -37,8 +39,6 @@ class PersonalDetailsPage {
     "dateOfBirth" -> mandatoryLocalDate(???)
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
-  def render(implicit request: Request[_],
-             messages: Messages,
-             viewConfig: ViewConfig): Html =
+  def render(implicit request: Request[_]): Html =
     views.html.personal_details(form.withError("firstname", "errror"))
 }

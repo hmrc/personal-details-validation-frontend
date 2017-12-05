@@ -20,7 +20,7 @@ import akka.stream.Materializer
 import org.jsoup.nodes.Document
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import play.twirl.api.Html
@@ -78,7 +78,6 @@ class ErrorHandlerSpec
 
   private trait Setup extends ViewSetup {
     implicit val materializer: Materializer = mock[Materializer]
-    implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
     val errorHandler: ErrorHandler = new ErrorHandler()
 

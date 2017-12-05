@@ -18,11 +18,9 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
-import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.personaldetailsvalidationfrontend.test.controllers.EndpointRequiringBodySetup
@@ -35,11 +33,11 @@ class PersonalDetailsCollectionControllerSpec
 
   "show" should {
     "return OK with body rendered using PersonalDetailsPage" in new Setup {
-      (page.render(_: Request[_], _: Messages, _: ViewConfig))
-        .expects(request, messages, viewConfig)
+      (page.render(_: Request[_]))
+        .expects(request)
         .returning(Html("content"))
 
-      val result = contoller.showPage(journeyId)(request)
+      val result = controller.showPage(journeyId)(request)
 
       status(result) shouldBe OK
       contentType(result) shouldBe Some(HTML)
@@ -51,6 +49,6 @@ class PersonalDetailsCollectionControllerSpec
   private trait Setup extends EndpointRequiringBodySetup {
     val journeyId = journeyIds.generateOne
     val page: PersonalDetailsPage = mock[PersonalDetailsPage]
-    val contoller = new PersonalDetailsCollectionController(page)
+    val controller = new PersonalDetailsCollectionController(page)
   }
 }
