@@ -34,6 +34,8 @@ object ViewConfigMockFactory extends MockFactory {
     (configMock.getString _).expects("google-analytics.token", *).returning(Some("ga-token"))
     (configMock.getString _).expects("google-analytics.host", *).returning(Some("ga-host"))
     (configMock.getStringList _).expects("play.i18n.langs").returning(Some(List("en", "cy").asJava))
+    (configMock.getString _).expects("play.i18n.descriptions.en", *).returning(Some("english"))
+    (configMock.getString _).expects("play.i18n.descriptions.cy", *).returning(Some("cymraeg"))
 
     configMock
   }

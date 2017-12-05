@@ -82,7 +82,10 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks {
   "languagesMap" should {
 
     "return a map of language descriptions associated with Lang objects" in new Setup {
-      whenConfigEntriesExists("play.i18n.langs" -> List("en", "cy")) { config =>
+      whenConfigEntriesExists(
+        "play.i18n.langs" -> List("en", "cy"),
+        "play.i18n.descriptions" -> Map("en" -> "english", "cy" -> "cymraeg")
+      ) { config =>
         config.languagesMap shouldBe Map(
           "english" -> Lang("en"),
           "cymraeg" -> Lang("cy")
@@ -90,14 +93,17 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks {
       }
     }
 
-    "throw a runtime exception when there's no value for 'play.i18n.langs'" in new Setup {
+    "return an empty map when there's no value for 'play.i18n.langs'" in new Setup {
       whenConfigEntriesExists() { config =>
-        a[RuntimeException] should be thrownBy config.languagesMap
+        config.languagesMap shouldBe Map.empty
       }
     }
 
-    "throw a runtime exception when there's unknown language code defined in 'play.i18n.langs'" in new Setup {
-      whenConfigEntriesExists("play.i18n.langs" -> List("en", "cy", "pl")) { config =>
+    "throw a runtime exception when there's no language description defined for a code in 'play.i18n.langs'" in new Setup {
+      whenConfigEntriesExists(
+        "play.i18n.langs" -> List("en", "cy", "pl"),
+        "play.i18n.descriptions" -> Map("en" -> "english", "cy" -> "cymraeg")
+      ) { config =>
         a[RuntimeException] should be thrownBy config.languagesMap
       }
     }

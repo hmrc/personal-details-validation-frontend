@@ -44,16 +44,11 @@ class ViewConfig @Inject()(protected val configuration: Configuration)
 trait LanguagesConfig {
   self: BaseConfig =>
 
-  private val availableLangs = Map(
-    "en" -> "english",
-    "cy" -> "cymraeg"
-  )
-
   lazy val languagesMap: Map[String, Lang] =
-    configuration.loadMandatory[Seq[String]]("play.i18n.langs")
+    configuration.load[Seq[String]]("play.i18n.langs", default = Nil)
       .map(toLangNameAndLangTuples)
       .toMap
 
   private def toLangNameAndLangTuples(code: String): (String, Lang) =
-    availableLangs(code) -> Lang(code)
+    configuration.loadMandatory[String](s"play.i18n.descriptions.$code") -> Lang(code)
 }
