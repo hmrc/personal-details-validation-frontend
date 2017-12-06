@@ -42,12 +42,11 @@ object ViewConfigMockFactory extends MockFactory {
   }
 
   private def messagesApi: MessagesApi = {
-    val messagesApi = mock[MessagesApi]
+    val messagesApi = stub[MessagesApi]
 
     (messagesApi.messages _)
-      .expects()
-      .returning(Map("default" -> Map.empty, "cy" -> Map.empty))
-      .repeat(2)
+      .when()
+      .returns(Map("default" -> Map.empty, "cy" -> Map.empty))
 
     messagesApi
   }
