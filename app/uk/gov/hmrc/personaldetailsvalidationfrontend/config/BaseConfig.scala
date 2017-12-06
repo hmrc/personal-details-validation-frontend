@@ -19,6 +19,8 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 import play.api.Configuration
 import uk.gov.voa.valuetype.StringValue
 
+import scala.collection.JavaConverters._
+
 trait BaseConfig {
 
   protected def configuration: Configuration
@@ -26,6 +28,7 @@ trait BaseConfig {
   protected case class Host(value: String) extends StringValue
 
   protected implicit lazy val stringValueFinder: String => Option[String] = configuration.getString(_)
+  protected implicit lazy val stringValuesFinder: String => Option[Seq[String]] = configuration.getStringList(_).map(_.asScala.toList)
   protected implicit lazy val intValueFinder: String => Option[Int] = configuration.getInt
 
   private lazy val servicesKey = "microservice.services"

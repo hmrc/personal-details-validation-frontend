@@ -19,10 +19,10 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalamock.scalatest.MockFactory
-import play.api.i18n.{Lang, Messages}
+import play.api.Application
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
-import play.api.{Application, Configuration}
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 
@@ -30,30 +30,11 @@ import scala.language.implicitConversions
 
 abstract class ViewSetup(implicit app: Application) extends MockFactory {
   implicit val viewConfig: ViewConfig = ViewConfigMockFactory()
+  implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
   implicit val lang: Lang = Lang("en")
   implicit val messages: Messages = Messages.Implicits.applicationMessages
 
   implicit def asDocument(html: Html): Document = Jsoup.parse(html.toString())
-}
-
-private object ViewConfigMockFactory extends MockFactory {
-
-  private def configuration: Configuration = {
-    val configMock = mock[Configuration]
-
-    (configMock.getString _).expects("assets.url", *).returning(Some("assets-url"))
-    (configMock.getString _).expects("assets.version", *).returning(Some("assets-version"))
-    (configMock.getString _).expects("optimizely.url", *).returning(None)
-    (configMock.getString _).expects("optimizely.projectId", *).returning(None)
-    (configMock.getString _).expects("google-analytics.token", *).returning(Some("ga-token"))
-    (configMock.getString _).expects("google-analytics.host", *).returning(Some("ga-host"))
-
-    configMock
-  }
-
-  def apply(): ViewConfig = {
-    new ViewConfig(configuration)
-  }
 }

@@ -18,12 +18,16 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 
 import javax.inject.{Inject, Singleton}
 
+import com.google.inject.ImplementedBy
 import play.api.Configuration
+import play.api.i18n.{Lang, MessagesApi}
 import uk.gov.hmrc.play.config.{AssetsConfig, OptimizelyConfig}
 
 @Singleton
-class ViewConfig @Inject()(protected val configuration: Configuration)
-  extends AssetsConfig
+class ViewConfig @Inject()(protected val configuration: Configuration,
+                           protected val messagesApi: MessagesApi)
+  extends LanguagesConfig
+    with AssetsConfig
     with OptimizelyConfig
     with BaseConfig {
 
@@ -35,4 +39,28 @@ class ViewConfig @Inject()(protected val configuration: Configuration)
 
   lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
   lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
+}
+
+@ImplementedBy(classOf[ViewConfig])
+trait LanguagesConfig {
+  self: BaseConfig =>
+
+  protected val messagesApi: MessagesApi
+
+  lazy val languagesMap: Map[String, Lang] =
+    configuration.load[Seq[String]]("play.i18n.langs", default = Nil)
+      .map(verifyMessagesExists)
+      .map(toLangNameAndLangTuples)
+      .toMap
+
+  private def toLangNameAndLangTuples(code: String): (String, Lang) =
+    configuration.loadMandatory[String](s"play.i18n.descriptions.$code") -> Lang(code)
+
+  private def verifyMessagesExists(code: String): String = {
+    val validatedCode = if (code == "en") "default" else code
+    messagesApi.messages.keySet.find(_ == validatedCode) match {
+      case Some(_) => code
+      case None => throw new RuntimeException(s"No messages.$code defined")
+    }
+  }
 }

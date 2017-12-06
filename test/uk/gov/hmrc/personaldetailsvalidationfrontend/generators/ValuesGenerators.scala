@@ -14,21 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.helloworld
+package uk.gov.hmrc.personaldetailsvalidationfrontend.generators
 
-import org.jsoup.nodes.Document
-import org.scalatestplus.play.OneAppPerSuite
-import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewSetup
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalacheck.Gen
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
 
-class HelloWorldPageSpec extends UnitSpec with OneAppPerSuite {
-
-  "render" should {
-
-    "return a H1 with a 'hello world' message" in new ViewSetup {
-      val page: Document = html.hello_world()
-
-      page.select("h1").text() shouldBe "Hello from personal-details-validation-frontend!"
-    }
-  }
+object ValuesGenerators {
+  implicit val journeyIds: Gen[JourneyId] = Gen.uuid.map(JourneyId.apply)
 }

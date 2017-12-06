@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
-@import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.main_template
+package uk.gov.hmrc.personaldetailsvalidationfrontend.mappings
 
-@()(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
+import java.time.LocalDate
 
-@main_template(title = "Hello from personal-details-validation-frontend", bodyClasses = None) {
-    <h1>Hello from personal-details-validation-frontend!</h1>
+import play.api.data.Forms._
+import play.api.data.Mapping
+
+object Mappings {
+
+  def mandatoryText(error: => String): Mapping[String] =
+    optional(text)
+      .verifying(error, _.isDefined)
+      .transform[String](_.get, Some.apply)
+
+  def mandatoryLocalDate(formatError: => String): Mapping[LocalDate] =
+    LocalDateMapping()(formatError)
 }
+

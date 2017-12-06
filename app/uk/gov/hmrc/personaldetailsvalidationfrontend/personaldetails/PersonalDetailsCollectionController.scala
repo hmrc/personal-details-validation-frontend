@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.helloworld
+package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
 import javax.inject.Inject
 
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc._
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
 
-class HelloWorldEndpoint @Inject()(page: HelloWorldPage)
-                                  (implicit val messagesApi: MessagesApi, viewConfig: ViewConfig)
-  extends FrontendController
-    with I18nSupport {
+class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage)
+  extends FrontendController {
 
-  val helloWorld = Action.async { implicit request =>
+  def showPage(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(page.render))
   }
 }

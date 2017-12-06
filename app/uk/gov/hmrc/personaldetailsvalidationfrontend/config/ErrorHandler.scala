@@ -19,10 +19,16 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 import javax.inject.{Inject, Singleton}
 
 import play.api.i18n.MessagesApi
-import play.api.mvc.Request
+import play.api.mvc.Results.NotFound
+import play.api.mvc.{Request, RequestHeader, Result, Results}
+import play.mvc.Http.Status._
 import play.twirl.api.Html
+import uk.gov.hmrc.personaldetailsvalidationfrontend.binders.bindingError
 import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.error_template
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
+
+import scala.concurrent.Future
+import scala.language.implicitConversions
 
 @Singleton
 class ErrorHandler @Inject()()(implicit val messagesApi: MessagesApi,
@@ -31,4 +37,13 @@ class ErrorHandler @Inject()()(implicit val messagesApi: MessagesApi,
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
                                     (implicit request: Request[_]): Html =
     error_template(pageTitle, heading, message)
+
+  override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
+    statusCode match {
+      case BAD_REQUEST if message.startsWith(bindingError) => Future.successful(NotFound(internalServerErrorTemplate(request)))
+      case other => Future.successful(Results.Status(other)(internalServerErrorTemplate(request)))
+    }
+  }
+
+  private implicit def rhToRequest(rh: RequestHeader): Request[_] = Request(rh, "")
 }

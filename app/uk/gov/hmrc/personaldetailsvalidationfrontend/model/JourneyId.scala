@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.helloworld
+package uk.gov.hmrc.personaldetailsvalidationfrontend.model
 
-import play.api.i18n.Messages
-import play.api.mvc.Request
-import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+import java.util.UUID
 
-class HelloWorldPage() {
+import uk.gov.voa.valuetype.ValueType
 
-  def render(implicit request: Request[_],
-             messages: Messages,
-             viewConfig: ViewConfig): Html =
-    html.hello_world()
-}
+case class JourneyId(value: UUID) extends ValueType[UUID]
