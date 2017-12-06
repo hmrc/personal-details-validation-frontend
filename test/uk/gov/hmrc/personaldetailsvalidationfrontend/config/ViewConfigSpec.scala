@@ -16,13 +16,17 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.config
 
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
 import play.api.Configuration
-import play.api.i18n.Lang
+import play.api.i18n.{Lang, MessagesApi}
 import uk.gov.hmrc.personaldetailsvalidationfrontend.test.configs.ConfigSetup
 import uk.gov.hmrc.play.test.UnitSpec
 
-class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks {
+class ViewConfigSpec
+  extends UnitSpec
+    with TableDrivenPropertyChecks
+    with MockFactory {
 
   private val scenarios = Tables.Table(
     ("propertyName",   "propertyAccessor",                            "configKey"),
@@ -82,6 +86,8 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks {
   "languagesMap" should {
 
     "return a map of language descriptions associated with Lang objects" in new Setup {
+      expectMessagesFilesExistsFor("default", "cy")
+
       whenConfigEntriesExists(
         "play.i18n.langs" -> List("en", "cy"),
         "play.i18n.descriptions" -> Map("en" -> "english", "cy" -> "cymraeg")
@@ -99,7 +105,20 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks {
       }
     }
 
+    "throw a runtime exception when there's no messages file defined for a code from 'play.i18n.langs'" in new Setup {
+      expectMessagesFilesExistsFor("default")
+
+      whenConfigEntriesExists(
+        "play.i18n.langs" -> List("en", "cy"),
+        "play.i18n.descriptions" -> Map("en" -> "english", "cy" -> "cymraeg")
+      ) { config =>
+        a[RuntimeException] should be thrownBy config.languagesMap
+      }
+    }
+
     "throw a runtime exception when there's no language description defined for a code in 'play.i18n.langs'" in new Setup {
+      expectMessagesFilesExistsFor("default", "cy")
+
       whenConfigEntriesExists(
         "play.i18n.langs" -> List("en", "cy", "pl"),
         "play.i18n.descriptions" -> Map("en" -> "english", "cy" -> "cymraeg")
@@ -110,6 +129,15 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks {
   }
 
   private trait Setup extends ConfigSetup[ViewConfig] {
-    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_)
+    val messagesApi = mock[MessagesApi]
+    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, messagesApi)
+
+    def expectMessagesFilesExistsFor(codes: String*) = {
+      val messagesMap = codes.map(_ -> Map.empty[String, String]).toMap
+      (messagesApi.messages _)
+        .expects()
+        .returning(messagesMap)
+        .repeat(messagesMap.size)
+    }
   }
 }

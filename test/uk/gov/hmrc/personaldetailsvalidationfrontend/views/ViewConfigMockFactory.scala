@@ -18,6 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.views
 
 import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
+import play.api.i18n.MessagesApi
 import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 
 import scala.collection.JavaConverters._
@@ -40,7 +41,17 @@ object ViewConfigMockFactory extends MockFactory {
     configMock
   }
 
-  def apply(): ViewConfig = {
-    new ViewConfig(configuration)
+  private def messagesApi: MessagesApi = {
+    val messagesApi = mock[MessagesApi]
+
+    (messagesApi.messages _)
+      .expects()
+      .returning(Map("default" -> Map.empty, "cy" -> Map.empty))
+      .repeat(2)
+
+    messagesApi
   }
+
+  def apply(): ViewConfig =
+    new ViewConfig(configuration, messagesApi)
 }
