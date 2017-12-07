@@ -47,6 +47,6 @@ package object binders {
         identity
       )
 
-    override def unbind(key: String, value: JourneyId): String = value.toString()
+    override def unbind(key: String, value: JourneyId): String = s"$key=${value.toString()}"
   }
 }

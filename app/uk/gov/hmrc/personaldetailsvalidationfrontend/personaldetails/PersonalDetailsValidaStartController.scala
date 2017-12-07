@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.model
+package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
-import java.util.UUID
-import java.util.UUID.randomUUID
+import javax.inject.Singleton
 
-import uk.gov.voa.valuetype.ValueType
+import play.api.mvc.Action
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-case class JourneyId(value: UUID) extends ValueType[UUID]
+@Singleton
+class PersonalDetailsValidationStartController extends FrontendController {
 
-object JourneyId {
-  def apply(): JourneyId = JourneyId(randomUUID())
+  def start(completionUrl: String) = Action {
+    Redirect(routes.PersonalDetailsCollectionController.showPage(JourneyId()))
+  }
+
 }

@@ -50,7 +50,8 @@ class JourneyIdQueryBindableSpec extends UnitSpec {
 
     "return JourneyId String representation" in {
       val journeyId = journeyIds.generateOne
-      journeyIdQueryBindable.unbind("journeyId", journeyId) shouldBe journeyId.toString()
+      val journeyIdQueryKey = "journeyId"
+      journeyIdQueryBindable.unbind(journeyIdQueryKey, journeyId) shouldBe s"$journeyIdQueryKey=${journeyId.toString()}"
     }
   }
 }
