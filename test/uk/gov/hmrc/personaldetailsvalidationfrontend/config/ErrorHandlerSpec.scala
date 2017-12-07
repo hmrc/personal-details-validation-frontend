@@ -24,7 +24,8 @@ import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidationfrontend.binders._
+import uk.gov.hmrc.personaldetailsvalidationfrontend.play.binders._
+import uk.gov.hmrc.personaldetailsvalidationfrontend.play.error.ErrorHandler
 import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewSetup
 import uk.gov.hmrc.play.test.UnitSpec
 

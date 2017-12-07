@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,27 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.model
 
-@(pageTitle: String,
-  heading: String,
-  message: String)(
-  implicit request: Request[_],
-  messages: Messages,
-  viewConfig: ViewConfig
-)
+import java.time.LocalDate
 
-@contentHeader = {
-  <h1>@heading</h1>
-}
-
-@mainContent = {
-  <p>@message</p>
-}
-
-@govuk_wrapper(title = pageTitle,
-               contentHeader = Some(contentHeader),
-               mainContent = mainContent
-)
+case class PersonalDetails(firstName: String,
+                           lastName: String,
+                           nino: String,
+                           dateOfBirth: LocalDate)

@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
+package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.model
 
-import java.time.LocalDate
+import uk.gov.hmrc.play.test.UnitSpec
 
-case class PersonalDetails(firstName: String,
-                           lastName: String,
-                           nino: String,
-                           dateOfBirth: LocalDate)
+class RelativeUrlSpecs extends UnitSpec {
+
+  "RelativeUrl" should {
+    "not be allowed to be constructed if parameter value does not start with '/'" in {
+      intercept[IllegalArgumentException](RelativeUrl("foobar"))
+    }
+
+    "not be allowed to be constructed if parameter value contains '//'" in {
+      intercept[IllegalArgumentException](RelativeUrl("/foobar//baz"))
+    }
+  }
+
+}

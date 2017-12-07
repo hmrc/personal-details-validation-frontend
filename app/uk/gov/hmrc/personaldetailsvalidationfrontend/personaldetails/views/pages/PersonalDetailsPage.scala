@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
+package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views.pages
 
 import javax.inject.{Inject, Singleton}
 
@@ -23,14 +23,16 @@ import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
+import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.model.PersonalDetails
+import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views
+import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfig
 
 @Singleton
 class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,
                                     viewConfig: ViewConfig)
   extends I18nSupport {
 
-  import uk.gov.hmrc.personaldetailsvalidationfrontend.mappings.Mappings._
+  import uk.gov.hmrc.personaldetailsvalidationfrontend.formmappings.Mappings._
 
   private val form: Form[PersonalDetails] = Form(mapping(
     "firstName" -> mandatoryText(???),
@@ -40,5 +42,5 @@ class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
   def render(implicit request: Request[_]): Html =
-    views.html.personal_details(form.withError("firstname", "errror"))
+    views.html.template.personal_details(form.withError("firstname", "errror"))
 }

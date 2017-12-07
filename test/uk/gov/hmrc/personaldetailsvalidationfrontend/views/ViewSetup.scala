@@ -24,7 +24,6 @@ import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 
 import scala.language.implicitConversions
 

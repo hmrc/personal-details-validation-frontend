@@ -18,6 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
 import org.jsoup.nodes.Document
 import org.scalatestplus.play.OneAppPerSuite
+import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewSetup
 import uk.gov.hmrc.play.test.UnitSpec
 

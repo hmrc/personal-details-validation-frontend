@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import play.api.i18n.{I18nSupport, Lang, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Controller}
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.{ErrorHandler, LanguagesConfig}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.play.error.ErrorHandler
 import uk.gov.hmrc.play.language.LanguageUtils.FlashWithSwitchIndicator
 
 import scala.language.implicitConversions

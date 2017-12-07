@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.model
+package uk.gov.hmrc.personaldetailsvalidationfrontend.formmappings
 
-import uk.gov.voa.valuetype.StringValue
+import java.time.LocalDate
 
-case class RelativeUrl(value: String) extends StringValue {
+import play.api.data.Forms._
+import play.api.data.Mapping
 
-  require(value.startsWith("/"), s"$value is not a relative url")
-  require(!value.contains("//"), s"$value is not protocol relative url safe")
+object Mappings {
 
+  def mandatoryText(error: => String): Mapping[String] =
+    optional(text)
+      .verifying(error, _.isDefined)
+      .transform[String](_.get, Some.apply)
+
+  def mandatoryLocalDate(formatError: => String): Mapping[LocalDate] =
+    LocalDateMapping()(formatError)
 }
+

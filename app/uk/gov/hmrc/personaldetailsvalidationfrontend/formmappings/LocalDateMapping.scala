@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.mappings
+package uk.gov.hmrc.personaldetailsvalidationfrontend.formmappings
 
 import java.time.LocalDate
 
@@ -24,9 +24,9 @@ import play.api.data.{FormError, Mapping, ObjectMapping}
 
 import scala.util.{Failure, Success, Try}
 
-case class LocalDateMapping private[mappings](key: String = "",
-                                              constraints: Seq[Constraint[LocalDate]] = Nil)
-                                             (formatError: => String)
+case class LocalDateMapping private[formmappings](key: String = "",
+                                                  constraints: Seq[Constraint[LocalDate]] = Nil)
+                                                 (formatError: => String)
   extends Mapping[LocalDate] with ObjectMapping {
 
   val mappings: Seq[Mapping[_]] = Seq(this)
