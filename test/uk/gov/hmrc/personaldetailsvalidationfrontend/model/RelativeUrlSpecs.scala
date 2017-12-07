@@ -16,13 +16,18 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.model
 
-import java.util.UUID
+import uk.gov.hmrc.play.test.UnitSpec
 
-import uk.gov.hmrc.personaldetailsvalidationfrontend.uuid.UUIDProvider
-import uk.gov.voa.valuetype.ValueType
+class RelativeUrlSpecs extends UnitSpec {
 
-case class JourneyId(value: UUID) extends ValueType[UUID]
+  "RelativeUrl" should {
+    "not be allowed to be constructed if parameter value does not start with '/'" in {
+      intercept[IllegalArgumentException](RelativeUrl("foobar"))
+    }
 
-object JourneyId {
-  def apply()(implicit uuidProvider: UUIDProvider): JourneyId = JourneyId(uuidProvider())
+    "not be allowed to be constructed if parameter value contains '//'" in {
+      intercept[IllegalArgumentException](RelativeUrl("/foobar//baz"))
+    }
+  }
+
 }

@@ -12,3 +12,6 @@ personal-details.dateOfBirth.hint=For example, 31 3 1980
 personal-details.dateOfBirth.day=Day
 personal-details.dateOfBirth.month=Month
 personal-details.dateOfBirth.year=Year
+
+# errors
+global.error.InternalServerError500.title=Sorry, we are experiencing technical difficulties

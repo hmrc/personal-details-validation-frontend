@@ -21,7 +21,9 @@ import java.util.UUID
 import cats.data.Validated
 import cats.implicits._
 import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
+
+import scala.util.{Failure, Success, Try}
 
 package object binders {
 
@@ -31,8 +33,7 @@ package object binders {
 
     override def bind(key: String,
                       params: Map[String, Seq[String]]): Option[Either[String, JourneyId]] =
-      params.get(key)
-        .map(_.head)
+      getValue(key, params)
         .map(toValidated)
         .map(toErrorMessageOrJourneyId)
 
@@ -49,4 +50,21 @@ package object binders {
 
     override def unbind(key: String, value: JourneyId): String = s"$key=${value.toString()}"
   }
+
+
+  implicit val relativeUrlQueryBinder: QueryStringBindable[RelativeUrl] = new QueryStringBindable[RelativeUrl] {
+
+    override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, RelativeUrl]] =
+      getValue(key, params).map { value =>
+        Try(RelativeUrl(value)) match {
+          case Success(relativeUrl) => Right(relativeUrl)
+          case Failure(ex) => Left(ex.getMessage)
+        }
+      }
+
+    override def unbind(key: String, value: RelativeUrl): String = s"$key=${value.toString()}"
+  }
+
+  private def getValue(key: String, params: Map[String, Seq[String]]): Option[String] = params.get(key).map(_.head)
+
 }

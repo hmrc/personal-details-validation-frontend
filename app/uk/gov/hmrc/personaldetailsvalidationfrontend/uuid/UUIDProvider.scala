@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
+package uk.gov.hmrc.personaldetailsvalidationfrontend.uuid
 
+import java.util.UUID
 import javax.inject.Singleton
 
-import play.api.mvc.Action
-import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-
 @Singleton
-class PersonalDetailsValidationStartController extends FrontendController {
-
-  def start(completionUrl: String) = Action {
-    Redirect(routes.PersonalDetailsCollectionController.showPage(JourneyId()))
-  }
-
+class UUIDProvider extends (() => UUID) {
+  override def apply() = UUID.randomUUID()
 }

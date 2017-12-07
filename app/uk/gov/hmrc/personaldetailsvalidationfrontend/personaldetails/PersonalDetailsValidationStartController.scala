@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.model
+package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
-import java.util.UUID
+import javax.inject.{Inject, Singleton}
 
+import play.api.mvc.Action
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
 import uk.gov.hmrc.personaldetailsvalidationfrontend.uuid.UUIDProvider
-import uk.gov.voa.valuetype.ValueType
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-case class JourneyId(value: UUID) extends ValueType[UUID]
+@Singleton
+class PersonalDetailsValidationStartController @Inject() (implicit uuidProvider: UUIDProvider) extends FrontendController {
 
-object JourneyId {
-  def apply()(implicit uuidProvider: UUIDProvider): JourneyId = JourneyId(uuidProvider())
+  def start(completionUrl: RelativeUrl) = Action {
+    Redirect(routes.PersonalDetailsCollectionController.showPage(JourneyId()))
+  }
+
 }

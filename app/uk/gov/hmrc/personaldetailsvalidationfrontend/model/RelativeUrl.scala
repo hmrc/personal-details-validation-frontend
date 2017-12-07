@@ -16,13 +16,11 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.model
 
-import java.util.UUID
+import uk.gov.voa.valuetype.StringValue
 
-import uk.gov.hmrc.personaldetailsvalidationfrontend.uuid.UUIDProvider
-import uk.gov.voa.valuetype.ValueType
+case class RelativeUrl(value: String) extends StringValue {
 
-case class JourneyId(value: UUID) extends ValueType[UUID]
+  require(value.startsWith("/"), s"$value is not a relative url")
+  require(!value.contains("//"), s"$value is not protocol relative url safe")
 
-object JourneyId {
-  def apply()(implicit uuidProvider: UUIDProvider): JourneyId = JourneyId(uuidProvider())
 }
