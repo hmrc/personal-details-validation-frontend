@@ -24,8 +24,8 @@ NOTE: User should be redirected to this page. It shouldn't be called directly fr
 ### Example redirects
 | CompletionUrl                 | Redirect url                                                                  |
 |:----------------------------- |:----------------------------------------------------------------------------- |
-|/my-service/pdv-complete       | /my-service/pdv-complete?journeyId=0018941f-fed3-47db-a05c-8b55e941324b       |
-|/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&journeyId=0018941f-fed3-47db-a05c-8b55e941324b   |
+|/my-service/pdv-complete       | /my-service/pdv-complete?validationId=0018941f-fed3-47db-a05c-8b55e941324b       |
+|/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&validationId=0018941f-fed3-47db-a05c-8b55e941324b   |
     
 ### License
 
