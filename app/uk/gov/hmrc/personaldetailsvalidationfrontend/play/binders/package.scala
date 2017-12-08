@@ -21,6 +21,7 @@ import java.util.UUID
 import cats.data.Validated
 import cats.implicits._
 import play.api.mvc.QueryStringBindable
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.RelativeUrl.relativeUrl
 import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
 
 package object binders {
@@ -53,7 +54,7 @@ package object binders {
 
     override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, RelativeUrl]] =
       getValue(key, params).map { value =>
-        Either.catchOnly[IllegalArgumentException](RelativeUrl(value)).leftMap(_.getMessage)
+        relativeUrl(value).leftMap(_.getMessage)
       }
 
     override def unbind(key: String, value: RelativeUrl): String = s"$key=${value.toString()}"

@@ -17,10 +17,17 @@
 package uk.gov.hmrc.personaldetailsvalidationfrontend.model
 
 import uk.gov.voa.valuetype.StringValue
+import cats.implicits._
 
-case class RelativeUrl(value: String) extends StringValue {
+case class RelativeUrl private [RelativeUrl] (value: String) extends StringValue {
 
   require(value.startsWith("/"), s"$value is not a relative url")
   require(!value.contains("//"), s"$value is not protocol relative url safe")
+
+}
+
+object RelativeUrl {
+
+  def relativeUrl(value: String): Either[IllegalArgumentException, RelativeUrl] = Either.catchOnly[IllegalArgumentException](RelativeUrl(value))
 
 }

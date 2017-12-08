@@ -31,7 +31,7 @@ class PersonalDetailsValidationStartControllerSpec extends UnitSpec with ScalaFu
 
   "start" should {
     "redirect to personal details page" in new Setup {
-      val result = controller.start(RelativeUrl("/foo/bar"))(request).futureValue
+      val result = controller.start(relativeUrl)(request).futureValue
       status(result) shouldBe 303
 
       result.header.headers(LOCATION) shouldBe routes.PersonalDetailsCollectionController.showPage(JourneyId(journeyIdValue)).url
@@ -43,6 +43,7 @@ class PersonalDetailsValidationStartControllerSpec extends UnitSpec with ScalaFu
     implicit val uuidProvider = stub[UUIDProvider]
 
     val journeyIdValue: UUID = randomUUID()
+    val Right(relativeUrl) = RelativeUrl.relativeUrl("/foo/bar")
 
     uuidProvider.apply _ when() returns journeyIdValue
 

@@ -22,11 +22,13 @@ class RelativeUrlSpecs extends UnitSpec {
 
   "RelativeUrl" should {
     "not be allowed to be constructed if parameter value does not start with '/'" in {
-      intercept[IllegalArgumentException](RelativeUrl("foobar"))
+      val Left(exception) =  RelativeUrl.relativeUrl("foobar")
+      exception shouldBe a[IllegalArgumentException]
     }
 
     "not be allowed to be constructed if parameter value contains '//'" in {
-      intercept[IllegalArgumentException](RelativeUrl("/foobar//baz"))
+      val Left(exception) =  RelativeUrl.relativeUrl("/foobar//baz")
+      exception shouldBe a[IllegalArgumentException]
     }
   }
 

@@ -28,9 +28,9 @@ class RelativeUrlQueryBindableSpec extends UnitSpec {
     "return RelativeUrl if key is present in params" in {
       val url = "/foo/bar"
 
-      val result = relativeUrlQueryBinder.bind(key, Map(key -> Seq(url.toString)))
+      val Some(Right(relativeUrl)) = relativeUrlQueryBinder.bind(key, Map(key -> Seq(url.toString)))
 
-      result shouldBe Some(Right(RelativeUrl(url)))
+      relativeUrl.value shouldBe url
     }
 
     "return None if key is not present" in {
@@ -52,7 +52,8 @@ class RelativeUrlQueryBindableSpec extends UnitSpec {
 
     "return query param string" in {
       val url = "/foo/bar"
-      relativeUrlQueryBinder.unbind(key, RelativeUrl(url)) shouldBe s"$key=$url"
+      val Right(relativeUrl) = RelativeUrl.relativeUrl(url)
+      relativeUrlQueryBinder.unbind(key, relativeUrl) shouldBe s"$key=$url"
     }
   }
 }
