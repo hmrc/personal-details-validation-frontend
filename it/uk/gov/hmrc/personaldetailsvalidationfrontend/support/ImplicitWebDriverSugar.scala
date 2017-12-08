@@ -1,9 +1,22 @@
 package uk.gov.hmrc.personaldetailsvalidationfrontend.support
 
 import org.openqa.selenium.WebDriver
-import uk.gov.hmrc.integration.framework.SingletonDriver
+import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
+import org.openqa.selenium.remote.DesiredCapabilities
+
+object SingletonDriver {
+  lazy val driver = {
+    val capabilities = DesiredCapabilities.chrome()
+
+    val options = new ChromeOptions()
+    options.merge(capabilities)
+
+    new ChromeDriver(options)
+  }
+
+  def closeInstance() = driver.quit()
+}
 
 trait ImplicitWebDriverSugar {
-  System.setProperty("browser", "chrome")
-  implicit lazy val webDriver: WebDriver = SingletonDriver.getInstance()
+  implicit lazy val webDriver: WebDriver = SingletonDriver.driver
 }

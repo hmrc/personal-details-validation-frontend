@@ -24,8 +24,8 @@ private object AppDependencies {
   )
 
   private def it() = Seq(
+    "org.seleniumhq.selenium" % "selenium-java" % "3.7.1" % IntegrationTest,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % IntegrationTest,
-    "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % IntegrationTest,
-    "uk.gov.hmrc" %% "scala-webdriver" % "5.18.0" % IntegrationTest
+    "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % IntegrationTest
   )
 }

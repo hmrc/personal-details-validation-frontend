@@ -5,8 +5,7 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.integration.framework.SingletonDriver
-import uk.gov.hmrc.personaldetailsvalidationfrontend.support.{ImplicitWebDriverSugar, NavigationSugar}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.support.{ImplicitWebDriverSugar, NavigationSugar, SingletonDriver}
 
 trait BaseIntegrationSpec
   extends WordSpec with GuiceOneServerPerSuite with ScalaFutures
@@ -25,7 +24,6 @@ trait BaseIntegrationSpec
   sys addShutdownHook {
     SingletonDriver.closeInstance()
   }
-
 }
 
 
