@@ -6,8 +6,9 @@ val appName = "personal-details-validation-frontend"
 
 lazy val playSettings: Seq[Setting[_]] = Seq(
   routesImport ++= Seq(
-    "uk.gov.hmrc.personaldetailsvalidationfrontend.binders._",
-    "uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId"
+    "uk.gov.hmrc.personaldetailsvalidationfrontend.play.binders._",
+    "uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId",
+    "uk.gov.hmrc.personaldetailsvalidationfrontend.model.RelativeUrl"
   )
 )
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.config
+package uk.gov.hmrc.personaldetailsvalidationfrontend.play.error
 
 import javax.inject.{Inject, Singleton}
 
@@ -23,8 +23,9 @@ import play.api.mvc.Results.NotFound
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.mvc.Http.Status._
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidationfrontend.binders.bindingError
-import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.error_template
+import uk.gov.hmrc.personaldetailsvalidationfrontend.play.binders.bindingError
+import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfig
+import uk.gov.hmrc.personaldetailsvalidationfrontend.views.html.template.error_template
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
 import scala.concurrent.Future

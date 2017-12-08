@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.binders
+package uk.gov.hmrc.personaldetailsvalidationfrontend.play.binders
 
 import org.scalacheck.Gen.alphaStr
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
@@ -50,7 +50,8 @@ class JourneyIdQueryBindableSpec extends UnitSpec {
 
     "return JourneyId String representation" in {
       val journeyId = journeyIds.generateOne
-      journeyIdQueryBindable.unbind("journeyId", journeyId) shouldBe journeyId.toString()
+      val journeyIdQueryKey = "journeyId"
+      journeyIdQueryBindable.unbind(journeyIdQueryKey, journeyId) shouldBe s"$journeyIdQueryKey=${journeyId.toString()}"
     }
   }
 }

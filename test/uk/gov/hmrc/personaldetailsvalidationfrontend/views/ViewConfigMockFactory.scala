@@ -19,7 +19,6 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.views
 import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
 import play.api.i18n.MessagesApi
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.ViewConfig
 
 import scala.collection.JavaConverters._
 

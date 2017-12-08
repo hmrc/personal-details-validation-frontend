@@ -14,32 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.config
-
-import javax.inject.{Inject, Singleton}
+package uk.gov.hmrc.personaldetailsvalidationfrontend.language
 
 import com.google.inject.ImplementedBy
-import play.api.Configuration
 import play.api.i18n.{Lang, MessagesApi}
-import uk.gov.hmrc.play.config.{AssetsConfig, OptimizelyConfig}
-
-@Singleton
-class ViewConfig @Inject()(protected val configuration: Configuration,
-                           protected val messagesApi: MessagesApi)
-  extends LanguagesConfig
-    with AssetsConfig
-    with OptimizelyConfig
-    with BaseConfig {
-
-  override lazy val assetsUrl: String = configuration.loadMandatory("assets.url")
-  override lazy val assetsVersion: String = configuration.loadMandatory("assets.version")
-
-  override lazy val optimizelyBaseUrl: String = configuration.load("optimizely.url", "")
-  override lazy val optimizelyProjectId: Option[String] = configuration.loadOptional("optimizely.projectId")
-
-  lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
-  lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
-}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.config.BaseConfig
+import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfig
 
 @ImplementedBy(classOf[ViewConfig])
 trait LanguagesConfig {

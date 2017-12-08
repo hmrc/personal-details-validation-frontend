@@ -16,19 +16,18 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
-import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views.pages.PersonalDetailsPage
+import play.api.mvc.Action
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.uuid.UUIDProvider
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+@Singleton
+class PersonalDetailsValidationStartController @Inject() (implicit uuidProvider: UUIDProvider) extends FrontendController {
 
-class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage)
-  extends FrontendController {
-
-  def showPage(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(page.render))
+  def start(completionUrl: RelativeUrl) = Action {
+    Redirect(routes.PersonalDetailsCollectionController.showPage(JourneyId()))
   }
+
 }
