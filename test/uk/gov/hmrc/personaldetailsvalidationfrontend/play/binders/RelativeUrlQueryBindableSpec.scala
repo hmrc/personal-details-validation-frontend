@@ -42,7 +42,7 @@ class RelativeUrlQueryBindableSpec extends UnitSpec {
 
       val result = relativeUrlQueryBinder.bind(key, Map(key -> Seq(url.toString)))
 
-      result shouldBe Some(Left(s"requirement failed: $url is not a relative url"))
+      result shouldBe Some(Left(s"$url is not a relative url"))
     }
   }
 
