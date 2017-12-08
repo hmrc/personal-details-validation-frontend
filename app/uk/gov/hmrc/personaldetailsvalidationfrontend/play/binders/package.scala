@@ -23,8 +23,6 @@ import cats.implicits._
 import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
 
-import scala.util.{Failure, Success, Try}
-
 package object binders {
 
   val bindingError: String = "binding-error: "
@@ -51,15 +49,11 @@ package object binders {
     override def unbind(key: String, value: JourneyId): String = s"$key=${value.toString()}"
   }
 
-
   implicit val relativeUrlQueryBinder: QueryStringBindable[RelativeUrl] = new QueryStringBindable[RelativeUrl] {
 
     override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, RelativeUrl]] =
       getValue(key, params).map { value =>
-        Try(RelativeUrl(value)) match {
-          case Success(relativeUrl) => Right(relativeUrl)
-          case Failure(ex) => Left(ex.getMessage)
-        }
+        Either.catchOnly[IllegalArgumentException](RelativeUrl(value)).leftMap(_.getMessage)
       }
 
     override def unbind(key: String, value: RelativeUrl): String = s"$key=${value.toString()}"
