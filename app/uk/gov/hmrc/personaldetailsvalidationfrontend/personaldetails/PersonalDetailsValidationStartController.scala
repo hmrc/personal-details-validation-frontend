@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 import javax.inject.{Inject, Singleton}
 
 import play.api.mvc.Action
-import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.model.{JourneyId, RelativeUrl}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
 import uk.gov.hmrc.personaldetailsvalidationfrontend.uuid.UUIDProvider
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 

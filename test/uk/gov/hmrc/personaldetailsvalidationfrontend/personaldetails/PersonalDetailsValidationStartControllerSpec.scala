@@ -22,7 +22,7 @@ import java.util.UUID.randomUUID
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import play.mvc.Http.HeaderNames.LOCATION
-import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.model.{JourneyId, RelativeUrl}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
 import uk.gov.hmrc.personaldetailsvalidationfrontend.test.controllers.EndpointSetup
 import uk.gov.hmrc.personaldetailsvalidationfrontend.uuid.UUIDProvider
 import uk.gov.hmrc.play.test.UnitSpec

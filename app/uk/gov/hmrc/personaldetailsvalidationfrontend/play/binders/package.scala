@@ -21,7 +21,7 @@ import java.util.UUID
 import cats.data.Validated
 import cats.implicits._
 import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.model.{JourneyId, RelativeUrl}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
 
 import scala.util.{Failure, Success, Try}
 

@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 import javax.inject.Inject
 
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.model.JourneyId
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
 import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 

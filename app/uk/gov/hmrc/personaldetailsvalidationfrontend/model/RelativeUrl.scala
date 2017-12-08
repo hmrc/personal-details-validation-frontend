@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.model
+package uk.gov.hmrc.personaldetailsvalidationfrontend.model
 
 import uk.gov.voa.valuetype.StringValue
 

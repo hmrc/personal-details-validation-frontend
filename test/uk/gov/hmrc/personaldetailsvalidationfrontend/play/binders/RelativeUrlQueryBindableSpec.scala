@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.play.binders
 
-import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.model.RelativeUrl
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.RelativeUrl
 import uk.gov.hmrc.play.test.UnitSpec
 
 class RelativeUrlQueryBindableSpec extends UnitSpec {
