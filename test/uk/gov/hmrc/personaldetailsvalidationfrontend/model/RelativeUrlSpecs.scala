@@ -21,7 +21,8 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class RelativeUrlSpecs extends UnitSpec {
 
-  "RelativeUrl" should {
+  "relativeUrl" should {
+
     "not be allowed to be constructed if parameter value does not start with '/'" in {
       val Left(exception) =  relativeUrl("foobar")
       exception shouldBe a[IllegalArgumentException]
@@ -32,5 +33,4 @@ class RelativeUrlSpecs extends UnitSpec {
       exception shouldBe a[IllegalArgumentException]
     }
   }
-
 }
