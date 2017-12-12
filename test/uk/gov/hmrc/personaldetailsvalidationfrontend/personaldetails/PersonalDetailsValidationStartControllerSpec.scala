@@ -26,15 +26,20 @@ import setups.controllers.EndpointSetup
 import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
 import uk.gov.hmrc.personaldetailsvalidationfrontend.uuid.UUIDProvider
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.test.Helpers._
 
-class PersonalDetailsValidationStartControllerSpec extends UnitSpec with ScalaFutures with MockFactory {
+class PersonalDetailsValidationStartControllerSpec
+  extends UnitSpec
+    with ScalaFutures
+    with MockFactory {
 
   "start" should {
     "redirect to personal details page" in new Setup {
-      val result = controller.start(relativeUrl)(request).futureValue
-      status(result) shouldBe 303
+      val result = controller.start(relativeUrl)(request)
 
-      result.header.headers(LOCATION) shouldBe routes.PersonalDetailsCollectionController.showPage(JourneyId(journeyIdValue)).url
+      status(result) shouldBe SEE_OTHER
+
+      header(LOCATION, result) shouldBe Some(routes.PersonalDetailsCollectionController.showPage(JourneyId(journeyIdValue)).url)
     }
   }
 
