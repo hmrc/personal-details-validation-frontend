@@ -19,8 +19,10 @@ package setups.controllers
 import akka.stream.Materializer
 import org.scalamock.scalatest.MockFactory
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{AnyContentAsEmpty, RequestHeader}
+import play.api.mvc.{AnyContentAsEmpty, RequestHeader, Result}
 import play.api.test.FakeRequest
+
+import scala.concurrent.Future
 
 trait EndpointSetup extends MockFactory {
   protected implicit val messagesApi: MessagesApi = mock[MessagesApi]
@@ -32,5 +34,20 @@ trait EndpointSetup extends MockFactory {
 }
 
 trait EndpointRequiringBodySetup extends EndpointSetup {
+
+  import org.scalatest.Matchers._
+  import play.api.test.Helpers._
+
   protected implicit val materializer: Materializer = mock[Materializer]
+
+  def verify(result: Future[Result])
+            (implicit materializer: Materializer) = new {
+
+    def has(statusCode: Int, content: String): Unit = {
+      status(result) shouldBe statusCode
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+      contentAsString(result) shouldBe content
+    }
+  }
 }

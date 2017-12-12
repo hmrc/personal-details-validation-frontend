@@ -42,5 +42,5 @@ private[personaldetails] class PersonalDetailsPage @Inject()(implicit val messag
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
   def render(implicit request: Request[_]): Html =
-    views.html.template.personal_details(form.withError("firstname", "errror"))
+    views.html.template.personal_details(form)
 }

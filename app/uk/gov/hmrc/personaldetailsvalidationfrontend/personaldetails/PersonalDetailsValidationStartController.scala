@@ -24,10 +24,10 @@ import uk.gov.hmrc.personaldetailsvalidationfrontend.uuid.UUIDProvider
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 @Singleton
-class PersonalDetailsValidationStartController @Inject() (implicit uuidProvider: UUIDProvider) extends FrontendController {
+class PersonalDetailsValidationStartController @Inject()(private implicit val uuidProvider: UUIDProvider)
+  extends FrontendController {
 
   def start(completionUrl: RelativeUrl) = Action {
     Redirect(routes.PersonalDetailsCollectionController.showPage(JourneyId()))
   }
-
 }

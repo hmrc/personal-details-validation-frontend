@@ -21,9 +21,11 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.Request
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import setups.controllers.EndpointRequiringBodySetup
+import setups.controllers.{EndpointRequiringBodySetup, PassThroughActionFilter}
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
+import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.verifiers.JourneyIdVerifier
 import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -33,23 +35,27 @@ class PersonalDetailsCollectionControllerSpec
     with ScalaFutures {
 
   "show" should {
-    "return OK with body rendered using PersonalDetailsPage" in new Setup {
+
+    "return OK with body rendered using PersonalDetailsPage " +
+      "when the given journeyId exists" in new Setup {
+      (journeyIdVerifier.forExisting(_: JourneyId))
+        .expects(journeyId)
+        .returning(PassThroughActionFilter)
+
       (page.render(_: Request[_]))
         .expects(request)
         .returning(Html("content"))
 
       val result = controller.showPage(journeyId)(request)
 
-      status(result) shouldBe OK
-      contentType(result) shouldBe Some(HTML)
-      charset(result) shouldBe Some("utf-8")
-      bodyOf(result).futureValue shouldBe "content"
+      verify(result).has(statusCode = OK, content = "content")
     }
   }
 
   private trait Setup extends EndpointRequiringBodySetup {
-    val journeyId = journeyIds.generateOne
+    val journeyId: JourneyId = journeyIds.generateOne
     val page: PersonalDetailsPage = mock[PersonalDetailsPage]
-    val controller = new PersonalDetailsCollectionController(page)
+    val journeyIdVerifier: JourneyIdVerifier = mock[JourneyIdVerifier]
+    val controller = new PersonalDetailsCollectionController(page, journeyIdVerifier)
   }
 }

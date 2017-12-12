@@ -18,17 +18,21 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
 import javax.inject.Inject
 
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
+import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.verifiers.JourneyIdVerifier
 import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
 
-class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage)
+class PersonalDetailsCollectionController @Inject()(private val page: PersonalDetailsPage,
+                                                    private val journeyIdVerifier: JourneyIdVerifier)
   extends FrontendController {
 
-  def showPage(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
+  import journeyIdVerifier._
+
+  def showPage(journeyId: JourneyId): Action[AnyContent] = forExisting(journeyId) async { implicit request =>
     Future.successful(Ok(page.render))
   }
 }
