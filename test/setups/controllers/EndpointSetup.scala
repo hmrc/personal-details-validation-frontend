@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.test.controllers
+package setups.controllers
 
 import akka.stream.Materializer
 import org.scalamock.scalatest.MockFactory

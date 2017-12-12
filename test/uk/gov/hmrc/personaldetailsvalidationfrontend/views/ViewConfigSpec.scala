@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.config
+package uk.gov.hmrc.personaldetailsvalidationfrontend.views
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
 import play.api.Configuration
 import play.api.i18n.{Lang, MessagesApi}
-import uk.gov.hmrc.personaldetailsvalidationfrontend.test.configs.ConfigSetup
-import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfig
+import setups.configs.ConfigSetup
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ViewConfigSpec

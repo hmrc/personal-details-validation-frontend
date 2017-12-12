@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
+package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views.pages
 
 import org.jsoup.nodes.Document
 import org.scalatestplus.play.OneAppPerSuite
-import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views.pages.PersonalDetailsPage
-import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewSetup
+import setups.views.ViewSetup
 import uk.gov.hmrc.play.test.UnitSpec
 
 class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {

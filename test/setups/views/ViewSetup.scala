@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.views
+package setups.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -24,6 +24,7 @@ import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import play.twirl.api.Html
+import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfig
 
 import scala.language.implicitConversions
 

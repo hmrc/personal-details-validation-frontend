@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.views
+package setups.views
 
 import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
 import play.api.i18n.MessagesApi
+import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfig
 
 import scala.collection.JavaConverters._
 

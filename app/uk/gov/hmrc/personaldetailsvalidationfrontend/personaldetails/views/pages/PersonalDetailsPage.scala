@@ -28,8 +28,8 @@ import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views
 import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfig
 
 @Singleton
-class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,
-                                    viewConfig: ViewConfig)
+private[personaldetails] class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,
+                                                             viewConfig: ViewConfig)
   extends I18nSupport {
 
   import uk.gov.hmrc.personaldetailsvalidationfrontend.formmappings.Mappings._

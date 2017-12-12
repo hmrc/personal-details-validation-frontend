@@ -24,8 +24,9 @@ import play.api.mvc.{AnyContentAsEmpty, Flash, Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
+import setups.views.ViewConfigMockFactory
 import uk.gov.hmrc.personaldetailsvalidationfrontend.play.error.ErrorHandler
-import uk.gov.hmrc.personaldetailsvalidationfrontend.views.{ViewConfig, ViewConfigMockFactory}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfig
 import uk.gov.hmrc.play.language.LanguageUtils.FlashWithSwitchIndicator
 import uk.gov.hmrc.play.test.UnitSpec
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.test.configs
+package setups.configs
 
 import play.api.Configuration
 

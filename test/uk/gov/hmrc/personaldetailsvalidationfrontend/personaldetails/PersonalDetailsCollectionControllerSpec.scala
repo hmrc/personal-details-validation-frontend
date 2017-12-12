@@ -21,10 +21,10 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.Request
 import play.api.test.Helpers._
 import play.twirl.api.Html
+import setups.controllers.EndpointRequiringBodySetup
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.views.pages.PersonalDetailsPage
-import uk.gov.hmrc.personaldetailsvalidationfrontend.test.controllers.EndpointRequiringBodySetup
 import uk.gov.hmrc.play.test.UnitSpec
 
 class PersonalDetailsCollectionControllerSpec

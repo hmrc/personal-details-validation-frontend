@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.config
+package uk.gov.hmrc.personaldetailsvalidationfrontend.play.error
 
 import akka.stream.Materializer
 import org.jsoup.nodes.Document
@@ -24,9 +24,8 @@ import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidationfrontend.play.binders._
-import uk.gov.hmrc.personaldetailsvalidationfrontend.play.error.ErrorHandler
-import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewSetup
+import setups.views.ViewSetup
+import uk.gov.hmrc.personaldetailsvalidationfrontend.play.binders.bindingError
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
