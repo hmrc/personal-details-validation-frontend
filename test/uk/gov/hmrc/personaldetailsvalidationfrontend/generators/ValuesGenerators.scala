@@ -17,8 +17,15 @@
 package uk.gov.hmrc.personaldetailsvalidationfrontend.generators
 
 import org.scalacheck.Gen
-import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.RelativeUrl.relativeUrl
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
 
 object ValuesGenerators {
-  implicit val journeyIds: Gen[JourneyId] = Gen.uuid.map(JourneyId.apply)
+
+  import Generators._
+
+  implicit val journeyIds: Gen[JourneyId] = Gen.uuid map JourneyId.apply
+  implicit val relativeUrls: Gen[RelativeUrl] = nonEmptyStrings map { string =>
+    relativeUrl(s"/$string").fold(throw _, identity)
+  }
 }

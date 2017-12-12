@@ -45,7 +45,11 @@ private[personaldetails] class JourneyMongoRepository @Inject()(private val mong
   ) with JourneyRepository {
 
   override def journeyExists(journeyId: JourneyId)
-                            (implicit executionContext: ExecutionContext): Future[Boolean] = ???
+                            (implicit executionContext: ExecutionContext): Future[Boolean] =
+    findById(journeyId) map {
+      case Some(_) => true
+      case None => false
+    }
 }
 
 private object JourneyMongoRepository {

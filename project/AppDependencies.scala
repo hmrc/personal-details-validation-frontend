@@ -21,7 +21,8 @@ private object AppDependencies {
     "org.scalacheck" %% "scalacheck" % "1.13.4" % Test,
     "org.scalamock" %% "scalamock" % "4.0.0" % Test,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % Test,
-    "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % Test
+    "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % Test,
+    "uk.gov.hmrc" %% "reactivemongo-test" % "3.0.0" % Test
   )
 
   private def it() = Seq(
