@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.uuid
+package uk.gov.hmrc.uuid
 
 import java.util.UUID
 import javax.inject.Singleton

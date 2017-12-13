@@ -18,7 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidation.model
 
 import java.util.UUID
 
-import uk.gov.hmrc.personaldetailsvalidation.uuid.UUIDProvider
+import uk.gov.hmrc.uuid.UUIDProvider
 import uk.gov.voa.valuetype.ValueType
 
 case class JourneyId(value: UUID) extends ValueType[UUID]

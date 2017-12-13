@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.generators
+package generators
 
 import java.time.{Instant, LocalDate, ZoneId, ZonedDateTime}
 

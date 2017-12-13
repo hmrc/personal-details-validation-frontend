@@ -22,7 +22,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model.{JourneyId, RelativeUrl}
 
 object ValuesGenerators {
 
-  import Generators._
+  import generators.Generators._
 
   implicit val journeyIds: Gen[JourneyId] = Gen.uuid map JourneyId.apply
   implicit val relativeUrls: Gen[RelativeUrl] = nonEmptyStrings map { string =>

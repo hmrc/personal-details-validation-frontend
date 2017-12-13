@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints.verifiers
 
+import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.Results._
@@ -24,11 +25,10 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import setups.controllers.ResultVerifiers._
-import uk.gov.hmrc.personaldetailsvalidation.generators.Generators.Implicits._
+import uk.gov.hmrc.errorhandling.ErrorHandler
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyId
 import uk.gov.hmrc.personaldetailsvalidation.repository.JourneyRepository
-import uk.gov.hmrc.errorhandling.ErrorHandler
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.play.test.UnitSpec
 

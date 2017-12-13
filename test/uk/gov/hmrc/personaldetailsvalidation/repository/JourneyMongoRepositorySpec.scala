@@ -17,10 +17,10 @@
 package uk.gov.hmrc.personaldetailsvalidation.repository
 
 import akka.Done
+import generators.Generators.Implicits._
 import org.scalatest.concurrent.ScalaFutures
 import play.modules.reactivemongo.ReactiveMongoComponent
 import uk.gov.hmrc.mongo.{MongoConnector, MongoSpecSupport}
-import uk.gov.hmrc.personaldetailsvalidation.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators._
 import uk.gov.hmrc.play.test.UnitSpec
 

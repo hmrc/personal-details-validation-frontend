@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.binders
 
+import generators.Generators.Implicits._
 import org.scalacheck.Gen.alphaStr
 import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
-import uk.gov.hmrc.personaldetailsvalidation.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.play.test.UnitSpec
 
