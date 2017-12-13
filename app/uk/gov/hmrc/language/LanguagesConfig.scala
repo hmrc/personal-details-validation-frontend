@@ -19,7 +19,7 @@ package uk.gov.hmrc.language
 import com.google.inject.ImplementedBy
 import play.api.i18n.{Lang, MessagesApi}
 import uk.gov.hmrc.config.BaseConfig
-import uk.gov.hmrc.personaldetailsvalidation.views.ViewConfig
+import uk.gov.hmrc.views.ViewConfig
 
 @ImplementedBy(classOf[ViewConfig])
 trait LanguagesConfig {

@@ -25,7 +25,7 @@ import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidation.personaldetails.model.PersonalDetails
 import uk.gov.hmrc.personaldetailsvalidation.personaldetails.views
-import uk.gov.hmrc.personaldetailsvalidation.views.ViewConfig
+import uk.gov.hmrc.views.ViewConfig
 
 @Singleton
 private[personaldetails] class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,

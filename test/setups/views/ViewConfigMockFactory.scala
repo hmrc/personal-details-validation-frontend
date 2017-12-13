@@ -19,7 +19,7 @@ package setups.views
 import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
 import play.api.i18n.MessagesApi
-import uk.gov.hmrc.personaldetailsvalidation.views.ViewConfig
+import uk.gov.hmrc.views.ViewConfig
 
 import scala.collection.JavaConverters._
 

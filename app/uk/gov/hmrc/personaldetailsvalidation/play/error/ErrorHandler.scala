@@ -24,8 +24,8 @@ import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.mvc.Http.Status._
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidation.play.binders.bindingError
-import uk.gov.hmrc.personaldetailsvalidation.views.ViewConfig
-import uk.gov.hmrc.personaldetailsvalidation.views.html.template.error_template
+import uk.gov.hmrc.views.ViewConfig
+import uk.gov.hmrc.views.html.template.error_template
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
 import scala.concurrent.Future
