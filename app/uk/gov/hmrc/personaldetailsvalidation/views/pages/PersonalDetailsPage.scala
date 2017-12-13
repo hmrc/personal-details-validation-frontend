@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.personaldetails.views.pages
+package uk.gov.hmrc.personaldetailsvalidation.views.pages
 
 import javax.inject.{Inject, Singleton}
 
@@ -24,12 +24,12 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
-import uk.gov.hmrc.personaldetailsvalidation.personaldetails.views
+import uk.gov.hmrc.personaldetailsvalidation.views
 import uk.gov.hmrc.views.ViewConfig
 
 @Singleton
-private[personaldetails] class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,
-                                                             viewConfig: ViewConfig)
+private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,
+                                                                       viewConfig: ViewConfig)
   extends I18nSupport {
 
   import uk.gov.hmrc.formmappings.Mappings._

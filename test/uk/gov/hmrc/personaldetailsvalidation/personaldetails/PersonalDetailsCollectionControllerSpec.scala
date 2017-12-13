@@ -28,7 +28,7 @@ import uk.gov.hmrc.personaldetailsvalidation.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyId
 import uk.gov.hmrc.personaldetailsvalidation.personaldetails.verifiers.JourneyIdVerifier
-import uk.gov.hmrc.personaldetailsvalidation.personaldetails.views.pages.PersonalDetailsPage
+import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.test.UnitSpec
 
 class PersonalDetailsCollectionControllerSpec

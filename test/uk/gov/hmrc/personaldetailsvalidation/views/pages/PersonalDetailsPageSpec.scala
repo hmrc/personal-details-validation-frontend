@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.personaldetails.views.pages
+package uk.gov.hmrc.personaldetailsvalidation.views.pages
 
 import org.jsoup.nodes.Document
 import org.scalatestplus.play.OneAppPerSuite

@@ -21,7 +21,7 @@ import javax.inject.Inject
 import play.api.mvc._
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyId
 import uk.gov.hmrc.personaldetailsvalidation.personaldetails.verifiers.JourneyIdVerifier
-import uk.gov.hmrc.personaldetailsvalidation.personaldetails.views.pages.PersonalDetailsPage
+import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
