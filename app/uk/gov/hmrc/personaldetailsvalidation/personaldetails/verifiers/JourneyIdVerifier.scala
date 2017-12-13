@@ -22,7 +22,7 @@ import play.api.mvc._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyId
 import uk.gov.hmrc.personaldetailsvalidation.personaldetails.repository.JourneyRepository
-import uk.gov.hmrc.personaldetailsvalidation.play.error.ErrorHandler
+import uk.gov.hmrc.errorhandling.ErrorHandler
 
 import scala.concurrent.{ExecutionContext, Future}
 

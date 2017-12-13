@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.play.error
+package uk.gov.hmrc.errorhandling
 
 import javax.inject.{Inject, Singleton}
 
@@ -33,7 +33,8 @@ import scala.language.implicitConversions
 
 @Singleton
 class ErrorHandler @Inject()()(implicit val messagesApi: MessagesApi,
-                               viewConfig: ViewConfig) extends FrontendErrorHandler {
+                               viewConfig: ViewConfig)
+  extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
                                     (implicit request: Request[_]): Html =

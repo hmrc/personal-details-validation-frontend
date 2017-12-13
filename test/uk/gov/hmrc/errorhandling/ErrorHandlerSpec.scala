@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.play.error
+package uk.gov.hmrc.errorhandling
 
 import akka.stream.Materializer
 import org.jsoup.nodes.Document
