@@ -18,7 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.language
 
 import com.google.inject.ImplementedBy
 import play.api.i18n.{Lang, MessagesApi}
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.BaseConfig
+import uk.gov.hmrc.config.BaseConfig
 import uk.gov.hmrc.personaldetailsvalidationfrontend.views.ViewConfig
 
 @ImplementedBy(classOf[ViewConfig])

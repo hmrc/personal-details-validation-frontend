@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import play.api.Configuration
 import play.api.i18n.MessagesApi
-import uk.gov.hmrc.personaldetailsvalidationfrontend.config.BaseConfig
+import uk.gov.hmrc.config.BaseConfig
 import uk.gov.hmrc.personaldetailsvalidationfrontend.language.LanguagesConfig
 import uk.gov.hmrc.play.config.{AssetsConfig, OptimizelyConfig}
 

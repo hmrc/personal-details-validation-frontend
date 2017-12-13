@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidationfrontend.formmappings
+package uk.gov.hmrc.formmappings
 
 import java.time.LocalDate
 

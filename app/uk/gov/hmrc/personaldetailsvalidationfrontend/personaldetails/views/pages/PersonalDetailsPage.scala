@@ -32,7 +32,7 @@ private[personaldetails] class PersonalDetailsPage @Inject()(implicit val messag
                                                              viewConfig: ViewConfig)
   extends I18nSupport {
 
-  import uk.gov.hmrc.personaldetailsvalidationfrontend.formmappings.Mappings._
+  import uk.gov.hmrc.formmappings.Mappings._
 
   private val form: Form[PersonalDetails] = Form(mapping(
     "firstName" -> mandatoryText(???),
