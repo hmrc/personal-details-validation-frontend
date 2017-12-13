@@ -19,10 +19,11 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.verifiers
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.Results._
-import play.api.mvc.{Request, Result}
+import play.api.mvc.{AnyContentAsEmpty, Request, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import setups.controllers.EndpointRequiringBodySetup
+import setups.controllers.ResultVerifiers._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
@@ -36,9 +37,9 @@ import scalamock.MockArgumentMatchers
 
 class JourneyIdVerifierSpec
   extends UnitSpec
-    with MockArgumentMatchers
     with ScalaFutures
-    with MockFactory {
+    with MockFactory
+    with MockArgumentMatchers {
 
   "forExisting" should {
 
@@ -68,7 +69,9 @@ class JourneyIdVerifierSpec
     }
   }
 
-  private trait Setup extends EndpointRequiringBodySetup {
+  private trait Setup {
+    implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+
     val journeyId: JourneyId = journeyIds.generateOne
 
     val actionBodyResult: Result = Ok("html")

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.repository
 
+import akka.Done
 import org.scalatest.concurrent.ScalaFutures
 import play.modules.reactivemongo.ReactiveMongoComponent
 import uk.gov.hmrc.mongo.{MongoConnector, MongoSpecSupport}
@@ -29,6 +30,18 @@ class JourneyMongoRepositorySpec
   extends UnitSpec
     with MongoSpecSupport
     with ScalaFutures {
+
+  "persist" should {
+
+    "persist the given journeyId and relativeUrl tuple so it can be retrieved" in new Setup {
+      val journeyId = journeyIds.generateOne
+      val relativeUrl = relativeUrls.generateOne
+
+      repository.persist(journeyId -> relativeUrl).futureValue shouldBe Done
+
+      repository.findById(journeyId).futureValue shouldBe Some(journeyId -> relativeUrl)
+    }
+  }
 
   "journeyExists" should {
 

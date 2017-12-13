@@ -19,6 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.repository
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
+import akka.Done
 import com.google.inject.ImplementedBy
 import play.modules.reactivemongo.ReactiveMongoComponent
 import uk.gov.hmrc.mongo.ReactiveRepository
@@ -30,6 +31,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[JourneyMongoRepository])
 private[personaldetails] trait JourneyRepository {
+
+  def persist(journeyIdAndRelativeUrl: (JourneyId, RelativeUrl))
+             (implicit executionContext: ExecutionContext): Future[Done]
 
   def journeyExists(journeyId: JourneyId)
                    (implicit executionContext: ExecutionContext): Future[Boolean]
@@ -43,6 +47,10 @@ private[personaldetails] class JourneyMongoRepository @Inject()(private val mong
     domainFormat = mongoEntity(JourneyMongoRepository.journeyFormat),
     idFormat = JourneyMongoRepository.journeyIdFormat
   ) with JourneyRepository {
+
+  override def persist(journeyIdAndRelativeUrl: (JourneyId, RelativeUrl))
+                      (implicit executionContext: ExecutionContext): Future[Done] =
+    insert(journeyIdAndRelativeUrl).map(_ => Done)
 
   override def journeyExists(journeyId: JourneyId)
                             (implicit executionContext: ExecutionContext): Future[Boolean] =

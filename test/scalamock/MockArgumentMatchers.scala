@@ -25,5 +25,7 @@ import scala.reflect.ClassTag
 trait MockArgumentMatchers extends ScalamockMatchers with ScalatestMatchers {
   self: MockFactory =>
 
-  def instanceOf[T](implicit classTag: ClassTag[T]): MatcherBase = argAssert{x: T => x.getClass shouldBe classTag.runtimeClass}
+  def instanceOf[T](implicit classTag: ClassTag[T]): MatcherBase = argAssert {
+    x: T => x.getClass shouldBe classTag.runtimeClass
+  }
 }

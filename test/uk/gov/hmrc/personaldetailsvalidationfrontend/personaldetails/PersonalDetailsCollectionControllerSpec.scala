@@ -18,10 +18,12 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
-import play.api.mvc.Request
+import play.api.mvc.{AnyContentAsEmpty, Request}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import setups.controllers.{EndpointRequiringBodySetup, PassThroughActionFilter}
+import setups.controllers.PassThroughActionFilter
+import setups.controllers.ResultVerifiers._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidationfrontend.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.personaldetailsvalidationfrontend.model.JourneyId
@@ -52,7 +54,9 @@ class PersonalDetailsCollectionControllerSpec
     }
   }
 
-  private trait Setup extends EndpointRequiringBodySetup {
+  private trait Setup {
+    implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+
     val journeyId: JourneyId = journeyIds.generateOne
     val page: PersonalDetailsPage = mock[PersonalDetailsPage]
     val journeyIdVerifier: JourneyIdVerifier = mock[JourneyIdVerifier]

@@ -19,40 +19,65 @@ package uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails
 import java.util.UUID
 import java.util.UUID.randomUUID
 
+import akka.Done
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
-import play.mvc.Http.HeaderNames.LOCATION
-import setups.controllers.EndpointSetup
-import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
-import uk.gov.hmrc.personaldetailsvalidationfrontend.uuid.UUIDProvider
-import uk.gov.hmrc.play.test.UnitSpec
+import play.api.mvc.{AnyContentAsEmpty, Request}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.mvc.Http.HeaderNames.LOCATION
+import uk.gov.hmrc.personaldetailsvalidationfrontend.model.{JourneyId, RelativeUrl}
+import uk.gov.hmrc.personaldetailsvalidationfrontend.personaldetails.repository.JourneyRepository
+import uk.gov.hmrc.personaldetailsvalidationfrontend.uuid.UUIDProvider
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
+import uk.gov.hmrc.play.test.UnitSpec
+
+import scala.concurrent.{ExecutionContext, Future}
+import scalamock.MockArgumentMatchers
 
 class PersonalDetailsValidationStartControllerSpec
   extends UnitSpec
-    with ScalaFutures
-    with MockFactory {
+    with MockFactory
+    with MockArgumentMatchers
+    with ScalaFutures {
 
   "start" should {
-    "redirect to personal details page" in new Setup {
+
+    "redirect to personal details page " +
+      "when persistence of journeyId and relativeUrl is successful" in new Setup {
+      (journeyRepository.persist(_: (JourneyId, RelativeUrl))(_: ExecutionContext))
+        .expects(journeyId -> relativeUrl, instanceOf[MdcLoggingExecutionContext])
+        .returning(Future.successful(Done))
+
       val result = controller.start(relativeUrl)(request)
 
       status(result) shouldBe SEE_OTHER
 
-      header(LOCATION, result) shouldBe Some(routes.PersonalDetailsCollectionController.showPage(JourneyId(journeyIdValue)).url)
+      header(LOCATION, result) shouldBe Some(routes.PersonalDetailsCollectionController.showPage(journeyId).url)
+    }
+
+    "fail when persisting journeyId and relativeUrl throws an exception" in new Setup {
+      (journeyRepository.persist(_: (JourneyId, RelativeUrl))(_: ExecutionContext))
+        .expects(journeyId -> relativeUrl, instanceOf[MdcLoggingExecutionContext])
+        .returning(Future.failed(new RuntimeException("error")))
+
+      a[RuntimeException] should be thrownBy controller.start(relativeUrl)(request).futureValue
     }
   }
 
-  trait Setup extends EndpointSetup {
+  private trait Setup {
 
-    implicit val uuidProvider = stub[UUIDProvider]
+    protected implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
+
+    implicit val uuidProvider: UUIDProvider = stub[UUIDProvider]
+    val journeyRepository: JourneyRepository = mock[JourneyRepository]
 
     val journeyIdValue: UUID = randomUUID()
+    val journeyId = JourneyId(journeyIdValue)
     val Right(relativeUrl) = RelativeUrl.relativeUrl("/foo/bar")
 
     uuidProvider.apply _ when() returns journeyIdValue
 
-    val controller = new PersonalDetailsValidationStartController()
+    val controller = new PersonalDetailsValidationStartController(journeyRepository)
   }
-
 }
