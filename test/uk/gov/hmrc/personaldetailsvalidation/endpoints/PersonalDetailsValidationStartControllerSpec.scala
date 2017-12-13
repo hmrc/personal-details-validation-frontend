@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.personaldetails
+package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import java.util.UUID
 import java.util.UUID.randomUUID

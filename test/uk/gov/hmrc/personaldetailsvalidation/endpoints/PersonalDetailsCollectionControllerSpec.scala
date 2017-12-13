@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.personaldetails
+package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
@@ -27,7 +27,7 @@ import setups.controllers.ResultVerifiers._
 import uk.gov.hmrc.personaldetailsvalidation.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyId
-import uk.gov.hmrc.personaldetailsvalidation.personaldetails.verifiers.JourneyIdVerifier
+import uk.gov.hmrc.personaldetailsvalidation.endpoints.verifiers.JourneyIdVerifier
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.test.UnitSpec
 

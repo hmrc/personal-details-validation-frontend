@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.personaldetails.verifiers
+package uk.gov.hmrc.personaldetailsvalidation.endpoints.verifiers
 
 import javax.inject.{Inject, Singleton}
 
@@ -27,8 +27,8 @@ import uk.gov.hmrc.errorhandling.ErrorHandler
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-private[personaldetails] class JourneyIdVerifier @Inject()(private val errorHandler: ErrorHandler,
-                                                           private val journeyRepository: JourneyRepository) {
+private[endpoints] class JourneyIdVerifier @Inject()(private val errorHandler: ErrorHandler,
+                                                     private val journeyRepository: JourneyRepository) {
 
   def forExisting(journeyId: JourneyId): ActionFilter[Request] with ActionBuilder[Request] = new ActionFilter[Request] with ActionBuilder[Request] {
 
