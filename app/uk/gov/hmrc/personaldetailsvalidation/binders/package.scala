@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.play
+package uk.gov.hmrc.personaldetailsvalidation
 
 import java.util.UUID
 
 import cats.data.Validated
 import cats.implicits._
 import play.api.mvc.QueryStringBindable
+import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
 import uk.gov.hmrc.personaldetailsvalidation.model.RelativeUrl.relativeUrl
 import uk.gov.hmrc.personaldetailsvalidation.model.{JourneyId, RelativeUrl}
 
 package object binders {
-
-  val bindingError: String = "binding-error: "
 
   implicit val journeyIdQueryBindable: QueryStringBindable[JourneyId] = new QueryStringBindable[JourneyId] {
 

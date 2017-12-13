@@ -23,10 +23,9 @@ import play.api.mvc.Results.NotFound
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.mvc.Http.Status._
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidation.play.binders.bindingError
+import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 import uk.gov.hmrc.views.ViewConfig
 import uk.gov.hmrc.views.html.template.error_template
-import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
 import scala.concurrent.Future
 import scala.language.implicitConversions
@@ -35,6 +34,8 @@ import scala.language.implicitConversions
 class ErrorHandler @Inject()()(implicit val messagesApi: MessagesApi,
                                viewConfig: ViewConfig)
   extends FrontendErrorHandler {
+
+  import ErrorHandler.bindingError
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
                                     (implicit request: Request[_]): Html =
@@ -48,4 +49,8 @@ class ErrorHandler @Inject()()(implicit val messagesApi: MessagesApi,
   }
 
   private implicit def rhToRequest(rh: RequestHeader): Request[_] = Request(rh, "")
+}
+
+object ErrorHandler {
+  val bindingError: String = "binding-error: "
 }

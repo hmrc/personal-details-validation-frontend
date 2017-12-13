@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.play.binders
+package uk.gov.hmrc.personaldetailsvalidation.binders
 
 import uk.gov.hmrc.personaldetailsvalidation.model.RelativeUrl
 import uk.gov.hmrc.play.test.UnitSpec

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.play.binders
+package uk.gov.hmrc.personaldetailsvalidation.binders
 
 import org.scalacheck.Gen.alphaStr
+import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
 import uk.gov.hmrc.personaldetailsvalidation.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.play.test.UnitSpec

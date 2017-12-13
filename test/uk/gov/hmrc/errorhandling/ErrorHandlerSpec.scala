@@ -25,7 +25,7 @@ import play.api.mvc.Result
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import setups.views.ViewSetup
-import uk.gov.hmrc.personaldetailsvalidation.play.binders.bindingError
+import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
