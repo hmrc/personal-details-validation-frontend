@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.personaldetails.model
+package uk.gov.hmrc.personaldetailsvalidation.model
 
 import java.time.LocalDate
 

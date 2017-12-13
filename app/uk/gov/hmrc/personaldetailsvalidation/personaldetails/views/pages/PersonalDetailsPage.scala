@@ -23,7 +23,7 @@ import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidation.personaldetails.model.PersonalDetails
+import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
 import uk.gov.hmrc.personaldetailsvalidation.personaldetails.views
 import uk.gov.hmrc.views.ViewConfig
 
