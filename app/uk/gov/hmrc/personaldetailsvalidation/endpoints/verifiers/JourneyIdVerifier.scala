@@ -19,10 +19,10 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints.verifiers
 import javax.inject.{Inject, Singleton}
 
 import play.api.mvc._
+import uk.gov.hmrc.errorhandling.ErrorHandler
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyId
 import uk.gov.hmrc.personaldetailsvalidation.repository.JourneyRepository
-import uk.gov.hmrc.errorhandling.ErrorHandler
 
 import scala.concurrent.{ExecutionContext, Future}
 

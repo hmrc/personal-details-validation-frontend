@@ -22,8 +22,8 @@ import akka.Done
 import play.api.mvc.Action
 import uk.gov.hmrc.personaldetailsvalidation.model.{JourneyId, RelativeUrl}
 import uk.gov.hmrc.personaldetailsvalidation.repository.JourneyRepository
-import uk.gov.hmrc.uuid.UUIDProvider
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.uuid.UUIDProvider
 
 @Singleton
 class PersonalDetailsValidationStartController @Inject()(journeyRepository: JourneyRepository)
