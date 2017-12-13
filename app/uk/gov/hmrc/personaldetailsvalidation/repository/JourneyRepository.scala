@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.personaldetails.repository
+package uk.gov.hmrc.personaldetailsvalidation.repository
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
@@ -30,7 +30,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model.{JourneyId, RelativeUrl}
 import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[JourneyMongoRepository])
-private[personaldetails] trait JourneyRepository {
+private[personaldetailsvalidation] trait JourneyRepository {
 
   def persist(journeyIdAndRelativeUrl: (JourneyId, RelativeUrl))
              (implicit executionContext: ExecutionContext): Future[Done]
@@ -40,7 +40,7 @@ private[personaldetails] trait JourneyRepository {
 }
 
 @Singleton
-private[personaldetails] class JourneyMongoRepository @Inject()(private val mongoComponent: ReactiveMongoComponent)
+private[personaldetailsvalidation] class JourneyMongoRepository @Inject()(private val mongoComponent: ReactiveMongoComponent)
   extends ReactiveRepository[(JourneyId, RelativeUrl), JourneyId](
     collectionName = "journey",
     mongo = mongoComponent.mongoConnector.db,

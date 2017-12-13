@@ -27,7 +27,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.mvc.Http.HeaderNames.LOCATION
 import uk.gov.hmrc.personaldetailsvalidation.model.{JourneyId, RelativeUrl}
-import uk.gov.hmrc.personaldetailsvalidation.personaldetails.repository.JourneyRepository
+import uk.gov.hmrc.personaldetailsvalidation.repository.JourneyRepository
 import uk.gov.hmrc.personaldetailsvalidation.uuid.UUIDProvider
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.play.test.UnitSpec

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.personaldetails.repository
+package uk.gov.hmrc.personaldetailsvalidation.repository
 
 import akka.Done
 import org.scalatest.concurrent.ScalaFutures

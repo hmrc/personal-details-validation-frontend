@@ -27,7 +27,7 @@ import setups.controllers.ResultVerifiers._
 import uk.gov.hmrc.personaldetailsvalidation.generators.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.journeyIds
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyId
-import uk.gov.hmrc.personaldetailsvalidation.personaldetails.repository.JourneyRepository
+import uk.gov.hmrc.personaldetailsvalidation.repository.JourneyRepository
 import uk.gov.hmrc.errorhandling.ErrorHandler
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.play.test.UnitSpec
