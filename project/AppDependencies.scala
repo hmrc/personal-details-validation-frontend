@@ -10,6 +10,7 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "bootstrap-play-25" % "1.0.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.15.0",
     "uk.gov.hmrc" %% "play-language" % "3.4.0",
+    "uk.gov.hmrc" %% "play-reactivemongo" % "6.1.0",
     "uk.gov.hmrc" %% "play-ui" % "7.9.0",
     "uk.gov.hmrc" %% "valuetype" % "1.1.0",
     ws
@@ -20,7 +21,8 @@ private object AppDependencies {
     "org.scalacheck" %% "scalacheck" % "1.13.4" % Test,
     "org.scalamock" %% "scalamock" % "4.0.0" % Test,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % Test,
-    "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % Test
+    "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % Test,
+    "uk.gov.hmrc" %% "reactivemongo-test" % "3.0.0" % Test
   )
 
   private def it() = Seq(

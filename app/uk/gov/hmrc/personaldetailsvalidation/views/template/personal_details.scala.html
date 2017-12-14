@@ -1,0 +1,76 @@
+@*
+ * Copyright 2017 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
+@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.views.html.components.date
+@import uk.gov.hmrc.views.html.template.main_template
+
+@(pageForm: Form[PersonalDetails])(
+  implicit request: Request[_],
+  messages: Messages,
+  viewConfig: ViewConfig
+)
+
+@main_template(title = messages("personal-details.title")) {
+
+    <p class="faded-text">
+        <strong>@messages("personal-details.faded-heading")</strong>
+    </p>
+
+    <header>
+        <h1 class="heading-48">@messages("personal-details.header")</h1>
+    </header>
+
+    <p>@messages("personal-details.paragraph")</p>
+
+    @form(Call("POST", "FIXME"), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
+        <fieldset class="form-field-group">
+            @input(
+                field = pageForm("firstName"),
+                '_label -> messages("personal-details.firstname"),
+                '_labelTextClass -> "form-label-bold"
+            )
+        </fieldset>
+        <fieldset class="form-field-group">
+            @input(
+                field = pageForm("lastName"),
+                '_label -> messages("personal-details.lastname"),
+                '_labelTextClass -> "form-label-bold"
+            )
+        </fieldset>
+        <fieldset class="form-field-group">
+            @input(
+                field = pageForm("nino"),
+                '_label -> messages("personal-details.nino"),
+                '_labelTextClass -> "form-label-bold",
+                '_inputHint -> {
+                    <span class="form-hint">{messages("personal-details.nino.hint")}</span>
+                    <span class="form-hint">{messages("personal-details.nino.hint.example")}</span>
+                }
+            )
+        </fieldset>
+        <fieldset class="form-field-group">
+            @date(
+                pageForm,
+                fieldName = "dateOfBirth",
+                labelKeyPrefix = "personal-details",
+                hintKeySuffix = Some("hint")
+            )
+        </fieldset>
+    }
+}
