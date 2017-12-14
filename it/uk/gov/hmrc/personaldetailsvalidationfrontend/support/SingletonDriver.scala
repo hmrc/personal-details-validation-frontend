@@ -1,10 +1,10 @@
 package uk.gov.hmrc.personaldetailsvalidationfrontend.support
 
-import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.remote.DesiredCapabilities
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.firefox.FirefoxDriver
 
 object SingletonDriver {
-  lazy val driver = new ChromeDriver(DesiredCapabilities.chrome())
+  val driver: WebDriver = new FirefoxDriver()
 
   def closeInstance() = driver.quit()
 }
