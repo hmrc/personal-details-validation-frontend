@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import javax.inject.{Inject, Singleton}
 
 import akka.Done
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.personaldetailsvalidation.model.{JourneyId, RelativeUrl}
 import uk.gov.hmrc.personaldetailsvalidation.repository.JourneyRepository
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
@@ -30,7 +30,7 @@ class PersonalDetailsValidationStartController @Inject()(journeyRepository: Jour
                                                         (implicit uuidProvider: UUIDProvider)
   extends FrontendController {
 
-  def start(completionUrl: RelativeUrl) = Action.async { implicit request =>
+  def start(completionUrl: RelativeUrl): Action[AnyContent] = Action.async { implicit request =>
     val journeyId = JourneyId()
     journeyRepository.persist(journeyId -> completionUrl) map {
       case Done => Redirect(routes.PersonalDetailsCollectionController.showPage(journeyId))
