@@ -23,7 +23,7 @@ import akka.Done
 import generators.Generators.Implicits._
 import mongo.MongoIndexVerifier
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import play.api.Configuration
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.indexes.Index
@@ -42,7 +42,8 @@ class JourneyMongoRepositorySpec
     with MongoSpecSupport
     with MongoIndexVerifier
     with MockFactory
-    with ScalaFutures {
+    with ScalaFutures
+    with IntegrationPatience {
 
   "persist" should {
 
@@ -85,6 +86,8 @@ class JourneyMongoRepositorySpec
 
   private trait Setup {
 
+    await(mongo().drop())
+
     val journeyId: JourneyId = journeyIds.generateOne
     val relativeUrl = relativeUrls.generateOne
 
@@ -100,8 +103,6 @@ class JourneyMongoRepositorySpec
     val repository = new JourneyMongoRepository(config, new ReactiveMongoComponent {
       override val mongoConnector: MongoConnector = mongoConnectorForTest
     })
-
-    await(repository.removeAll())
   }
 
 }
