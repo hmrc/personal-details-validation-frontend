@@ -16,23 +16,34 @@
 
 package uk.gov.hmrc.config
 
+import cats.data.{NonEmptyList, ValidatedNel}
 import play.api.Configuration
 
 package object ops {
 
   implicit class ConfigurationOps(configuration: Configuration) {
 
+    private type ConfigKey = String
+    private type ConfigFinder[Value] = ConfigKey => Configuration => ValidatedNel[String, Value]
+
     def loadMandatory[A](key: String)
-                        (implicit find: String => Configuration => Option[A]): A =
-      loadOptional(key).getOrElse(throw new RuntimeException(s"Missing key: $key"))
+                        (implicit finder: ConfigFinder[A]): A =
+      loadValidated(key)(finder).fold(throwRuntimeException, identity)
 
     def load[A](key: String, default: => A)
-               (implicit find: String => Configuration => Option[A]): A =
-      loadOptional(key).getOrElse(default)
+               (implicit finder: ConfigFinder[A]): A =
+      loadValidated(key)(finder).fold(_ => default, identity)
 
     def loadOptional[A](key: String)
-                       (implicit find: String => Configuration => Option[A]): Option[A] =
-      find(key)(configuration)
+                       (implicit finder: ConfigFinder[A]): Option[A] =
+      loadValidated(key)(finder).toOption
+
+    private [config] def loadValidated[A](key: String)
+                                (implicit finder: ConfigFinder[A]): ValidatedNel[String, A] =
+      finder(key)(configuration)
+
+    private def throwRuntimeException(errors: NonEmptyList[String]) = throw new RuntimeException(errors.toList.mkString(", "))
+
   }
 
 

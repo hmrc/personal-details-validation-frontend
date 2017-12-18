@@ -18,6 +18,9 @@ package uk.gov.hmrc.config
 
 import java.time.Duration
 
+import cats.data.Validated._
+import cats.data.ValidatedNel
+import cats.implicits._
 import play.api.Configuration
 import uk.gov.hmrc.http.Host
 
@@ -27,22 +30,37 @@ package object implicits {
 
   import ops._
 
-  implicit def stringValueFinder(key: String)(configuration: Configuration): Option[String] = configuration.getString(key)
-  implicit def stringValuesFinder(key: String)(configuration: Configuration): Option[Seq[String]] = configuration.getStringList(key).map(_.asScala.toList)
-  implicit def intValueFinder(key: String)(configuration: Configuration): Option[Int] = configuration.getInt(key)
+  implicit def stringValueFinder(key: String)(configuration: Configuration): ValidatedNel[String, String] =
+    configuration.getString(key).toValidated(key)
 
-  implicit def hostFinder(key: String)(configuration: Configuration): Option[Host] = for {
-    servicesKey <- Some("microservice.services")
-    defaultProtocol <- Some(configuration.load(s"$servicesKey.protocol", "http"))
-    host <- configuration.loadOptional[String](s"$servicesKey.$key.host")
-    port <- configuration.loadOptional[Int](s"$servicesKey.$key.port")
-  } yield {
+  implicit def stringValuesFinder(key: String)(configuration: Configuration): ValidatedNel[String, Seq[String]] =
+    configuration.getStringList(key).map(_.asScala.toList).toValidated(key)
+
+  implicit def intValueFinder(key: String)(configuration: Configuration): ValidatedNel[String, Int] =
+    configuration.getInt(key).toValidated(key)
+
+
+  implicit def hostFinder(key: String)(configuration: Configuration): ValidatedNel[String, Host] = {
+    val servicesKey = "microservice.services"
+    val defaultProtocol = configuration.load(s"$servicesKey.protocol", "http")
     val protocol = configuration.load(s"$servicesKey.$key.protocol", defaultProtocol)
-    Host(s"$protocol://$host:$port")
+    val validatedHost = configuration.loadValidated[String](s"$servicesKey.$key.host")
+    val validatedPort = configuration.loadValidated[Int](s"$servicesKey.$key.port")
+
+    (validatedHost, validatedPort) match {
+      case (Valid(host), Valid(port)) => Host(s"$protocol://$host:$port").validNel
+      case (invalid@Invalid(_), Valid(_)) => invalid
+      case (Valid(_), invalid@Invalid(_)) => invalid
+      case (Invalid(hostErrors), Invalid(portErrors)) => Invalid(hostErrors.concatNel(portErrors))
+    }
   }
 
-  implicit def durationFinder(key: String)(configuration: Configuration): Option[Duration] =
-    configuration.loadOptional[String](key).map(Duration.parse)
+  implicit def durationFinder(key: String)(configuration: Configuration): ValidatedNel[String, Duration] =
+    configuration.loadOptional[String](key).map(Duration.parse).toValidated(key)
 
+
+  private implicit class ValueOps[V](maybeV: Option[V]) {
+    def toValidated(key: String): ValidatedNel[String, V] = maybeV.toValidNel(s"$key not found")
+  }
 
 }
