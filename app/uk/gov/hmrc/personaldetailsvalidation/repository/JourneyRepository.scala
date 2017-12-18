@@ -20,14 +20,21 @@ import java.util.UUID
 import javax.inject.{Inject, Singleton}
 
 import akka.Done
+import reactivemongo.play.json.ImplicitBSONHandlers._
 import com.google.inject.ImplementedBy
+import play.api.libs.json.JsObject
 import play.modules.reactivemongo.ReactiveMongoComponent
+import reactivemongo.api.indexes.Index
+import reactivemongo.api.indexes.IndexType.Descending
+import reactivemongo.bson.BSONDocument
+import uk.gov.hmrc.datetime.CurrentTimeProvider
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.mongo.json.ReactiveMongoFormats.mongoEntity
 import uk.gov.hmrc.personaldetailsvalidation.model.RelativeUrl.relativeUrl
 import uk.gov.hmrc.personaldetailsvalidation.model.{JourneyId, RelativeUrl}
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.json.ops._
 
 @ImplementedBy(classOf[JourneyMongoRepository])
 private[personaldetailsvalidation] trait JourneyRepository {
@@ -40,7 +47,7 @@ private[personaldetailsvalidation] trait JourneyRepository {
 }
 
 @Singleton
-private[personaldetailsvalidation] class JourneyMongoRepository @Inject()(private val mongoComponent: ReactiveMongoComponent)
+private[personaldetailsvalidation] class JourneyMongoRepository @Inject()(config: JourneyMongoRepositoryConfig, mongoComponent: ReactiveMongoComponent)(implicit currentTimeProvider: CurrentTimeProvider)
   extends ReactiveRepository[(JourneyId, RelativeUrl), JourneyId](
     collectionName = "journey",
     mongo = mongoComponent.mongoConnector.db,
@@ -48,9 +55,17 @@ private[personaldetailsvalidation] class JourneyMongoRepository @Inject()(privat
     idFormat = JourneyMongoRepository.journeyIdFormat
   ) with JourneyRepository {
 
+  override def indexes: Seq[Index] = Seq(
+    Index(Seq("createdAt" -> Descending), name = Some("journey-ttl-index"), options = BSONDocument("expireAfterSeconds" -> config.collectionTtl.getSeconds))
+  )
+
+
   override def persist(journeyIdAndRelativeUrl: (JourneyId, RelativeUrl))
-                      (implicit executionContext: ExecutionContext): Future[Done] =
-    insert(journeyIdAndRelativeUrl).map(_ => Done)
+                      (implicit executionContext: ExecutionContext): Future[Done] = {
+    val document = domainFormatImplicit.writes(journeyIdAndRelativeUrl).as[JsObject].withCreatedTimeStamp()
+
+    collection.insert(document).map(_ => Done)
+  }
 
   override def journeyExists(journeyId: JourneyId)
                             (implicit executionContext: ExecutionContext): Future[Boolean] =
