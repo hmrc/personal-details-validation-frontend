@@ -41,10 +41,8 @@ package object implicits {
     Host(s"$protocol://$host:$port")
   }
 
-  implicit def durationFinder(key: String)(configuration: Configuration): Option[Duration] = {
-    val durationValue = configuration.loadMandatory[String](key)
-    Some(Duration.parse(durationValue))
-  }
+  implicit def durationFinder(key: String)(configuration: Configuration): Option[Duration] =
+    configuration.loadOptional[String](key).map(Duration.parse)
 
 
 }

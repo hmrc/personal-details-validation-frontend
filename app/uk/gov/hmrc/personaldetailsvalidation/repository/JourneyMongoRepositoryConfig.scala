@@ -26,6 +26,6 @@ import uk.gov.hmrc.config.ops._
 @Singleton
 private class JourneyMongoRepositoryConfig @Inject()(configuration: Configuration)  {
 
-  lazy val collectionTtl: Duration = Duration.from(configuration.loadMandatory[Duration]("mongodb.collections.journey.ttl"))
+  lazy val collectionTtl: Duration = configuration.loadMandatory[Duration]("mongodb.collections.journey.ttl")
 
 }

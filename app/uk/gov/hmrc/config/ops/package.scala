@@ -24,15 +24,15 @@ package object ops {
 
     def loadMandatory[A](key: String)
                         (implicit find: String => Configuration => Option[A]): A =
-      find(key)(configuration).getOrElse(throw new RuntimeException(s"Missing key: $key"))
+      loadOptional(key).getOrElse(throw new RuntimeException(s"Missing key: $key"))
+
+    def load[A](key: String, default: => A)
+               (implicit find: String => Configuration => Option[A]): A =
+      loadOptional(key).getOrElse(default)
 
     def loadOptional[A](key: String)
                        (implicit find: String => Configuration => Option[A]): Option[A] =
       find(key)(configuration)
-
-    def load[A](key: String, default: => A)
-               (implicit find: String => Configuration => Option[A]): A =
-      find(key)(configuration).getOrElse(default)
   }
 
 
