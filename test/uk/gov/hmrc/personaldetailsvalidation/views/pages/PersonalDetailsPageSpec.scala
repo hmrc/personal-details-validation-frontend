@@ -20,6 +20,7 @@ import org.jsoup.nodes.Document
 import org.scalatestplus.play.OneAppPerSuite
 import setups.views.ViewSetup
 import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 
 class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
 
@@ -32,6 +33,8 @@ class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
       html.select(".faded-text strong").text() shouldBe messages("personal-details.faded-heading")
       html.select(".faded-text ~ header h1").text() shouldBe messages("personal-details.header")
       html.select("header ~ p").text() shouldBe messages("personal-details.paragraph")
+
+//      html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit()
 
       val fieldsets = html.select("form fieldset")
       val firstNameFieldset = fieldsets.first()

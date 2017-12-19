@@ -16,38 +16,12 @@
 
 package uk.gov.hmrc.personaldetailsvalidation
 
-import java.util.UUID
-
-import cats.data.Validated
 import cats.implicits._
 import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
+import uk.gov.hmrc.personaldetailsvalidation.model.RelativeUrl
 import uk.gov.hmrc.personaldetailsvalidation.model.RelativeUrl.relativeUrl
-import uk.gov.hmrc.personaldetailsvalidation.model.{JourneyId, RelativeUrl}
 
 package object binders {
-
-  implicit val journeyIdQueryBindable: QueryStringBindable[JourneyId] = new QueryStringBindable[JourneyId] {
-
-    override def bind(key: String,
-                      params: Map[String, Seq[String]]): Option[Either[String, JourneyId]] =
-      getValue(key, params)
-        .map(toValidated)
-        .map(toErrorMessageOrJourneyId)
-
-    private def toValidated(v: String): Validated[IllegalArgumentException, JourneyId] =
-      Validated.catchOnly[IllegalArgumentException] {
-        JourneyId(UUID.fromString(v))
-      }
-
-    private def toErrorMessageOrJourneyId(validated: Validated[IllegalArgumentException, JourneyId]): Either[String, JourneyId] =
-      validated.toEither.bimap(
-        exception => bindingError + exception.getMessage,
-        identity
-      )
-
-    override def unbind(key: String, value: JourneyId): String = s"$key=${value.toString()}"
-  }
 
   implicit val relativeUrlQueryBinder: QueryStringBindable[RelativeUrl] = new QueryStringBindable[RelativeUrl] {
 

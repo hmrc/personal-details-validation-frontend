@@ -23,11 +23,8 @@ import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import setups.controllers.PassThroughActionFilter
 import setups.controllers.ResultVerifiers._
-import uk.gov.hmrc.personaldetailsvalidation.endpoints.verifiers.JourneyIdVerifier
-import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.journeyIds
-import uk.gov.hmrc.personaldetailsvalidation.model.JourneyId
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -38,17 +35,12 @@ class PersonalDetailsCollectionControllerSpec
 
   "showPage" should {
 
-    "return OK with body rendered using PersonalDetailsPage " +
-      "when the given journeyId exists" in new Setup {
-      (journeyIdVerifier.forExisting(_: JourneyId))
-        .expects(journeyId)
-        .returning(PassThroughActionFilter)
-
+    "return OK with body rendered using PersonalDetailsPage" in new Setup {
       (page.render(_: Request[_]))
         .expects(request)
         .returning(Html("content"))
 
-      val result = controller.showPage(journeyId)(request)
+      val result = controller.showPage(completionUrl)(request)
 
       verify(result).has(statusCode = OK, content = "content")
     }
@@ -57,9 +49,9 @@ class PersonalDetailsCollectionControllerSpec
   private trait Setup {
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-    val journeyId: JourneyId = journeyIds.generateOne
+    val completionUrl = ValuesGenerators.relativeUrls.generateOne
+
     val page: PersonalDetailsPage = mock[PersonalDetailsPage]
-    val journeyIdVerifier: JourneyIdVerifier = mock[JourneyIdVerifier]
-    val controller = new PersonalDetailsCollectionController(page, journeyIdVerifier)
+    val controller = new PersonalDetailsCollectionController(page)
   }
 }

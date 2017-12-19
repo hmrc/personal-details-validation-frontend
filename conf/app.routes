@@ -4,4 +4,4 @@ GET        /language/:language        uk.gov.hmrc.language.ChangeLanguageEndpoin
 
 GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: RelativeUrl)
 
-GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(journeyId: JourneyId)
+GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: RelativeUrl)

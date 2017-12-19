@@ -4,6 +4,7 @@ import uk.gov.hmrc.personaldetailsvalidation.support.WebPage
 
 case class ErrorPage(url: String = "") extends WebPage {
 
-  override lazy val isCurrentPage: Boolean =
-    pageTitle == "Sorry, we are experiencing technical difficulties"
+  lazy val verifyDisplayed: () => Unit = () => {
+    pageTitle shouldBe "Sorry, we are experiencing technical difficulties"
+  }
 }
