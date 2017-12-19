@@ -16,33 +16,58 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
+import java.util.UUID
+
 import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
+import play.api.mvc.Results._
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import setups.controllers.ResultVerifiers._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.play.test.UnitSpec
+
+import scala.concurrent.{ExecutionContext, Future}
+import scalamock.MockArgumentMatchers
 
 class PersonalDetailsCollectionControllerSpec
   extends UnitSpec
     with MockFactory
+    with MockArgumentMatchers
     with ScalaFutures {
 
   "showPage" should {
 
-    "return OK with body rendered using PersonalDetailsPage" in new Setup {
-      (page.render(_: Request[_]))
-        .expects(request)
+    "return OK with HTML body rendered using PersonalDetailsPage" in new Setup {
+      (page.render(_: CompletionUrl)(_: Request[_]))
+        .expects(completionUrl, request)
         .returning(Html("content"))
 
       val result = controller.showPage(completionUrl)(request)
 
       verify(result).has(statusCode = OK, content = "content")
+    }
+  }
+
+  "submit" should {
+
+    "pass the outcome of validateUserDetails" in new Setup {
+      val redirectUrl = s"${completionUrl.value}?validationId=${UUID.randomUUID()}"
+
+      (userDetailsValidator.validateUserDetails(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+        .returning(Future.successful(Redirect(redirectUrl)))
+
+      val result = controller.submit(completionUrl)(request)
+
+      redirectLocation(result) shouldBe Some(redirectUrl)
     }
   }
 
@@ -52,6 +77,7 @@ class PersonalDetailsCollectionControllerSpec
     val completionUrl = ValuesGenerators.completionUrls.generateOne
 
     val page: PersonalDetailsPage = mock[PersonalDetailsPage]
+    val userDetailsValidator = mock[UserDetailsValidator]
     val controller = new PersonalDetailsCollectionController(page)
   }
 }

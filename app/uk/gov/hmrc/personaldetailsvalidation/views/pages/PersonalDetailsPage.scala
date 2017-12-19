@@ -23,7 +23,7 @@ import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.views
 import uk.gov.hmrc.views.ViewConfig
 
@@ -41,6 +41,7 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
     "dateOfBirth" -> mandatoryLocalDate(???)
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
-  def render(implicit request: Request[_]): Html =
-    views.html.template.personal_details(form)
+  def render(completionUrl: CompletionUrl)
+            (implicit request: Request[_]): Html =
+    views.html.template.personal_details(form, completionUrl)
 }

@@ -14,13 +14,14 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
+@import uk.gov.hmrc.personaldetailsvalidation.model.{PersonalDetails, CompletionUrl}
 @import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.components.date
 @import uk.gov.hmrc.views.html.template.main_template
 
-@(pageForm: Form[PersonalDetails])(
+@(pageForm: Form[PersonalDetails], completionUrl: CompletionUrl)(
   implicit request: Request[_],
   messages: Messages,
   viewConfig: ViewConfig
@@ -38,7 +39,7 @@
 
     <p>@messages("personal-details.paragraph")</p>
 
-    @form(Call("POST", "FIXME"), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
+    @form(routes.PersonalDetailsCollectionController.submit(completionUrl), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
         <fieldset class="form-field-group">
             @input(
                 field = pageForm("firstName"),

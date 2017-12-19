@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.views.pages
 
+import generators.Generators.Implicits._
 import org.jsoup.nodes.Document
 import org.scalatestplus.play.OneAppPerSuite
 import setups.views.ViewSetup
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 
 class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
 
@@ -34,7 +36,7 @@ class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
       html.select(".faded-text ~ header h1").text() shouldBe messages("personal-details.header")
       html.select("header ~ p").text() shouldBe messages("personal-details.paragraph")
 
-//      html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit()
+      html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
 
       val fieldsets = html.select("form fieldset")
       val firstNameFieldset = fieldsets.first()
@@ -71,6 +73,7 @@ class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
   }
 
   private trait Setup extends ViewSetup {
-    val html: Document = new PersonalDetailsPage().render
+    val completionUrl = ValuesGenerators.completionUrls.generateOne
+    val html: Document = new PersonalDetailsPage().render(completionUrl)
   }
 }

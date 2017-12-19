@@ -28,7 +28,11 @@ import scala.concurrent.Future
 class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage)
   extends FrontendController {
 
-  def showPage(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(page.render))
+  def showPage(completionUrl: CompletionUrl): Action[AnyContent] = Action { implicit request =>
+    Ok(page.render(completionUrl))
+  }
+
+  def submit(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+    Future.failed(throw new RuntimeException(""))
   }
 }
