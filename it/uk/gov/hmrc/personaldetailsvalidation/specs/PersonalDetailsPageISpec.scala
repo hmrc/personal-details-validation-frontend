@@ -14,7 +14,7 @@ class PersonalDetailsPageISpec extends BaseIntegrationSpec {
       goTo(s"/personal-details?journeyId=${UUID.randomUUID()}")
 
       Then("I should see the error page")
-      on(ErrorPage)
+      on(ErrorPage())
     }
   }
 }

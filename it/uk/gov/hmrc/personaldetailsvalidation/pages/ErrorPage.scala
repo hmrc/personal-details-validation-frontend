@@ -2,8 +2,8 @@ package uk.gov.hmrc.personaldetailsvalidation.pages
 
 import uk.gov.hmrc.personaldetailsvalidation.support.WebPage
 
-object ErrorPage extends WebPage {
-  override def isCurrentPage = pageTitle == "Sorry, we are experiencing technical difficulties"
+case class ErrorPage(url: String = "") extends WebPage {
 
-  override val url = ""
+  override lazy val isCurrentPage: Boolean =
+    pageTitle == "Sorry, we are experiencing technical difficulties"
 }
