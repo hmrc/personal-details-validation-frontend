@@ -49,7 +49,7 @@ class PersonalDetailsCollectionControllerSpec
   private trait Setup {
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-    val completionUrl = ValuesGenerators.relativeUrls.generateOne
+    val completionUrl = ValuesGenerators.completionUrls.generateOne
 
     val page: PersonalDetailsPage = mock[PersonalDetailsPage]
     val controller = new PersonalDetailsCollectionController(page)

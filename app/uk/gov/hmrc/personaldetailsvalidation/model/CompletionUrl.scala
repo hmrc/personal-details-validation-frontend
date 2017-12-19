@@ -19,19 +19,20 @@ package uk.gov.hmrc.personaldetailsvalidation.model
 import cats.implicits._
 import uk.gov.voa.valuetype.StringValue
 
-case class RelativeUrl private[RelativeUrl](value: String) extends StringValue
+case class CompletionUrl private[CompletionUrl](value: String) extends StringValue
 
-object RelativeUrl {
+object CompletionUrl {
 
-  def relativeUrl(value: String): Either[IllegalArgumentException, RelativeUrl] = for {
+  def completionUrl(value: String): Either[IllegalArgumentException, CompletionUrl] = for {
     _ <- validateRelativeUrl(value)
     _ <- validateProtocolRelativeUrlSafe(value)
-  } yield RelativeUrl(value)
+  } yield CompletionUrl(value)
 
   private def validateRelativeUrl(value: String) = validate(value.startsWith("/"), s"$value is not a relative url")
 
   private def validateProtocolRelativeUrlSafe(value: String) = validate(!value.contains("//"), s"$value is not protocol relative url safe")
 
-  private def validate(condition: => Boolean, errorMessage: => String): Either[IllegalArgumentException, Unit] = Either.cond(condition, (), new IllegalArgumentException(errorMessage))
+  private def validate(condition: => Boolean, errorMessage: => String): Either[IllegalArgumentException, Unit] =
+    Either.cond(condition, (), new IllegalArgumentException(errorMessage))
 
 }

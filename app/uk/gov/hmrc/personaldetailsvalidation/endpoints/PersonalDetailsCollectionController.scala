@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import javax.inject.Inject
 
 import play.api.mvc._
-import uk.gov.hmrc.personaldetailsvalidation.model.RelativeUrl
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -28,7 +28,7 @@ import scala.concurrent.Future
 class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage)
   extends FrontendController {
 
-  def showPage(completionUrl: RelativeUrl): Action[AnyContent] = Action.async { implicit request =>
+  def showPage(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(page.render))
   }
 }

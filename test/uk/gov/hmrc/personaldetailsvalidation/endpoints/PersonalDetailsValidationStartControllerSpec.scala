@@ -49,7 +49,7 @@ class PersonalDetailsValidationStartControllerSpec
 
     protected implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
 
-    val completionUrl = ValuesGenerators.relativeUrls.generateOne
+    val completionUrl = ValuesGenerators.completionUrls.generateOne
 
     val controller = new PersonalDetailsValidationStartController()
   }

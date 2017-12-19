@@ -19,14 +19,14 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import javax.inject.Singleton
 
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.personaldetailsvalidation.model.RelativeUrl
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 @Singleton
 class PersonalDetailsValidationStartController()
   extends FrontendController {
 
-  def start(completionUrl: RelativeUrl): Action[AnyContent] = Action { implicit request =>
+  def start(completionUrl: CompletionUrl): Action[AnyContent] = Action { implicit request =>
     Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
   }
 }
