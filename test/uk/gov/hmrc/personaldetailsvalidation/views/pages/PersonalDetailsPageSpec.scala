@@ -25,7 +25,8 @@ class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
 
   "render" should {
 
-    "return a personal details page containing first name, last name, nino and date of birth controls" in new Setup {
+    "return a personal details page containing first name, last name, nino, date of birth inputs " +
+      "and a continue button" in new Setup {
       html.title() shouldBe messages("personal-details.title")
 
       html.select(".faded-text strong").text() shouldBe messages("personal-details.faded-heading")
@@ -61,6 +62,8 @@ class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
       val yearElement = dateElementDivs.next()
       yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
       yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+
+      html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
     }
   }
 

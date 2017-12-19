@@ -1,3 +1,5 @@
+continue.button.text=Yn eich blaen
+
 personal-details.title=Nodwch eich manylion - Cadarnhau pwy ydych
 personal-details.faded-heading=Cadarnhau pwy ydych
 personal-details.header=Nodwch eich manylion

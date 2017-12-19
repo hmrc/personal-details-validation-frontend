@@ -36,7 +36,7 @@ class PersonalDetailsCollectionControllerSpec
     with MockFactory
     with ScalaFutures {
 
-  "show" should {
+  "showPage" should {
 
     "return OK with body rendered using PersonalDetailsPage " +
       "when the given journeyId exists" in new Setup {
