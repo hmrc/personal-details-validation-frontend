@@ -61,8 +61,8 @@ class PersonalDetailsCollectionControllerSpec
     "pass the outcome of validateUserDetails" in new Setup {
       val redirectUrl = s"${completionUrl.value}?validationId=${UUID.randomUUID()}"
 
-      (userDetailsValidator.validateUserDetails(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+      (personalDetailsSubmitter.bindAndSend(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(completionUrl, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returning(Future.successful(Redirect(redirectUrl)))
 
       val result = controller.submit(completionUrl)(request)
@@ -77,7 +77,9 @@ class PersonalDetailsCollectionControllerSpec
     val completionUrl = ValuesGenerators.completionUrls.generateOne
 
     val page: PersonalDetailsPage = mock[PersonalDetailsPage]
-    val userDetailsValidator = mock[UserDetailsValidator]
-    val controller = new PersonalDetailsCollectionController(page)
+
+    val personalDetailsSubmitter = mock[FuturedPersonalDetailsSubmitter]
+
+    val controller = new PersonalDetailsCollectionController(page, personalDetailsSubmitter)
   }
 }

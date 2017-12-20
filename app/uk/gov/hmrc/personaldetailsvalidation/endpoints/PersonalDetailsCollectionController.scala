@@ -25,7 +25,8 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.Future
 
-class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage)
+class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
+                                                    personalDetailsSubmitter: FuturedPersonalDetailsSubmitter)
   extends FrontendController {
 
   def showPage(completionUrl: CompletionUrl): Action[AnyContent] = Action { implicit request =>
@@ -33,6 +34,6 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage)
   }
 
   def submit(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    Future.failed(throw new RuntimeException(""))
+    personalDetailsSubmitter.bindAndSend(completionUrl)
   }
 }

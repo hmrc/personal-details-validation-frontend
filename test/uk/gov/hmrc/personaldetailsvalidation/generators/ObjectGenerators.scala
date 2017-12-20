@@ -17,17 +17,17 @@
 package uk.gov.hmrc.personaldetailsvalidation.generators
 
 import org.scalacheck.Gen
-import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
+import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
 
-object ValuesGenerators {
+object ObjectGenerators {
 
   import generators.Generators._
+  import ValuesGenerators._
 
-  implicit val completionUrls: Gen[CompletionUrl] = nonEmptyStrings map { string =>
-    completionUrl(s"/$string").fold(throw _, identity)
-  }
-
-  implicit val ninos: Gen[String] = nonEmptyStrings
-
+  implicit val personalDetailsObjects: Gen[PersonalDetails] = for {
+    firstName <- nonEmptyStrings
+    lastName <- nonEmptyStrings
+    dateOfBirth <- localDates
+    nino <- ninos
+  } yield PersonalDetails(firstName, lastName, nino, dateOfBirth)
 }

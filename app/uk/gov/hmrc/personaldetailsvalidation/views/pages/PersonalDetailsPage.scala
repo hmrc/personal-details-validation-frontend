@@ -21,7 +21,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.data.Form
 import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Request
+import play.api.mvc.{Request, Result}
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.views
@@ -44,4 +44,6 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   def render(completionUrl: CompletionUrl)
             (implicit request: Request[_]): Html =
     views.html.template.personal_details(form, completionUrl)
+
+  def bind(implicit request: Request[_]): Either[Result, PersonalDetails] = ???
 }
