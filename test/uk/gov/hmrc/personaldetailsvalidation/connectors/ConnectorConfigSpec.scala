@@ -27,27 +27,27 @@ class ConnectorConfigSpec
 
   "personalDetailsValidationBaseUrl" should {
 
-    "return be comprised of configured host, port and '/personal-details-validation" in new Setup {
+    "return be comprised of configured host and port" in new Setup {
       whenConfigEntriesExists(
         "microservice.services.personal-details-validation.host" -> "some-host",
         "microservice.services.personal-details-validation.port" -> "123") { config =>
-        config.personalDetailsValidationBaseUrl shouldBe "http://some-host:123/personal-details-validation"
+        config.personalDetailsValidationBaseUrl shouldBe "http://some-host:123"
       }
     }
-    "return be comprised of configured protocol, host and port and '/personal-details-validation" in new Setup {
+    "return be comprised of configured protocol, host and port" in new Setup {
       whenConfigEntriesExists(
         "microservice.services.personal-details-validation.protocol" -> "some-protocol",
         "microservice.services.personal-details-validation.host" -> "some-host",
         "microservice.services.personal-details-validation.port" -> "123") { config =>
-        config.personalDetailsValidationBaseUrl shouldBe "some-protocol://some-host:123/personal-details-validation"
+        config.personalDetailsValidationBaseUrl shouldBe "some-protocol://some-host:123"
       }
     }
-    "return be comprised of configured protocol, host and port and '/personal-details-validation when 'microservice.services.protocol' is given" in new Setup {
+    "return be comprised of configured protocol, host and port when 'microservice.services.protocol' is given" in new Setup {
       whenConfigEntriesExists(
         "microservice.services.protocol" -> "some-protocol",
         "microservice.services.personal-details-validation.host" -> "some-host",
         "microservice.services.personal-details-validation.port" -> "123") { config =>
-        config.personalDetailsValidationBaseUrl shouldBe "some-protocol://some-host:123/personal-details-validation"
+        config.personalDetailsValidationBaseUrl shouldBe "some-protocol://some-host:123"
       }
     }
     "throw a runtime exception when there's no value for 'personal-details-validation.host'" in new Setup {

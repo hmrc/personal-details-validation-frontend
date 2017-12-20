@@ -38,27 +38,27 @@ class FuturedPersonalDetailsSenderSpec
 
   "passToValidation" should {
 
-    "pass returned Location from POST to /personal-details-validation/" in new Setup {
+    "pass returned Location from POST to /personal-details-validation" in new Setup {
 
-      val locationUrl = uris.generateOne
-      expectPost(toUrl = "http://personal-details-validation/")
+      val locationUri = uris.generateOne
+      expectPost(toUrl = "http://host/personal-details-validation")
         .withPayload(payload)
-        .returning(status = CREATED, headers = LOCATION -> locationUrl.toString)
+        .returning(status = CREATED, headers = LOCATION -> locationUri.toString)
 
-      connector.passToValidation(personalDetails).futureValue shouldBe locationUrl
+      connector.passToValidation(personalDetails).futureValue shouldBe locationUri
     }
 
     s"throw a BadGatewayException when there is no $LOCATION header " +
-      "in the response from POST to /personal-details-validation/" in new Setup {
+      "in the response from POST to /personal-details-validation" in new Setup {
 
-      expectPost(toUrl = "http://personal-details-validation/")
+      expectPost(toUrl = "http://host/personal-details-validation")
         .withPayload(payload)
         .returning(status = CREATED)
 
       val exception = intercept[BadGatewayException] {
         await(connector.passToValidation(personalDetails))
       }
-      exception.message shouldBe "No Location header in the response from POST http://personal-details-validation/"
+      exception.message shouldBe "No Location header in the response from POST http://host/personal-details-validation"
       exception.responseCode shouldBe BAD_GATEWAY
     }
 
@@ -66,14 +66,14 @@ class FuturedPersonalDetailsSenderSpec
 
       s"throw a BadGatewayException when POST to /personal-details-validation/ returns $unexpectedStatus" in new Setup {
 
-        expectPost(toUrl = "http://personal-details-validation/")
+        expectPost(toUrl = "http://host/personal-details-validation")
           .withPayload(payload)
           .returning(unexpectedStatus, "some response body")
 
         val exception = intercept[BadGatewayException] {
           await(connector.passToValidation(personalDetails))
         }
-        exception.message shouldBe s"Unexpected response from POST http://personal-details-validation/ with status: '$unexpectedStatus' and body: some response body"
+        exception.message shouldBe s"Unexpected response from POST http://host/personal-details-validation with status: '$unexpectedStatus' and body: some response body"
         exception.responseCode shouldBe BAD_GATEWAY
       }
     }
@@ -92,7 +92,7 @@ class FuturedPersonalDetailsSenderSpec
     )
 
     private val connectorConfig = new ConnectorConfig(mock[Configuration]) {
-      override lazy val personalDetailsValidationBaseUrl = "http://personal-details-validation"
+      override lazy val personalDetailsValidationBaseUrl = "http://host"
     }
 
     val connector = new FuturedPersonalDetailsSender(httpClient, connectorConfig)

@@ -47,7 +47,7 @@ class FuturedPersonalDetailsSender @Inject()(httpClient: HttpClient,
                                (implicit headerCarrier: HeaderCarrier,
                                 executionContext: ExecutionContext): Future[URI] =
     httpClient.POST(
-      url = personalDetailsValidationBaseUrl + "/",
+      url = s"$personalDetailsValidationBaseUrl/personal-details-validation",
       body = personalDetails.toJson
     )
 

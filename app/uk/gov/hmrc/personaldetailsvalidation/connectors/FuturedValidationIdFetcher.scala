@@ -39,10 +39,12 @@ class FuturedValidationIdFetcher @Inject()(httpClient: HttpClient,
                                            connectorConfig: ConnectorConfig)
   extends ValidationIdFetcher[Future] {
 
-  override def fetchValidationId(url: URI)
+  import connectorConfig.personalDetailsValidationBaseUrl
+
+  override def fetchValidationId(uri: URI)
                                 (implicit headerCarrier: HeaderCarrier,
                                  executionContext: ExecutionContext): Future[String] =
-    httpClient.GET(url.toString)
+    httpClient.GET(s"$personalDetailsValidationBaseUrl$uri")
 
   private implicit val validationIdHttpReads: HttpReads[String] = new HttpReads[String] {
     override def read(method: String, url: String, response: HttpResponse): String = response.status match {

@@ -47,8 +47,8 @@ private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetail
                   headerCarrier: HeaderCarrier,
                   executionContext: ExecutionContext): Interpretation[Result] = for {
     maybePersonalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl))
-    maybeContinueUrl <- passToValidation(maybePersonalDetails)
-    maybeValidationId <- fetchValidationId(maybeContinueUrl)
+    maybeContinueUri <- passToValidation(maybePersonalDetails)
+    maybeValidationId <- fetchValidationId(maybeContinueUri)
     maybeRedirect <- formRedirect(completionUrl, maybeValidationId)
   } yield maybeRedirect.fold(identity, identity)
 
@@ -60,11 +60,11 @@ private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetail
       case Left(badRequest) => Left(badRequest)
     }
 
-  private def fetchValidationId(maybeContinueUrl: Either[Result, URI])
+  private def fetchValidationId(maybeContinueUri: Either[Result, URI])
                                (implicit headerCarrier: HeaderCarrier,
                                 executionContext: ExecutionContext): Interpretation[Either[Result, String]] =
-    maybeContinueUrl match {
-      case Right(continueUrl) => validationIdFetcher.fetchValidationId(continueUrl).map(Right(_))
+    maybeContinueUri match {
+      case Right(continueUri) => validationIdFetcher.fetchValidationId(continueUri).map(Right(_))
       case Left(badRequest) => Left(badRequest)
     }
 

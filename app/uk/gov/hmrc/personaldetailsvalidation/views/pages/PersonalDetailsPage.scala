@@ -36,10 +36,10 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   import uk.gov.hmrc.formmappings.Mappings._
 
   private val form: Form[PersonalDetails] = Form(mapping(
-    "firstName" -> mandatoryText(???),
-    "lastName" -> mandatoryText(???),
-    "nino" -> mandatoryText(???),
-    "dateOfBirth" -> mandatoryLocalDate(???)
+    "firstName" -> mandatoryText("undefined"),
+    "lastName" -> mandatoryText("undefined"),
+    "nino" -> mandatoryText("undefined"),
+    "dateOfBirth" -> mandatoryLocalDate("undefined")
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
   def render(implicit completionUrl: CompletionUrl,

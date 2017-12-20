@@ -37,41 +37,41 @@ class FuturedValidationIdFetcherSpec
 
   "fetchValidationId" should {
 
-    "call GET on the given url " +
+    "call GET on the given uri " +
       "and extract validationId from the response" in new Setup {
 
       val validationId = Gen.uuid.generateOne.toString
 
-      expectGet(toUrl = url.toString)
+      expectGet(toUrl = s"$baseUrl$uri")
         .returning(status = OK, body = Json.obj("id" -> validationId))
 
-      connector.fetchValidationId(url).futureValue shouldBe validationId
+      connector.fetchValidationId(uri).futureValue shouldBe validationId
     }
 
     s"throw a BadGatewayException when there is no 'id' " +
-      "in the response from GET to the given url" in new Setup {
+      "in the response from GET to the given uri" in new Setup {
 
-      expectGet(toUrl = url.toString)
+      expectGet(toUrl = s"$baseUrl$uri")
         .returning(status = OK, body = JsNull)
 
       val exception = intercept[BadGatewayException] {
-        await(connector.fetchValidationId(url))
+        await(connector.fetchValidationId(uri))
       }
-      exception.message shouldBe s"No 'id' property in the json response from GET $url"
+      exception.message shouldBe s"No 'id' property in the json response from GET $baseUrl$uri"
       exception.responseCode shouldBe BAD_GATEWAY
     }
 
     Set(NO_CONTENT, NOT_FOUND, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
 
-      s"throw a BadGatewayException when GET to the given url returns $unexpectedStatus" in new Setup {
+      s"throw a BadGatewayException when GET to the given uri returns $unexpectedStatus" in new Setup {
 
-        expectGet(toUrl = url.toString)
+        expectGet(toUrl = s"$baseUrl$uri")
           .returning(unexpectedStatus, "some response body")
 
         val exception = intercept[BadGatewayException] {
-          await(connector.fetchValidationId(url))
+          await(connector.fetchValidationId(uri))
         }
-        exception.message shouldBe s"Unexpected response from GET $url with status: '$unexpectedStatus' and body: some response body"
+        exception.message shouldBe s"Unexpected response from GET $baseUrl$uri with status: '$unexpectedStatus' and body: some response body"
         exception.responseCode shouldBe BAD_GATEWAY
       }
     }
@@ -80,10 +80,11 @@ class FuturedValidationIdFetcherSpec
   private trait Setup extends HttpClientStubSetup {
     implicit val headerCarrier = HeaderCarrier()
 
-    val url = uris.generateOne
+    val uri = uris.generateOne
 
+    val baseUrl = "http://host"
     private val connectorConfig = new ConnectorConfig(mock[Configuration]) {
-      override lazy val personalDetailsValidationBaseUrl = "http://personal-details-validation"
+      override lazy val personalDetailsValidationBaseUrl: String = baseUrl
     }
 
     val connector = new FuturedValidationIdFetcher(httpClient, connectorConfig)

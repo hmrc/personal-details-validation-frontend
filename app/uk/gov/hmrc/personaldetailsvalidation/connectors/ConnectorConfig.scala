@@ -28,5 +28,5 @@ private class ConnectorConfig @Inject()(configuration: Configuration) {
   import uk.gov.hmrc.config.implicits._
 
   lazy val personalDetailsValidationBaseUrl: String =
-    configuration.loadMandatory[Host]("personal-details-validation") + "/personal-details-validation"
+    configuration.loadMandatory[Host]("personal-details-validation").toString()
 }
