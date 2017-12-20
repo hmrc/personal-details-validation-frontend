@@ -46,7 +46,7 @@ private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetail
                  (implicit request: Request[_],
                   headerCarrier: HeaderCarrier,
                   executionContext: ExecutionContext): Interpretation[Result] = for {
-    maybePersonalDetails <- pure(personalDetailsPage.bind)
+    maybePersonalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl))
     maybeContinueUrl <- passToValidation(maybePersonalDetails)
     maybeValidationId <- fetchValidationId(maybeContinueUrl)
     maybeRedirect <- formRedirect(completionUrl, maybeValidationId)

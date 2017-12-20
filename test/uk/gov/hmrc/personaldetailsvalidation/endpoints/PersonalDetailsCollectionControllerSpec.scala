@@ -46,7 +46,7 @@ class PersonalDetailsCollectionControllerSpec
   "showPage" should {
 
     "return OK with HTML body rendered using PersonalDetailsPage" in new Setup {
-      (page.render(_: CompletionUrl)(_: Request[_]))
+      (page.render(_: CompletionUrl, _: Request[_]))
         .expects(completionUrl, request)
         .returning(Html("content"))
 

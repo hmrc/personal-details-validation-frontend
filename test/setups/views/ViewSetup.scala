@@ -32,7 +32,7 @@ abstract class ViewSetup(implicit app: Application) extends MockFactory {
   implicit val viewConfig: ViewConfig = ViewConfigMockFactory()
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-  implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val lang: Lang = Lang("en")
   implicit val messages: Messages = Messages.Implicits.applicationMessages
 

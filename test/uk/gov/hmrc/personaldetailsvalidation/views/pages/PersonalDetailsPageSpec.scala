@@ -20,16 +20,21 @@ import generators.Generators.Implicits._
 import org.jsoup.nodes.Document
 import org.scalatestplus.play.OneAppPerSuite
 import setups.views.ViewSetup
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
+import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.personalDetailsObjects
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
+import uk.gov.hmrc.play.test.UnitSpec
 
-class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
+class PersonalDetailsPageSpec
+  extends UnitSpec
+    with OneAppPerSuite {
 
   "render" should {
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
       "and a continue button" in new Setup {
+      val html: Document = personalDetailsPage.render
+
       html.title() shouldBe messages("personal-details.title")
 
       html.select(".faded-text strong").text() shouldBe messages("personal-details.faded-heading")
@@ -72,8 +77,29 @@ class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
     }
   }
 
+  "bind" should {
+
+    "return PersonalDetails when data provided on the form is valid" in new Setup {
+      val personalDetails = personalDetailsObjects.generateOne
+
+      implicit val requestWithFormData = request.withFormUrlEncodedBody(
+        "firstName" -> personalDetails.firstName,
+        "lastName" -> personalDetails.lastName,
+        "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
+        "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
+        "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
+        "nino" -> personalDetails.nino
+      )
+
+      val response = personalDetailsPage.bindFromRequest
+
+      response shouldBe Right(personalDetails)
+    }
+  }
+
   private trait Setup extends ViewSetup {
-    val completionUrl = ValuesGenerators.completionUrls.generateOne
-    val html: Document = new PersonalDetailsPage().render(completionUrl)
+    implicit val completionUrl = ValuesGenerators.completionUrls.generateOne
+
+    val personalDetailsPage = new PersonalDetailsPage()
   }
 }

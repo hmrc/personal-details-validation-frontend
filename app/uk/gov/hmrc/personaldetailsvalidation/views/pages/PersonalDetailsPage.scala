@@ -21,10 +21,11 @@ import javax.inject.{Inject, Singleton}
 import play.api.data.Form
 import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.Results.BadRequest
 import play.api.mvc.{Request, Result}
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
-import uk.gov.hmrc.personaldetailsvalidation.views
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.personal_details
 import uk.gov.hmrc.views.ViewConfig
 
 @Singleton
@@ -41,9 +42,14 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
     "dateOfBirth" -> mandatoryLocalDate(???)
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
-  def render(completionUrl: CompletionUrl)
-            (implicit request: Request[_]): Html =
-    views.html.template.personal_details(form, completionUrl)
+  def render(implicit completionUrl: CompletionUrl,
+             request: Request[_]): Html =
+    personal_details(form, completionUrl)
 
-  def bind(implicit request: Request[_]): Either[Result, PersonalDetails] = ???
+  def bindFromRequest(implicit request: Request[_],
+                      completionUrl: CompletionUrl): Either[Result, PersonalDetails] =
+    form.bindFromRequest().fold(
+      formWithErrors => Left(BadRequest(personal_details(formWithErrors, completionUrl))),
+      Right(_)
+    )
 }

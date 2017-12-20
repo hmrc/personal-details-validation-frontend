@@ -30,7 +30,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{PersonalDetailsSender, ValidationIdFetcher}
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.personalDetailsObjects
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.{completionUrls, uris}
-import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -44,8 +44,8 @@ class PersonalDetailsSubmitterSpec
   "bindAndSend" should {
 
     "return BAD_REQUEST when form binds with errors" in new Setup {
-      (page.bind(_: Request[_]))
-        .expects(request)
+      (page.bindFromRequest(_: Request[_], _: CompletionUrl))
+        .expects(request, completionUrl)
         .returning(Left(BadRequest("page with errors")))
 
       val result = submitter.bindAndSend(completionUrl)
@@ -59,8 +59,8 @@ class PersonalDetailsSubmitterSpec
       "return redirect to completionUrl with appended validationId query parameter" in new Setup {
 
       val personalDetails = personalDetailsObjects.generateOne
-      (page.bind(_: Request[_]))
-        .expects(request)
+      (page.bindFromRequest(_: Request[_], _: CompletionUrl))
+        .expects(request, completionUrl)
         .returning(Right(personalDetails))
 
       val locationUrl = uris.generateOne
