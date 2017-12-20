@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.generators
 
+import java.net.URI
+
 import org.scalacheck.Gen
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
@@ -24,9 +26,15 @@ object ValuesGenerators {
 
   import generators.Generators._
 
-  implicit val completionUrls: Gen[CompletionUrl] = nonEmptyStrings map { string =>
-    completionUrl(s"/$string").fold(throw _, identity)
-  }
+  implicit val completionUrls: Gen[CompletionUrl] = Gen.nonEmptyListOf(nonEmptyStrings)
+    .map(_.mkString("/"))
+    .map { path =>
+      completionUrl(s"/$path").fold(throw _, identity)
+    }
+
+  implicit val uris: Gen[URI] = Gen.nonEmptyListOf(nonEmptyStrings)
+    .map(_.mkString("/"))
+    .map(path => new URI(s"/$path"))
 
   implicit val ninos: Gen[String] = nonEmptyStrings
 

@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
+import java.net.URI
+
 import cats.Id
 import generators.Generators.Implicits._
-import org.scalacheck.Gen
+import generators.Generators._
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.Request
 import play.api.mvc.Results._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.personaldetailsvalidation.connectors.PersonalDetailsValidationConnector
+import uk.gov.hmrc.personaldetailsvalidation.connectors.{PersonalDetailsSender, ValidationIdFetcher}
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.personalDetailsObjects
-import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
-import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.completionUrls
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.{completionUrls, uris}
 import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.test.UnitSpec
@@ -52,17 +53,24 @@ class PersonalDetailsSubmitterSpec
       status(result) shouldBe BAD_REQUEST
     }
 
-    "returns redirect to the completionUrl with appended validationId " +
-      "returned from passing successfully bound Personal Details to the validation service" in new Setup {
-      val personalDetails = personalDetailsObjects.generateOne
+    "bind the request to PersonalDetails, " +
+      "post it to the validation service, " +
+      "fetch validationId from the validation service and " +
+      "return redirect to completionUrl with appended validationId query parameter" in new Setup {
 
+      val personalDetails = personalDetailsObjects.generateOne
       (page.bind(_: Request[_]))
         .expects(request)
         .returning(Right(personalDetails))
 
-      val validationId = Gen.uuid.generateOne.toString
+      val locationUrl = uris.generateOne
       (personalDetailsValidationConnector.passToValidation(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
         .expects(personalDetails, headerCarrier, executionContext)
+        .returning(locationUrl)
+
+      val validationId = nonEmptyStrings.generateOne
+      (validationIdFetcher.fetchValidationId(_: URI)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(locationUrl, headerCarrier, executionContext)
         .returning(validationId)
 
       val result = submitter.bindAndSend(completionUrl)
@@ -80,9 +88,12 @@ class PersonalDetailsSubmitterSpec
 
     val page = mock[PersonalDetailsPage]
 
-    abstract class ConnectorInterpretation extends PersonalDetailsValidationConnector[Id]
+    abstract class ConnectorInterpretation extends PersonalDetailsSender[Id]
     val personalDetailsValidationConnector = mock[ConnectorInterpretation]
 
-    val submitter = new PersonalDetailsSubmitter[Id](page, personalDetailsValidationConnector)
+    abstract class ValidationIdFetcherInterpretation extends ValidationIdFetcher[Id]
+    val validationIdFetcher = mock[ValidationIdFetcherInterpretation]
+
+    val submitter = new PersonalDetailsSubmitter[Id](page, personalDetailsValidationConnector, validationIdFetcher)
   }
 }

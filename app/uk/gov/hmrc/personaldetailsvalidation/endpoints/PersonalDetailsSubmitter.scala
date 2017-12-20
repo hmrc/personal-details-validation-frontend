@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
+import java.net.URI
 import javax.inject.{Inject, Singleton}
 
 import cats.Monad
@@ -23,7 +24,7 @@ import cats.implicits._
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedPersonalDetailsValidationConnector, PersonalDetailsValidationConnector}
+import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedPersonalDetailsSender, FuturedValidationIdFetcher, PersonalDetailsSender, ValidationIdFetcher}
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 
@@ -33,26 +34,37 @@ import scala.language.{higherKinds, implicitConversions}
 
 @Singleton
 private class FuturedPersonalDetailsSubmitter @Inject()(personalDetailsPage: PersonalDetailsPage,
-                                                        personalDetailsValidationConnector: FuturedPersonalDetailsValidationConnector)
-  extends PersonalDetailsSubmitter[Future](personalDetailsPage, personalDetailsValidationConnector)
+                                                        personalDetailsValidationConnector: FuturedPersonalDetailsSender,
+                                                        validationIdFetcher: FuturedValidationIdFetcher)
+  extends PersonalDetailsSubmitter[Future](personalDetailsPage, personalDetailsValidationConnector, validationIdFetcher)
 
 private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetailsPage: PersonalDetailsPage,
-                                                                  personalDetailsValidationConnector: PersonalDetailsValidationConnector[Interpretation]) {
+                                                                  personalDetailsValidationConnector: PersonalDetailsSender[Interpretation],
+                                                                  validationIdFetcher: ValidationIdFetcher[Interpretation]) {
 
   def bindAndSend(completionUrl: CompletionUrl)
                  (implicit request: Request[_],
                   headerCarrier: HeaderCarrier,
                   executionContext: ExecutionContext): Interpretation[Result] = for {
     maybePersonalDetails <- pure(personalDetailsPage.bind)
-    maybeValidationId <- passToValidation(maybePersonalDetails)
+    maybeContinueUrl <- passToValidation(maybePersonalDetails)
+    maybeValidationId <- fetchValidationId(maybeContinueUrl)
     maybeRedirect <- formRedirect(completionUrl, maybeValidationId)
   } yield maybeRedirect.fold(identity, identity)
 
   private def passToValidation(maybePersonalDetails: Either[Result, PersonalDetails])
                               (implicit headerCarrier: HeaderCarrier,
-                               executionContext: ExecutionContext): Interpretation[Either[Result, String]] =
+                               executionContext: ExecutionContext): Interpretation[Either[Result, URI]] =
     maybePersonalDetails match {
       case Right(personalDetails) => personalDetailsValidationConnector.passToValidation(personalDetails).map(Right(_))
+      case Left(badRequest) => Left(badRequest)
+    }
+
+  private def fetchValidationId(maybeContinueUrl: Either[Result, URI])
+                               (implicit headerCarrier: HeaderCarrier,
+                                executionContext: ExecutionContext): Interpretation[Either[Result, String]] =
+    maybeContinueUrl match {
+      case Right(continueUrl) => validationIdFetcher.fetchValidationId(continueUrl).map(Right(_))
       case Left(badRequest) => Left(badRequest)
     }
 
