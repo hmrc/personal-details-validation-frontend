@@ -48,12 +48,11 @@ private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetail
                   headerCarrier: HeaderCarrier,
                   executionContext: ExecutionContext): Interpretation[Result] = {
     for {
-      maybePersonalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl))
-      maybeContinueUri <- passToValidation(maybePersonalDetails)
-      maybeValidationId <- fetchValidationId(maybeContinueUri)
-      maybeRedirect <- formRedirect(completionUrl, maybeValidationId)
-    } yield maybeRedirect
-  }.value.fold(identity, identity)
+      personalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl))
+      validationIdUrl <- passToValidation(personalDetails)
+      validationId <- fetchValidationId(validationIdUrl)
+    } yield validationId
+  }.value.fold(identity, formRedirect(completionUrl))
 
   private def passToValidation(personalDetails: PersonalDetails)
                               (implicit headerCarrier: HeaderCarrier,
@@ -65,8 +64,8 @@ private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetail
                                 executionContext: ExecutionContext): EitherT[Interpretation, Result, String] =
     validationIdFetcher.fetchValidationId(continueUri).map(Either.right[Result, String])
 
-  private def formRedirect(completionUrl: CompletionUrl, validationId: String): EitherT[Interpretation, Result, Result] =
-    Right(Redirect(s"$completionUrl?validationId=$validationId"))
+  private def formRedirect(completionUrl: CompletionUrl)(validationId: String): Result =
+    Redirect(s"$completionUrl?validationId=$validationId")
 
   private implicit def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =
     EitherT(implicitly[Monad[Interpretation]].pure(maybeValue))
