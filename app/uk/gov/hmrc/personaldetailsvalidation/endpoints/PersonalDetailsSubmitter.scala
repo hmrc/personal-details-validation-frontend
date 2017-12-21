@@ -20,6 +20,7 @@ import java.net.URI
 import javax.inject.{Inject, Singleton}
 
 import cats.Monad
+import cats.data.EitherT
 import cats.implicits._
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
@@ -45,35 +46,31 @@ private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetail
   def bindAndSend(completionUrl: CompletionUrl)
                  (implicit request: Request[_],
                   headerCarrier: HeaderCarrier,
-                  executionContext: ExecutionContext): Interpretation[Result] = for {
-    maybePersonalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl))
-    maybeContinueUri <- passToValidation(maybePersonalDetails)
-    maybeValidationId <- fetchValidationId(maybeContinueUri)
-    maybeRedirect <- formRedirect(completionUrl, maybeValidationId)
-  } yield maybeRedirect.fold(identity, identity)
+                  executionContext: ExecutionContext): Interpretation[Result] = {
+    for {
+      maybePersonalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl))
+      maybeContinueUri <- passToValidation(maybePersonalDetails)
+      maybeValidationId <- fetchValidationId(maybeContinueUri)
+      maybeRedirect <- formRedirect(completionUrl, maybeValidationId)
+    } yield maybeRedirect
+  }.value.fold(identity, identity)
 
-  private def passToValidation(maybePersonalDetails: Either[Result, PersonalDetails])
+  private def passToValidation(personalDetails: PersonalDetails)
                               (implicit headerCarrier: HeaderCarrier,
-                               executionContext: ExecutionContext): Interpretation[Either[Result, URI]] =
-    maybePersonalDetails match {
-      case Right(personalDetails) => personalDetailsValidationConnector.passToValidation(personalDetails).map(Right(_))
-      case Left(badRequest) => Left(badRequest)
-    }
+                               executionContext: ExecutionContext): EitherT[Interpretation, Result, URI] =
+    personalDetailsValidationConnector.passToValidation(personalDetails).map(Either.right[Result, URI])
 
-  private def fetchValidationId(maybeContinueUri: Either[Result, URI])
+  private def fetchValidationId(continueUri: URI)
                                (implicit headerCarrier: HeaderCarrier,
-                                executionContext: ExecutionContext): Interpretation[Either[Result, String]] =
-    maybeContinueUri match {
-      case Right(continueUri) => validationIdFetcher.fetchValidationId(continueUri).map(Right(_))
-      case Left(badRequest) => Left(badRequest)
-    }
+                                executionContext: ExecutionContext): EitherT[Interpretation, Result, String] =
+    validationIdFetcher.fetchValidationId(continueUri).map(Either.right[Result, String])
 
-  private def formRedirect(completionUrl: CompletionUrl, maybeValidationId: Either[Result, String]): Interpretation[Either[Result, Result]] =
-    maybeValidationId match {
-      case Right(validationId) => Right(Redirect(s"$completionUrl?validationId=$validationId"))
-      case Left(badRequest) => Left(badRequest)
-    }
+  private def formRedirect(completionUrl: CompletionUrl, validationId: String): EitherT[Interpretation, Result, Result] =
+    Right(Redirect(s"$completionUrl?validationId=$validationId"))
 
-  private implicit def pure[T](value: T): Interpretation[T] =
-    implicitly[Monad[Interpretation]].pure(value)
+  private implicit def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =
+    EitherT(implicitly[Monad[Interpretation]].pure(maybeValue))
+
+  private implicit def toEitherT[L, R](wrappedMaybeValue: Interpretation[Either[L, R]]): EitherT[Interpretation, L, R] =
+    EitherT(wrappedMaybeValue)
 }
