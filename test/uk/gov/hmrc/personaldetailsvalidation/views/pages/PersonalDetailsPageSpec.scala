@@ -23,6 +23,7 @@ import setups.views.ViewSetup
 import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.personalDetailsObjects
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.test.UnitSpec
 
 class PersonalDetailsPageSpec
@@ -77,7 +78,7 @@ class PersonalDetailsPageSpec
     }
   }
 
-  "bind" should {
+  "bindFromRequest" should {
 
     "return PersonalDetails when data provided on the form is valid" in new Setup {
       val personalDetails = personalDetailsObjects.generateOne
@@ -98,7 +99,7 @@ class PersonalDetailsPageSpec
   }
 
   private trait Setup extends ViewSetup {
-    implicit val completionUrl = ValuesGenerators.completionUrls.generateOne
+    implicit val completionUrl: CompletionUrl = ValuesGenerators.completionUrls.generateOne
 
     val personalDetailsPage = new PersonalDetailsPage()
   }

@@ -21,8 +21,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.data.Form
 import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Results.BadRequest
-import play.api.mvc.{Request, Result}
+import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.personal_details
@@ -47,9 +46,9 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
     personal_details(form, completionUrl)
 
   def bindFromRequest(implicit request: Request[_],
-                      completionUrl: CompletionUrl): Either[Result, PersonalDetails] =
+                      completionUrl: CompletionUrl): Either[Html, PersonalDetails] =
     form.bindFromRequest().fold(
-      formWithErrors => Left(BadRequest(personal_details(formWithErrors, completionUrl))),
+      formWithErrors => Left(personal_details(formWithErrors, completionUrl)),
       Right(_)
     )
 }

@@ -23,9 +23,9 @@ import generators.Generators.Implicits._
 import generators.Generators._
 import org.scalamock.scalatest.MockFactory
 import play.api.mvc.{AnyContentAsEmpty, Request}
-import play.api.mvc.Results._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{PersonalDetailsSender, ValidationIdFetcher}
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.personalDetailsObjects
@@ -46,11 +46,12 @@ class PersonalDetailsSubmissionSpec
     "return BAD_REQUEST when form binds with errors" in new Setup {
       (page.bindFromRequest(_: Request[_], _: CompletionUrl))
         .expects(request, completionUrl)
-        .returning(Left(BadRequest("page with errors")))
+        .returning(Left(Html("page with errors")))
 
       val result = submitter.bindValidateAndRedirect(completionUrl)
 
       status(result) shouldBe BAD_REQUEST
+      contentAsString(result) shouldBe "page with errors"
     }
 
     "bind the request to PersonalDetails, " +

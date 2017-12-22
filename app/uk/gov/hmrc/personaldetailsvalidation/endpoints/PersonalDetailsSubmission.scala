@@ -24,6 +24,7 @@ import cats.data.EitherT
 import cats.implicits._
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
+import play.twirl.api.Html
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedPersonalDetailsSender, FuturedValidationIdFetcher, PersonalDetailsSender, ValidationIdFetcher}
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
@@ -52,19 +53,22 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
       validationIdFetchUri <- passToValidation(personalDetails)
       validationId <- fetchValidationId(validationIdFetchUri)
     } yield validationId
-  }.value.fold(identity, formRedirect(completionUrl))
+  }.value.fold(
+    pageWithErrors => BadRequest(pageWithErrors),
+    validationId => formRedirect(validationId, completionUrl)
+  )
 
   private def passToValidation(personalDetails: PersonalDetails)
                               (implicit headerCarrier: HeaderCarrier,
-                               executionContext: ExecutionContext): EitherT[Interpretation, Result, URI] =
-    personalDetailsValidationConnector.passToValidation(personalDetails).map(Either.right[Result, URI])
+                               executionContext: ExecutionContext): EitherT[Interpretation, Html, URI] =
+    personalDetailsValidationConnector.passToValidation(personalDetails).map(Either.right[Html, URI])
 
   private def fetchValidationId(validationIdFetchUri: URI)
                                (implicit headerCarrier: HeaderCarrier,
-                                executionContext: ExecutionContext): EitherT[Interpretation, Result, String] =
-    validationIdFetcher.fetchValidationId(validationIdFetchUri).map(Either.right[Result, String])
+                                executionContext: ExecutionContext): EitherT[Interpretation, Html, String] =
+    validationIdFetcher.fetchValidationId(validationIdFetchUri).map(Either.right[Html, String])
 
-  private def formRedirect(completionUrl: CompletionUrl)(validationId: String): Result =
+  private def formRedirect(validationId: String, completionUrl: CompletionUrl): Result =
     Redirect(s"$completionUrl?validationId=$validationId")
 
   private def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =
