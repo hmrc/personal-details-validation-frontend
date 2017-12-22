@@ -51,7 +51,7 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
       body = personalDetails.toJson
     )
 
-  private implicit val personalDetailsSubmitionReads: HttpReads[URI] = new HttpReads[URI] {
+  private implicit val personalDetailsSubmissionReads: HttpReads[URI] = new HttpReads[URI] {
     override def read(method: String, url: String, response: HttpResponse): URI = response.status match {
       case CREATED => response.header(LOCATION).map(new URI(_)).getOrElse {
         throw new BadGatewayException(s"No $LOCATION header in the response from $method $url")
