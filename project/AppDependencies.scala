@@ -3,7 +3,7 @@ import sbt._
 
 private object AppDependencies {
 
-  def apply(): Seq[ModuleID] = compile ++ test() ++ it()
+  def apply(): Seq[ModuleID] = compile ++ test ++ it
 
   private val compile = Seq(
     "org.typelevel" %% "cats-core" % "1.0.0-RC1",
@@ -16,16 +16,15 @@ private object AppDependencies {
     ws
   )
 
-  private def test() = Seq(
+  private val test = Seq(
     "org.jsoup" % "jsoup" % "1.10.2" % Test,
     "org.scalacheck" %% "scalacheck" % "1.13.4" % Test,
     "org.scalamock" %% "scalamock" % "4.0.0" % Test,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % Test,
-    "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % Test,
-    "uk.gov.hmrc" %% "reactivemongo-test" % "3.0.0" % Test
+    "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % Test
   )
 
-  private def it() = Seq(
+  private val it = Seq(
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % IntegrationTest,
     "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % IntegrationTest
   )

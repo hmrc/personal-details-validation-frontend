@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.uuid
+package uk.gov.hmrc.personaldetailsvalidation.connectors
 
-import java.util.UUID
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
+
+import play.api.Configuration
+import uk.gov.hmrc.http.Host
 
 @Singleton
-class UUIDProvider extends (() => UUID) {
-  override def apply() = UUID.randomUUID()
+private class ConnectorConfig @Inject()(configuration: Configuration) {
+
+  import uk.gov.hmrc.config.ops._
+  import uk.gov.hmrc.config.implicits._
+
+  lazy val personalDetailsValidationBaseUrl: String =
+    configuration.loadMandatory[Host]("personal-details-validation").toString()
 }

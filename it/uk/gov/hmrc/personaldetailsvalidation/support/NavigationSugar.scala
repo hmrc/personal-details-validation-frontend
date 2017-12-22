@@ -7,12 +7,12 @@ import org.scalatest.{Assertions, Matchers}
 
 trait NavigationSugar extends WebBrowser with Eventually with Assertions with Matchers with IntegrationPatience {
 
-  def goOn(page: WebPage)(implicit webDriver: WebDriver) = {
+  def goOn(page: WebPage)(implicit webDriver: WebDriver): Unit = {
     goTo(page)
     on(page)
   }
 
-  def on(page: WebPage)(implicit webDriver: WebDriver) = {
+  def on(page: WebPage)(implicit webDriver: WebDriver): Unit = {
     setCaptureDir("target/screenshots")
     withScreenshot {
       withClue("timeout waiting for the 'body' element") {
@@ -21,11 +21,7 @@ trait NavigationSugar extends WebBrowser with Eventually with Assertions with Ma
         }
       }
 
-      withClue(s"Page isCurrentPage returned false: browser's current url: [$currentUrl], actual title in html: $pageTitle was not equal to expected page object's url [${page.url}]. Page source: $pageSource") {
-        eventually {
-          page.isCurrentPage shouldBe true
-        }
-      }
+      page.verifyDisplayed
     }
   }
 }

@@ -2,9 +2,12 @@ package uk.gov.hmrc.personaldetailsvalidation.pages
 
 import uk.gov.hmrc.personaldetailsvalidation.support.WebPage
 
-object PersonalDetailsPage extends WebPage {
-  override val url: String = ""
+case class PersonalDetailsPage(completionUrl: String) extends WebPage {
 
-  override def isCurrentPage: Boolean = pageTitle == "Enter your details - Confirm your identity"
+  val url: String = s"/personal-details?completionUrl=$completionUrl"
 
+  lazy val verifyDisplayed: () => Unit = () => {
+    pageTitle shouldBe "Enter your details - Confirm your identity"
+    currentUrl shouldBe url
+  }
 }

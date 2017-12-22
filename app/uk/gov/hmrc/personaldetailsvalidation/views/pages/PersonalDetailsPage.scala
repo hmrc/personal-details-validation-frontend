@@ -23,8 +23,8 @@ import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
-import uk.gov.hmrc.personaldetailsvalidation.views
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.personal_details
 import uk.gov.hmrc.views.ViewConfig
 
 @Singleton
@@ -35,12 +35,20 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   import uk.gov.hmrc.formmappings.Mappings._
 
   private val form: Form[PersonalDetails] = Form(mapping(
-    "firstName" -> mandatoryText(???),
-    "lastName" -> mandatoryText(???),
-    "nino" -> mandatoryText(???),
-    "dateOfBirth" -> mandatoryLocalDate(???)
+    "firstName" -> mandatoryText("undefined"),
+    "lastName" -> mandatoryText("undefined"),
+    "nino" -> mandatoryText("undefined"),
+    "dateOfBirth" -> mandatoryLocalDate("undefined")
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
-  def render(implicit request: Request[_]): Html =
-    views.html.template.personal_details(form)
+  def render(implicit completionUrl: CompletionUrl,
+             request: Request[_]): Html =
+    personal_details(form, completionUrl)
+
+  def bindFromRequest(implicit request: Request[_],
+                      completionUrl: CompletionUrl): Either[Html, PersonalDetails] =
+    form.bindFromRequest().fold(
+      formWithErrors => Left(personal_details(formWithErrors, completionUrl)),
+      Right(_)
+    )
 }

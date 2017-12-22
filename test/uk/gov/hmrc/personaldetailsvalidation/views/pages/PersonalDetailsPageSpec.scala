@@ -16,21 +16,33 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.views.pages
 
+import generators.Generators.Implicits._
 import org.jsoup.nodes.Document
 import org.scalatestplus.play.OneAppPerSuite
 import setups.views.ViewSetup
+import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
+import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.personalDetailsObjects
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.test.UnitSpec
 
-class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
+class PersonalDetailsPageSpec
+  extends UnitSpec
+    with OneAppPerSuite {
 
   "render" should {
 
-    "return a personal details page containing first name, last name, nino and date of birth controls" in new Setup {
+    "return a personal details page containing first name, last name, nino, date of birth inputs " +
+      "and a continue button" in new Setup {
+      val html: Document = personalDetailsPage.render
+
       html.title() shouldBe messages("personal-details.title")
 
       html.select(".faded-text strong").text() shouldBe messages("personal-details.faded-heading")
       html.select(".faded-text ~ header h1").text() shouldBe messages("personal-details.header")
       html.select("header ~ p").text() shouldBe messages("personal-details.paragraph")
+
+      html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
 
       val fieldsets = html.select("form fieldset")
       val firstNameFieldset = fieldsets.first()
@@ -61,10 +73,34 @@ class PersonalDetailsPageSpec extends UnitSpec with OneAppPerSuite {
       val yearElement = dateElementDivs.next()
       yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
       yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+
+      html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
+    }
+  }
+
+  "bindFromRequest" should {
+
+    "return PersonalDetails when data provided on the form is valid" in new Setup {
+      val personalDetails = personalDetailsObjects.generateOne
+
+      implicit val requestWithFormData = request.withFormUrlEncodedBody(
+        "firstName" -> personalDetails.firstName,
+        "lastName" -> personalDetails.lastName,
+        "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
+        "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
+        "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
+        "nino" -> personalDetails.nino
+      )
+
+      val response = personalDetailsPage.bindFromRequest
+
+      response shouldBe Right(personalDetails)
     }
   }
 
   private trait Setup extends ViewSetup {
-    val html: Document = new PersonalDetailsPage().render
+    implicit val completionUrl: CompletionUrl = ValuesGenerators.completionUrls.generateOne
+
+    val personalDetailsPage = new PersonalDetailsPage()
   }
 }

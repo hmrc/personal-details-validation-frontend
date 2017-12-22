@@ -2,6 +2,7 @@
 
 GET        /language/:language        uk.gov.hmrc.language.ChangeLanguageEndpoint.switchTo(language: String)
 
-GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: RelativeUrl)
+GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: CompletionUrl)
 
-GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(journeyId: JourneyId)
+GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl)
+POST       /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submit(completionUrl: CompletionUrl)

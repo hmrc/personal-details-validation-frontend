@@ -16,24 +16,17 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Singleton
 
-import akka.Done
 import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.personaldetailsvalidation.model.{JourneyId, RelativeUrl}
-import uk.gov.hmrc.personaldetailsvalidation.repository.JourneyRepository
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import uk.gov.hmrc.uuid.UUIDProvider
 
 @Singleton
-class PersonalDetailsValidationStartController @Inject()(journeyRepository: JourneyRepository)
-                                                        (implicit uuidProvider: UUIDProvider)
+class PersonalDetailsValidationStartController()
   extends FrontendController {
 
-  def start(completionUrl: RelativeUrl): Action[AnyContent] = Action.async { implicit request =>
-    val journeyId = JourneyId()
-    journeyRepository.persist(journeyId -> completionUrl) map {
-      case Done => Redirect(routes.PersonalDetailsCollectionController.showPage(journeyId))
-    }
+  def start(completionUrl: CompletionUrl): Action[AnyContent] = Action { implicit request =>
+    Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
   }
 }

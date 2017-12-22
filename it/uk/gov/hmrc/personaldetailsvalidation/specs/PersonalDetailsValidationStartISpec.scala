@@ -9,10 +9,11 @@ class PersonalDetailsValidationStartISpec extends BaseIntegrationSpec {
     scenario("Personal Details Validation journey started with a valid completionUrl") {
 
       When("I navigate to /personal-details-validation/start with a valid completionUrl")
-      goTo("/start?completionUrl=/foobar")
+      val completionUrl = "/foobar"
+      goTo("/start?completionUrl=" + completionUrl)
 
       Then("I should get redirected to the Personal Details page")
-      on(PersonalDetailsPage)
+      on(PersonalDetailsPage(completionUrl))
     }
 
     scenario("Personal Details Validation journey started without a completionUrl parameter") {
@@ -21,7 +22,7 @@ class PersonalDetailsValidationStartISpec extends BaseIntegrationSpec {
       goTo("/start")
 
       Then("I should see the error page")
-      on(ErrorPage)
+      on(ErrorPage())
     }
 
     scenario("Personal Details Validation journey started with an invalid completionUrl") {
@@ -30,7 +31,7 @@ class PersonalDetailsValidationStartISpec extends BaseIntegrationSpec {
       goTo("/start?completionUrl=http://foobar")
 
       Then("I should see the error page")
-      on(ErrorPage)
+      on(ErrorPage())
     }
   }
 }

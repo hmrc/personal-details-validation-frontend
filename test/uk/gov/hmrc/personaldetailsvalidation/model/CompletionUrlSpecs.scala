@@ -16,20 +16,20 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-import uk.gov.hmrc.personaldetailsvalidation.model.RelativeUrl.relativeUrl
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 import uk.gov.hmrc.play.test.UnitSpec
 
-class RelativeUrlSpecs extends UnitSpec {
+class CompletionUrlSpecs extends UnitSpec {
 
-  "relativeUrl" should {
+  "completionUrl" should {
 
     "not be allowed to be constructed if parameter value does not start with '/'" in {
-      val Left(exception) =  relativeUrl("foobar")
+      val Left(exception) =  completionUrl("foobar")
       exception shouldBe a[IllegalArgumentException]
     }
 
     "not be allowed to be constructed if parameter value contains '//'" in {
-      val Left(exception) =  relativeUrl("/foobar//baz")
+      val Left(exception) =  completionUrl("/foobar//baz")
       exception shouldBe a[IllegalArgumentException]
     }
   }

@@ -6,5 +6,5 @@ import org.openqa.selenium.firefox.FirefoxDriver
 object SingletonDriver {
   val driver: WebDriver = new FirefoxDriver()
 
-  def closeInstance() = driver.quit()
+  def closeInstance(): Unit = driver.quit()
 }

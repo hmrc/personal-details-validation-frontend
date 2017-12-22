@@ -1,7 +1,7 @@
 package uk.gov.hmrc.personaldetailsvalidation.specs
 
-import org.scalatest.{FeatureSpec, GivenWhenThen}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import org.scalatest.{FeatureSpec, GivenWhenThen}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder

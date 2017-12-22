@@ -16,47 +16,21 @@
 
 package uk.gov.hmrc.personaldetailsvalidation
 
-import java.util.UUID
-
-import cats.data.Validated
 import cats.implicits._
 import play.api.mvc.QueryStringBindable
-import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
-import uk.gov.hmrc.personaldetailsvalidation.model.RelativeUrl.relativeUrl
-import uk.gov.hmrc.personaldetailsvalidation.model.{JourneyId, RelativeUrl}
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 
 package object binders {
 
-  implicit val journeyIdQueryBindable: QueryStringBindable[JourneyId] = new QueryStringBindable[JourneyId] {
+  implicit val completionUrlQueryBinder: QueryStringBindable[CompletionUrl] = new QueryStringBindable[CompletionUrl] {
 
-    override def bind(key: String,
-                      params: Map[String, Seq[String]]): Option[Either[String, JourneyId]] =
-      getValue(key, params)
-        .map(toValidated)
-        .map(toErrorMessageOrJourneyId)
-
-    private def toValidated(v: String): Validated[IllegalArgumentException, JourneyId] =
-      Validated.catchOnly[IllegalArgumentException] {
-        JourneyId(UUID.fromString(v))
-      }
-
-    private def toErrorMessageOrJourneyId(validated: Validated[IllegalArgumentException, JourneyId]): Either[String, JourneyId] =
-      validated.toEither.bimap(
-        exception => bindingError + exception.getMessage,
-        identity
-      )
-
-    override def unbind(key: String, value: JourneyId): String = s"$key=${value.toString()}"
-  }
-
-  implicit val relativeUrlQueryBinder: QueryStringBindable[RelativeUrl] = new QueryStringBindable[RelativeUrl] {
-
-    override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, RelativeUrl]] =
+    override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, CompletionUrl]] =
       getValue(key, params).map { value =>
-        relativeUrl(value).leftMap(_.getMessage)
+        completionUrl(value).leftMap(_.getMessage)
       }
 
-    override def unbind(key: String, value: RelativeUrl): String = s"$key=${value.toString()}"
+    override def unbind(key: String, value: CompletionUrl): String = s"$key=${value.toString()}"
   }
 
   private def getValue(key: String, params: Map[String, Seq[String]]): Option[String] = params.get(key).map(_.head)

@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.json
+package uk.gov.hmrc.personaldetailsvalidation.generators
 
-import java.time.ZoneOffset.UTC
+import org.scalacheck.Gen
+import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
 
-import play.api.libs.json.{JsNumber, JsObject}
-import uk.gov.hmrc.datetime.CurrentTimeProvider
+object ObjectGenerators {
 
-package object ops {
+  import generators.Generators._
+  import ValuesGenerators._
 
-  implicit class JsonObjectOps(target: JsObject) {
-    def withCreatedTimeStamp(fieldName: String = "createdAt")(implicit currentTimeProvider: CurrentTimeProvider) = target + (fieldName -> JsNumber(currentTimeProvider().atZone(UTC).toInstant.toEpochMilli))
-  }
-
+  implicit val personalDetailsObjects: Gen[PersonalDetails] = for {
+    firstName <- nonEmptyStrings
+    lastName <- nonEmptyStrings
+    dateOfBirth <- localDates
+    nino <- ninos
+  } yield PersonalDetails(firstName, lastName, nino, dateOfBirth)
 }

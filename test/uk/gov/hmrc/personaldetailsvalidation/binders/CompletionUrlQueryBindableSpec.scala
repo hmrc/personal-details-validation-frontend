@@ -16,44 +16,44 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.binders
 
-import uk.gov.hmrc.personaldetailsvalidation.model.RelativeUrl
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.test.UnitSpec
 
-class RelativeUrlQueryBindableSpec extends UnitSpec {
+class CompletionUrlQueryBindableSpec extends UnitSpec {
 
-  "relativeUrlQueryBindable.bind" should {
+  "completionUrlQueryBindable.bind" should {
 
     val key = "completionUrl"
 
-    "return RelativeUrl if key is present in params" in {
+    "return CompletionUrl if key is present in params" in {
       val url = "/foo/bar"
 
-      val Some(Right(relativeUrl)) = relativeUrlQueryBinder.bind(key, Map(key -> Seq(url.toString)))
+      val Some(Right(completionUrl)) = completionUrlQueryBinder.bind(key, Map(key -> Seq(url.toString)))
 
-      relativeUrl.value shouldBe url
+      completionUrl.value shouldBe url
     }
 
     "return None if key is not present" in {
-      relativeUrlQueryBinder.bind(key, Map.empty) shouldBe None
+      completionUrlQueryBinder.bind(key, Map.empty) shouldBe None
     }
 
-    "return error if key not a valid relative url" in {
+    "return error if key not a valid completion url" in {
       val url = "foo/bar"
 
-      val result = relativeUrlQueryBinder.bind(key, Map(key -> Seq(url.toString)))
+      val result = completionUrlQueryBinder.bind(key, Map(key -> Seq(url.toString)))
 
       result shouldBe Some(Left(s"$url is not a relative url"))
     }
   }
 
-  "relativeUrlQueryBindable.unbind" should {
+  "completionUrlQueryBindable.unbind" should {
 
     val key = "completionUrl"
 
     "return query param string" in {
       val url = "/foo/bar"
-      val Right(relativeUrl) = RelativeUrl.relativeUrl(url)
-      relativeUrlQueryBinder.unbind(key, relativeUrl) shouldBe s"$key=$url"
+      val Right(completionUrl) = CompletionUrl.completionUrl(url)
+      completionUrlQueryBinder.unbind(key, completionUrl) shouldBe s"$key=$url"
     }
   }
 }

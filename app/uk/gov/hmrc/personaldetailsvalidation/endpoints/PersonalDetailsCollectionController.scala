@@ -19,20 +19,19 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import javax.inject.Inject
 
 import play.api.mvc._
-import uk.gov.hmrc.personaldetailsvalidation.endpoints.verifiers.JourneyIdVerifier
-import uk.gov.hmrc.personaldetailsvalidation.model.JourneyId
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
-
-class PersonalDetailsCollectionController @Inject()(private val page: PersonalDetailsPage,
-                                                    private val journeyIdVerifier: JourneyIdVerifier)
+class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
+                                                    personalDetailsSubmission: FuturedPersonalDetailsSubmission)
   extends FrontendController {
 
-  import journeyIdVerifier._
+  def showPage(implicit completionUrl: CompletionUrl): Action[AnyContent] = Action { implicit request =>
+    Ok(page.render)
+  }
 
-  def showPage(journeyId: JourneyId): Action[AnyContent] = forExisting(journeyId) async { implicit request =>
-    Future.successful(Ok(page.render))
+  def submit(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+    personalDetailsSubmission.bindValidateAndRedirect(completionUrl)
   }
 }
