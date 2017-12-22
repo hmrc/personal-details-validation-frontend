@@ -88,13 +88,8 @@ class PersonalDetailsSubmissionSpec
     val completionUrl = completionUrls.generateOne
 
     val page = mock[PersonalDetailsPage]
-
-    abstract class ConnectorInterpretation extends PersonalDetailsSender[Id]
-    val personalDetailsValidationConnector = mock[ConnectorInterpretation]
-
-    abstract class ValidationIdFetcherInterpretation extends ValidationIdFetcher[Id]
-    val validationIdFetcher = mock[ValidationIdFetcherInterpretation]
-
+    val personalDetailsValidationConnector = mock[PersonalDetailsSender[Id]]
+    val validationIdFetcher = mock[ValidationIdFetcher[Id]]
     val submitter = new PersonalDetailsSubmission[Id](page, personalDetailsValidationConnector, validationIdFetcher)
   }
 }
