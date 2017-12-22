@@ -34,19 +34,19 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.language.{higherKinds, implicitConversions}
 
 @Singleton
-private class FuturedPersonalDetailsSubmitter @Inject()(personalDetailsPage: PersonalDetailsPage,
-                                                        personalDetailsValidationConnector: FuturedPersonalDetailsSender,
-                                                        validationIdFetcher: FuturedValidationIdFetcher)
-  extends PersonalDetailsSubmitter[Future](personalDetailsPage, personalDetailsValidationConnector, validationIdFetcher)
+private class FuturedPersonalDetailsSubmission @Inject()(personalDetailsPage: PersonalDetailsPage,
+                                                         personalDetailsValidationConnector: FuturedPersonalDetailsSender,
+                                                         validationIdFetcher: FuturedValidationIdFetcher)
+  extends PersonalDetailsSubmission[Future](personalDetailsPage, personalDetailsValidationConnector, validationIdFetcher)
 
-private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetailsPage: PersonalDetailsPage,
-                                                                  personalDetailsValidationConnector: PersonalDetailsSender[Interpretation],
-                                                                  validationIdFetcher: ValidationIdFetcher[Interpretation]) {
+private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetailsPage: PersonalDetailsPage,
+                                                                   personalDetailsValidationConnector: PersonalDetailsSender[Interpretation],
+                                                                   validationIdFetcher: ValidationIdFetcher[Interpretation]) {
 
-  def bindAndSend(completionUrl: CompletionUrl)
-                 (implicit request: Request[_],
-                  headerCarrier: HeaderCarrier,
-                  executionContext: ExecutionContext): Interpretation[Result] = {
+  def bindValidateAndRedirect(completionUrl: CompletionUrl)
+                             (implicit request: Request[_],
+                              headerCarrier: HeaderCarrier,
+                              executionContext: ExecutionContext): Interpretation[Result] = {
     for {
       personalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl))
       validationIdFetchUri <- passToValidation(personalDetails)
@@ -67,7 +67,7 @@ private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetail
   private def formRedirect(completionUrl: CompletionUrl)(validationId: String): Result =
     Redirect(s"$completionUrl?validationId=$validationId")
 
-  private implicit def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =
+  private def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =
     EitherT(implicitly[Monad[Interpretation]].pure(maybeValue))
 
   private implicit def toEitherT[L, R](wrappedMaybeValue: Interpretation[Either[L, R]]): EitherT[Interpretation, L, R] =

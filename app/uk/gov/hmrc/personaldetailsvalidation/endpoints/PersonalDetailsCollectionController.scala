@@ -23,10 +23,8 @@ import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
-
 class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
-                                                    personalDetailsSubmitter: FuturedPersonalDetailsSubmitter)
+                                                    personalDetailsSubmission: FuturedPersonalDetailsSubmission)
   extends FrontendController {
 
   def showPage(implicit completionUrl: CompletionUrl): Action[AnyContent] = Action { implicit request =>
@@ -34,6 +32,6 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def submit(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    personalDetailsSubmitter.bindAndSend(completionUrl)
+    personalDetailsSubmission.bindValidateAndRedirect(completionUrl)
   }
 }

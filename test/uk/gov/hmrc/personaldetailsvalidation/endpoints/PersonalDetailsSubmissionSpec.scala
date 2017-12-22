@@ -22,7 +22,7 @@ import cats.Id
 import generators.Generators.Implicits._
 import generators.Generators._
 import org.scalamock.scalatest.MockFactory
-import play.api.mvc.Request
+import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.mvc.Results._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -37,18 +37,18 @@ import uk.gov.hmrc.play.test.UnitSpec
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 
-class PersonalDetailsSubmitterSpec
+class PersonalDetailsSubmissionSpec
   extends UnitSpec
     with MockFactory {
 
-  "bindAndSend" should {
+  "bindValidateAndRedirect" should {
 
     "return BAD_REQUEST when form binds with errors" in new Setup {
       (page.bindFromRequest(_: Request[_], _: CompletionUrl))
         .expects(request, completionUrl)
         .returning(Left(BadRequest("page with errors")))
 
-      val result = submitter.bindAndSend(completionUrl)
+      val result = submitter.bindValidateAndRedirect(completionUrl)
 
       status(result) shouldBe BAD_REQUEST
     }
@@ -73,7 +73,7 @@ class PersonalDetailsSubmitterSpec
         .expects(locationUrl, headerCarrier, executionContext)
         .returning(validationId)
 
-      val result = submitter.bindAndSend(completionUrl)
+      val result = submitter.bindValidateAndRedirect(completionUrl)
 
       status(result) shouldBe SEE_OTHER
       result.header.headers(LOCATION) shouldBe s"$completionUrl?validationId=$validationId"
@@ -81,8 +81,8 @@ class PersonalDetailsSubmitterSpec
   }
 
   private trait Setup {
-    implicit val request = FakeRequest()
-    implicit val headerCarrier = HeaderCarrier()
+    implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
+    implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
     val completionUrl = completionUrls.generateOne
 
@@ -94,6 +94,6 @@ class PersonalDetailsSubmitterSpec
     abstract class ValidationIdFetcherInterpretation extends ValidationIdFetcher[Id]
     val validationIdFetcher = mock[ValidationIdFetcherInterpretation]
 
-    val submitter = new PersonalDetailsSubmitter[Id](page, personalDetailsValidationConnector, validationIdFetcher)
+    val submitter = new PersonalDetailsSubmission[Id](page, personalDetailsValidationConnector, validationIdFetcher)
   }
 }

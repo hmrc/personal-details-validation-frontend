@@ -58,10 +58,11 @@ class PersonalDetailsCollectionControllerSpec
 
   "submit" should {
 
-    "pass the outcome of validateUserDetails" in new Setup {
+    "pass the outcome of bindValidateAndRedirect" in new Setup {
+
       val redirectUrl = s"${completionUrl.value}?validationId=${UUID.randomUUID()}"
 
-      (personalDetailsSubmitter.bindAndSend(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+      (personalDetailsSubmitter.bindValidateAndRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
         .expects(completionUrl, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returning(Future.successful(Redirect(redirectUrl)))
 
@@ -78,7 +79,7 @@ class PersonalDetailsCollectionControllerSpec
 
     val page: PersonalDetailsPage = mock[PersonalDetailsPage]
 
-    val personalDetailsSubmitter = mock[FuturedPersonalDetailsSubmitter]
+    val personalDetailsSubmitter = mock[FuturedPersonalDetailsSubmission]
 
     val controller = new PersonalDetailsCollectionController(page, personalDetailsSubmitter)
   }
