@@ -49,8 +49,8 @@ private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetail
                   executionContext: ExecutionContext): Interpretation[Result] = {
     for {
       personalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl))
-      validationIdUrl <- passToValidation(personalDetails)
-      validationId <- fetchValidationId(validationIdUrl)
+      validationIdFetchUri <- passToValidation(personalDetails)
+      validationId <- fetchValidationId(validationIdFetchUri)
     } yield validationId
   }.value.fold(identity, formRedirect(completionUrl))
 
@@ -59,10 +59,10 @@ private class PersonalDetailsSubmitter[Interpretation[_] : Monad](personalDetail
                                executionContext: ExecutionContext): EitherT[Interpretation, Result, URI] =
     personalDetailsValidationConnector.passToValidation(personalDetails).map(Either.right[Result, URI])
 
-  private def fetchValidationId(continueUri: URI)
+  private def fetchValidationId(validationIdFetchUri: URI)
                                (implicit headerCarrier: HeaderCarrier,
                                 executionContext: ExecutionContext): EitherT[Interpretation, Result, String] =
-    validationIdFetcher.fetchValidationId(continueUri).map(Either.right[Result, String])
+    validationIdFetcher.fetchValidationId(validationIdFetchUri).map(Either.right[Result, String])
 
   private def formRedirect(completionUrl: CompletionUrl)(validationId: String): Result =
     Redirect(s"$completionUrl?validationId=$validationId")

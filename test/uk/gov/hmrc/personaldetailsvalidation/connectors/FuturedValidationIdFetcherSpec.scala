@@ -42,22 +42,22 @@ class FuturedValidationIdFetcherSpec
 
       val validationId = Gen.uuid.generateOne.toString
 
-      expectGet(toUrl = s"$baseUrl$uri")
+      expectGet(toUrl = s"$baseUrl$endpointUri")
         .returning(status = OK, body = Json.obj("id" -> validationId))
 
-      connector.fetchValidationId(uri).futureValue shouldBe validationId
+      connector.fetchValidationId(endpointUri).futureValue shouldBe validationId
     }
 
     s"throw a BadGatewayException when there is no 'id' " +
       "in the response from GET to the given uri" in new Setup {
 
-      expectGet(toUrl = s"$baseUrl$uri")
+      expectGet(toUrl = s"$baseUrl$endpointUri")
         .returning(status = OK, body = JsNull)
 
       val exception = intercept[BadGatewayException] {
-        await(connector.fetchValidationId(uri))
+        await(connector.fetchValidationId(endpointUri))
       }
-      exception.message shouldBe s"No 'id' property in the json response from GET $baseUrl$uri"
+      exception.message shouldBe s"No 'id' property in the json response from GET $baseUrl$endpointUri"
       exception.responseCode shouldBe BAD_GATEWAY
     }
 
@@ -65,22 +65,22 @@ class FuturedValidationIdFetcherSpec
 
       s"throw a BadGatewayException when GET to the given uri returns $unexpectedStatus" in new Setup {
 
-        expectGet(toUrl = s"$baseUrl$uri")
+        expectGet(toUrl = s"$baseUrl$endpointUri")
           .returning(unexpectedStatus, "some response body")
 
         val exception = intercept[BadGatewayException] {
-          await(connector.fetchValidationId(uri))
+          await(connector.fetchValidationId(endpointUri))
         }
-        exception.message shouldBe s"Unexpected response from GET $baseUrl$uri with status: '$unexpectedStatus' and body: some response body"
+        exception.message shouldBe s"Unexpected response from GET $baseUrl$endpointUri with status: '$unexpectedStatus' and body: some response body"
         exception.responseCode shouldBe BAD_GATEWAY
       }
     }
   }
 
   private trait Setup extends HttpClientStubSetup {
-    implicit val headerCarrier = HeaderCarrier()
+    implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-    val uri = uris.generateOne
+    val endpointUri = uris.generateOne
 
     val baseUrl = "http://host"
     private val connectorConfig = new ConnectorConfig(mock[Configuration]) {

@@ -29,7 +29,7 @@ import scala.language.higherKinds
 
 trait ValidationIdFetcher[Interpretation[_]] {
 
-  def fetchValidationId(url: URI)
+  def fetchValidationId(endpointUri: URI)
                        (implicit headerCarrier: HeaderCarrier,
                         executionContext: ExecutionContext): Interpretation[String]
 }
@@ -41,10 +41,10 @@ class FuturedValidationIdFetcher @Inject()(httpClient: HttpClient,
 
   import connectorConfig.personalDetailsValidationBaseUrl
 
-  override def fetchValidationId(uri: URI)
+  override def fetchValidationId(endpointUri: URI)
                                 (implicit headerCarrier: HeaderCarrier,
                                  executionContext: ExecutionContext): Future[String] =
-    httpClient.GET(s"$personalDetailsValidationBaseUrl$uri")
+    httpClient.GET(s"$personalDetailsValidationBaseUrl$endpointUri")
 
   private implicit val validationIdHttpReads: HttpReads[String] = new HttpReads[String] {
     override def read(method: String, url: String, response: HttpResponse): String = response.status match {
