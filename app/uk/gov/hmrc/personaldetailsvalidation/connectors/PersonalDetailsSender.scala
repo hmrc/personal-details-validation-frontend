@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
-trait PersonalDetailsSender[Interpretation[_]] {
+private[personaldetailsvalidation] trait PersonalDetailsSender[Interpretation[_]] {
 
   def passToValidation(personalDetails: PersonalDetails)
                       (implicit headerCarrier: HeaderCarrier,
@@ -37,8 +37,8 @@ trait PersonalDetailsSender[Interpretation[_]] {
 }
 
 @Singleton
-class FuturedPersonalDetailsSender @Inject()(httpClient: HttpClient,
-                                             connectorConfig: ConnectorConfig)
+private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(httpClient: HttpClient,
+                                                                                connectorConfig: ConnectorConfig)
   extends PersonalDetailsSender[Future] {
 
   import connectorConfig.personalDetailsValidationBaseUrl

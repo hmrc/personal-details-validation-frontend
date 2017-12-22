@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
-trait ValidationIdFetcher[Interpretation[_]] {
+private[personaldetailsvalidation] trait ValidationIdFetcher[Interpretation[_]] {
 
   def fetchValidationId(endpointUri: URI)
                        (implicit headerCarrier: HeaderCarrier,
@@ -35,8 +35,8 @@ trait ValidationIdFetcher[Interpretation[_]] {
 }
 
 @Singleton
-class FuturedValidationIdFetcher @Inject()(httpClient: HttpClient,
-                                           connectorConfig: ConnectorConfig)
+private[personaldetailsvalidation] class FuturedValidationIdFetcher @Inject()(httpClient: HttpClient,
+                                                                              connectorConfig: ConnectorConfig)
   extends ValidationIdFetcher[Future] {
 
   import connectorConfig.personalDetailsValidationBaseUrl
