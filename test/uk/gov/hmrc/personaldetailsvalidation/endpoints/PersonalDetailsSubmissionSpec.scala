@@ -22,6 +22,7 @@ import cats.Id
 import generators.Generators.Implicits._
 import generators.Generators._
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -39,11 +40,15 @@ import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 
 class PersonalDetailsSubmissionSpec
   extends UnitSpec
-    with MockFactory {
+    with MockFactory
+    with TableDrivenPropertyChecks {
 
   "bindValidateAndRedirect" should {
 
     "return BAD_REQUEST when form binds with errors" in new Setup {
+
+      val completionUrl = completionUrls.generateOne
+
       (page.bindFromRequest(_: Request[_], _: CompletionUrl))
         .expects(request, completionUrl)
         .returning(Left(Html("page with errors")))
@@ -54,30 +59,33 @@ class PersonalDetailsSubmissionSpec
       contentAsString(result) shouldBe "page with errors"
     }
 
+
     "bind the request to PersonalDetails, " +
       "post it to the validation service, " +
       "fetch validationId from the validation service and " +
-      "return redirect to completionUrl with appended validationId query parameter" in new Setup {
+      "return redirect to completionUrl with appended validationId query parameter" in new Setup with HappyTestCaseScenarios {
 
-      val personalDetails = personalDetailsObjects.generateOne
-      (page.bindFromRequest(_: Request[_], _: CompletionUrl))
-        .expects(request, completionUrl)
-        .returning(Right(personalDetails))
+      forAll(completionUrlScenarios) { case (completionUrl, validationId, expectedRedirectUrl) =>
 
-      val locationUrl = uris.generateOne
-      (personalDetailsValidationConnector.passToValidation(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(personalDetails, headerCarrier, executionContext)
-        .returning(locationUrl)
+        val personalDetails = personalDetailsObjects.generateOne
+        (page.bindFromRequest(_: Request[_], _: CompletionUrl))
+          .expects(request, completionUrl)
+          .returning(Right(personalDetails))
 
-      val validationId = nonEmptyStrings.generateOne
-      (validationIdFetcher.fetchValidationId(_: URI)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(locationUrl, headerCarrier, executionContext)
-        .returning(validationId)
+        val locationUrl = uris.generateOne
+        (personalDetailsValidationConnector.passToValidation(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(personalDetails, headerCarrier, executionContext)
+          .returning(locationUrl)
 
-      val result = submitter.bindValidateAndRedirect(completionUrl)
+        (validationIdFetcher.fetchValidationId(_: URI)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(locationUrl, headerCarrier, executionContext)
+          .returning(validationId)
 
-      status(result) shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe s"$completionUrl?validationId=$validationId"
+        val result = submitter.bindValidateAndRedirect(completionUrl)
+
+        status(result) shouldBe SEE_OTHER
+        result.header.headers(LOCATION) shouldBe expectedRedirectUrl
+      }
     }
   }
 
@@ -85,11 +93,36 @@ class PersonalDetailsSubmissionSpec
     implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-    val completionUrl = completionUrls.generateOne
-
     val page = mock[PersonalDetailsPage]
     val personalDetailsValidationConnector = mock[PersonalDetailsSender[Id]]
     val validationIdFetcher = mock[ValidationIdFetcher[Id]]
     val submitter = new PersonalDetailsSubmission[Id](page, personalDetailsValidationConnector, validationIdFetcher)
+  }
+
+  private trait HappyTestCaseScenarios {
+
+    val completionUrlScenarios = Tables.Table(
+      ("given completion url", "validationId", "expected redirect url"),
+      row(),
+      row(withCompletionUrlQueryParameters = "param=value")
+    )
+
+    private def row(withCompletionUrlQueryParameters: String*): (CompletionUrl, String, String) = {
+      for {
+        completionUrl <- completionUrls
+        validationId <- nonEmptyStrings
+      } yield {
+        val completionUrlWithQueryParams = completionUrl.copy(s"${completionUrl.value}${withCompletionUrlQueryParameters.asUrlPart}")
+        val redirectUrlQueryParams = (withCompletionUrlQueryParameters :+ s"validationId=$validationId").asUrlPart
+        (completionUrlWithQueryParams, validationId, s"$completionUrl$redirectUrlQueryParams")
+      }
+    }.generateOne
+
+    private implicit class QueryParams(queryParams: Seq[String]) {
+      lazy val asUrlPart: String = queryParams match {
+        case Nil => ""
+        case params => s"?${params.mkString("&")}"
+      }
+    }
   }
 }

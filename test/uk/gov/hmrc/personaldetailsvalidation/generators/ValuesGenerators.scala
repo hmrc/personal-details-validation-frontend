@@ -26,13 +26,13 @@ object ValuesGenerators {
 
   import generators.Generators._
 
-  implicit val completionUrls: Gen[CompletionUrl] = Gen.nonEmptyListOf(nonEmptyStrings)
+  implicit val completionUrls: Gen[CompletionUrl] = Gen.nonEmptyListOf(strings(10))
     .map(_.mkString("/"))
     .map { path =>
       completionUrl(s"/$path").fold(throw _, identity)
     }
 
-  implicit val uris: Gen[URI] = Gen.nonEmptyListOf(nonEmptyStrings)
+  implicit val uris: Gen[URI] = Gen.nonEmptyListOf(strings(10))
     .map(_.mkString("/"))
     .map(path => new URI(s"/$path"))
 

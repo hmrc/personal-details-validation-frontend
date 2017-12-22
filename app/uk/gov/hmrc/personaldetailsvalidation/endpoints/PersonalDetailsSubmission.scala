@@ -69,7 +69,10 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
     validationIdFetcher.fetchValidationId(validationIdFetchUri).map(Either.right[Html, String])
 
   private def formRedirect(validationId: String, completionUrl: CompletionUrl): Result =
-    Redirect(s"$completionUrl?validationId=$validationId")
+    Option(new URI(completionUrl.value).getQuery) match {
+      case None => Redirect(s"$completionUrl?validationId=$validationId")
+      case _ => Redirect(s"$completionUrl&validationId=$validationId")
+    }
 
   private def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =
     EitherT(implicitly[Monad[Interpretation]].pure(maybeValue))
