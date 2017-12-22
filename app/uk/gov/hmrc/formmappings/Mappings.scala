@@ -25,8 +25,14 @@ object Mappings {
 
   def mandatoryText(error: => String): Mapping[String] =
     optional(text)
+      .transform[Option[String]](emptyStringAsNone, emptyStringAsNone)
       .verifying(error, _.isDefined)
       .transform[String](_.get, Some.apply)
+
+  private def emptyStringAsNone(maybeValue: Option[String]): Option[String] = maybeValue.map(_.trim).flatMap {
+    case "" => Option.empty[String]
+    case nonEmpty => Some(nonEmpty)
+  }
 
   def mandatoryLocalDate(formatError: => String): Mapping[LocalDate] =
     LocalDateMapping()(formatError)

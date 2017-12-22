@@ -35,7 +35,7 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   import uk.gov.hmrc.formmappings.Mappings._
 
   private val form: Form[PersonalDetails] = Form(mapping(
-    "firstName" -> mandatoryText("undefined"),
+    "firstName" -> mandatoryText("personal-details.firstname.required"),
     "lastName" -> mandatoryText("undefined"),
     "nino" -> mandatoryText("undefined"),
     "dateOfBirth" -> mandatoryLocalDate("undefined")
@@ -49,6 +49,6 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
                       completionUrl: CompletionUrl): Either[Html, PersonalDetails] =
     form.bindFromRequest().fold(
       formWithErrors => Left(personal_details(formWithErrors, completionUrl)),
-      Right(_)
+      personalDetails => Right(personalDetails)
     )
 }

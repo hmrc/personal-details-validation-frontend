@@ -5,6 +5,7 @@ personal-details.faded-heading=Cadarnhau pwy ydych
 personal-details.header=Nodwch eich manylion
 personal-details.paragraph=Mae hyn o gymorth i ni gadarnhau pwy ydych, fel ein bod yn gwybod pa gwestiynau i''w gofyn i chi.
 personal-details.firstname=Enw cyntaf
+personal-details.firstname.required=Nodwch eich enw cyntaf.
 personal-details.lastname=Enw olaf
 personal-details.nino=Rhif Yswiriant Gwladol
 personal-details.nino.hint=Mae hwn ar eich cerdyn Yswiriant Gwladol, llythyr ynghylch budd-daliadau, slip talu neu P60.

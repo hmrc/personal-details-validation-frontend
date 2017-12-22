@@ -80,8 +80,7 @@ class PersonalDetailsPageSpec
 
   "bindFromRequest" should {
 
-    "return PersonalDetails when data provided on the form is valid" in new Setup {
-      val personalDetails = personalDetailsObjects.generateOne
+    "return PersonalDetails when data provided on the form is valid" in new Setup with BindFromRequestTooling {
 
       implicit val requestWithFormData = request.withFormUrlEncodedBody(
         "firstName" -> personalDetails.firstName,
@@ -96,11 +95,35 @@ class PersonalDetailsPageSpec
 
       response shouldBe Right(personalDetails)
     }
+
+    "return 'personal-details.firstname.required' error message when first name is not provided" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = request.withFormUrlEncodedBody(
+        "firstName" -> " ",
+        "lastName" -> personalDetails.lastName,
+        "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
+        "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
+        "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
+        "nino" -> personalDetails.nino
+      )
+
+      val Left(response) = personalDetailsPage.bindFromRequest
+
+      val page: Document = response
+
+      val firstNameLabel = page.select("label[for=firstName][class=form-field--error]")
+      firstNameLabel.isEmpty shouldBe false
+      firstNameLabel.select(".error-notification").text() shouldBe messages("personal-details.firstname.required")
+    }
   }
 
   private trait Setup extends ViewSetup {
     implicit val completionUrl: CompletionUrl = ValuesGenerators.completionUrls.generateOne
 
     val personalDetailsPage = new PersonalDetailsPage()
+  }
+
+  private trait BindFromRequestTooling {
+    val personalDetails = personalDetailsObjects.generateOne
   }
 }

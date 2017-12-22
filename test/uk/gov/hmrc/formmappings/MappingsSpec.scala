@@ -48,11 +48,25 @@ class MappingsSpec
       bindResult shouldBe Left(Seq(FormError("field", "error")))
     }
 
+    "return the given error if value for the given key is empty" in {
+      val bindResult = mapping("field" -> mandatoryText("error"))(identity)(Some.apply)
+        .bind(Map("field" -> " "))
+
+      bindResult shouldBe Left(Seq(FormError("field", "error")))
+    }
+
     "unbind the given value" in {
       val unboundValue = mapping("field" -> mandatoryText("error"))(identity)(Some.apply)
         .unbind("some text")
 
       unboundValue shouldBe Map("field" -> "some text")
+    }
+
+    "unbind given empty value to None" in {
+      val unboundValue = mapping("field" -> mandatoryText("error"))(identity)(Some.apply)
+        .unbind(" ")
+
+      unboundValue shouldBe Map.empty
     }
   }
 

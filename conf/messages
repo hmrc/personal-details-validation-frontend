@@ -5,6 +5,7 @@ personal-details.faded-heading=Confirm your identity
 personal-details.header=Enter your details
 personal-details.paragraph=This is to help us confirm who you are, so we know what questions to ask you.
 personal-details.firstname=First name
+personal-details.firstname.required=Enter your first name.
 personal-details.lastname=Last name
 personal-details.nino=National Insurance number
 personal-details.nino.hint=It''s on your National Insurance card, benefit letter, payslip or P60.
