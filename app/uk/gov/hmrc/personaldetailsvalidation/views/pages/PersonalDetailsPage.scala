@@ -37,7 +37,7 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   private val form: Form[PersonalDetails] = Form(mapping(
     "firstName" -> mandatoryText("personal-details.firstname.required"),
     "lastName" -> mandatoryText("personal-details.lastname.required"),
-    "nino" -> mandatoryText("undefined"),
+    "nino" -> mandatoryText("personal-details.nino.required"),
     "dateOfBirth" -> mandatoryLocalDate("undefined")
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
