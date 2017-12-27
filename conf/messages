@@ -7,6 +7,7 @@ personal-details.paragraph=This is to help us confirm who you are, so we know wh
 personal-details.firstname=First name
 personal-details.firstname.required=Enter your first name.
 personal-details.lastname=Last name
+personal-details.lastname.required=Enter your last name.
 personal-details.nino=National Insurance number
 personal-details.nino.hint=It''s on your National Insurance card, benefit letter, payslip or P60.
 personal-details.nino.hint.example=For example, QQ123456C

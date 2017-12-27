@@ -96,7 +96,8 @@ class PersonalDetailsPageSpec
       response shouldBe Right(personalDetails)
     }
 
-    "return 'personal-details.firstname.required' error message when first name is not provided" in new Setup with BindFromRequestTooling {
+    "return 'personal-details.firstname.required' error message " +
+      "when first name is not provided" in new Setup with BindFromRequestTooling {
 
       implicit val requestWithFormData = request.withFormUrlEncodedBody(
         "firstName" -> " ",
@@ -114,6 +115,27 @@ class PersonalDetailsPageSpec
       val firstNameLabel = page.select("label[for=firstName][class=form-field--error]")
       firstNameLabel.isEmpty shouldBe false
       firstNameLabel.select(".error-notification").text() shouldBe messages("personal-details.firstname.required")
+    }
+
+    "return 'personal-details.lastname.required' error message " +
+      "when last name is not provided" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = request.withFormUrlEncodedBody(
+        "firstName" -> personalDetails.firstName,
+        "lastName" -> " ",
+        "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
+        "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
+        "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
+        "nino" -> personalDetails.nino
+      )
+
+      val Left(response) = personalDetailsPage.bindFromRequest
+
+      val page: Document = response
+
+      val lastNameLabel = page.select("label[for=lastName][class=form-field--error]")
+      lastNameLabel.isEmpty shouldBe false
+      lastNameLabel.select(".error-notification").text() shouldBe messages("personal-details.lastname.required")
     }
   }
 
