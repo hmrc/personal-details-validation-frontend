@@ -83,8 +83,8 @@ class PersonalDetailsPageSpec
     "return PersonalDetails when data provided on the form is valid" in new Setup with BindFromRequestTooling {
 
       implicit val requestWithFormData = request.withFormUrlEncodedBody(
-        "firstName" -> personalDetails.firstName,
-        "lastName" -> personalDetails.lastName,
+        "firstName" -> personalDetails.firstName.toString(),
+        "lastName" -> personalDetails.lastName.toString(),
         "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
         "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
         "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
@@ -101,7 +101,7 @@ class PersonalDetailsPageSpec
 
       implicit val requestWithFormData = request.withFormUrlEncodedBody(
         "firstName" -> " ",
-        "lastName" -> personalDetails.lastName,
+        "lastName" -> personalDetails.lastName.toString(),
         "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
         "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
         "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
@@ -121,7 +121,7 @@ class PersonalDetailsPageSpec
       "when last name is blank" in new Setup with BindFromRequestTooling {
 
       implicit val requestWithFormData = request.withFormUrlEncodedBody(
-        "firstName" -> personalDetails.firstName,
+        "firstName" -> personalDetails.firstName.toString(),
         "lastName" -> " ",
         "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
         "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
@@ -142,8 +142,8 @@ class PersonalDetailsPageSpec
       "when nino is blank" in new Setup with BindFromRequestTooling {
 
       implicit val requestWithFormData = request.withFormUrlEncodedBody(
-        "firstName" -> personalDetails.firstName,
-        "lastName" -> personalDetails.lastName,
+        "firstName" -> personalDetails.firstName.toString(),
+        "lastName" -> personalDetails.lastName.toString(),
         "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
         "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
         "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
@@ -163,8 +163,8 @@ class PersonalDetailsPageSpec
       "when nino is invalid" in new Setup with BindFromRequestTooling {
 
       implicit val requestWithFormData = request.withFormUrlEncodedBody(
-        "firstName" -> personalDetails.firstName,
-        "lastName" -> personalDetails.lastName,
+        "firstName" -> personalDetails.firstName.toString(),
+        "lastName" -> personalDetails.lastName.toString(),
         "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
         "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
         "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,

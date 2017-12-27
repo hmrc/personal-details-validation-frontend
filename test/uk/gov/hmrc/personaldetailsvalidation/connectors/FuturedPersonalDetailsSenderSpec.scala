@@ -85,10 +85,10 @@ class FuturedPersonalDetailsSenderSpec
     val personalDetails = personalDetailsObjects.generateOne
 
     val payload = Json.obj(
-      "firstName" -> personalDetails.firstName,
-      "lastName" -> personalDetails.lastName,
+      "firstName" -> personalDetails.firstName.toString(),
+      "lastName" -> personalDetails.lastName.toString(),
       "dateOfBirth" -> personalDetails.dateOfBirth,
-      "nino" -> personalDetails.nino
+      "nino" -> personalDetails.nino.toString()
     )
 
     private val connectorConfig = new ConnectorConfig(mock[Configuration]) {

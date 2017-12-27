@@ -20,8 +20,8 @@ import java.net.URI
 
 import org.scalacheck.Gen
 import uk.gov.hmrc.domain.{Generator, Nino}
-import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, NonEmptyString}
 
 object ValuesGenerators {
 
@@ -36,6 +36,9 @@ object ValuesGenerators {
   implicit val uris: Gen[URI] = Gen.nonEmptyListOf(strings(10))
     .map(_.mkString("/"))
     .map(path => new URI(s"/$path"))
+
+  implicit val nonEmptyStringObjects: Gen[NonEmptyString] =
+    nonEmptyStrings.map(NonEmptyString.apply)
 
   implicit val ninos: Gen[Nino] = {
     val ninoGenerator = new Generator()

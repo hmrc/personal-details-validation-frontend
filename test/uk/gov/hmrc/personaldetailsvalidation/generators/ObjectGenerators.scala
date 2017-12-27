@@ -25,8 +25,8 @@ object ObjectGenerators {
   import ValuesGenerators._
 
   implicit val personalDetailsObjects: Gen[PersonalDetails] = for {
-    firstName <- nonEmptyStrings
-    lastName <- nonEmptyStrings
+    firstName <- nonEmptyStringObjects
+    lastName <- nonEmptyStringObjects
     dateOfBirth <- localDates
     nino <- ninos
   } yield PersonalDetails(firstName, lastName, nino, dateOfBirth)

@@ -41,6 +41,13 @@ class MappingsSpec
       bindResult shouldBe Right("some text")
     }
 
+    "trim and bind successfully for a given String value" in {
+      val bindResult = mapping("field" -> mandatoryText("error"))(identity)(Some.apply)
+        .bind(Map("field" -> " some text  "))
+
+      bindResult shouldBe Right("some text")
+    }
+
     "return the given error if no entry for the field is given" in {
       val bindResult = mapping("field" -> mandatoryText("error"))(identity)(Some.apply)
         .bind(Map.empty)

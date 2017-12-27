@@ -16,11 +16,8 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-import java.time.LocalDate
+import uk.gov.voa.valuetype.StringValue
 
-import uk.gov.hmrc.domain.Nino
-
-case class PersonalDetails(firstName: NonEmptyString,
-                           lastName: NonEmptyString,
-                           nino: Nino,
-                           dateOfBirth: LocalDate)
+case class NonEmptyString(value: String) extends StringValue {
+  require(value.trim.length > 0, s"$typeName cannot be empty")
+}

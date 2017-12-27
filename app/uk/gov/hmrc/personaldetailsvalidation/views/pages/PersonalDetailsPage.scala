@@ -24,7 +24,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, NonEmptyString, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.personal_details
 import uk.gov.hmrc.views.ViewConfig
 
@@ -38,8 +38,10 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   import uk.gov.hmrc.formmappings.Mappings._
 
   private val form: Form[PersonalDetails] = Form(mapping(
-    "firstName" -> mandatoryText("personal-details.firstname.required"),
-    "lastName" -> mandatoryText("personal-details.lastname.required"),
+    "firstName" -> mandatoryText("personal-details.firstname.required")
+      .transform[NonEmptyString](NonEmptyString.apply, _.toString),
+    "lastName" -> mandatoryText("personal-details.lastname.required")
+      .transform[NonEmptyString](NonEmptyString.apply, _.toString),
     "nino" -> mandatoryText("personal-details.nino.required")
       .verifying("personal-details.nino.invalid", maybeNino => Try(Nino(maybeNino)).isSuccess)
       .transform[Nino](Nino.apply, _.toString),
