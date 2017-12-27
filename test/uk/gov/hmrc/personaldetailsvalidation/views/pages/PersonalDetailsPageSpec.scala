@@ -88,7 +88,7 @@ class PersonalDetailsPageSpec
         "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
         "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
         "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
-        "nino" -> personalDetails.nino
+        "nino" -> personalDetails.nino.toString()
       )
 
       val response = personalDetailsPage.bindFromRequest
@@ -105,7 +105,7 @@ class PersonalDetailsPageSpec
         "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
         "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
         "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
-        "nino" -> personalDetails.nino
+        "nino" -> personalDetails.nino.toString()
       )
 
       val Left(response) = personalDetailsPage.bindFromRequest
@@ -126,7 +126,7 @@ class PersonalDetailsPageSpec
         "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
         "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
         "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
-        "nino" -> personalDetails.nino
+        "nino" -> personalDetails.nino.toString()
       )
 
       val Left(response) = personalDetailsPage.bindFromRequest
@@ -157,6 +157,27 @@ class PersonalDetailsPageSpec
       val ninoLabel = page.select("label[for=nino][class=form-field--error]")
       ninoLabel.isEmpty shouldBe false
       ninoLabel.select(".error-notification").text() shouldBe messages("personal-details.nino.required")
+    }
+
+    "return 'personal-details.nino.invalid' error message " +
+      "when nino is invalid" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = request.withFormUrlEncodedBody(
+        "firstName" -> personalDetails.firstName,
+        "lastName" -> personalDetails.lastName,
+        "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
+        "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
+        "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
+        "nino" -> "AA11"
+      )
+
+      val Left(response) = personalDetailsPage.bindFromRequest
+
+      val page: Document = response
+
+      val ninoLabel = page.select("label[for=nino][class=form-field--error]")
+      ninoLabel.isEmpty shouldBe false
+      ninoLabel.select(".error-notification").text() shouldBe messages("personal-details.nino.invalid")
     }
   }
 

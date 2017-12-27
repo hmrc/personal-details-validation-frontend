@@ -23,9 +23,12 @@ import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.personal_details
 import uk.gov.hmrc.views.ViewConfig
+
+import scala.util.Try
 
 @Singleton
 private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,
@@ -37,7 +40,9 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   private val form: Form[PersonalDetails] = Form(mapping(
     "firstName" -> mandatoryText("personal-details.firstname.required"),
     "lastName" -> mandatoryText("personal-details.lastname.required"),
-    "nino" -> mandatoryText("personal-details.nino.required"),
+    "nino" -> mandatoryText("personal-details.nino.required")
+      .verifying("personal-details.nino.invalid", maybeNino => Try(Nino(maybeNino)).isSuccess)
+      .transform[Nino](Nino.apply, _.toString),
     "dateOfBirth" -> mandatoryLocalDate("undefined")
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 

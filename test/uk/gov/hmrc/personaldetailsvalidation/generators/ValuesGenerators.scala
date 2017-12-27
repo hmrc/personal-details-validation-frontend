@@ -19,6 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.generators
 import java.net.URI
 
 import org.scalacheck.Gen
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 
@@ -36,6 +37,8 @@ object ValuesGenerators {
     .map(_.mkString("/"))
     .map(path => new URI(s"/$path"))
 
-  implicit val ninos: Gen[String] = nonEmptyStrings
-
+  implicit val ninos: Gen[Nino] = {
+    val ninoGenerator = new Generator()
+    Gen.identifier.map(_ => ninoGenerator.nextNino)
+  }
 }
