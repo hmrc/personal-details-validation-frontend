@@ -18,6 +18,13 @@ personal-details.dateOfBirth.hint=For example, 31 3 1980
 personal-details.dateOfBirth.day=Day
 personal-details.dateOfBirth.month=Month
 personal-details.dateOfBirth.year=Year
+personal-details.dateOfBirth.invalid=Enter your date of birth in the correct format. For example, 31 3 1980.
+personal-details.dateOfBirth.day.required=Enter the day of the month from your date of birth.
+personal-details.dateOfBirth.day.invalid=The date you have entered is invalid. Enter a number between 1 and 31.
+personal-details.dateOfBirth.month.required=Enter the month from your date of birth.
+personal-details.dateOfBirth.month.invalid=The month you have entered is invalid. Enter a number between 1 and 12.
+personal-details.dateOfBirth.year.required=Enter the year from your date of birth.
+personal-details.dateOfBirth.year.invalid=The year you have entered is invalid. Enter the year you were born.
 
 # errors
 global.error.InternalServerError500.title=Sorry, we are experiencing technical difficulties

@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.formmappings
 
-import java.time.LocalDate
+import java.time.{LocalDate, Year}
 
 import generators.Generators.Implicits._
 import generators.Generators._
@@ -77,86 +77,121 @@ class MappingsSpec
     }
   }
 
-  "mandatoryLocalDate" should {
+  "mandatoryLocalDate.bind" should {
 
-    "bind successfully when given year, month and day are valid" in new MandatoryLocalDateTestCase {
+    "bind successfully when given year, month and day are valid" in new DateMappingSetup with DateMappingTools {
 
-      forAll { localDate: LocalDate =>
+      forAll { date: LocalDate =>
 
         val bindResult = dateMapping.bind(Map(
-          "date.year" -> localDate.getYear.toString,
-          "date.month" -> localDate.getMonthValue.toString,
-          "date.day" -> localDate.getDayOfMonth.toString
+          "date.year" -> date.getYear.toString,
+          "date.month" -> date.getMonthValue.toString,
+          "date.day" -> date.getDayOfMonth.toString
         ))
 
-        bindResult shouldBe Right(localDate)
+        bindResult shouldBe Right(date)
       }
     }
 
-    "return the given error if there are missing date parts" in new MandatoryLocalDateTestCase {
+    "return the 'required' error if there are missing date parts" in new DateMappingSetup with DateMappingTools {
 
-      forAll(Gen.choose(1, 3), localDates) { (partsNumber, localDate) =>
+      forAll(Gen.oneOf(1, 2, 3), validDateParts) { (numberOfPartsToRemove, allParts) =>
 
-        val allParts = Seq(
-          "date.year" -> localDate.getYear.toString,
-          "date.month" -> localDate.getMonthValue.toString,
-          "date.day" -> localDate.getDayOfMonth.toString
-        )
-        val selectedParts = (1 to partsNumber).foldLeft(allParts) { (partsLeft, _) =>
+        val selectedParts = (1 to numberOfPartsToRemove).foldLeft(allParts) { (partsLeft, _) =>
           val partToRemove = Gen.oneOf(partsLeft).generateOne
           partsLeft filterNot (_ == partToRemove)
         }
 
         val bindResult = dateMapping.bind(selectedParts.toMap)
 
-        bindResult shouldBe Left(Seq(FormError("date", "error.missing")))
+        bindResult shouldBe Left(
+          (allParts diff selectedParts)
+            .map(toPartName)
+            .map(toErrorKeySuffixed("required"))
+            .map(toFormError)
+        )
       }
     }
 
-    "return the given error if date parts are not parseable to Int" in new MandatoryLocalDateTestCase {
+    "return the 'required' error if there are blank values for parts" in new DateMappingSetup with DateMappingTools {
 
-      forAll(Gen.choose(1, 3), localDates) { case (nonIntPart, localDate) =>
+      forAll(generatedPartNames, validDateParts) { (partToBeInvalid, allParts) =>
 
-        val dateParts = Seq(
-          "date.year" -> localDate.getYear.toString,
-          "date.month" -> localDate.getMonthValue.toString,
-          "date.day" -> localDate.getDayOfMonth.toString
-        ).zipWithIndex.map { case (part@(partName, _), idx) =>
-          if (idx + 1 == nonIntPart) partName -> "abc"
-          else part
+        val partsWithBlanks = allParts map {
+          case (partName, _) if partName == partToBeInvalid => partName -> " "
+          case partNameAndValue => partNameAndValue
         }
 
-        val bindResult = dateMapping.bind(dateParts.toMap)
+        val bindResult = dateMapping.bind(partsWithBlanks.toMap)
 
-        bindResult shouldBe Left(Seq(FormError("date", "error.missing")))
+        bindResult shouldBe Left(
+          Seq(partToBeInvalid)
+            .map(toErrorKeySuffixed("required"))
+            .map(toFormError)
+        )
       }
     }
 
-    "return the given error if date parts have wrong values" in new MandatoryLocalDateTestCase {
+    "return the 'invalid' error if date parts are not parseable to Int" in new DateMappingSetup with DateMappingTools {
 
-      forAll(Gen.choose(1, 3), localDates) { (invalidIntPart, localDate) =>
+      forAll(generatedPartNames, validDateParts) { (partToBeInvalid, allParts) =>
 
-        val dateParts = Seq(
-          "date.year" -> localDate.getYear.toString,
-          "date.month" -> localDate.getMonthValue.toString,
-          "date.day" -> localDate.getDayOfMonth.toString
-        ).map {
-          case ("date.year", _) if invalidIntPart == 1 => "date.year" -> Gen.oneOf(-10000, 999).generateOne.toString
-          case ("date.month", _) if invalidIntPart == 2 => "date.month" -> Gen.oneOf(-1, 0, 13).generateOne.toString
-          case ("date.day", _) if invalidIntPart == 3 => "date.day" -> Gen.oneOf(-1, 0, 32).generateOne.toString
+        val partsWithInvalids = allParts map {
+          case (partName, _) if partName == partToBeInvalid => partName -> "abc"
+          case partNameAndValue => partNameAndValue
+        }
+
+        val bindResult = dateMapping.bind(partsWithInvalids.toMap)
+
+        bindResult shouldBe Left(
+          Seq(partToBeInvalid)
+            .map(toErrorKeySuffixed("invalid"))
+            .map(toFormError)
+        )
+      }
+    }
+
+    "return the 'invalid' error if date parts have wrong values" in new DateMappingSetup with DateMappingTools {
+
+      forAll(generatedPartNames, validDateParts) { (partToBeInvalid, allParts) =>
+
+        val partsWithInvalids = allParts map {
+          case (partName@"date.year", _) if partName == partToBeInvalid => partName ->
+            Gen.oneOf(Year.MIN_VALUE - 1, Year.MAX_VALUE + 1).generateOne.toString
+          case (partName@"date.month", _) if partName == partToBeInvalid =>
+            partName -> Gen.oneOf(-1, 0, 13).generateOne.toString
+          case (partName@"date.day", _) if partName == partToBeInvalid =>
+            partName -> Gen.oneOf(-1, 0, 32).generateOne.toString
           case part => part
         }
 
-        val bindResult = dateMapping.bind(dateParts.toMap)
+        val bindResult = dateMapping.bind(partsWithInvalids.toMap)
 
-        bindResult shouldBe Left(Seq(FormError("date", "error.missing")))
+        bindResult shouldBe Left(
+          Seq(partToBeInvalid)
+            .map(toErrorKeySuffixed("invalid"))
+            .map(toFormError)
+        )
       }
     }
 
-    "return the given error if date parts are invalid and there are additional constraints added" in {
+    "return the 'invalid' error if date parts forms invalid date" in new DateMappingSetup {
+
+      val partsWithInvalids = Map(
+        "date.year" -> "2017",
+        "date.month" -> "2",
+        "date.day" -> "29"
+      )
+
+      val bindResult = dateMapping.bind(partsWithInvalids.toMap)
+
+      bindResult shouldBe Left(Seq(FormError("date", "error.key.date.invalid")))
+    }
+
+    "return the 'invalid' error if date parts are invalid and there are additional constraints added" in new DateMappingTools {
 
       val dateMapping = mapping(
-        "date" -> mandatoryLocalDate("error.missing").verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
+        "date" -> mandatoryLocalDate("error.key").verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
       )(identity)(Some.apply)
 
       val bindResult = dateMapping.bind(Map(
@@ -165,13 +200,17 @@ class MappingsSpec
         "date.day" -> "c"
       ))
 
-      bindResult shouldBe Left(Seq(FormError("date", "error.missing")))
+      bindResult shouldBe Left(
+        partNames
+          .map(toErrorKeySuffixed("invalid"))
+          .map(toFormError)
+      )
     }
 
     "return the additional verification error if date parts are valid but does not meet the additional constraints" in {
 
       val dateMapping = mapping(
-        "date" -> mandatoryLocalDate("error.missing").verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
+        "date" -> mandatoryLocalDate("error.key").verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
       )(identity)(Some.apply)
 
       val bindResult = dateMapping.bind(Map(
@@ -182,8 +221,11 @@ class MappingsSpec
 
       bindResult shouldBe Left(Seq(FormError("date", "special.error")))
     }
+  }
 
-    "unbind the given LocalDate" in new MandatoryLocalDateTestCase {
+  "mandatoryLocalDate.unbind" should {
+
+    "unbind the given LocalDate" in new DateMappingSetup with DateMappingTools {
 
       forAll { localDate: LocalDate =>
 
@@ -194,11 +236,14 @@ class MappingsSpec
         )
       }
     }
+  }
 
-    "unbindAndValidate the given value and return errors if the unbound value does not meet defined constraints" in {
+  "mandatoryLocalDate.unbindAndValidate" should {
+
+    "return unbound date with errors if the unbound value does not meet defined constraints" in {
 
       val dateMapping = mapping(
-        "date" -> mandatoryLocalDate("error.missing").verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
+        "date" -> mandatoryLocalDate("error.key").verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
       )(identity)(Some.apply)
 
       dateMapping.unbindAndValidate(LocalDate.of(2017, 11, 23)) shouldBe Map(
@@ -208,10 +253,10 @@ class MappingsSpec
       ) -> Seq(FormError("date", "special.error"))
     }
 
-    "unbindAndValidate the given value and return no errors if the unbound value meets defined constraints" in {
+    "return unbound date with no errors if the unbound value meets defined constraints" in {
 
       val dateMapping = mapping(
-        "date" -> mandatoryLocalDate("error.missing").verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
+        "date" -> mandatoryLocalDate("error.key").verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
       )(identity)(Some.apply)
 
       dateMapping.unbindAndValidate(LocalDate.of(2017, 11, 25)) shouldBe Map(
@@ -222,10 +267,34 @@ class MappingsSpec
     }
   }
 
-  private trait MandatoryLocalDateTestCase {
+  private trait DateMappingSetup {
 
     val dateMapping = mapping(
-      "date" -> mandatoryLocalDate("error.missing")
+      "date" -> mandatoryLocalDate("error.key")
     )(identity)(Some.apply)
+  }
+
+  private trait DateMappingTools {
+
+    val partNames = Seq("date.year", "date.month", "date.day")
+    val generatedPartNames: Gen[String] = Gen.oneOf(partNames).suchThat(partNames.contains)
+
+    val validDateParts: Gen[Seq[(String, String)]] = for {
+      date <- localDates
+    } yield Seq(
+      "date.year" -> date.getYear.toString,
+      "date.month" -> date.getMonthValue.toString,
+      "date.day" -> date.getDayOfMonth.toString
+    )
+
+    val toPartName: ((String, String)) => String = {
+      case (partName, _) => partName
+    }
+
+    def toErrorKeySuffixed(suffix: String): String => String =
+      name => s"error.key.$name.$suffix"
+
+    def toFormError(errorKey: String): FormError =
+      FormError("date", errorKey)
   }
 }

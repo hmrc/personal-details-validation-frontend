@@ -45,7 +45,7 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
     "nino" -> mandatoryText("personal-details.nino.required")
       .verifying("personal-details.nino.invalid", maybeNino => Try(Nino(maybeNino)).isSuccess)
       .transform[Nino](Nino.apply, _.toString),
-    "dateOfBirth" -> mandatoryLocalDate("undefined")
+    "dateOfBirth" -> mandatoryLocalDate("personal-details")
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
   def render(implicit completionUrl: CompletionUrl,
