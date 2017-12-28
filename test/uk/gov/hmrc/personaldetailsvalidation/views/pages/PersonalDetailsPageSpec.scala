@@ -62,7 +62,7 @@ class PersonalDetailsPageSpec
       ninoHints.next().text() shouldBe messages("personal-details.nino.hint.example")
       ninoFieldset.select("label[for=nino] input[type=text][name=nino]").isEmpty shouldBe false
 
-      val dateFieldset = fieldsets.next().select("div fieldset")
+      val dateFieldset = fieldsets.next().select("div")
       dateFieldset.select(".form-label-bold").text() shouldBe messages("personal-details.dateOfBirth")
       dateFieldset.select(".form-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
       val dateElementDivs = dateFieldset.select(".form-date .form-group")
