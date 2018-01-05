@@ -79,21 +79,21 @@ class MappingsSpec
 
   "mandatoryLocalDate.bind" should {
 
-    "bind successfully when given year, month and day are valid" in new DateMappingSetup with DateMappingTools {
+    "bind successfully when given year, month and day are valid" in new DateMappingSetup with DateMapping {
 
       forAll { date: LocalDate =>
 
         val bindResult = dateMapping.bind(Map(
-          "date.year" -> date.getYear.toString,
-          "date.month" -> date.getMonthValue.toString,
-          "date.day" -> date.getDayOfMonth.toString
+          s"$dateFieldName.year" -> date.getYear.toString,
+          s"$dateFieldName.month" -> date.getMonthValue.toString,
+          s"$dateFieldName.day" -> date.getDayOfMonth.toString
         ))
 
         bindResult shouldBe Right(date)
       }
     }
 
-    "return the 'required' error if there are missing date parts" in new DateMappingSetup with DateMappingTools {
+    "return the 'required' error if there are missing date parts" in new DateMappingSetup with DateMapping {
 
       forAll(Gen.oneOf(1, 2, 3), validDateParts) { (numberOfPartsToRemove, allParts) =>
 
@@ -113,7 +113,7 @@ class MappingsSpec
       }
     }
 
-    "return the 'required' error if there are blank values for parts" in new DateMappingSetup with DateMappingTools {
+    "return the 'required' error if there are blank values for parts" in new DateMappingSetup with DateMapping {
 
       forAll(generatedPartNames, validDateParts) { (partToBeInvalid, allParts) =>
 
@@ -132,7 +132,7 @@ class MappingsSpec
       }
     }
 
-    "return the 'invalid' error if date parts are not parseable to Int" in new DateMappingSetup with DateMappingTools {
+    "return the 'invalid' error if date parts are not parseable to Int" in new DateMappingSetup with DateMapping {
 
       forAll(generatedPartNames, validDateParts) { (partToBeInvalid, allParts) =>
 
@@ -151,7 +151,7 @@ class MappingsSpec
       }
     }
 
-    "return the 'invalid' error if date parts have wrong values" in new DateMappingSetup with DateMappingTools {
+    "return the 'invalid' error if date parts have wrong values" in new DateMappingSetup with DateMapping {
 
       forAll(generatedPartNames, validDateParts) { (partToBeInvalid, allParts) =>
 
@@ -175,29 +175,29 @@ class MappingsSpec
       }
     }
 
-    "return the 'invalid' error if date parts forms invalid date" in new DateMappingSetup {
+    "return the 'invalid' error if date parts forms invalid date" in new DateMappingSetup with DateMapping {
 
       val partsWithInvalids = Map(
-        "date.year" -> "2017",
-        "date.month" -> "2",
-        "date.day" -> "29"
+        s"$dateFieldName.year" -> "2017",
+        s"$dateFieldName.month" -> "2",
+        s"$dateFieldName.day" -> "29"
       )
 
-      val bindResult = dateMapping.bind(partsWithInvalids.toMap)
+      val bindResult = dateMapping.bind(partsWithInvalids)
 
-      bindResult shouldBe Left(Seq(FormError("date", "error.key.date.invalid")))
+      bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.invalid")))
     }
 
-    "return the 'invalid' error if date parts are invalid and there are additional constraints added" in new DateMappingTools {
+    "return the 'invalid' error if date parts are invalid and there are additional constraints added" in new DateMappingSetup {
 
       val dateMapping = mapping(
-        "date" -> mandatoryLocalDate("error.key").verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
+        dateFieldName -> mandatoryLocalDate(errorKeyPrefix).verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
       )(identity)(Some.apply)
 
       val bindResult = dateMapping.bind(Map(
-        "date.year" -> "a",
-        "date.month" -> "b",
-        "date.day" -> "c"
+        s"$dateFieldName.year" -> "a",
+        s"$dateFieldName.month" -> "b",
+        s"$dateFieldName.day" -> "c"
       ))
 
       bindResult shouldBe Left(
@@ -225,14 +225,14 @@ class MappingsSpec
 
   "mandatoryLocalDate.unbind" should {
 
-    "unbind the given LocalDate" in new DateMappingSetup with DateMappingTools {
+    "unbind the given LocalDate" in new DateMappingSetup with DateMapping {
 
       forAll { localDate: LocalDate =>
 
         dateMapping.unbind(localDate) shouldBe Map(
-          "date.year" -> localDate.getYear.toString,
-          "date.month" -> localDate.getMonthValue.toString,
-          "date.day" -> localDate.getDayOfMonth.toString
+          s"$dateFieldName.year" -> localDate.getYear.toString,
+          s"$dateFieldName.month" -> localDate.getMonthValue.toString,
+          s"$dateFieldName.day" -> localDate.getDayOfMonth.toString
         )
       }
     }
@@ -267,24 +267,29 @@ class MappingsSpec
     }
   }
 
-  private trait DateMappingSetup {
+  private trait DateMapping {
+
+    self: DateMappingSetup =>
 
     val dateMapping = mapping(
-      "date" -> mandatoryLocalDate("error.key")
+      dateFieldName -> mandatoryLocalDate(errorKeyPrefix)
     )(identity)(Some.apply)
   }
 
-  private trait DateMappingTools {
+  private trait DateMappingSetup {
 
-    val partNames = Seq("date.year", "date.month", "date.day")
+    val dateFieldName = "date"
+    val errorKeyPrefix = "error.key"
+
+    val partNames = Seq(s"$dateFieldName.year", s"$dateFieldName.month", s"$dateFieldName.day")
     val generatedPartNames: Gen[String] = Gen.oneOf(partNames).suchThat(partNames.contains)
 
     val validDateParts: Gen[Seq[(String, String)]] = for {
       date <- localDates
     } yield Seq(
-      "date.year" -> date.getYear.toString,
-      "date.month" -> date.getMonthValue.toString,
-      "date.day" -> date.getDayOfMonth.toString
+      s"$dateFieldName.year" -> date.getYear.toString,
+      s"$dateFieldName.month" -> date.getMonthValue.toString,
+      s"$dateFieldName.day" -> date.getDayOfMonth.toString
     )
 
     val toPartName: ((String, String)) => String = {
@@ -292,9 +297,9 @@ class MappingsSpec
     }
 
     def toErrorKeySuffixed(suffix: String): String => String =
-      name => s"error.key.$name.$suffix"
+      name => s"$errorKeyPrefix.$name.$suffix"
 
     def toFormError(errorKey: String): FormError =
-      FormError("date", errorKey)
+      FormError(dateFieldName, errorKey)
   }
 }
