@@ -34,7 +34,7 @@ object Mappings {
     case nonEmpty => Some(nonEmpty)
   }
 
-  def mandatoryLocalDate(formatError: => String): Mapping[LocalDate] =
-    LocalDateMapping()(formatError)
+  def mandatoryLocalDate(errorKeyPrefix: => String): Mapping[LocalDate] =
+    LocalDateMapping()(errorKeyPrefix)
 }
 
