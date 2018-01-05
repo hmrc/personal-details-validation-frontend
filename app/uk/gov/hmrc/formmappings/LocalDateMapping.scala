@@ -59,6 +59,8 @@ case class LocalDateMapping private[formmappings](key: String = "",
 
 private object LocalDateMapping {
 
+  import cats.implicits._
+
   private case class LocalDateBinder(key: String,
                                      constraints: Seq[Constraint[LocalDate]])
                                     (errorKeyPrefix: => String) {
@@ -118,17 +120,18 @@ private object LocalDateMapping {
       }
     }
 
-    private implicit class ValidatedPartsOps(validatedParts: Seq[ValidatedNel[String, Int]]) {
+    private implicit class ValidatedPartsOps(seqOfValidatedParts: Seq[ValidatedNel[String, Int]]) {
 
-      lazy val toValidatedDate: ValidatedNel[String, LocalDate] = validatedParts.foldLeft(Validated.validNel[String, Seq[Int]](Nil)) {
-        case (Validated.Valid(parts), Validated.Valid(part)) => Validated.validNel(parts :+ part)
-        case (Validated.Valid(_), invalid@Validated.Invalid(_)) => invalid
-        case (invalidParts@Validated.Invalid(_), Validated.Invalid(errors)) => invalidParts.leftMap[NonEmptyList[String]](_ concatNel errors)
-        case (invalidParts@Validated.Invalid(_), Validated.Valid(_)) => invalidParts
-      } match {
-        case invalid@Validated.Invalid(_) => invalid
-        case Validated.Valid(parts) => toDate(parts)
-      }
+      lazy val toValidatedDate: ValidatedNel[String, LocalDate] =
+        seqOfValidatedParts.toValidatedSeqOfParts match {
+          case invalid@Validated.Invalid(_) => invalid
+          case Validated.Valid(parts) => toDate(parts)
+        }
+
+      private[ValidatedPartsOps] lazy val toValidatedSeqOfParts: ValidatedNel[String, Seq[Int]] =
+        seqOfValidatedParts.foldLeft(Validated.validNel[String, List[Int]](Nil)) {
+          case (combinedParts, validatedPart) => combinedParts combine validatedPart.map(List(_))
+        }
 
       private def toDate: Seq[Int] => ValidatedNel[String, LocalDate] = {
         case year :: month :: day :: Nil =>

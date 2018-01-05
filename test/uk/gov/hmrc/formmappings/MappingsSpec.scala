@@ -166,7 +166,7 @@ class MappingsSpec
 
         val partsWithInvalids = allParts.toMap + partWithIllegalValue
 
-        val bindResult = dateMapping.bind(partsWithInvalids.toMap)
+        val bindResult = dateMapping.bind(partsWithInvalids)
 
         bindResult shouldBe Left(
           Seq(partToBeInvalid)
