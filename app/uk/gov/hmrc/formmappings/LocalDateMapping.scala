@@ -96,10 +96,8 @@ private object LocalDateMapping {
 
     private implicit class ValidatedStringPartOps(validatedPart: ValidatedNel[String, (String, String)]) {
 
-      lazy val parseToInt: ValidatedNel[String, (String, Int)] = validatedPart match {
-        case invalid@Validated.Invalid(error) =>
-          invalid
-        case Validated.Valid((partName, stringValue)) =>
+      lazy val parseToInt: ValidatedNel[String, (String, Int)] = validatedPart flatMap {
+        case (partName, stringValue) =>
           Try(stringValue.toInt) match {
             case Success(partAsInt) => Validated.validNel(partName -> partAsInt)
             case Failure(_) => Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
@@ -109,10 +107,8 @@ private object LocalDateMapping {
 
     private implicit class ValidatedIntPartOps(validatedPart: ValidatedNel[String, (String, Int)]) {
 
-      def validateUsing(validate: Long => Long): ValidatedNel[String, Int] = validatedPart match {
-        case invalid@Validated.Invalid(error) =>
-          invalid
-        case Validated.Valid((partName, intValue)) =>
+      def validateUsing(validate: Long => Long): ValidatedNel[String, Int] = validatedPart flatMap {
+        case (partName, intValue) =>
           Try(validate(intValue)) match {
             case Success(validatedValue) => Validated.validNel(validatedValue.intValue())
             case Failure(_) => Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
@@ -123,26 +119,32 @@ private object LocalDateMapping {
     private implicit class ValidatedPartsOps(seqOfValidatedParts: Seq[ValidatedNel[String, Int]]) {
 
       lazy val toValidatedDate: ValidatedNel[String, LocalDate] =
-        seqOfValidatedParts.toValidatedSeqOfParts match {
-          case invalid@Validated.Invalid(_) => invalid
-          case Validated.Valid(parts) => toDate(parts)
-        }
+        seqOfValidatedParts
+          .toValidatedSeqOfParts
+          .leftMap(toSingleErrorIfAllPartsMissing)
+          .flatMap(toDate)
 
       private[ValidatedPartsOps] lazy val toValidatedSeqOfParts: ValidatedNel[String, Seq[Int]] =
         seqOfValidatedParts.foldLeft(Validated.validNel[String, List[Int]](Nil)) {
           case (combinedParts, validatedPart) => combinedParts combine validatedPart.map(List(_))
         }
 
-      private def toDate: Seq[Int] => ValidatedNel[String, LocalDate] = {
-        case year :: month :: day :: Nil =>
+      private def toSingleErrorIfAllPartsMissing(errors: NonEmptyList[String]): NonEmptyList[String] =
+        errors.filter(_ endsWith ".required").size match {
+          case 3 => NonEmptyList.of(dateFieldError(suffixed = "required"))
+          case _ => errors
+        }
+
+      private val toDate: Seq[Int] => ValidatedNel[String, LocalDate] = {
+        case year +: month +: day +: Nil =>
           Validated.catchOnly[DateTimeException](LocalDate.of(year, month, day))
-            .leftMap(_ => NonEmptyList.of(dateFieldError))
-        case _ => Validated.invalidNel(dateFieldError)
+            .leftMap(_ => NonEmptyList.of(dateFieldError(suffixed = "invalid")))
+        case _ => Validated.invalidNel(dateFieldError(suffixed = "invalid"))
       }
 
-      private lazy val dateFieldError = key match {
-        case "" => s"$errorKeyPrefix.invalid"
-        case nonEmptyKey => s"$errorKeyPrefix.$nonEmptyKey.invalid"
+      private def dateFieldError(suffixed: String) = key match {
+        case "" => s"$errorKeyPrefix.$suffixed"
+        case nonEmptyKey => s"$errorKeyPrefix.$nonEmptyKey.$suffixed"
       }
     }
 
@@ -153,15 +155,13 @@ private object LocalDateMapping {
 
       import play.api.data.validation.{Invalid, Valid}
 
-      lazy val checkConstraints: Validated[Seq[FormError], LocalDate] = validatedDate match {
-        case invalid@Validated.Invalid(_) => invalid
-        case Validated.Valid(date) =>
-          constraints
-            .map(constraint => constraint(date))
-            .foldLeft(Seq.empty[FormError]) {
-              case (formErrors, Valid) => formErrors
-              case (formErrors, Invalid(validationErrors)) => combineErrors(formErrors, validationErrors)
-            }.toValidated(date)
+      lazy val checkConstraints: Validated[Seq[FormError], LocalDate] = validatedDate flatMap { date =>
+        constraints
+          .map(constraint => constraint(date))
+          .foldLeft(Seq.empty[FormError]) {
+            case (formErrors, Valid) => formErrors
+            case (formErrors, Invalid(validationErrors)) => combineErrors(formErrors, validationErrors)
+          }.toValidated(date)
       }
 
       private def combineErrors(formErrors: Seq[FormError], validationErrors: Seq[ValidationError]) =
@@ -175,6 +175,15 @@ private object LocalDateMapping {
           case errors => Validated.invalid(errors)
         }
       }
+    }
+
+    private implicit class ValidatedOps[ErrorType, ValidType](validated: Validated[ErrorType, ValidType]) {
+
+      def flatMap[NewValidType](map: ValidType => Validated[ErrorType, NewValidType]): Validated[ErrorType, NewValidType] =
+        validated match {
+          case Validated.Valid(validValue) => map(validValue)
+          case invalid@Validated.Invalid(_) => invalid
+        }
     }
   }
 }

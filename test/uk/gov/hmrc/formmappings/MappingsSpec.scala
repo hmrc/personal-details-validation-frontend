@@ -93,9 +93,9 @@ class MappingsSpec
       }
     }
 
-    "return the 'required' error if there are missing date parts" in new DateMappingSetup with DateMapping {
+    "return the 'required' errors if some date parts are missing" in new DateMappingSetup with DateMapping {
 
-      forAll(Gen.oneOf(1, 2, 3), validDateParts) { (numberOfPartsToRemove, allParts) =>
+      forAll(Gen.oneOf(1, 2), validDateParts) { (numberOfPartsToRemove, allParts) =>
 
         val selectedParts = (1 to numberOfPartsToRemove).foldLeft(allParts) { (partsLeft, _) =>
           val partToRemove = Gen.oneOf(partsLeft).generateOne
@@ -111,6 +111,13 @@ class MappingsSpec
             .map(toFormError)
         )
       }
+    }
+
+    "return the 'required' error if all date parts are missing" in new DateMappingSetup with DateMapping {
+
+      val bindResult = dateMapping.bind(Map.empty)
+
+      bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.required")))
     }
 
     "return the 'required' error if there are blank values for parts" in new DateMappingSetup with DateMapping {

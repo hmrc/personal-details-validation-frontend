@@ -162,6 +162,20 @@ class PersonalDetailsPageSpec
       page.errorFor("nino") shouldBe messages("personal-details.nino.invalid")
     }
 
+    "return 'personal-details.dateOfBirth.required' error message " +
+      "when any of the date parts are given" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = request.withFormUrlEncodedBody(
+        "dateOfBirth.day" -> " ", "dateOfBirth.month" -> ""
+      )
+
+      val Left(response) = personalDetailsPage.bindFromRequest
+
+      val page: Document = response
+
+      page.dateError shouldBe messages("personal-details.dateOfBirth.required")
+    }
+
     "return 'personal-details.dateOfBirth.invalid' error message " +
       "when there's invalid date" in new Setup with BindFromRequestTooling {
 
