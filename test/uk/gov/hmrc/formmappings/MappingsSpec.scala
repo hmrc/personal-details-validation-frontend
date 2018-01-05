@@ -95,17 +95,20 @@ class MappingsSpec
 
     "return the 'required' errors if some date parts are missing" in new DateMappingSetup with DateMapping {
 
-      forAll(Gen.oneOf(1, 2), validDateParts) { (numberOfPartsToRemove, allParts) =>
-
-        val selectedParts = (1 to numberOfPartsToRemove).foldLeft(allParts) { (partsLeft, _) =>
+      val removeAPart: (Seq[(String, String)], Int) => Seq[(String, String)] = {
+        case (partsLeft, _) =>
           val partToRemove = Gen.oneOf(partsLeft).generateOne
           partsLeft filterNot (_ == partToRemove)
-        }
+      }
 
-        val bindResult = dateMapping.bind(selectedParts.toMap)
+      forAll(Gen.oneOf(1, 2), validDateParts) { (numberOfPartsToRemove, allParts) =>
+
+        val partsLeft = (1 to numberOfPartsToRemove).foldLeft(allParts)(removeAPart)
+
+        val bindResult = dateMapping.bind(partsLeft.toMap)
 
         bindResult shouldBe Left(
-          (allParts diff selectedParts)
+          (allParts diff partsLeft)
             .map(toPartName)
             .map(toErrorKeySuffixed("required"))
             .map(toFormError)
