@@ -155,15 +155,16 @@ class MappingsSpec
 
       forAll(generatedPartNames, validDateParts) { (partToBeInvalid, allParts) =>
 
-        val partsWithInvalids = allParts map {
-          case (partName@"date.year", _) if partName == partToBeInvalid => partName ->
-            Gen.oneOf(Year.MIN_VALUE - 1, Year.MAX_VALUE + 1).generateOne.toString
-          case (partName@"date.month", _) if partName == partToBeInvalid =>
-            partName -> Gen.oneOf(-1, 0, 13).generateOne.toString
-          case (partName@"date.day", _) if partName == partToBeInvalid =>
-            partName -> Gen.oneOf(-1, 0, 32).generateOne.toString
-          case part => part
+        val partWithIllegalValue = partToBeInvalid match {
+          case `yearPartName` =>
+            yearPartName -> Gen.oneOf(Year.MIN_VALUE - 1, Year.MAX_VALUE + 1).generateOne.toString
+          case `monthPartName` =>
+            monthPartName -> Gen.oneOf(-1, 0, 13).generateOne.toString
+          case `dayPartName` =>
+            dayPartName -> Gen.oneOf(-1, 0, 32).generateOne.toString
         }
+
+        val partsWithInvalids = allParts.toMap + partWithIllegalValue
 
         val bindResult = dateMapping.bind(partsWithInvalids.toMap)
 
@@ -281,7 +282,10 @@ class MappingsSpec
     val dateFieldName = "date"
     val errorKeyPrefix = "error.key"
 
-    val partNames = Seq(s"$dateFieldName.year", s"$dateFieldName.month", s"$dateFieldName.day")
+    val yearPartName = s"$dateFieldName.year"
+    val monthPartName = s"$dateFieldName.month"
+    val dayPartName = s"$dateFieldName.day"
+    val partNames = Seq(yearPartName, monthPartName, dayPartName)
     val generatedPartNames: Gen[String] = Gen.oneOf(partNames).suchThat(partNames.contains)
 
     val validDateParts: Gen[Seq[(String, String)]] = for {
