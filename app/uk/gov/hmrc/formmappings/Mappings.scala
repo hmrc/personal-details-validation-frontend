@@ -20,14 +20,15 @@ import java.time.LocalDate
 
 import play.api.data.Forms._
 import play.api.data.Mapping
+import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
 
 object Mappings {
 
-  def mandatoryText(error: => String): Mapping[String] =
+  def mandatoryText(error: => String): Mapping[NonEmptyString] =
     optional(text)
       .transform[Option[String]](emptyStringAsNone, emptyStringAsNone)
       .verifying(error, _.isDefined)
-      .transform[String](_.get, Some.apply)
+      .transform[NonEmptyString](validatedNonBlankString => validatedNonBlankString.map(NonEmptyString).get, nonEmptyString => Some(nonEmptyString.value))
 
   private def emptyStringAsNone(maybeValue: Option[String]): Option[String] = maybeValue.map(_.trim).flatMap {
     case "" => Option.empty[String]

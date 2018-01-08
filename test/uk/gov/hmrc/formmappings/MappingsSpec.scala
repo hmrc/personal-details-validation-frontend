@@ -24,6 +24,7 @@ import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import play.api.data.FormError
 import play.api.data.Forms.mapping
+import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
 import uk.gov.hmrc.play.test.UnitSpec
 
 class MappingsSpec
@@ -38,14 +39,14 @@ class MappingsSpec
       val bindResult = mapping("field" -> mandatoryText("error"))(identity)(Some.apply)
         .bind(Map("field" -> "some text"))
 
-      bindResult shouldBe Right("some text")
+      bindResult shouldBe Right(NonEmptyString("some text"))
     }
 
     "trim and bind successfully for a given String value" in {
       val bindResult = mapping("field" -> mandatoryText("error"))(identity)(Some.apply)
         .bind(Map("field" -> " some text  "))
 
-      bindResult shouldBe Right("some text")
+      bindResult shouldBe Right(NonEmptyString("some text"))
     }
 
     "return the given error if no entry for the field is given" in {
@@ -64,16 +65,9 @@ class MappingsSpec
 
     "unbind the given value" in {
       val unboundValue = mapping("field" -> mandatoryText("error"))(identity)(Some.apply)
-        .unbind("some text")
+        .unbind(NonEmptyString("some text"))
 
       unboundValue shouldBe Map("field" -> "some text")
-    }
-
-    "unbind given empty value to None" in {
-      val unboundValue = mapping("field" -> mandatoryText("error"))(identity)(Some.apply)
-        .unbind(" ")
-
-      unboundValue shouldBe Map.empty
     }
   }
 

@@ -38,13 +38,11 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   import uk.gov.hmrc.formmappings.Mappings._
 
   private val form: Form[PersonalDetails] = Form(mapping(
-    "firstName" -> mandatoryText("personal-details.firstname.required")
-      .transform[NonEmptyString](NonEmptyString.apply, _.toString),
-    "lastName" -> mandatoryText("personal-details.lastname.required")
-      .transform[NonEmptyString](NonEmptyString.apply, _.toString),
+    "firstName" -> mandatoryText("personal-details.firstname.required"),
+    "lastName" -> mandatoryText("personal-details.lastname.required"),
     "nino" -> mandatoryText("personal-details.nino.required")
-      .verifying("personal-details.nino.invalid", maybeNino => Try(Nino(maybeNino)).isSuccess)
-      .transform[Nino](Nino.apply, _.toString),
+      .verifying("personal-details.nino.invalid", nonEmptyString => Try(Nino(nonEmptyString.value)).isSuccess)
+      .transform[Nino](validatedNonEmptyNino => Nino(validatedNonEmptyNino.value), nino => NonEmptyString(nino.toString)),
     "dateOfBirth" -> mandatoryLocalDate("personal-details")
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
