@@ -21,7 +21,7 @@ trait NavigationSugar extends WebBrowser with Eventually with Assertions with Ma
         }
       }
 
-      page.verifyDisplayed
+      page.verifyThisPageDisplayed()
     }
   }
 }
