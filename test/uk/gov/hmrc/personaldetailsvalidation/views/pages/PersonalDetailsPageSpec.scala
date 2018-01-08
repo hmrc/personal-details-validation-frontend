@@ -46,6 +46,8 @@ class PersonalDetailsPageSpec
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
 
+      html.select("form div[class=flash error-summary]").isEmpty shouldBe false
+
       val fieldsets = html.select("form fieldset")
       val firstNameFieldset = fieldsets.first()
       firstNameFieldset.select("label[for=firstname] .form-label-bold").text() shouldBe messages("personal-details.firstname")
@@ -123,6 +125,9 @@ class PersonalDetailsPageSpec
 
       val page: Document = response
 
+      page.errorsSummary.heading shouldBe messages("error-summary.heading")
+      page.errorsSummary.content shouldBe messages("personal-details.firstname.required")
+
       page.errorFor("firstName") shouldBe messages("personal-details.firstname.required")
     }
 
@@ -134,6 +139,9 @@ class PersonalDetailsPageSpec
       val Left(response) = personalDetailsPage.bindFromRequest
 
       val page: Document = response
+
+      page.errorsSummary.heading shouldBe messages("error-summary.heading")
+      page.errorsSummary.content shouldBe messages("personal-details.lastname.required")
 
       page.errorFor("lastName") shouldBe messages("personal-details.lastname.required")
     }
@@ -147,6 +155,9 @@ class PersonalDetailsPageSpec
 
       val page: Document = response
 
+      page.errorsSummary.heading shouldBe messages("error-summary.heading")
+      page.errorsSummary.content shouldBe messages("personal-details.nino.required")
+
       page.errorFor("nino") shouldBe messages("personal-details.nino.required")
     }
 
@@ -159,19 +170,25 @@ class PersonalDetailsPageSpec
 
       val page: Document = response
 
+      page.errorsSummary.heading shouldBe messages("error-summary.heading")
+      page.errorsSummary.content shouldBe messages("personal-details.nino.invalid")
+
       page.errorFor("nino") shouldBe messages("personal-details.nino.invalid")
     }
 
     "return 'personal-details.dateOfBirth.required' error message " +
       "when any of the date parts are given" in new Setup with BindFromRequestTooling {
 
-      implicit val requestWithFormData = request.withFormUrlEncodedBody(
-        "dateOfBirth.day" -> " ", "dateOfBirth.month" -> ""
+      implicit val requestWithFormData = validRequest(
+        replace = "dateOfBirth.day" -> " ", "dateOfBirth.month" -> "", "dateOfBirth.year" -> ""
       )
 
       val Left(response) = personalDetailsPage.bindFromRequest
 
       val page: Document = response
+
+      page.errorsSummary.heading shouldBe messages("error-summary.heading")
+      page.errorsSummary.content shouldBe messages("personal-details.dateOfBirth.required")
 
       page.dateError shouldBe messages("personal-details.dateOfBirth.required")
     }
@@ -187,6 +204,9 @@ class PersonalDetailsPageSpec
 
       val page: Document = response
 
+      page.errorsSummary.heading shouldBe messages("error-summary.heading")
+      page.errorsSummary.content shouldBe messages("personal-details.dateOfBirth.invalid")
+
       page.dateError shouldBe messages("personal-details.dateOfBirth.invalid")
     }
 
@@ -201,6 +221,9 @@ class PersonalDetailsPageSpec
 
         val page: Document = response
 
+        page.errorsSummary.heading shouldBe messages("error-summary.heading")
+        page.errorsSummary.content shouldBe messages(s"personal-details.dateOfBirth.$datePartName.required")
+
         page.dateError shouldBe messages(s"personal-details.dateOfBirth.$datePartName.required")
       }
 
@@ -212,6 +235,9 @@ class PersonalDetailsPageSpec
         val Left(response) = personalDetailsPage.bindFromRequest
 
         val page: Document = response
+
+        page.errorsSummary.heading shouldBe messages("error-summary.heading")
+        page.errorsSummary.content shouldBe messages(s"personal-details.dateOfBirth.$datePartName.invalid")
 
         page.dateError shouldBe messages(s"personal-details.dateOfBirth.$datePartName.invalid")
       }
@@ -254,7 +280,17 @@ class PersonalDetailsPageSpec
 
     implicit class PageOps(page: Document) {
 
-      def errorFor(fieldName: String) = {
+      lazy val errorsSummary = new {
+
+        private lazy val errorsSummaryDiv =
+          page.select("form div[class=flash error-summary error-summary--show]")
+
+        lazy val heading = errorsSummaryDiv.select("h2").text()
+
+        lazy val content = errorsSummaryDiv.select("ul").text()
+      }
+
+      def errorFor(fieldName: String): String = {
         val control = page.select(s"label[for=$fieldName][class=form-field--error]")
         control.isEmpty shouldBe false
         control.select(".error-notification").text()

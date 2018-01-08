@@ -1,4 +1,5 @@
 continue.button.text=Yn eich blaen
+error-summary.heading=Mae gwallau ar y dudalen hon.
 
 personal-details.title=Nodwch eich manylion - Cadarnhau pwy ydych
 personal-details.faded-heading=Cadarnhau pwy ydych
