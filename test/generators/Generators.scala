@@ -41,19 +41,14 @@ trait Generators {
 
   def strings(maxLength: Int): Gen[String] = strings(1, maxLength)
 
-  def strings(minLenght: Int, maxLength: Int): Gen[String] = {
+  def strings(minLength: Int, maxLength: Int): Gen[String] = {
     for {
-      length <- Gen.chooseNum(minLenght, maxLength)
+      length <- Gen.chooseNum(minLength, maxLength)
       chars <- Gen.listOfN(length, Gen.alphaNumChar)
     } yield chars.mkString
-  }.suchThat(_.trim.nonEmpty)
+  } suchThat (value => value.length >= minLength && value.length <= maxLength)
 
-  val nonEmptyStrings: Gen[String] = {
-    for {
-      length <- Gen.chooseNum(1, 1000)
-      chars <- Gen.listOfN(length, Gen.alphaNumChar)
-    } yield chars.mkString
-  }.suchThat(_.trim.nonEmpty)
+  val nonEmptyStrings: Gen[String] = strings(1, 1000)
 
   implicit val instants: Gen[Instant] = Gen.choose(minTimestamp, maxTimestamp).map(Instant.ofEpochMilli)
 
