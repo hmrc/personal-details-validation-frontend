@@ -129,9 +129,11 @@ private object LocalDateMapping {
           case (combinedParts, validatedPart) => combinedParts combine validatedPart.map(List(_))
         }
 
+      private val numberOfDateParts = 3
+
       private def toSingleErrorIfAllPartsMissing(errors: NonEmptyList[String]): NonEmptyList[String] =
         errors.filter(_ endsWith ".required").size match {
-          case 3 => NonEmptyList.of(dateFieldError(suffixed = "required"))
+          case `numberOfDateParts` => NonEmptyList.of(dateFieldError(suffixed = "required"))
           case _ => errors
         }
 
