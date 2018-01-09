@@ -300,7 +300,7 @@ class PersonalDetailsPageSpec
         page.select("div[class=form-date]")
           .parents()
           .first()
-          .select(".error-message")
+          .select(".error-notification")
           .text()
     }
   }

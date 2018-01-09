@@ -27,12 +27,12 @@
     form(fieldName).errors
 }
 
-<div class="form-group @if(dateErrors.nonEmpty) {error}">
-    <legend><span class="form-label-bold">@messages(s"$labelKeyPrefix.$fieldName")</span></legend>
-
+<div class="form-group @if(dateErrors.nonEmpty) {form-field--error}">
     @dateErrors.map(err => (err.message, err.args)).distinct.map { case (msg, args) =>
-        <p class="error-message">@messages(msg, args: _*)</p>
+        <span class="error-notification">@messages(msg, args: _*)</span>
     }
+
+    <legend><span class="form-label-bold">@messages(s"$labelKeyPrefix.$fieldName")</span></legend>
 
     @hintKeySuffix.map { key =>
         <span class="form-hint">@messages(s"$labelKeyPrefix.$fieldName.$key")</span>
