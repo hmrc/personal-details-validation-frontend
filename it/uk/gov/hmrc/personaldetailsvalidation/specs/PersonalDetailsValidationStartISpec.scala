@@ -1,6 +1,7 @@
 package uk.gov.hmrc.personaldetailsvalidation.specs
 
 import uk.gov.hmrc.personaldetailsvalidation.pages.{ErrorPage, PersonalDetailsPage}
+import uk.gov.hmrc.personaldetailsvalidation.support.BaseIntegrationSpec
 
 class PersonalDetailsValidationStartISpec extends BaseIntegrationSpec {
 

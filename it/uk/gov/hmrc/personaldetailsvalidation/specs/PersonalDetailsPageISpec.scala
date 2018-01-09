@@ -3,9 +3,17 @@ package uk.gov.hmrc.personaldetailsvalidation.specs
 import java.time.LocalDate
 
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.personaldetailsvalidation.model.{NonEmptyString, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.pages.{CompletionPage, ErrorPage, PersonalDetailsPage}
+import uk.gov.hmrc.personaldetailsvalidation.services.PersonalDetailsService
+import uk.gov.hmrc.personaldetailsvalidation.support.BaseIntegrationSpec
+import uk.gov.hmrc.personaldetailsvalidation.support.wiremock.WiremockedService
 
-class PersonalDetailsPageISpec extends BaseIntegrationSpec {
+class PersonalDetailsPageISpec
+  extends BaseIntegrationSpec
+    with WiremockedService {
+
+  wiremock("personal-details-validation").on("localhost", 11111)
 
   feature("Personal Details Page") {
 
@@ -40,10 +48,18 @@ class PersonalDetailsPageISpec extends BaseIntegrationSpec {
       When("I fill in the fields with valid data")
       personalDetailsPage.fillIn("Jim", "Ferguson", Nino("AA000003D"), LocalDate.of(1948, 4, 23))
 
-      And("submit it")
+      And("I know the personal-details-validation service validates the data successfully")
+      PersonalDetailsService validatesSuccessfully PersonalDetails(
+        firstName = NonEmptyString("Jim"),
+        lastName = NonEmptyString("Ferguson"),
+        nino = Nino("AA000003D"),
+        dateOfBirth = LocalDate.of(1948, 4, 23)
+      )
+
+      And("when I submit the data")
       personalDetailsPage.submitForm()
 
-      Then("I should get redirected to the completion url I gave")
+      Then("I should get redirected to my completion url")
       on(CompletionPage(completionUrl))
     }
 

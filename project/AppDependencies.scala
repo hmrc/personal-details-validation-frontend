@@ -26,6 +26,7 @@ private object AppDependencies {
   )
 
   private val it = Seq(
+    "com.github.tomakehurst" % "wiremock" % "2.12.0" % IntegrationTest,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % IntegrationTest,
     "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % IntegrationTest
   )
