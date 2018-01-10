@@ -1,6 +1,7 @@
 package uk.gov.hmrc.personaldetailsvalidation.specs
 
 import uk.gov.hmrc.personaldetailsvalidation.pages.{ErrorPage, PersonalDetailsPage}
+import uk.gov.hmrc.personaldetailsvalidation.support.BaseIntegrationSpec
 
 class PersonalDetailsValidationStartISpec extends BaseIntegrationSpec {
 
@@ -10,7 +11,7 @@ class PersonalDetailsValidationStartISpec extends BaseIntegrationSpec {
 
       When("I navigate to /personal-details-validation/start with a valid completionUrl")
       val completionUrl = "/foobar"
-      goTo("/start?completionUrl=" + completionUrl)
+      goTo(s"/start?completionUrl=$completionUrl")
 
       Then("I should get redirected to the Personal Details page")
       on(PersonalDetailsPage(completionUrl))

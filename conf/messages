@@ -1,19 +1,32 @@
 continue.button.text=Continue
+error-summary.heading=There are errors on the page.
 
 personal-details.title=Enter your details - Confirm your identity
 personal-details.faded-heading=Confirm your identity
 personal-details.header=Enter your details
 personal-details.paragraph=This is to help us confirm who you are, so we know what questions to ask you.
 personal-details.firstname=First name
+personal-details.firstname.required=Enter your first name.
 personal-details.lastname=Last name
+personal-details.lastname.required=Enter your last name.
 personal-details.nino=National Insurance number
 personal-details.nino.hint=It''s on your National Insurance card, benefit letter, payslip or P60.
 personal-details.nino.hint.example=For example, QQ123456C
+personal-details.nino.required=Enter your National Insurance number.
+personal-details.nino.invalid=Enter your National Insurance number in the correct format. For example QQ123456C.
 personal-details.dateOfBirth=Date of birth
 personal-details.dateOfBirth.hint=For example, 31 3 1980
 personal-details.dateOfBirth.day=Day
 personal-details.dateOfBirth.month=Month
 personal-details.dateOfBirth.year=Year
+personal-details.dateOfBirth.required=Enter your date of birth.
+personal-details.dateOfBirth.invalid=Enter your date of birth in the correct format. For example, 31 3 1980.
+personal-details.dateOfBirth.day.required=Enter the day of the month from your date of birth.
+personal-details.dateOfBirth.day.invalid=The date you have entered is invalid. Enter a number between 1 and 31.
+personal-details.dateOfBirth.month.required=Enter the month from your date of birth.
+personal-details.dateOfBirth.month.invalid=The month you have entered is invalid. Enter a number between 1 and 12.
+personal-details.dateOfBirth.year.required=Enter the year from your date of birth.
+personal-details.dateOfBirth.year.invalid=The year you have entered is invalid. Enter the year you were born.
 
 # errors
 global.error.InternalServerError500.title=Sorry, we are experiencing technical difficulties

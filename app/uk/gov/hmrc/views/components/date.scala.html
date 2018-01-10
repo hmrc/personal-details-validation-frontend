@@ -1,5 +1,5 @@
 @*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,63 +27,46 @@
     form(fieldName).errors
 }
 
-<div id="@fieldName" class="form-group @if(dateErrors.nonEmpty) {error}">
-    <fieldset>
-        <legend><span class="form-label-bold">@messages(s"$labelKeyPrefix.$fieldName")</span></legend>
+<div class="form-group @if(dateErrors.nonEmpty) {form-field--error}">
+    @dateErrors.map(err => (err.message, err.args)).distinct.map { case (msg, args) =>
+        <span class="error-notification">@messages(msg, args: _*)</span>
+    }
 
-        @dateErrors.map(err => (err.message, err.args)).distinct.map { case (msg, args) =>
-            <p class="error-message">@messages(msg, args: _*)</p>
-        }
+    <legend><span class="form-label-bold">@messages(s"$labelKeyPrefix.$fieldName")</span></legend>
 
-        @hintKeySuffix.map { key =>
-            <span class="form-hint">@messages(s"$labelKeyPrefix.$fieldName.$key")</span>
-        }
+    @hintKeySuffix.map { key =>
+        <span class="form-hint">@messages(s"$labelKeyPrefix.$fieldName.$key")</span>
+    }
 
-        <div class="form-date">
-            <div class="form-group form-group-day">
-                @input(
-                    field = form(s"$fieldName.day"),
-                    '_label -> messages(s"$labelKeyPrefix.$fieldName.day"),
-                    '_type -> "number",
-                    '_labelClass -> "form-label",
-                    '_pattern -> "[0-9]*",
-                    '_min -> "0",
-                    '_max -> "31",
-                    '_showConstraints -> false,
-                    '_showErrors -> false,
-                    '_inputClass -> "form-control"
-                )
-            </div>
-
-            <div class="form-group form-group-month">
-                @input(
-                    field = form(s"$fieldName.month"),
-                    '_label -> messages(s"$labelKeyPrefix.$fieldName.month"),
-                    '_type -> "number",
-                    '_labelClass -> "form-label",
-                    '_showConstraints -> false,
-                    '_showErrors -> false,
-                    '_pattern -> "[0-9]*",
-                    '_min -> "0",
-                    '_max -> "12",
-                    '_inputClass -> "form-control"
-                )
-            </div>
-
-            <div class="form-group form-group-year">
-                @input(
-                    field = form(s"$fieldName.year"),
-                    '_label -> messages(s"$labelKeyPrefix.$fieldName.year"),
-                    '_type -> "number",
-                    '_labelClass -> "form-label",
-                    '_showConstraints -> false,
-                    '_showErrors -> false,
-                    '_pattern -> "[0-9]*",
-                    '_min -> "0",
-                    '_max -> "2120",
-                    '_inputClass -> "form-control"
-                )
-            </div>
+    <div class="form-date">
+        <div class="form-group form-group-day">
+            @input(
+                field = form(s"$fieldName.day"),
+                '_label -> messages(s"$labelKeyPrefix.$fieldName.day"),
+                '_type -> "number",
+                '_labelClass -> "form-label",
+                '_inputClass -> "form-control"
+            )
         </div>
-    </fieldset>
+
+        <div class="form-group form-group-month">
+            @input(
+                field = form(s"$fieldName.month"),
+                '_label -> messages(s"$labelKeyPrefix.$fieldName.month"),
+                '_type -> "number",
+                '_labelClass -> "form-label",
+                '_inputClass -> "form-control"
+            )
+        </div>
+
+        <div class="form-group form-group-year">
+            @input(
+                field = form(s"$fieldName.year"),
+                '_label -> messages(s"$labelKeyPrefix.$fieldName.year"),
+                '_type -> "number",
+                '_labelClass -> "form-label",
+                '_inputClass -> "form-control"
+            )
+        </div>
+    </div>
 </div>

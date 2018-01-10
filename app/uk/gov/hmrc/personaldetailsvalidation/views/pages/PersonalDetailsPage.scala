@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,12 @@ import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, NonEmptyString, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.personal_details
 import uk.gov.hmrc.views.ViewConfig
+
+import scala.util.Try
 
 @Singleton
 private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,
@@ -35,10 +38,12 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   import uk.gov.hmrc.formmappings.Mappings._
 
   private val form: Form[PersonalDetails] = Form(mapping(
-    "firstName" -> mandatoryText("undefined"),
-    "lastName" -> mandatoryText("undefined"),
-    "nino" -> mandatoryText("undefined"),
-    "dateOfBirth" -> mandatoryLocalDate("undefined")
+    "firstName" -> mandatoryText("personal-details.firstname.required"),
+    "lastName" -> mandatoryText("personal-details.lastname.required"),
+    "nino" -> mandatoryText("personal-details.nino.required")
+      .verifying("personal-details.nino.invalid", nonEmptyString => Try(Nino(nonEmptyString.value)).isSuccess)
+      .transform[Nino](validatedNonEmptyNino => Nino(validatedNonEmptyNino.value), nino => NonEmptyString(nino.toString)),
+    "dateOfBirth" -> mandatoryLocalDate("personal-details")
   )(PersonalDetails.apply)(PersonalDetails.unapply))
 
   def render(implicit completionUrl: CompletionUrl,
@@ -49,6 +54,6 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
                       completionUrl: CompletionUrl): Either[Html, PersonalDetails] =
     form.bindFromRequest().fold(
       formWithErrors => Left(personal_details(formWithErrors, completionUrl)),
-      Right(_)
+      personalDetails => Right(personalDetails)
     )
 }

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.http
+package uk.gov.hmrc.personaldetailsvalidation.model
 
 import uk.gov.voa.valuetype.StringValue
 
-case class Host(value: String) extends StringValue
+case class NonEmptyString(value: String) extends StringValue {
+  require(value.trim.length > 0, s"$typeName cannot be empty")
+}

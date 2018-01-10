@@ -4,7 +4,6 @@ import uk.gov.hmrc.personaldetailsvalidation.support.WebPage
 
 case class ErrorPage(url: String = "") extends WebPage {
 
-  lazy val verifyDisplayed: () => Unit = () => {
+  def verifyThisPageDisplayed(): Unit =
     pageTitle shouldBe "Sorry, we are experiencing technical difficulties"
-  }
 }

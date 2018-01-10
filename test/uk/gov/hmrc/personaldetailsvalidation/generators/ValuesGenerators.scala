@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,9 @@ package uk.gov.hmrc.personaldetailsvalidation.generators
 import java.net.URI
 
 import org.scalacheck.Gen
-import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, NonEmptyString}
 
 object ValuesGenerators {
 
@@ -36,6 +37,11 @@ object ValuesGenerators {
     .map(_.mkString("/"))
     .map(path => new URI(s"/$path"))
 
-  implicit val ninos: Gen[String] = nonEmptyStrings
+  implicit val nonEmptyStringObjects: Gen[NonEmptyString] =
+    nonEmptyStrings.map(NonEmptyString.apply)
 
+  implicit val ninos: Gen[Nino] = {
+    val ninoGenerator = new Generator()
+    Gen.identifier.map(_ => ninoGenerator.nextNino)
+  }
 }

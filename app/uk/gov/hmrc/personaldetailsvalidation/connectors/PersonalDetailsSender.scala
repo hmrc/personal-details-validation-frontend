@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,11 @@ import javax.inject.{Inject, Singleton}
 
 import play.api.http.HeaderNames._
 import play.api.http.Status.CREATED
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{Format, JsObject, Json}
 import uk.gov.hmrc.http.{BadGatewayException, HeaderCarrier, HttpReads, HttpResponse}
-import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
+import uk.gov.hmrc.personaldetailsvalidation.model.{NonEmptyString, PersonalDetails}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.voa.valuetype.play.formats.ValueTypeFormat._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
@@ -60,6 +61,8 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
         throw new BadGatewayException(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}")
     }
   }
+
+  private implicit val nonEmptyStringFormat: Format[NonEmptyString] = format(NonEmptyString.apply)
 
   private implicit class PersonalDetailsSerializer(personalDetails: PersonalDetails) {
     lazy val toJson: JsObject = Json.obj(

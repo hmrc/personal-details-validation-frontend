@@ -8,6 +8,7 @@ private object AppDependencies {
   private val compile = Seq(
     "org.typelevel" %% "cats-core" % "1.0.0-RC1",
     "uk.gov.hmrc" %% "bootstrap-play-25" % "1.0.0",
+    "uk.gov.hmrc" %% "domain" % "5.0.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.15.0",
     "uk.gov.hmrc" %% "play-language" % "3.4.0",
     "uk.gov.hmrc" %% "play-reactivemongo" % "6.1.0",
@@ -25,6 +26,7 @@ private object AppDependencies {
   )
 
   private val it = Seq(
+    "com.github.tomakehurst" % "wiremock" % "2.12.0" % IntegrationTest,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % IntegrationTest,
     "uk.gov.hmrc" %% "hmrctest" % "3.0.0" % IntegrationTest
   )

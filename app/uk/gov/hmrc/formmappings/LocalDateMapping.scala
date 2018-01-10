@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,84 +16,33 @@
 
 package uk.gov.hmrc.formmappings
 
-import java.time.LocalDate
+import java.time.temporal.ChronoField._
+import java.time.{DateTimeException, LocalDate}
 
-import cats.implicits._
-import play.api.data.validation.{Constraint, Invalid, Valid}
+import cats.data.{NonEmptyList, Validated, ValidatedNel}
+import play.api.data.validation.{Constraint, ValidationError}
 import play.api.data.{FormError, Mapping, ObjectMapping}
 
 import scala.util.{Failure, Success, Try}
 
 case class LocalDateMapping private[formmappings](key: String = "",
                                                   constraints: Seq[Constraint[LocalDate]] = Nil)
-                                                 (formatError: => String)
-  extends Mapping[LocalDate] with ObjectMapping {
+                                                 (errorKeyPrefix: => String)
+  extends Mapping[LocalDate]
+    with ObjectMapping {
+
+  private lazy val binder = LocalDateMapping.LocalDateBinder(key, constraints)(errorKeyPrefix)
+
+  import binder._
 
   val mappings: Seq[Mapping[_]] = Seq(this)
 
-  def bind(data: Map[String, String]): Seq[FormError] Either LocalDate =
-    Seq(data.find("year"), data.find("month"), data.find("day"))
-      .map(partsToInt)
-      .toXorOfSequence
-      .flatMap(toLocalDate)
-      .leftMap(toFormErrors)
-      .flatMap(checkConstraints)
-
-  private implicit class DataOps(data: Map[String, String]) {
-    def find(partName: String): String Either String =
-      Either.fromOption(data.get(formKeyFor(partName)), s"Missing $partName")
-  }
-
-  private def formKeyFor(partName: String) =
-    (if (key.isEmpty) None else Some(key))
-      .map(k => s"$k.$partName").getOrElse(partName)
-
-  private val partsToInt: (String Either String) => String Either Int =
-    _.flatMap { stringDataPart =>
-      Try(stringDataPart.toInt) match {
-        case Success(intDataPart) => Right(intDataPart)
-        case Failure(parsingError) => Left(parsingError.getMessage)
-      }
-    }
-
-  private implicit class IntsOps(partsAsInts: Seq[String Either Int]) {
-
-    val toXorOfSequence: String Either Seq[Int] =
-      partsAsInts
-        .foldLeft(Either.right[String, Seq[Int]](Nil)) {
-          (partsSeq, maybeDataPart) =>
-            partsSeq.flatMap(parts => maybeDataPart.map(part => parts :+ part))
-        }
-  }
-
-  private val toLocalDate: (Seq[Int]) => String Either LocalDate =
-    allParts =>
-      if (allParts.head < 1000)
-        Left(s"Year ${allParts.head} is invalid")
-      else Try {
-        LocalDate.of(allParts.head, allParts(1), allParts(2))
-      } match {
-        case Success(localDate) => Right(localDate)
-        case Failure(exception) => Left(exception.getMessage)
-      }
-
-  private val checkConstraints: LocalDate => Seq[FormError] Either LocalDate =
-    localDate =>
-      constraints.map(_.apply(localDate)).foldLeft(Seq.empty[FormError]) {
-        case (allErrors, Valid) => allErrors
-        case (allErrors, Invalid(errors)) => allErrors ++: errors.map(error => FormError(key, error.message, error.args))
-      } match {
-        case Nil => Right(localDate)
-        case validationErrors => Left(validationErrors)
-      }
-
-  private val toFormErrors: String => Seq[FormError] =
-    _ => Seq(FormError(key, formatError))
+  def bind(formData: Map[String, String]): Seq[FormError] Either LocalDate = binder.bind(formData)
 
   def unbind(date: LocalDate): Map[String, String] = Map(
-    formKeyFor("year") -> date.getYear.toString,
-    formKeyFor("month") -> date.getMonthValue.toString,
-    formKeyFor("day") -> date.getDayOfMonth.toString
+    "year".prependWithKey -> date.getYear.toString,
+    "month".prependWithKey -> date.getMonthValue.toString,
+    "day".prependWithKey -> date.getDayOfMonth.toString
   )
 
   def unbindAndValidate(date: LocalDate): (Map[String, String], Seq[FormError]) =
@@ -101,9 +50,142 @@ case class LocalDateMapping private[formmappings](key: String = "",
 
   def withPrefix(prefix: String): Mapping[LocalDate] =
     addPrefix(prefix)
-      .map(newKey => LocalDateMapping(newKey, constraints)(formatError))
+      .map(newKey => LocalDateMapping(newKey, constraints)(errorKeyPrefix))
       .getOrElse(this)
 
   def verifying(addConstraints: Constraint[LocalDate]*): Mapping[LocalDate] =
-    LocalDateMapping(key, constraints ++ addConstraints.toSeq)(formatError)
+    LocalDateMapping(key, constraints ++ addConstraints.toSeq)(errorKeyPrefix)
+}
+
+private object LocalDateMapping {
+
+  import cats.implicits._
+
+  private case class LocalDateBinder(key: String,
+                                     constraints: Seq[Constraint[LocalDate]])
+                                    (errorKeyPrefix: => String) {
+
+    def bind(formData: Map[String, String]): Either[Seq[FormError], LocalDate] = Seq(
+      "year".prependWithKey.findValueIn(formData).parseToInt.validateUsing(YEAR.checkValidValue),
+      "month".prependWithKey.findValueIn(formData).parseToInt.validateUsing(MONTH_OF_YEAR.checkValidValue),
+      "day".prependWithKey.findValueIn(formData).parseToInt.validateUsing(DAY_OF_MONTH.checkValidValue)
+    ).toValidatedDate
+      .leftMap(toFormErrors)
+      .checkConstraints
+      .toEither
+
+    implicit class PartNameOps(partName: String) {
+
+      lazy val prependWithKey: String = key match {
+        case "" => partName
+        case nonEmptyKey => s"$nonEmptyKey.$partName"
+      }
+
+      private[LocalDateBinder] def findValueIn(formData: Map[String, String]): ValidatedNel[String, (String, String)] =
+        Validated.fromOption(
+          formData.get(partName).flatMap(blankToNone).map(part => partName -> part),
+          NonEmptyList.of(s"$errorKeyPrefix.$partName.required")
+        )
+
+      private val blankToNone: String => Option[String] =
+        _.trim match {
+          case "" => None
+          case nonEmpty => Some(nonEmpty)
+        }
+    }
+
+    private implicit class ValidatedStringPartOps(validatedPart: ValidatedNel[String, (String, String)]) {
+
+      lazy val parseToInt: ValidatedNel[String, (String, Int)] = validatedPart flatMap {
+        case (partName, stringValue) =>
+          Try(stringValue.toInt) match {
+            case Success(partAsInt) => Validated.validNel(partName -> partAsInt)
+            case Failure(_) => Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
+          }
+      }
+    }
+
+    private implicit class ValidatedIntPartOps(validatedPart: ValidatedNel[String, (String, Int)]) {
+
+      def validateUsing(validate: Long => Long): ValidatedNel[String, Int] = validatedPart flatMap {
+        case (partName, intValue) =>
+          Try(validate(intValue)) match {
+            case Success(validatedValue) => Validated.validNel(validatedValue.intValue())
+            case Failure(_) => Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
+          }
+      }
+    }
+
+    private implicit class ValidatedPartsOps(seqOfValidatedParts: Seq[ValidatedNel[String, Int]]) {
+
+      lazy val toValidatedDate: ValidatedNel[String, LocalDate] =
+        seqOfValidatedParts
+          .toValidatedSeqOfParts
+          .leftMap(toSingleErrorIfAllPartsMissing)
+          .flatMap(toDate)
+
+      private[ValidatedPartsOps] lazy val toValidatedSeqOfParts: ValidatedNel[String, Seq[Int]] =
+        seqOfValidatedParts.foldLeft(Validated.validNel[String, List[Int]](Nil)) {
+          case (combinedParts, validatedPart) => combinedParts combine validatedPart.map(List(_))
+        }
+
+      private val numberOfDateParts = 3
+
+      private def toSingleErrorIfAllPartsMissing(errors: NonEmptyList[String]): NonEmptyList[String] =
+        errors.filter(_ endsWith ".required").size match {
+          case `numberOfDateParts` => NonEmptyList.of(dateFieldError(suffixed = "required"))
+          case _ => errors
+        }
+
+      private val toDate: Seq[Int] => ValidatedNel[String, LocalDate] = {
+        case year +: month +: day +: Nil =>
+          Validated.catchOnly[DateTimeException](LocalDate.of(year, month, day))
+            .leftMap(_ => NonEmptyList.of(dateFieldError(suffixed = "invalid")))
+        case _ => Validated.invalidNel(dateFieldError(suffixed = "invalid"))
+      }
+
+      private def dateFieldError(suffixed: String) = key match {
+        case "" => s"$errorKeyPrefix.$suffixed"
+        case nonEmptyKey => s"$errorKeyPrefix.$nonEmptyKey.$suffixed"
+      }
+    }
+
+    private def toFormErrors(errorKeys: NonEmptyList[String]): List[FormError] =
+      errorKeys.toList.map(FormError(key, _))
+
+    private implicit class ValidatedDateOps(validatedDate: Validated[Seq[FormError], LocalDate]) {
+
+      import play.api.data.validation.{Invalid, Valid}
+
+      lazy val checkConstraints: Validated[Seq[FormError], LocalDate] = validatedDate flatMap { date =>
+        constraints
+          .map(constraint => constraint(date))
+          .foldLeft(Seq.empty[FormError]) {
+            case (formErrors, Valid) => formErrors
+            case (formErrors, Invalid(validationErrors)) => combineErrors(formErrors, validationErrors)
+          }.toValidated(date)
+      }
+
+      private def combineErrors(formErrors: Seq[FormError], validationErrors: Seq[ValidationError]) =
+        formErrors ++: validationErrors.map {
+          error => FormError(key, error.message, error.args)
+        }
+
+      private implicit class FormErrorsOps(formErrors: Seq[FormError]) {
+        def toValidated(date: LocalDate) = formErrors match {
+          case Nil => Validated.valid(date)
+          case errors => Validated.invalid(errors)
+        }
+      }
+    }
+
+    private implicit class ValidatedOps[ErrorType, ValidType](validated: Validated[ErrorType, ValidType]) {
+
+      def flatMap[NewValidType](map: ValidType => Validated[ErrorType, NewValidType]): Validated[ErrorType, NewValidType] =
+        validated match {
+          case Validated.Valid(validValue) => map(validValue)
+          case invalid@Validated.Invalid(_) => invalid
+        }
+    }
+  }
 }

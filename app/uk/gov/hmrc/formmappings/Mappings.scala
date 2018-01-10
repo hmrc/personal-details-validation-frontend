@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,22 @@ import java.time.LocalDate
 
 import play.api.data.Forms._
 import play.api.data.Mapping
+import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
 
 object Mappings {
 
-  def mandatoryText(error: => String): Mapping[String] =
+  def mandatoryText(error: => String): Mapping[NonEmptyString] =
     optional(text)
+      .transform[Option[String]](emptyStringAsNone, emptyStringAsNone)
       .verifying(error, _.isDefined)
-      .transform[String](_.get, Some.apply)
+      .transform[NonEmptyString](validatedNonBlankString => validatedNonBlankString.map(NonEmptyString).get, nonEmptyString => Some(nonEmptyString.value))
 
-  def mandatoryLocalDate(formatError: => String): Mapping[LocalDate] =
-    LocalDateMapping()(formatError)
+  private def emptyStringAsNone(maybeValue: Option[String]): Option[String] = maybeValue.map(_.trim).flatMap {
+    case "" => Option.empty[String]
+    case nonEmpty => Some(nonEmpty)
+  }
+
+  def mandatoryLocalDate(errorKeyPrefix: => String): Mapping[LocalDate] =
+    LocalDateMapping()(errorKeyPrefix)
 }
 

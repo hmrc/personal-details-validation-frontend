@@ -1,5 +1,5 @@
 @*
- * Copyright 2017 HM Revenue & Customs
+ * Copyright 2018 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,12 @@
     <p>@messages("personal-details.paragraph")</p>
 
     @form(routes.PersonalDetailsCollectionController.submit(completionUrl), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
+
+        @errorSummary(
+            heading = Messages("error-summary.heading"),
+            form = pageForm
+        )
+
         <fieldset class="form-field-group">
             @input(
                 field = pageForm("firstName"),
