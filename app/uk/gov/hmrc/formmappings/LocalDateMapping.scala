@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.formmappings
 
+import java.time.temporal.ChronoField
 import java.time.temporal.ChronoField._
 import java.time.{DateTimeException, LocalDate}
 
@@ -23,6 +24,7 @@ import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import play.api.data.validation.{Constraint, ValidationError}
 import play.api.data.{FormError, Mapping, ObjectMapping}
 
+import scala.language.implicitConversions
 import scala.util.{Failure, Success, Try}
 
 case class LocalDateMapping private[formmappings](key: String = "",
@@ -66,9 +68,9 @@ private object LocalDateMapping {
                                     (errorKeyPrefix: => String) {
 
     def bind(formData: Map[String, String]): Either[Seq[FormError], LocalDate] = Seq(
-      "year".prependWithKey.findValueIn(formData).parseToInt.validateUsing(YEAR.checkValidValue),
-      "month".prependWithKey.findValueIn(formData).parseToInt.validateUsing(MONTH_OF_YEAR.checkValidValue),
-      "day".prependWithKey.findValueIn(formData).parseToInt.validateUsing(DAY_OF_MONTH.checkValidValue)
+      "year".prependWithKey.findValueIn(formData).parseToInt.validateUsing(fourDigitsValidator),
+      "month".prependWithKey.findValueIn(formData).parseToInt.validateUsing(MONTH_OF_YEAR),
+      "day".prependWithKey.findValueIn(formData).parseToInt.validateUsing(DAY_OF_MONTH)
     ).toValidatedDate
       .leftMap(toFormErrors)
       .checkConstraints
@@ -107,13 +109,21 @@ private object LocalDateMapping {
 
     private implicit class ValidatedIntPartOps(validatedPart: ValidatedNel[String, (String, Int)]) {
 
-      def validateUsing(validate: Long => Long): ValidatedNel[String, Int] = validatedPart flatMap {
-        case (partName, intValue) =>
-          Try(validate(intValue)) match {
-            case Success(validatedValue) => Validated.validNel(validatedValue.intValue())
-            case Failure(_) => Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
-          }
+      def validateUsing(validate: ((String, Int)) => ValidatedNel[String, Int]): ValidatedNel[String, Int] =
+        validatedPart flatMap validate
+    }
+
+    private implicit def asTupleToValidated(field: ChronoField): ((String, Int)) => ValidatedNel[String, Int] = {
+      case (partName: String, partValue: Int) => Try(field.checkValidValue(partValue)) match {
+        case Success(validatedValue) => Validated.validNel(validatedValue.intValue())
+        case Failure(_) => Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
       }
+    }
+
+    private val fourDigitsValidator: ((String, Int)) => ValidatedNel[String, Int] = {
+      case (partName, year) =>
+        if (year > 999 && year < 9999) Validated.validNel(year)
+        else Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
     }
 
     private implicit class ValidatedPartsOps(seqOfValidatedParts: Seq[ValidatedNel[String, Int]]) {

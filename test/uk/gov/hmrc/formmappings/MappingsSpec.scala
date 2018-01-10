@@ -161,7 +161,7 @@ class MappingsSpec
 
         val partWithIllegalValue = partToBeInvalid match {
           case `yearPartName` =>
-            yearPartName -> Gen.oneOf(Year.MIN_VALUE - 1, Year.MAX_VALUE + 1).generateOne.toString
+            yearPartName -> Gen.oneOf(1000 - 1, 9999 + 1).generateOne.toString
           case `monthPartName` =>
             monthPartName -> Gen.oneOf(-1, 0, 13).generateOne.toString
           case `dayPartName` =>
