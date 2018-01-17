@@ -16,17 +16,27 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Singleton
 
-import play.api.mvc.{Action, AnyContent}
+import cats.Monad
+import cats.implicits._
+import play.api.mvc.Result
+import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.language.{higherKinds, implicitConversions}
 
 @Singleton
-class PersonalDetailsValidationStartController @Inject()(journeyStart: FuturedJourneyStart)
-  extends FrontendController {
+private class FuturedJourneyStart extends JourneyStart[Future]()
 
-  def start(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    journeyStart.findRedirect(completionUrl)
-  }
+private class JourneyStart[Interpretation[_] : Monad]() {
+
+  def findRedirect(completionUrl: CompletionUrl): Interpretation[Result] =
+    Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
+
+  private implicit def pure[R](value: R): Interpretation[R] =
+    implicitly[Monad[Interpretation]].pure(value)
+
 }
