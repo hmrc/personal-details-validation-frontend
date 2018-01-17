@@ -23,6 +23,7 @@ import generators.Generators.Implicits._
 import generators.Generators._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -41,7 +42,10 @@ import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 class PersonalDetailsSubmissionSpec
   extends UnitSpec
     with MockFactory
+    with OneAppPerSuite
     with TableDrivenPropertyChecks {
+
+  import PersonalDetailsSubmission.validationIdSessionKey
 
   "bindValidateAndRedirect" should {
 
@@ -57,13 +61,13 @@ class PersonalDetailsSubmissionSpec
 
       status(result) shouldBe BAD_REQUEST
       contentAsString(result) shouldBe "page with errors"
+      result.session.get(validationIdSessionKey) shouldBe None
     }
-
 
     "bind the request to PersonalDetails, " +
       "post it to the validation service, " +
       "fetch validationId from the validation service and " +
-      "return redirect to completionUrl with appended validationId query parameter" in new Setup with HappyTestCaseScenarios {
+      "return redirect to completionUrl with appended validationId query parameter and validationId added to the session" in new Setup with HappyTestCaseScenarios {
 
       forAll(completionUrlScenarios) { case (completionUrl, validationId, expectedRedirectUrl) =>
 
@@ -85,6 +89,7 @@ class PersonalDetailsSubmissionSpec
 
         status(result) shouldBe SEE_OTHER
         result.header.headers(LOCATION) shouldBe expectedRedirectUrl
+        result.session.get(validationIdSessionKey) shouldBe Some(validationId)
       }
     }
   }

@@ -44,6 +44,8 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
                                                                    personalDetailsValidationConnector: PersonalDetailsSender[Interpretation],
                                                                    validationIdFetcher: ValidationIdFetcher[Interpretation]) {
 
+  import PersonalDetailsSubmission.validationIdSessionKey
+
   def bindValidateAndRedirect(completionUrl: CompletionUrl)
                              (implicit request: Request[_],
                               headerCarrier: HeaderCarrier,
@@ -56,6 +58,7 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
   }.value.fold(
     pageWithErrors => BadRequest(pageWithErrors),
     validationId => formRedirect(validationId, completionUrl)
+      .addingToSession(validationIdSessionKey -> validationId)
   )
 
   private def passToValidation(personalDetails: PersonalDetails)
@@ -79,4 +82,8 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
 
   private implicit def toEitherT[L, R](wrappedMaybeValue: Interpretation[Either[L, R]]): EitherT[Interpretation, L, R] =
     EitherT(wrappedMaybeValue)
+}
+
+private object PersonalDetailsSubmission {
+  val validationIdSessionKey = "ValidationId"
 }
