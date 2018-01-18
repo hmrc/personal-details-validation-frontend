@@ -37,12 +37,16 @@ import scala.language.{higherKinds, implicitConversions}
 @Singleton
 private class FuturedPersonalDetailsSubmission @Inject()(personalDetailsPage: PersonalDetailsPage,
                                                          personalDetailsValidationConnector: FuturedPersonalDetailsSender,
-                                                         validationIdFetcher: FuturedValidationIdFetcher)
-  extends PersonalDetailsSubmission[Future](personalDetailsPage, personalDetailsValidationConnector, validationIdFetcher)
+                                                         validationIdFetcher: FuturedValidationIdFetcher,
+                                                         redirectComposer: RedirectComposer)
+  extends PersonalDetailsSubmission[Future](personalDetailsPage, personalDetailsValidationConnector, validationIdFetcher, redirectComposer)
 
 private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetailsPage: PersonalDetailsPage,
                                                                    personalDetailsValidationConnector: PersonalDetailsSender[Interpretation],
-                                                                   validationIdFetcher: ValidationIdFetcher[Interpretation]) {
+                                                                   validationIdFetcher: ValidationIdFetcher[Interpretation],
+                                                                   redirectComposer: RedirectComposer) {
+
+  import PersonalDetailsSubmission._
 
   def bindValidateAndRedirect(completionUrl: CompletionUrl)
                              (implicit request: Request[_],
@@ -55,7 +59,8 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
     } yield validationId
   }.value.fold(
     pageWithErrors => BadRequest(pageWithErrors),
-    validationId => formRedirect(validationId, completionUrl)
+    validationId => redirectComposer.compose(completionUrl, validationId)
+      .addingToSession(validationIdSessionKey -> validationId)
   )
 
   private def passToValidation(personalDetails: PersonalDetails)
@@ -68,15 +73,13 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
                                 executionContext: ExecutionContext): EitherT[Interpretation, Html, String] =
     validationIdFetcher.fetchValidationId(validationIdFetchUri).map(Either.right[Html, String])
 
-  private def formRedirect(validationId: String, completionUrl: CompletionUrl): Result =
-    Option(new URI(completionUrl.value).getQuery) match {
-      case None => Redirect(s"$completionUrl?validationId=$validationId")
-      case _ => Redirect(s"$completionUrl&validationId=$validationId")
-    }
-
   private def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =
     EitherT(implicitly[Monad[Interpretation]].pure(maybeValue))
 
   private implicit def toEitherT[L, R](wrappedMaybeValue: Interpretation[Either[L, R]]): EitherT[Interpretation, L, R] =
     EitherT(wrappedMaybeValue)
+}
+
+private object PersonalDetailsSubmission {
+  val validationIdSessionKey = "ValidationId"
 }

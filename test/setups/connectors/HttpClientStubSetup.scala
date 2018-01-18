@@ -65,6 +65,9 @@ trait HttpClientStubSetup extends MockFactory {
     def returning(status: Int, body: JsValue): Unit =
       returning(HttpResponse(status, responseJson = Some(body)))
 
+    def returning(status: Int): Unit =
+      returning(HttpResponse(status, responseJson = None))
+
     def returning(status: Int, body: String): Unit =
       returning(HttpResponse(status, responseString = Some(body)))
 

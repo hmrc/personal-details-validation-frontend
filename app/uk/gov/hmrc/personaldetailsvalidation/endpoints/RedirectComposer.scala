@@ -16,17 +16,22 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import javax.inject.{Inject, Singleton}
+import java.net.URI
 
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.Result
+import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-@Singleton
-class PersonalDetailsValidationStartController @Inject()(journeyStart: FuturedJourneyStart)
-  extends FrontendController {
+private class RedirectComposer {
 
-  def start(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    journeyStart.findRedirect(completionUrl)
+  private val validationIdQueryParameter = "validationId"
+
+  def compose(completionUrl: CompletionUrl, validationId: String): Result = Option(new URI(completionUrl.value).getQuery) match {
+    case None => Redirect(s"$completionUrl?${validationId.toQueryParameter}")
+    case _ => Redirect(s"$completionUrl&${validationId.toQueryParameter}")
+  }
+
+  private implicit class QueryParameterOps(validationId: String) {
+    val toQueryParameter: String = s"$validationIdQueryParameter=$validationId"
   }
 }

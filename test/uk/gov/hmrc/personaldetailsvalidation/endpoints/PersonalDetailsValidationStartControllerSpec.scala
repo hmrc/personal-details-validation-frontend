@@ -19,13 +19,16 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
-import play.api.mvc.{AnyContentAsEmpty, Request}
+import play.api.mvc.Results.Redirect
+import play.api.mvc.{AnyContentAsEmpty, Request, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import play.mvc.Http.HeaderNames.LOCATION
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.play.test.UnitSpec
 
+import scala.concurrent.{ExecutionContext, Future}
 import scalamock.MockArgumentMatchers
 
 class PersonalDetailsValidationStartControllerSpec
@@ -36,12 +39,24 @@ class PersonalDetailsValidationStartControllerSpec
 
   "start" should {
 
-    "redirect to personal details page" in new Setup {
-      val result = controller.start(completionUrl)(request)
+    "fetch redirect from the JourneyStart" in new Setup {
 
-      status(result) shouldBe SEE_OTHER
+      val redirect: Result = Redirect("some-url")
 
-      header(LOCATION, result) shouldBe Some(routes.PersonalDetailsCollectionController.showPage(completionUrl).url)
+      (journeyStart.findRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(url, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+        .returning(Future.successful(redirect))
+
+      controller.start(url)(request).futureValue shouldBe redirect
+    }
+
+    "throw an exception when fetchRedirect returns one" in new Setup {
+
+      (journeyStart.findRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(url, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+        .returning(Future.failed(new RuntimeException("Unrecoverable error")))
+
+      a[RuntimeException] should be thrownBy controller.start(url)(request).futureValue
     }
   }
 
@@ -49,8 +64,10 @@ class PersonalDetailsValidationStartControllerSpec
 
     protected implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
 
-    val completionUrl = ValuesGenerators.completionUrls.generateOne
+    val journeyStart = mock[FuturedJourneyStart]
 
-    val controller = new PersonalDetailsValidationStartController()
+    val url = ValuesGenerators.completionUrls.generateOne
+
+    val controller = new PersonalDetailsValidationStartController(journeyStart)
   }
 }
