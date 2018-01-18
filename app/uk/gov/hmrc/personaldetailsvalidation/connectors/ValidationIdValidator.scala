@@ -39,7 +39,7 @@ private[personaldetailsvalidation] class FuturedValidationIdValidator @Inject()(
 
   override def verify(validationId: String)
                      (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Boolean] =
-    httpClient.GET(s"$personalDetailsValidationBaseUrl/$validationId")
+    httpClient.GET(s"$personalDetailsValidationBaseUrl/personal-details-validation/$validationId")
 
   private implicit val validationIdHttpReads: HttpReads[Boolean] = new HttpReads[Boolean] {
     override def read(method: String, url: String, response: HttpResponse): Boolean = response.status match {

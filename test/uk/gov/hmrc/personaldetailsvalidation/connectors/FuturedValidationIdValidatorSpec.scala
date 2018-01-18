@@ -35,17 +35,17 @@ class FuturedValidationIdValidatorSpec
 
   "verify" should {
 
-    "return true if call to GET personal-details-validation/:validationId returns OK" in new Setup {
+    "return true if call to GET /personal-details-validation/:validationId returns OK" in new Setup {
 
-      expectGet(toUrl = s"$baseUrl/$validationId")
+      expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
         .returning(status = OK)
 
       validationIdValidator.verify(validationId).futureValue shouldBe true
     }
 
-    "return false if call to GET personal-details-validation/:validationId returns NOT_FOUND" in new Setup {
+    "return false if call to GET /personal-details-validation/:validationId returns NOT_FOUND" in new Setup {
 
-      expectGet(toUrl = s"$baseUrl/$validationId")
+      expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
         .returning(status = NOT_FOUND)
 
       validationIdValidator.verify(validationId).futureValue shouldBe false
@@ -53,15 +53,15 @@ class FuturedValidationIdValidatorSpec
 
     Set(NO_CONTENT, BAD_REQUEST, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
 
-      s"throw a BadGatewayException when GET personal-details-validation/:validationId returns $unexpectedStatus" in new Setup {
+      s"throw a BadGatewayException when GET /personal-details-validation/:validationId returns $unexpectedStatus" in new Setup {
 
-        expectGet(toUrl = s"$baseUrl/$validationId")
+        expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
           .returning(unexpectedStatus, "some response body")
 
         val exception = intercept[BadGatewayException] {
           await(validationIdValidator.verify(validationId))
         }
-        exception.message shouldBe s"Unexpected response from GET $baseUrl/$validationId with status: '$unexpectedStatus' and body: some response body"
+        exception.message shouldBe s"Unexpected response from GET $baseUrl/personal-details-validation/$validationId with status: '$unexpectedStatus' and body: some response body"
         exception.responseCode shouldBe BAD_GATEWAY
       }
     }
