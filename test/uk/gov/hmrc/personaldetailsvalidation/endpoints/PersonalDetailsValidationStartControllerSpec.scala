@@ -22,11 +22,13 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContentAsEmpty, Request, Result}
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scalamock.MockArgumentMatchers
 
 class PersonalDetailsValidationStartControllerSpec
@@ -41,8 +43,8 @@ class PersonalDetailsValidationStartControllerSpec
 
       val redirect: Result = Redirect("some-url")
 
-      (journeyStart.findRedirect(_: CompletionUrl))
-        .expects(url)
+      (journeyStart.findRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(url, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returning(Future.successful(redirect))
 
       controller.start(url)(request).futureValue shouldBe redirect
@@ -50,8 +52,8 @@ class PersonalDetailsValidationStartControllerSpec
 
     "throw an exception when fetchRedirect returns one" in new Setup {
 
-      (journeyStart.findRedirect(_: CompletionUrl))
-        .expects(url)
+      (journeyStart.findRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(url, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returning(Future.failed(new RuntimeException("Unrecoverable error")))
 
       a[RuntimeException] should be thrownBy controller.start(url)(request).futureValue
