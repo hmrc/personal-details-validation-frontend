@@ -43,8 +43,8 @@ private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: Val
 
   def findRedirect(completionUrl: CompletionUrl)
                   (implicit request: Request[_], headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Interpretation[Result] = for {
-    maybeValidationIdFromSession <- findValidationIdInSession
-    maybeValidatedValidationId <- validate(maybeValidationIdFromSession)
+    maybeSessionValidationId <- findValidationIdInSession
+    maybeValidatedValidationId <- validate(maybeSessionValidationId)
     redirect <- findRedirectUsing(maybeValidatedValidationId, completionUrl)
   } yield redirect
 
