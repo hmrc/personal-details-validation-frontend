@@ -59,7 +59,7 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
     } yield validationId
   }.value.fold(
     pageWithErrors => BadRequest(pageWithErrors),
-    validationId => redirectComposer.compose(completionUrl, validationId)
+    validationId => redirectComposer.redirect(completionUrl, validationId)
       .addingToSession(validationIdSessionKey -> validationId)
   )
 

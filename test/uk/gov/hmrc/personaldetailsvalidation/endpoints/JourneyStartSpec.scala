@@ -17,13 +17,17 @@
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import cats.Id
+import cats.data.EitherT
 import generators.Generators.Implicits._
 import generators.Generators.nonEmptyStrings
 import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.OneAppPerSuite
+import play.api.LoggerLike
 import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
+import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.ValidationIdValidator
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
@@ -52,10 +56,10 @@ class JourneyStartSpec
 
       (validationIdValidator.verify(_: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
-        .returning(true)
+        .returning(EitherT.rightT[Id, ProcessingError](true))
 
       val redirect = Redirect("redirect-url")
-      (redirectComposer.compose(_: CompletionUrl, _: String))
+      (redirectComposer.redirect(_: CompletionUrl, _: String))
         .expects(completionUrl, validationId)
         .returning(redirect)
 
@@ -69,9 +73,30 @@ class JourneyStartSpec
 
       (validationIdValidator.verify(_: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
-        .returning(false)
+        .returning(EitherT.rightT[Id, ProcessingError](false))
 
       journeyStart.findRedirect(completionUrl) shouldBe Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
+    }
+
+    "log an validation error and return redirect to the given completionUrl with 'technicalError' " +
+      "if there's 'validationId' in the session " +
+      "but 'validationId' validation returns an error" in new Setup {
+      implicit val requestWithValidationId = request.withSession(validationIdSessionKey -> validationId)
+
+      val validationError = ProcessingError("some message")
+      (validationIdValidator.verify(_: String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(validationId, headerCarrier, executionContext)
+        .returning(EitherT.leftT[Id, Boolean](validationError))
+
+      (logger.error(_: ProcessingError))
+        .expects(validationError)
+
+      val redirect = Redirect("redirect-url")
+      (redirectComposer.redirectWithTechnicalErrorParameter(_: CompletionUrl))
+        .expects(completionUrl)
+        .returning(redirect)
+
+      journeyStart.findRedirect(completionUrl) shouldBe redirect
     }
   }
 
@@ -84,7 +109,8 @@ class JourneyStartSpec
 
     val validationIdValidator = mock[ValidationIdValidator[Id]]
     val redirectComposer = mock[RedirectComposer]
+    val logger = mock[Logger]
 
-    val journeyStart = new JourneyStart[Id](validationIdValidator, redirectComposer)
+    val journeyStart = new JourneyStart[Id](validationIdValidator, redirectComposer, logger)
   }
 }

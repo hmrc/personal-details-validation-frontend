@@ -30,20 +30,40 @@ class RedirectComposerSpec
   extends UnitSpec
     with TableDrivenPropertyChecks {
 
-  private val validationId = nonEmptyStrings.generateOne
-  private val scenarios = Tables.Table(
-    ("given completion url",        "expected redirect url"),
-    ("/some-url",                   s"/some-url?validationId=$validationId"),
-    ("/some-url?parameter1=value1", s"/some-url?parameter1=value1&validationId=$validationId")
-  )
+  "redirect" should {
 
-  "compose" should {
+    val validationId = nonEmptyStrings.generateOne
+    val scenarios = Tables.Table(
+      ("given completion url", "expected redirect url"),
+      ("/some-url", s"/some-url?validationId=$validationId"),
+      ("/some-url?parameter1=value1", s"/some-url?parameter1=value1&validationId=$validationId")
+    )
 
     forAll(scenarios) { (completionUrl, expectedRedirect) =>
 
       s"return a Redirect to the $expectedRedirect when completionUrl is '$completionUrl'" in {
 
-        val result = new RedirectComposer().compose(completionUrl, validationId)
+        val result = new RedirectComposer().redirect(completionUrl, validationId)
+
+        status(result) shouldBe SEE_OTHER
+        result.header.headers.get(LOCATION) shouldBe Some(expectedRedirect)
+      }
+    }
+  }
+
+  "redirectWithTechnicalErrorParameter" should {
+
+    val scenarios = Tables.Table(
+      ("given completion url", "expected redirect url"),
+      ("/some-url", s"/some-url?technicalError"),
+      ("/some-url?parameter1=value1", s"/some-url?parameter1=value1&technicalError")
+    )
+
+    forAll(scenarios) { (completionUrl, expectedRedirect) =>
+
+      s"return a Redirect to the $expectedRedirect when completionUrl is '$completionUrl'" in {
+
+        val result = new RedirectComposer().redirectWithTechnicalErrorParameter(completionUrl)
 
         status(result) shouldBe SEE_OTHER
         result.header.headers.get(LOCATION) shouldBe Some(expectedRedirect)

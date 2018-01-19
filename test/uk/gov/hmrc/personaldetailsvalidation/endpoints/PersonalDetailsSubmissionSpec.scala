@@ -85,7 +85,7 @@ class PersonalDetailsSubmissionSpec
         .returning(validationId)
 
       val redirectUrl = "redirect-url"
-      (redirectComposer.compose(_: CompletionUrl, _: String))
+      (redirectComposer.redirect(_: CompletionUrl, _: String))
         .expects(completionUrl, validationId)
         .returning(Redirect(redirectUrl))
 

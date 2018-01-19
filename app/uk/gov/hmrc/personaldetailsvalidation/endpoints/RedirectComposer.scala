@@ -25,10 +25,20 @@ import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 private class RedirectComposer {
 
   private val validationIdQueryParameter = "validationId"
+  private val technicalErrorQueryParameter = "technicalError"
 
-  def compose(completionUrl: CompletionUrl, validationId: String): Result = Option(new URI(completionUrl.value).getQuery) match {
-    case None => Redirect(s"$completionUrl?${validationId.toQueryParameter}")
-    case _ => Redirect(s"$completionUrl&${validationId.toQueryParameter}")
+  def redirect(completionUrl: CompletionUrl, validationId: String): Result =
+    completionUrl appendParameter validationId.toQueryParameter
+
+  def redirectWithTechnicalErrorParameter(completionUrl: CompletionUrl): Result =
+    completionUrl appendParameter technicalErrorQueryParameter
+
+  private implicit class CompletionUrlOps(completionUrl: CompletionUrl) {
+
+    def appendParameter(parameter: String) = Option(new URI(completionUrl.value).getQuery) match {
+      case None => Redirect(s"$completionUrl?$parameter")
+      case _ => Redirect(s"$completionUrl&$parameter")
+    }
   }
 
   private implicit class QueryParameterOps(validationId: String) {
