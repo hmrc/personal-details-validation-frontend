@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.http.ws.WSHttp
 import scala.concurrent.Future
 
 trait HttpClientStubSetup extends MockFactory {
+
   private val configuration = mock[Configuration]
   (configuration.getString(_: String, _: Option[Set[String]]))
     .expects("appName", None)
@@ -52,10 +53,17 @@ trait HttpClientStubSetup extends MockFactory {
         ))
 
       def returning(response: HttpResponse): Unit =
-        httpClient.postStubbing = (actualUrl: String, actualPayload: JsObject) => {
+        httpClient.postStubbing = (actualUrl: String, actualPayload: JsObject) => Future.successful {
           actualUrl shouldBe toUrl
           actualPayload shouldBe payload
           response
+        }
+
+      def throwing(exception: RuntimeException): Unit =
+        httpClient.postStubbing = (actualUrl: String, actualPayload: JsObject) => Future.failed {
+          actualUrl shouldBe toUrl
+          actualPayload shouldBe payload
+          exception
         }
     }
   }
@@ -90,16 +98,15 @@ trait HttpClientStubSetup extends MockFactory {
 
     override val hooks: Seq[HttpHook] = Nil
 
-    private[HttpClientStubSetup] var postStubbing: (String, JsObject) => HttpResponse =
+    private[HttpClientStubSetup] var postStubbing: (String, JsObject) => Future[HttpResponse] =
       (_, _) => throw new IllegalStateException("HttpClientStub not configured")
 
     private[HttpClientStubSetup] var getStubbing: (String) => Future[HttpResponse] =
       (_) => throw new IllegalStateException("HttpClientStub not configured")
 
     override def doPost[A](url: String, body: A, headers: Seq[(String, String)])
-                          (implicit wts: Writes[A], hc: HeaderCarrier): Future[HttpResponse] = Future.successful {
+                          (implicit wts: Writes[A], hc: HeaderCarrier): Future[HttpResponse] =
       postStubbing(url, body.asInstanceOf[JsObject])
-    }
 
     override def doGet(url: String)
                       (implicit hc: HeaderCarrier): Future[HttpResponse] =

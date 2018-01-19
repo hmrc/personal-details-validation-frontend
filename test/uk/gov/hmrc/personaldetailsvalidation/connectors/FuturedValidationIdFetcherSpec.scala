@@ -24,7 +24,8 @@ import play.api.Configuration
 import play.api.libs.json.{JsNull, Json}
 import play.api.test.Helpers._
 import setups.connectors.HttpClientStubSetup
-import uk.gov.hmrc.http.{BadGatewayException, HeaderCarrier}
+import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators._
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -45,35 +46,44 @@ class FuturedValidationIdFetcherSpec
       expectGet(toUrl = s"$baseUrl$endpointUri")
         .returning(status = OK, body = Json.obj("id" -> validationId))
 
-      connector.fetchValidationId(endpointUri).futureValue shouldBe validationId
+      connector.fetchValidationId(endpointUri).value.futureValue shouldBe Right(validationId)
     }
 
-    s"throw a BadGatewayException when there is no 'id' " +
-      "in the response from GET to the given uri" in new Setup {
+    "return a ProcessingError " +
+      "when there is no 'id' in the response from GET to the given uri" in new Setup {
 
       expectGet(toUrl = s"$baseUrl$endpointUri")
         .returning(status = OK, body = JsNull)
 
-      val exception = intercept[BadGatewayException] {
-        await(connector.fetchValidationId(endpointUri))
-      }
-      exception.message shouldBe s"No 'id' property in the json response from GET $baseUrl$endpointUri"
-      exception.responseCode shouldBe BAD_GATEWAY
+      connector.fetchValidationId(endpointUri).value.futureValue shouldBe Left(ProcessingError(
+        s"No 'id' property in the json response from GET $baseUrl$endpointUri"
+      ))
     }
 
     Set(NO_CONTENT, NOT_FOUND, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
 
-      s"throw a BadGatewayException when GET to the given uri returns $unexpectedStatus" in new Setup {
+      "return a ProcessingError " +
+        s"when GET to the given uri returns $unexpectedStatus" in new Setup {
 
         expectGet(toUrl = s"$baseUrl$endpointUri")
           .returning(unexpectedStatus, "some response body")
 
-        val exception = intercept[BadGatewayException] {
-          await(connector.fetchValidationId(endpointUri))
-        }
-        exception.message shouldBe s"Unexpected response from GET $baseUrl$endpointUri with status: '$unexpectedStatus' and body: some response body"
-        exception.responseCode shouldBe BAD_GATEWAY
+        connector.fetchValidationId(endpointUri).value.futureValue shouldBe Left(ProcessingError(
+          s"Unexpected response from GET $baseUrl$endpointUri with status: '$unexpectedStatus' and body: some response body"
+        ))
       }
+    }
+
+    "return a ProcessingError " +
+      "when GET to the given uri throws an exception" in new Setup {
+
+      val exception = new RuntimeException("message")
+      expectGet(toUrl = s"$baseUrl$endpointUri")
+        .throwing(exception)
+
+      connector.fetchValidationId(endpointUri).value.futureValue shouldBe Left(ProcessingError(
+        s"Call to GET $baseUrl$endpointUri threw: $exception"
+      ))
     }
   }
 

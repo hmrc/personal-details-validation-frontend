@@ -19,9 +19,11 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 import java.net.URI
 import javax.inject.{Inject, Singleton}
 
+import cats.data.EitherT
 import play.api.http.Status.OK
 import play.api.libs.json.{JsError, JsSuccess}
-import uk.gov.hmrc.http.{BadGatewayException, HeaderCarrier, HttpReads, HttpResponse}
+import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +33,7 @@ private[personaldetailsvalidation] trait ValidationIdFetcher[Interpretation[_]] 
 
   def fetchValidationId(endpointUri: URI)
                        (implicit headerCarrier: HeaderCarrier,
-                        executionContext: ExecutionContext): Interpretation[String]
+                        executionContext: ExecutionContext): EitherT[Interpretation, ProcessingError, String]
 }
 
 @Singleton
@@ -43,18 +45,26 @@ private[personaldetailsvalidation] class FuturedValidationIdFetcher @Inject()(ht
 
   override def fetchValidationId(endpointUri: URI)
                                 (implicit headerCarrier: HeaderCarrier,
-                                 executionContext: ExecutionContext): Future[String] =
-    httpClient.GET(s"$personalDetailsValidationBaseUrl$endpointUri")
+                                 executionContext: ExecutionContext): EitherT[Future, ProcessingError, String] = EitherT {
+    val url = s"$personalDetailsValidationBaseUrl$endpointUri"
 
-  private implicit val validationIdHttpReads: HttpReads[String] = new HttpReads[String] {
-    override def read(method: String, url: String, response: HttpResponse): String = response.status match {
+    httpClient
+      .GET(url)
+      .recover(toProcessingError(url))
+  }
+
+  private implicit val validationIdHttpReads: HttpReads[Either[ProcessingError, String]] = new HttpReads[Either[ProcessingError, String]] {
+    override def read(method: String, url: String, response: HttpResponse): Either[ProcessingError, String] = response.status match {
       case OK => (response.json \ "id").validate[String] match {
-        case JsSuccess(validationId, _) => validationId
-        case JsError(_) =>
-          throw new BadGatewayException(s"No 'id' property in the json response from $method $url")
+        case JsSuccess(validationId, _) => Right(validationId)
+        case JsError(_) => Left(ProcessingError(s"No 'id' property in the json response from $method $url"))
       }
       case other =>
-        throw new BadGatewayException(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}")
+        Left(ProcessingError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
     }
+  }
+
+  private def toProcessingError(url: String): PartialFunction[Throwable, Either[ProcessingError, String]] = {
+    case exception => Left(ProcessingError(s"Call to GET $url threw: $exception"))
   }
 }

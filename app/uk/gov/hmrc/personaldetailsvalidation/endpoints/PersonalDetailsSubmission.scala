@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import java.net.URI
 import javax.inject.{Inject, Singleton}
 
 import cats.Monad
@@ -25,9 +24,11 @@ import cats.implicits._
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
 import play.twirl.api.Html
+import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedPersonalDetailsSender, FuturedValidationIdFetcher, PersonalDetailsSender, ValidationIdFetcher}
-import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,46 +39,43 @@ import scala.language.{higherKinds, implicitConversions}
 private class FuturedPersonalDetailsSubmission @Inject()(personalDetailsPage: PersonalDetailsPage,
                                                          personalDetailsValidationConnector: FuturedPersonalDetailsSender,
                                                          validationIdFetcher: FuturedValidationIdFetcher,
-                                                         redirectComposer: RedirectComposer)
-  extends PersonalDetailsSubmission[Future](personalDetailsPage, personalDetailsValidationConnector, validationIdFetcher, redirectComposer)
+                                                         redirectComposer: RedirectComposer,
+                                                         logger: Logger)
+  extends PersonalDetailsSubmission[Future](personalDetailsPage, personalDetailsValidationConnector, validationIdFetcher, redirectComposer, logger)
 
 private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetailsPage: PersonalDetailsPage,
                                                                    personalDetailsValidationConnector: PersonalDetailsSender[Interpretation],
                                                                    validationIdFetcher: ValidationIdFetcher[Interpretation],
-                                                                   redirectComposer: RedirectComposer) {
+                                                                   redirectComposer: RedirectComposer,
+                                                                   logger: Logger) {
 
   import PersonalDetailsSubmission._
+  import personalDetailsValidationConnector._
+  import redirectComposer._
+  import validationIdFetcher._
 
   def bindValidateAndRedirect(completionUrl: CompletionUrl)
                              (implicit request: Request[_],
                               headerCarrier: HeaderCarrier,
                               executionContext: ExecutionContext): Interpretation[Result] = {
     for {
-      personalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl))
-      validationIdFetchUri <- passToValidation(personalDetails)
-      validationId <- fetchValidationId(validationIdFetchUri)
-    } yield validationId
-  }.value.fold(
-    pageWithErrors => BadRequest(pageWithErrors),
-    validationId => redirectComposer.redirect(completionUrl, validationId)
+      personalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl)) leftMap pageWithErrorToBadRequest
+      validationIdFetchUri <- passToValidation(personalDetails) leftMap errorToRedirect(to = completionUrl)
+      validationId <- fetchValidationId(validationIdFetchUri) leftMap errorToRedirect(to = completionUrl)
+    } yield redirect(completionUrl, validationId)
       .addingToSession(validationIdSessionKey -> validationId)
-  )
+  }.merge
 
-  private def passToValidation(personalDetails: PersonalDetails)
-                              (implicit headerCarrier: HeaderCarrier,
-                               executionContext: ExecutionContext): EitherT[Interpretation, Html, URI] =
-    personalDetailsValidationConnector.passToValidation(personalDetails).map(Either.right[Html, URI])
+  private val pageWithErrorToBadRequest: Html => Result = BadRequest(_)
 
-  private def fetchValidationId(validationIdFetchUri: URI)
-                               (implicit headerCarrier: HeaderCarrier,
-                                executionContext: ExecutionContext): EitherT[Interpretation, Html, String] =
-    validationIdFetcher.fetchValidationId(validationIdFetchUri).map(Either.right[Html, String])
+  private def errorToRedirect(to: CompletionUrl): ProcessingError => Result = {
+    error =>
+      logger.error(error)
+      redirectWithTechnicalErrorParameter(to)
+  }
 
   private def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =
     EitherT(implicitly[Monad[Interpretation]].pure(maybeValue))
-
-  private implicit def toEitherT[L, R](wrappedMaybeValue: Interpretation[Either[L, R]]): EitherT[Interpretation, L, R] =
-    EitherT(wrappedMaybeValue)
 }
 
 private object PersonalDetailsSubmission {

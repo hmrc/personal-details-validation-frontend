@@ -54,7 +54,7 @@ class FuturedValidationIdValidatorSpec
 
     Set(NO_CONTENT, BAD_REQUEST, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
 
-      s"return a Left with an error when GET /personal-details-validation/:validationId returns $unexpectedStatus" in new Setup {
+      s"return a ProcessingError when GET /personal-details-validation/:validationId returns $unexpectedStatus" in new Setup {
 
         expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
           .returning(unexpectedStatus, "some response body")
@@ -65,7 +65,7 @@ class FuturedValidationIdValidatorSpec
       }
     }
 
-    "return a Left with an error when GET /personal-details-validation/:validationId throws an exception" in new Setup {
+    "return a ProcessingError when GET /personal-details-validation/:validationId throws an exception" in new Setup {
 
       val exception = new RuntimeException("Some error")
       expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
