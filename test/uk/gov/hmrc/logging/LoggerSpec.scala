@@ -16,22 +16,24 @@
 
 package uk.gov.hmrc.logging
 
-import org.scalamock.scalatest.MockFactory
-import org.slf4j
+import org.scalamock.scalatest.MixedMockFactory
 import play.api.LoggerLike
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.play.test.UnitSpec
 
 class LoggerSpec
   extends UnitSpec
-    with MockFactory {
+    with MixedMockFactory {
 
   "error" should {
 
     "delegate to the given logger" in new Setup {
       val error = ProcessingError("message")
 
-      underlyingLogger.expect.error("message")
+      underlyingLogger.expects('error)(argAssert {
+        (message: () => String) =>
+          message() shouldBe "message"
+      })
 
       logger.error(error)
     }
@@ -39,21 +41,7 @@ class LoggerSpec
 
   private trait Setup {
 
-    val underlyingLogger = new LoggerLike {
-
-      override val logger: slf4j.Logger = mock[slf4j.Logger]
-
-      def expect = new {
-        def error(message: String) = {
-          (logger.isErrorEnabled: () => Boolean)
-            .expects()
-            .returning(true)
-
-          (logger.error(_: String))
-            .expects(message)
-        }
-      }
-    }
+    val underlyingLogger = Proxy.mock[LoggerLike]
 
     val logger = new Logger(underlyingLogger)
   }
