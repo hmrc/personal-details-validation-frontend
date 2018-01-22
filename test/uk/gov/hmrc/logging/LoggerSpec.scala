@@ -31,29 +31,30 @@ class LoggerSpec
     "delegate to the given logger" in new Setup {
       val error = ProcessingError("message")
 
-      makeErrorLoggingEnabled
-
-      (underlyingLogger.error(_: String))
-        .expects(error.message)
+      underlyingLogger.expect.error("message")
 
       logger.error(error)
     }
   }
 
   private trait Setup {
-    self =>
 
-    val underlyingLogger = mock[slf4j.Logger]
+    val underlyingLogger = new LoggerLike {
 
-    def makeErrorLoggingEnabled =
-      (underlyingLogger.isErrorEnabled: () => Boolean)
-        .expects()
-        .returning(true)
+      override val logger: slf4j.Logger = mock[slf4j.Logger]
 
-    private val loggerLike = new LoggerLike {
-      override val logger: slf4j.Logger = self.underlyingLogger
+      def expect = new {
+        def error(message: String) = {
+          (logger.isErrorEnabled: () => Boolean)
+            .expects()
+            .returning(true)
+
+          (logger.error(_: String))
+            .expects(message)
+        }
+      }
     }
 
-    val logger = new Logger(loggerLike)
+    val logger = new Logger(underlyingLogger)
   }
 }
