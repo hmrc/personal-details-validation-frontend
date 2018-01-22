@@ -19,11 +19,11 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import javax.inject.{Inject, Singleton}
 
 import cats.Monad
-import cats.data.OptionT
 import cats.implicits._
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedValidationIdValidator, ValidationIdValidator}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 
@@ -33,46 +33,39 @@ import scala.language.{higherKinds, implicitConversions}
 
 @Singleton
 private class FuturedJourneyStart @Inject()(validationIdValidator: FuturedValidationIdValidator,
-                                            redirectComposer: RedirectComposer)
-  extends JourneyStart[Future](validationIdValidator, redirectComposer)
+                                            redirectComposer: RedirectComposer,
+                                            logger: Logger)
+  extends JourneyStart[Future](validationIdValidator, redirectComposer, logger)
 
 private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: ValidationIdValidator[Interpretation],
-                                                      redirectComposer: RedirectComposer) {
+                                                      redirectComposer: RedirectComposer,
+                                                      logger: Logger) {
 
   import PersonalDetailsSubmission._
+  import validationIdValidator._
+  import redirectComposer._
 
   def findRedirect(completionUrl: CompletionUrl)
-                  (implicit request: Request[_], headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Interpretation[Result] = for {
-    maybeSessionValidationId <- findValidationIdInSession
-    maybeValidatedValidationId <- validate(maybeSessionValidationId)
-    redirect <- findRedirectUsing(maybeValidatedValidationId, completionUrl)
-  } yield redirect
+                  (implicit request: Request[_], headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Interpretation[Result] =
+    findValidationIdInSession match {
+      case None =>
+        Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
+      case Some(sessionValidationId) =>
+        verify(sessionValidationId)
+          .map(findRedirectUsing(_, sessionValidationId, completionUrl))
+          .valueOr { error =>
+            logger.error(error)
+            redirectWithTechnicalErrorParameter(completionUrl)
+          }
+    }
 
-  private def findValidationIdInSession(implicit request: Request[_]): Interpretation[Option[String]] =
+  private def findValidationIdInSession(implicit request: Request[_]): Option[String] =
     request.session.get(validationIdSessionKey)
 
-  private def validate(maybeValidationId: Option[String])
-                      (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Interpretation[Option[String]] = {
-    for {
-      validationId <- OptionT(pure(maybeValidationId))
-      verification <- OptionT.liftF(validationIdValidator.verify(validationId))
-      validatedValidationId <- (verification -> validationId).toValidatedValidationId
-    } yield validatedValidationId
-  }.value
-
-  private implicit class VerificationOps(verificationValidationIdTuple: (Boolean, String)) {
-
-    private val (verification, validationId) = verificationValidationIdTuple
-
-    val toValidatedValidationId: OptionT[Interpretation, String] =
-      if (verification) OptionT.pure(validationId)
-      else OptionT.none
-  }
-
-  private def findRedirectUsing(maybeValidationId: Option[String],
-                                completionUrl: CompletionUrl): Interpretation[Result] = maybeValidationId match {
-    case None => Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
-    case Some(validationId) => redirectComposer.compose(completionUrl, validationId)
+  private def findRedirectUsing(validationResult: Boolean, validationId: String,
+                                completionUrl: CompletionUrl): Result = validationResult match {
+    case false => Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
+    case true => redirect(completionUrl, validationId)
   }
 
   private implicit def pure[R](value: R): Interpretation[R] =

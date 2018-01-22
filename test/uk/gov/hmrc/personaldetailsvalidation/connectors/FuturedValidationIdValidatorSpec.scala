@@ -23,7 +23,8 @@ import org.scalatest.concurrent.ScalaFutures
 import play.api.Configuration
 import play.api.test.Helpers._
 import setups.connectors.HttpClientStubSetup
-import uk.gov.hmrc.http.{BadGatewayException, HeaderCarrier}
+import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
@@ -40,7 +41,7 @@ class FuturedValidationIdValidatorSpec
       expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
         .returning(status = OK)
 
-      validationIdValidator.verify(validationId).futureValue shouldBe true
+      validationIdValidator.verify(validationId).value.futureValue shouldBe Right(true)
     }
 
     "return false if call to GET /personal-details-validation/:validationId returns NOT_FOUND" in new Setup {
@@ -48,22 +49,31 @@ class FuturedValidationIdValidatorSpec
       expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
         .returning(status = NOT_FOUND)
 
-      validationIdValidator.verify(validationId).futureValue shouldBe false
+      validationIdValidator.verify(validationId).value.futureValue shouldBe Right(false)
     }
 
     Set(NO_CONTENT, BAD_REQUEST, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
 
-      s"throw a BadGatewayException when GET /personal-details-validation/:validationId returns $unexpectedStatus" in new Setup {
+      s"return a ProcessingError when GET /personal-details-validation/:validationId returns $unexpectedStatus" in new Setup {
 
         expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
           .returning(unexpectedStatus, "some response body")
 
-        val exception = intercept[BadGatewayException] {
-          await(validationIdValidator.verify(validationId))
-        }
-        exception.message shouldBe s"Unexpected response from GET $baseUrl/personal-details-validation/$validationId with status: '$unexpectedStatus' and body: some response body"
-        exception.responseCode shouldBe BAD_GATEWAY
+        validationIdValidator.verify(validationId).value.futureValue shouldBe Left(ProcessingError(
+          s"Unexpected response from GET $baseUrl/personal-details-validation/$validationId with status: '$unexpectedStatus' and body: some response body"
+        ))
       }
+    }
+
+    "return a ProcessingError when GET /personal-details-validation/:validationId throws an exception" in new Setup {
+
+      val exception = new RuntimeException("Some error")
+      expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
+        .throwing(exception)
+
+      validationIdValidator.verify(validationId).value.futureValue shouldBe Left(ProcessingError(
+        s"Call to GET $baseUrl/personal-details-validation/$validationId threw: $exception"
+      ))
     }
   }
 
