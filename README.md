@@ -13,19 +13,21 @@ personal-details-validation-frontend service is used to capture name, surname, d
 ## GET /personal-details-validation/start?completionUrl=:completionUrl
 Displays a page to capture user's details. After capturing user's details, these details are checked against citizen details database. 
 If they match, this information is stored by [personal-details-validation](https://github.com/hmrc/personal-details-validation) backend service. Then the user is redirected to the completionUrl regardless of citizen details check outcome. 
-validationId parameter will be appended to the completionUrl. It is a UUID and it can be used to retrieve the validation outcome and personal-details (if validation was successful) later using [personal-details-validation](https://github.com/hmrc/personal-details-validation#get-personal-details-validationvalidationid) backend service.
+`validationId` query parameter will be appended to the completionUrl. It is a UUID and it can be used to retrieve the validation outcome and personal-details (if validation was successful) later using [personal-details-validation](https://github.com/hmrc/personal-details-validation#get-personal-details-validationvalidationid) backend service.
+Also, if there is technical error in personal-details-validation component, then user is redirected to the completionUrl with `technicalError` query parameter.
 NOTE: User should be redirected to this page. It shouldn't be called directly from a micro-service.
 
 ### Parameters
 | Name          | Description                                   |
 |:------------- |:--------------------------------------------- |
-| completionUrl | Mandatory. Should be a valid relative URL.    |
+| completionUrl | Mandatory. Should be a url-encoded relative URL.    |
     
 ### Example redirects
 | CompletionUrl                 | Redirect url                                                                  |
 |:----------------------------- |:----------------------------------------------------------------------------- |
 |/my-service/pdv-complete       | /my-service/pdv-complete?validationId=0018941f-fed3-47db-a05c-8b55e941324b       |
 |/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&validationId=0018941f-fed3-47db-a05c-8b55e941324b   |
+|/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&technicalError                                      |
     
 ### License
 

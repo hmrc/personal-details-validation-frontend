@@ -28,16 +28,16 @@ private class RedirectComposer {
   private val technicalErrorQueryParameter = "technicalError"
 
   def redirect(completionUrl: CompletionUrl, validationId: String): Result =
-    completionUrl appendParameter validationId.toQueryParameter
+    Redirect(completionUrl appendParameter validationId.toQueryParameter)
 
   def redirectWithTechnicalErrorParameter(completionUrl: CompletionUrl): Result =
-    completionUrl appendParameter technicalErrorQueryParameter
+    Redirect(completionUrl appendParameter technicalErrorQueryParameter)
 
   private implicit class CompletionUrlOps(completionUrl: CompletionUrl) {
 
     def appendParameter(parameter: String) = Option(new URI(completionUrl.value).getQuery) match {
-      case None => Redirect(s"$completionUrl?$parameter")
-      case _ => Redirect(s"$completionUrl&$parameter")
+      case None => s"$completionUrl?$parameter"
+      case _ => s"$completionUrl&$parameter"
     }
   }
 

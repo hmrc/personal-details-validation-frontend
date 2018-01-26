@@ -30,11 +30,14 @@ import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators._
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
+import scala.concurrent.duration._
 
 class FuturedValidationIdFetcherSpec
   extends UnitSpec
     with MockFactory
     with ScalaFutures {
+
+  override implicit val patienceConfig: PatienceConfig = PatienceConfig(timeout = 300 millis)
 
   "fetchValidationId" should {
 

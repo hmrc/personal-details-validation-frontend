@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.binders
 
+import java.net.URLEncoder
+
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -51,9 +53,9 @@ class CompletionUrlQueryBindableSpec extends UnitSpec {
     val key = "completionUrl"
 
     "return query param string" in {
-      val url = "/foo/bar"
+      val url = "/foo/bar?param1=value1&param2=value2"
       val Right(completionUrl) = CompletionUrl.completionUrl(url)
-      completionUrlQueryBinder.unbind(key, completionUrl) shouldBe s"$key=$url"
+      completionUrlQueryBinder.unbind(key, completionUrl) shouldBe s"$key=${URLEncoder.encode(url, "UTF-8")}"
     }
   }
 }
