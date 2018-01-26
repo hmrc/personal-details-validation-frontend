@@ -37,7 +37,7 @@ class FuturedValidationIdFetcherSpec
     with MockFactory
     with ScalaFutures {
 
-  override implicit val patienceConfig: PatienceConfig = PatienceConfig(timeout = 300 millis)
+  override implicit val patienceConfig: PatienceConfig = PatienceConfig(timeout = 1 second)
 
   "fetchValidationId" should {
 
