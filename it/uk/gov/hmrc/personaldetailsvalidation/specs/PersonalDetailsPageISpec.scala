@@ -37,7 +37,7 @@ class PersonalDetailsPageISpec
 
     scenario("Personal Details page submitted with valid personal details") {
 
-      When("I navigate to /personal-details-validation/personal-details with invalid completionUrl")
+      When("I navigate to /personal-details-validation/personal-details with valid completionUrl")
       val completionUrl = "/foobar?param1=value1&param2=value2"
       goTo(s"/personal-details?completionUrl=$completionUrl")
 
@@ -65,7 +65,7 @@ class PersonalDetailsPageISpec
 
     scenario("Personal Details page submitted with invalid personal details") {
 
-      When("I navigate to /personal-details-validation/personal-details with invalid completionUrl")
+      When("I navigate to /personal-details-validation/personal-details with valid completionUrl")
       val completionUrl = "/completion-url"
       goTo(s"/personal-details?completionUrl=$completionUrl")
 
