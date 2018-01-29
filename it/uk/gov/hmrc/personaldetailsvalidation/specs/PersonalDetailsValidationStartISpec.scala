@@ -1,5 +1,7 @@
 package uk.gov.hmrc.personaldetailsvalidation.specs
 
+import java.net.URLEncoder
+
 import uk.gov.hmrc.personaldetailsvalidation.pages.{ErrorPage, PersonalDetailsPage}
 import uk.gov.hmrc.personaldetailsvalidation.support.BaseIntegrationSpec
 
@@ -10,7 +12,7 @@ class PersonalDetailsValidationStartISpec extends BaseIntegrationSpec {
     scenario("Personal Details Validation journey started with a valid completionUrl") {
 
       When("I navigate to /personal-details-validation/start with a valid completionUrl")
-      val completionUrl = "/foobar"
+      val completionUrl = URLEncoder.encode("/foobar?param1=value1&param2=value2", "UTF-8")
       goTo(s"/start?completionUrl=$completionUrl")
 
       Then("I should get redirected to the Personal Details page")

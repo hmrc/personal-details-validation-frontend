@@ -36,7 +36,7 @@ class RedirectComposerSpec
     val scenarios = Tables.Table(
       ("given completion url", "expected redirect url"),
       ("/some-url", s"/some-url?validationId=$validationId"),
-      ("/some-url?parameter1=value1", s"/some-url?parameter1=value1&validationId=$validationId")
+      ("/some-url?parameter1=value1&parameter2=value2", s"/some-url?parameter1=value1&parameter2=value2&validationId=$validationId")
     )
 
     forAll(scenarios) { (completionUrl, expectedRedirect) =>

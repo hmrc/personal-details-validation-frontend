@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.personaldetailsvalidation
 
+import java.net.URLEncoder
+
 import cats.implicits._
 import play.api.mvc.QueryStringBindable
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
@@ -30,7 +32,7 @@ package object binders {
         completionUrl(value).leftMap(_.getMessage)
       }
 
-    override def unbind(key: String, value: CompletionUrl): String = s"$key=${value.toString()}"
+    override def unbind(key: String, value: CompletionUrl): String = s"$key=${URLEncoder.encode(value.toString(), "UTF-8")}"
   }
 
   private def getValue(key: String, params: Map[String, Seq[String]]): Option[String] = params.get(key).map(_.head)
