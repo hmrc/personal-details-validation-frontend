@@ -28,9 +28,19 @@ object CompletionUrl {
     _ <- validateProtocolRelativeUrlSafe(value)
   } yield CompletionUrl(value)
 
-  private def validateRelativeUrl(value: String) = validate(value.startsWith("/"), s"$value is not a relative url")
+  private def validateRelativeUrl(url: String) = validate(
+    url.isLocalhost || url.startsWith("/"),
+    s"$url is not a relative url"
+  )
 
-  private def validateProtocolRelativeUrlSafe(value: String) = validate(!value.contains("//"), s"$value is not protocol relative url safe")
+  private def validateProtocolRelativeUrlSafe(url: String) = validate(
+    url.isLocalhost || !url.contains("//"),
+    s"$url is not protocol relative url safe"
+  )
+
+  private implicit class UrlOps(url: String) {
+    lazy val isLocalhost = url.startsWith("http://localhost")
+  }
 
   private def validate(condition: => Boolean, errorMessage: => String): Either[IllegalArgumentException, Unit] =
     Either.cond(condition, (), new IllegalArgumentException(errorMessage))

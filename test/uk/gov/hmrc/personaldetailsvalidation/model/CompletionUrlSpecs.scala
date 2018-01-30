@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
+import cats.implicits._
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -23,13 +24,21 @@ class CompletionUrlSpecs extends UnitSpec {
 
   "completionUrl" should {
 
-    "not be allowed to be constructed if parameter value does not start with '/'" in {
-      val Left(exception) =  completionUrl("foobar")
+    "be instantiatable if the value does start with '/'" in {
+      completionUrl("/foo").map(_.value) shouldBe Right("/foo")
+    }
+
+    "be instantiatable if the value does start with 'http://localhost'" in {
+      completionUrl("http://localhost/foo").map(_.value) shouldBe Right("http://localhost/foo")
+    }
+
+    "not be instantiatable if the value neither starts with '/' nor 'http://localhost'" in {
+      val Left(exception) = completionUrl("foobar")
       exception shouldBe a[IllegalArgumentException]
     }
 
-    "not be allowed to be constructed if parameter value contains '//'" in {
-      val Left(exception) =  completionUrl("/foobar//baz")
+    "not be instantiatable if the value contains '//' and does not start with 'http://localhost'" in {
+      val Left(exception) = completionUrl("/foobar//baz")
       exception shouldBe a[IllegalArgumentException]
     }
   }
