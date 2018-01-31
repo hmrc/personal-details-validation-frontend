@@ -17,19 +17,30 @@
 package uk.gov.hmrc.personaldetailsvalidation.model
 
 import cats.implicits._
+import generators.Generators.strings
+import org.scalacheck.Gen
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 import uk.gov.hmrc.play.test.UnitSpec
 
-class CompletionUrlSpecs extends UnitSpec {
+class CompletionUrlSpecs
+  extends UnitSpec
+    with GeneratorDrivenPropertyChecks {
+
+  private val urls = Gen.nonEmptyListOf(strings(10)).map(_.mkString("/", "/", ""))
 
   "completionUrl" should {
 
     "be instantiatable if the value does start with '/'" in {
-      completionUrl("/foo").map(_.value) shouldBe Right("/foo")
+      forAll(urls) { url =>
+        completionUrl(url).map(_.value) shouldBe Right(url)
+      }
     }
 
     "be instantiatable if the value does start with 'http://localhost'" in {
-      completionUrl("http://localhost/foo").map(_.value) shouldBe Right("http://localhost/foo")
+      forAll(urls) { url =>
+        completionUrl(s"http://localhost$url").map(_.value) shouldBe Right(s"http://localhost$url")
+      }
     }
 
     "not be instantiatable if the value neither starts with '/' nor 'http://localhost'" in {
