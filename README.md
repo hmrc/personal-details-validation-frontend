@@ -20,7 +20,7 @@ NOTE: User should be redirected to this page. It shouldn't be called directly fr
 ### Parameters
 | Name          | Description                                   |
 |:------------- |:--------------------------------------------- |
-| completionUrl | Mandatory. Should be a url-encoded relative URL.    |
+| completionUrl | Mandatory. Should be a url-encoded relative URL or starts with `http://localhost`.    |
     
 ### Example redirects
 | CompletionUrl                 | Redirect url                                                                  |

@@ -16,20 +16,40 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
+import cats.implicits._
+import generators.Generators.strings
+import org.scalacheck.Gen
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 import uk.gov.hmrc.play.test.UnitSpec
 
-class CompletionUrlSpecs extends UnitSpec {
+class CompletionUrlSpecs
+  extends UnitSpec
+    with GeneratorDrivenPropertyChecks {
+
+  private val urls = Gen.nonEmptyListOf(strings(10)).map(_.mkString("/", "/", ""))
 
   "completionUrl" should {
 
-    "not be allowed to be constructed if parameter value does not start with '/'" in {
-      val Left(exception) =  completionUrl("foobar")
+    "be instantiatable if the value does start with '/'" in {
+      forAll(urls) { url =>
+        completionUrl(url).map(_.value) shouldBe Right(url)
+      }
+    }
+
+    "be instantiatable if the value does start with 'http://localhost'" in {
+      forAll(urls) { url =>
+        completionUrl(s"http://localhost$url").map(_.value) shouldBe Right(s"http://localhost$url")
+      }
+    }
+
+    "not be instantiatable if the value neither starts with '/' nor 'http://localhost'" in {
+      val Left(exception) = completionUrl("foobar")
       exception shouldBe a[IllegalArgumentException]
     }
 
-    "not be allowed to be constructed if parameter value contains '//'" in {
-      val Left(exception) =  completionUrl("/foobar//baz")
+    "not be instantiatable if the value contains '//' and does not start with 'http://localhost'" in {
+      val Left(exception) = completionUrl("/foobar//baz")
       exception shouldBe a[IllegalArgumentException]
     }
   }
