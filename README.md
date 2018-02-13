@@ -29,6 +29,13 @@ NOTE: User should be redirected to this page. It shouldn't be called directly fr
 |/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&validationId=0018941f-fed3-47db-a05c-8b55e941324b   |
 |/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&technicalError                                      |
     
+    
+### How to build
+```
+sbt test it:test
+```
+The integration test passes on Firefox 46.0.1 version. This is the version installed on Jenkins agent. Chromedriver is not used because Jenkins (ci-open) was having problem with chromedriver. Squid proxy was intercepting and webops had no clue why it is doing so.
+    
 ### License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
