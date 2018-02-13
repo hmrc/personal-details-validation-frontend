@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.components.date
-@import uk.gov.hmrc.views.html.template.main_template
+@import uk.gov.hmrc.views.html.template.{main_template, error_prefix}
 
 @(pageForm: Form[PersonalDetails],
   completionUrl: CompletionUrl)(
@@ -28,51 +28,56 @@
   viewConfig: ViewConfig
 )
 
-@main_template(title = messages("personal-details.title")) {
+@main_template(title = error_prefix(pageForm) + messages("personal-details.title") + " - GOV.UK") {
+
+    @if(pageForm.hasErrors) {
+        @errorSummary(
+            heading = Messages("error-summary.heading"),
+            form = pageForm
+        )
+    }
 
     <p class="faded-text">
-        <strong>@messages("personal-details.faded-heading")</strong>
+        @messages("personal-details.faded-heading")
     </p>
 
-    <header>
-        <h1 class="heading-48">@messages("personal-details.header")</h1>
-    </header>
+
+    <h1 class="heading-xlarge">@messages("personal-details.header")</h1>
+
 
     <p>@messages("personal-details.paragraph")</p>
 
     @form(routes.PersonalDetailsCollectionController.submit(completionUrl), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
 
-        @errorSummary(
-            heading = Messages("error-summary.heading"),
-            form = pageForm
-        )
-
-        <fieldset class="form-field-group">
+        <div class="form-group">
             @input(
                 field = pageForm("firstName"),
                 '_label -> messages("personal-details.firstname"),
-                '_labelTextClass -> "form-label-bold"
+                '_inputClass -> "input--medium input--cleared",
+                '_labelTextClass -> "form-label-bold",
+                '_labelClass -> "soft--ends"
             )
-        </fieldset>
-        <fieldset class="form-field-group">
+        </div>
+        <div class="form-group">
             @input(
                 field = pageForm("lastName"),
                 '_label -> messages("personal-details.lastname"),
-                '_labelTextClass -> "form-label-bold"
+                '_inputClass -> "input--medium input--cleared",
+                '_labelTextClass -> "form-label-bold",
+                '_labelClass -> "soft--ends"
             )
-        </fieldset>
-        <fieldset class="form-field-group">
+        </div>
+        <div class="form-group">
             @input(
                 field = pageForm("nino"),
                 '_label -> messages("personal-details.nino"),
+                '_inputClass -> "input--medium input--cleared",
                 '_labelTextClass -> "form-label-bold",
-                '_inputHint -> {
-                    <span class="form-hint">{messages("personal-details.nino.hint")}</span>
-                    <span class="form-hint">{messages("personal-details.nino.hint.example")}</span>
-                }
+                '_inputHint -> messages("personal-details.nino.hint"),
+                '_labelClass -> "soft--ends"
             )
-        </fieldset>
-        <fieldset class="form-field-group">
+        </div>
+        <fieldset class="form-group">
             @date(
                 pageForm,
                 fieldName = "dateOfBirth",
@@ -81,7 +86,7 @@
             )
         </fieldset>
 
-        <div class="form-field form-field--submit flush--bottom">
+        <div class="form-group form-field--submit flush--bottom">
             <button class="button" type="submit">@Messages("continue.button.text")</button>
         </div>
     }

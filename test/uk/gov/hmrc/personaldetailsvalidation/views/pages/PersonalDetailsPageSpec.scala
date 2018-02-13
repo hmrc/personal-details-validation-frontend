@@ -38,33 +38,32 @@ class PersonalDetailsPageSpec
       "and a continue button" in new Setup {
       val html: Document = personalDetailsPage.render
 
-      html.title() shouldBe messages("personal-details.title")
+      html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
 
-      html.select(".faded-text strong").text() shouldBe messages("personal-details.faded-heading")
-      html.select(".faded-text ~ header h1").text() shouldBe messages("personal-details.header")
-      html.select("header ~ p").text() shouldBe messages("personal-details.paragraph")
+      html.select(".faded-text").text() shouldBe messages("personal-details.faded-heading")
+      html.select(".faded-text ~ h1.heading-xlarge").text() shouldBe messages("personal-details.header")
+      html.select("h1.heading-xlarge ~ p").text() shouldBe messages("personal-details.paragraph")
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
 
-      html.select("form div[class=flash error-summary]").isEmpty shouldBe false
+      html.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
 
-      val fieldsets = html.select("form fieldset")
+      val fieldsets = html.select("form .form-group")
       val firstNameFieldset = fieldsets.first()
-      firstNameFieldset.select("label[for=firstname] .form-label-bold").text() shouldBe messages("personal-details.firstname")
+      firstNameFieldset.select("label[for=firstname]").text() shouldBe messages("personal-details.firstname")
       firstNameFieldset.select("label[for=firstname] input[type=text][name=firstName]").isEmpty shouldBe false
 
       val lastNameFieldset = fieldsets.next()
-      lastNameFieldset.select("label[for=lastname] .form-label-bold").text() shouldBe messages("personal-details.lastname")
+      lastNameFieldset.select("label[for=lastname]").text() shouldBe messages("personal-details.lastname")
       lastNameFieldset.select("label[for=lastname] input[type=text][name=lastName]").isEmpty shouldBe false
 
       val ninoFieldset = fieldsets.next()
       ninoFieldset.select("label[for=nino] .form-label-bold").text() shouldBe messages("personal-details.nino")
-      val ninoHints = ninoFieldset.select("label[for=nino] .form-hint .form-hint")
+      val ninoHints = ninoFieldset.select("label[for=nino] .form-hint")
       ninoHints.first().text() shouldBe messages("personal-details.nino.hint")
-      ninoHints.next().text() shouldBe messages("personal-details.nino.hint.example")
       ninoFieldset.select("label[for=nino] input[type=text][name=nino]").isEmpty shouldBe false
 
-      val dateFieldset = fieldsets.next().select("div")
+      val dateFieldset = fieldsets.next().select("fieldset")
       dateFieldset.select(".form-label-bold").text() shouldBe messages("personal-details.dateOfBirth")
       dateFieldset.select(".form-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
       val dateElementDivs = dateFieldset.select(".form-date .form-group")
@@ -283,7 +282,7 @@ class PersonalDetailsPageSpec
       lazy val errorsSummary = new {
 
         private lazy val errorsSummaryDiv =
-          page.select("form div[class=flash error-summary error-summary--show]")
+          page.select("div[class=flash error-summary error-summary--show]")
 
         lazy val heading = errorsSummaryDiv.select("h2").text()
 
@@ -291,7 +290,7 @@ class PersonalDetailsPageSpec
       }
 
       def errorFor(fieldName: String): String = {
-        val control = page.select(s"label[for=$fieldName][class=form-field--error]")
+        val control = page.select(s"label[for=$fieldName].form-field--error")
         control.isEmpty shouldBe false
         control.select(".error-notification").text()
       }

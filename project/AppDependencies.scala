@@ -11,7 +11,7 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "domain" % "5.0.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.15.0",
     "uk.gov.hmrc" %% "play-language" % "3.4.0",
-    "uk.gov.hmrc" %% "play-ui" % "7.9.0",
+    "uk.gov.hmrc" %% "play-ui" % "7.13.0",
     "uk.gov.hmrc" %% "valuetype" % "1.1.0",
     ws
   )
