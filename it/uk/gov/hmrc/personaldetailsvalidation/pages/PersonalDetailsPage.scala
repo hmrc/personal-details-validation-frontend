@@ -10,7 +10,7 @@ case class PersonalDetailsPage(completionUrl: String) extends WebPage {
   val url: String = s"/personal-details-validation/personal-details?completionUrl=$completionUrl"
 
   def verifyThisPageDisplayed(): Unit = {
-    pageTitle shouldBe "Enter your details - Confirm your identity"
+    pageTitle shouldBe "Enter your details - Confirm your identity - GOV.UK"
     currentUrl.path shouldBe url.path
     currentUrl.query shouldBe url.query
   }

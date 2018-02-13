@@ -38,8 +38,16 @@
 @head = {
     @uiLayouts.head(
       linkElem = None,
-      headScripts = None)
+      headScripts = Some(headScripts))
     <meta name="format-detection" content="telephone=no" />
+}
+
+@headScripts = {
+    <link href="@controllers.routes.Assets.at("stylesheets/styles.css")" media="screen" rel="stylesheet" type="text/css">
+}
+
+@scriptElement = {
+    <script src="@controllers.routes.Assets.at("javascripts/scripts.js")" type="text/javascript"></script>
 }
 
 @headerNavLinks = {}
@@ -59,7 +67,7 @@
       analyticsToken = Some(viewConfig.analyticsToken),
       analyticsHost = viewConfig.analyticsHost,
       ssoUrl = None,
-      scriptElem = scriptElem,
+      scriptElem = Some(scriptElement),
       gaCalls = None)
 }
 
