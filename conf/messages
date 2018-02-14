@@ -11,7 +11,6 @@ personal-details.lastname=Last name
 personal-details.lastname.required=Enter your last name.
 personal-details.nino=National Insurance number
 personal-details.nino.hint=It''s on your National Insurance card, benefit letter, payslip or P60. For example, QQ123456C
-personal-details.nino.hint.example=For example, QQ123456C
 personal-details.nino.required=Enter your National Insurance number.
 personal-details.nino.invalid=Enter your National Insurance number in the correct format. For example QQ123456C.
 personal-details.dateOfBirth=Date of birth

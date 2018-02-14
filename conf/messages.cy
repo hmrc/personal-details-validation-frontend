@@ -11,7 +11,6 @@ personal-details.lastname=Enw olaf
 personal-details.lastname.required=Nodwch eich enw olaf.
 personal-details.nino=Rhif Yswiriant Gwladol
 personal-details.nino.hint=Mae hwn ar eich cerdyn Yswiriant Gwladol, llythyr ynghylch budd-daliadau, slip talu neu P60. Er enghraifft, QQ123456C
-personal-details.nino.hint.example=Er enghraifft, QQ123456C
 personal-details.nino.required=Rhowch eich rhif Yswiriant Gwladol.
 personal-details.nino.invalid=Nodwch eich rhif Yswiriant Gwladol yn y fformat gywir. Er enghraifft, QQ123456C.
 personal-details.dateOfBirth=Dyddiad geni

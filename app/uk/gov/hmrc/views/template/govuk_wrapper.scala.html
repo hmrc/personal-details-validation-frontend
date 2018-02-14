@@ -35,15 +35,15 @@
 @import layouts.{govuk_template => hmrcGovUkTemplate}
 @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
 
+@headScripts = {
+    <link href="@controllers.routes.Assets.at("stylesheets/styles.css")" media="screen" rel="stylesheet" type="text/css">
+}
+
 @head = {
     @uiLayouts.head(
       linkElem = None,
       headScripts = Some(headScripts))
     <meta name="format-detection" content="telephone=no" />
-}
-
-@headScripts = {
-    <link href="@controllers.routes.Assets.at("stylesheets/styles.css")" media="screen" rel="stylesheet" type="text/css">
 }
 
 @scriptElement = {

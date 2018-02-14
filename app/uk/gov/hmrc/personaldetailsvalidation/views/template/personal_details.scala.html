@@ -28,7 +28,7 @@
   viewConfig: ViewConfig
 )
 
-@main_template(title = error_prefix(pageForm) + messages("personal-details.title") + " - GOV.UK") {
+@main_template(title = error_prefix(pageForm) + messages("personal-details.title")) {
 
     @if(pageForm.hasErrors) {
         @errorSummary(
