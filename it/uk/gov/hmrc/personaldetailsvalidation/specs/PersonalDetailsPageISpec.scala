@@ -77,14 +77,18 @@ class PersonalDetailsPageISpec
       personalDetailsPage.fillIn(" ", "Ferguson", Nino("AA999999D"), LocalDate.of(1948, 4, 23))
       personalDetailsPage.submitForm()
 
+      Then("I should see the Personal Details page")
+      val personalDetailsPageError = PersonalDetailsPage(completionUrl, true)
+      on(personalDetailsPageError)
+
       Then("I should stay on the Personal Details page")
-      on(personalDetailsPage)
+      on(personalDetailsPageError)
 
       And("I should still see the data I entered")
-      personalDetailsPage.verifyDataPresent(" ", "Ferguson", Nino("AA999999D"), LocalDate.of(1948, 4, 23))
+      personalDetailsPageError.verifyDataPresent(" ", "Ferguson", Nino("AA999999D"), LocalDate.of(1948, 4, 23))
 
       And("I should see errors for invalid values")
-      personalDetailsPage containsErrors "Enter your first name."
+      personalDetailsPageError containsErrors "Enter your first name."
     }
   }
 }

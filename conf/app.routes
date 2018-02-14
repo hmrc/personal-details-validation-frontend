@@ -6,3 +6,5 @@ GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endp
 
 GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl)
 POST       /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submit(completionUrl: CompletionUrl)
+
+GET         /assets/*file             controllers.Assets.at(path="/public", file)
