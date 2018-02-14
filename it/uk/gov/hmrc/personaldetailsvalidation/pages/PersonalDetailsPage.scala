@@ -5,12 +5,16 @@ import java.time.LocalDate
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.personaldetailsvalidation.support.WebPage
 
-case class PersonalDetailsPage(completionUrl: String) extends WebPage {
+case class PersonalDetailsPage(completionUrl: String, verifyThisPageDisplayedWithError: Boolean = false ) extends WebPage {
 
   val url: String = s"/personal-details-validation/personal-details?completionUrl=$completionUrl"
 
   def verifyThisPageDisplayed(): Unit = {
-    pageTitle shouldBe "Enter your details - Confirm your identity - GOV.UK"
+    if(verifyThisPageDisplayedWithError){
+        pageTitle shouldBe "Error: Enter your details - Confirm your identity - GOV.UK"
+    }else{
+        pageTitle shouldBe "Enter your details - Confirm your identity - GOV.UK"
+    }
     currentUrl.path shouldBe url.path
     currentUrl.query shouldBe url.query
   }
@@ -35,12 +39,12 @@ case class PersonalDetailsPage(completionUrl: String) extends WebPage {
 
   def containsErrors(errors: String*): Unit = errors foreach { error =>
 
-    find(cssSelector("form .error-summary--show")) match {
+    find(cssSelector(".error-summary--show")) match {
       case Some(element) => element.text should include(error)
       case _ => fail(s"'$errors' not found in the Errors Summary box")
     }
 
-    find(cssSelector("form fieldset label")) match {
+    find(cssSelector("form label")) match {
       case Some(element) => element.text should include(error)
       case _ => fail(s"'$errors' not found in the field description")
     }
