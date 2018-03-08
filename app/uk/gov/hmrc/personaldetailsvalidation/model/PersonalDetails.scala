@@ -19,8 +19,14 @@ package uk.gov.hmrc.personaldetailsvalidation.model
 import java.time.LocalDate
 
 import uk.gov.hmrc.domain.Nino
+trait PersonalDetails
 
-case class PersonalDetails(firstName: NonEmptyString,
-                           lastName: NonEmptyString,
-                           nino: Nino,
-                           dateOfBirth: LocalDate)
+case class PersonalDetailsWithNino(firstName: NonEmptyString,
+                                     lastName: NonEmptyString,
+                                     nino: Nino,
+                                     dateOfBirth: LocalDate) extends PersonalDetails
+
+case class PersonalDetailsWithPostcode(firstName: NonEmptyString,
+                                     lastName: NonEmptyString,
+                                     postcode: NonEmptyString,
+                                     dateOfBirth: LocalDate) extends PersonalDetails

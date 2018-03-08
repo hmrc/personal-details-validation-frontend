@@ -1,14 +1,21 @@
 package uk.gov.hmrc.personaldetailsvalidation.services
 
-import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
+import java.time.LocalDate
 import java.util.UUID
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.HeaderNames.LOCATION
 import play.api.http.Status.{CREATED, OK}
-import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
+import play.api.libs.json.Json
+import uk.gov.hmrc.domain.Nino
 
 object PersonalDetailsService {
+
+  case class PersonalDetails(firstName: String, lastName:String, nino: Option[Nino] = None, postcode: Option[String] = None, dateOfBirth: LocalDate)
+
+  object PersonalDetails {
+    implicit val writes = Json.writes[PersonalDetails]
+  }
 
   def validatesSuccessfully(personalDetails: PersonalDetails): Unit = {
     val validationId = UUID.randomUUID().toString
@@ -24,17 +31,11 @@ object PersonalDetailsService {
   }
 
   private def `POST /personal-details-validation`(personalDetails: PersonalDetails) = new {
+
     def toReturn(status: Int, header: (String, String)) =
       stubFor(
         post(urlEqualTo("/personal-details-validation"))
-          .withRequestBody(equalToJson(
-            s"""{
-               | "firstName":"${personalDetails.firstName}",
-               | "lastName":"${personalDetails.lastName}",
-               | "dateOfBirth":"${personalDetails.dateOfBirth.format(ISO_LOCAL_DATE)}",
-               | "nino":"${personalDetails.nino}"
-               |}
-               | """.stripMargin, true, false))
+          .withRequestBody(equalToJson(Json.toJson(personalDetails).toString()))
           .willReturn(aResponse()
             .withStatus(status)
             .withHeader(header._1, header._2)

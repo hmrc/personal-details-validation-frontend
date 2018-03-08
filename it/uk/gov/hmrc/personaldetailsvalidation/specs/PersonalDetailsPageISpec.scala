@@ -6,6 +6,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.personaldetailsvalidation.model.{NonEmptyString, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.pages.{CompletionPage, ErrorPage, PersonalDetailsPage}
 import uk.gov.hmrc.personaldetailsvalidation.services.PersonalDetailsService
+import uk.gov.hmrc.personaldetailsvalidation.services.PersonalDetailsService.PersonalDetails
 import uk.gov.hmrc.personaldetailsvalidation.support.BaseIntegrationSpec
 import uk.gov.hmrc.personaldetailsvalidation.support.wiremock.WiremockedService
 
@@ -50,9 +51,9 @@ class PersonalDetailsPageISpec
 
       And("I know the personal-details-validation service validates the data successfully")
       PersonalDetailsService validatesSuccessfully PersonalDetails(
-        firstName = NonEmptyString("Jim"),
-        lastName = NonEmptyString("Ferguson"),
-        nino = Nino("AA000003D"),
+        firstName = NonEmptyString("Jim").value,
+        lastName = NonEmptyString("Ferguson").value,
+        nino = Some(Nino("AA000003D")),
         dateOfBirth = LocalDate.of(1948, 4, 23)
       )
 
