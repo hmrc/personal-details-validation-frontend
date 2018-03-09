@@ -38,6 +38,28 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
 
   import uk.gov.hmrc.formmappings.Mappings._
 
+  type PersonalDetailsData = Tuple5[NonEmptyString,NonEmptyString,Option[Nino],LocalDate,Option[NonEmptyString]]
+
+  private lazy val personalDetailsParser: (NonEmptyString,NonEmptyString,Option[Nino],LocalDate,Option[NonEmptyString]) => PersonalDetailsData =
+    (_,_,_,_,_)
+
+  private val createPersonalDetails: PersonalDetailsData=> PersonalDetails = {
+      case (firstName, lastName, Some(nino), dateOfBirth, None) => PersonalDetailsWithNino(firstName, lastName, nino, dateOfBirth)
+      case (firstName, lastName, None, dateOfBirth, Some(postcode)) => PersonalDetailsWithPostcode(firstName, lastName, postcode, dateOfBirth)
+      case _ => throw new IllegalStateException("Either of nino or postcode should be present")
+    }
+
+  private val createPersonalDetailsData: PersonalDetails=> PersonalDetailsData ={
+    case PersonalDetailsWithNino(firstName, lastName, nino, dateOfBirth) => (firstName, lastName, Some(nino), dateOfBirth, None)
+    case PersonalDetailsWithPostcode(firstName, lastName, postcode, dateOfBirth) => (firstName, lastName, None, dateOfBirth, Some(postcode))
+  }
+
+  private val ninoAndPostcodeMutuallyExclusive: PersonalDetailsData => Boolean = {
+    case (_, _, Some(_), _, Some(_)) => false
+    case (_, _, None, _, None) => false
+    case _ => true
+  }
+
   private val form: Form[PersonalDetails] = Form(mapping(
     "firstName" -> mandatoryText("personal-details.firstname.required"),
     "lastName" -> mandatoryText("personal-details.lastname.required"),
@@ -46,39 +68,10 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
       .transform[Option[Nino]](_.map(nonEmptyString => Nino(nonEmptyString.value)), _.map(nino => NonEmptyString(nino.value))),
     "dateOfBirth" -> mandatoryLocalDate("personal-details"),
     "postcode" -> optionalText
-      .verifying("personal-details.postcode.invalid", nonEmptyString => nonEmptyString.forall(nonEmptyString => Try(nonEmptyString.value).isSuccess))
   )(personalDetailsParser)(Some(_))
-    .verifying("personal-details.ninoOrPostcode.required", ninoAndPostcodeMutuallyExclusive _)
+    .verifying("personal-details.ninoOrPostcode.required", ninoAndPostcodeMutuallyExclusive)
     .transform(createPersonalDetails, createPersonalDetailsData)
   )
-
-  type PersonalDetailsData = Tuple5[NonEmptyString,NonEmptyString,Option[Nino],LocalDate,Option[NonEmptyString]]
-
-  private lazy val personalDetailsParser: (NonEmptyString,NonEmptyString,Option[Nino],LocalDate,Option[NonEmptyString]) => PersonalDetailsData =
-    (_,_,_,_,_)
-
-  private def createPersonalDetails(personalDetailsData: PersonalDetailsData): PersonalDetails = {
-    val (firstName, lastName, mayBeNino, dateOfBirth, mayBePostcode) = personalDetailsData
-    (mayBeNino, mayBePostcode) match {
-      case (Some(nino), None) => PersonalDetailsWithNino(firstName, lastName, nino, dateOfBirth)
-      case (None, Some(postcode)) => PersonalDetailsWithPostcode(firstName, lastName, postcode, dateOfBirth)
-      case _ => throw new IllegalStateException("Either of nino or postcode should be present")
-    }
-  }
-
-  private def createPersonalDetailsData(personalDetails: PersonalDetails): PersonalDetailsData = personalDetails match {
-    case PersonalDetailsWithNino(firstName, lastName, nino, dateOfBirth) => (firstName, lastName, Some(nino), dateOfBirth, None)
-    case PersonalDetailsWithPostcode(firstName, lastName, postcode, dateOfBirth) => (firstName, lastName, None, dateOfBirth, Some(postcode))
-  }
-
-  private def ninoAndPostcodeMutuallyExclusive(personalDetailsData: PersonalDetailsData): Boolean = {
-    val (_, _, nino, _, postcode) = personalDetailsData
-    (nino, postcode) match {
-      case (Some(_), Some(_)) => false
-      case (None, None) => false
-      case _ => true
-    }
-  }
 
   def render(implicit completionUrl: CompletionUrl,
              request: Request[_]): Html =

@@ -43,20 +43,20 @@ class FuturedPersonalDetailsSenderSpec
 
       val locationUri = uris.generateOne
       expectPost(toUrl = "http://host/personal-details-validation")
-        .withPayload(payload)
+        .withPayload(PayloadWithNino)
         .returning(status = CREATED, headers = LOCATION -> locationUri.toString)
 
-      connector.passToValidation(personalDetails).value.futureValue shouldBe Right(locationUri)
+      connector.passToValidation(personalDetailsWithNino).value.futureValue shouldBe Right(locationUri)
     }
 
     s"return a ProcessingError when there is no $LOCATION header " +
       "in the response from POST to /personal-details-validation" in new Setup {
 
       expectPost(toUrl = "http://host/personal-details-validation")
-        .withPayload(payload)
+        .withPayload(PayloadWithNino)
         .returning(status = CREATED)
 
-      connector.passToValidation(personalDetails).value.futureValue shouldBe Left(ProcessingError(
+      connector.passToValidation(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
         "No Location header in the response from POST http://host/personal-details-validation"
       ))
     }
@@ -66,10 +66,10 @@ class FuturedPersonalDetailsSenderSpec
       s"return a ProcessingError when POST to /personal-details-validation/ returns $unexpectedStatus" in new Setup {
 
         expectPost(toUrl = "http://host/personal-details-validation")
-          .withPayload(payload)
+          .withPayload(PayloadWithNino)
           .returning(unexpectedStatus, "some response body")
 
-        connector.passToValidation(personalDetails).value.futureValue shouldBe Left(ProcessingError(
+        connector.passToValidation(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
           s"Unexpected response from POST http://host/personal-details-validation with status: '$unexpectedStatus' and body: some response body"
         ))
       }
@@ -79,10 +79,10 @@ class FuturedPersonalDetailsSenderSpec
 
       val exception = new RuntimeException("message")
       expectPost(toUrl = "http://host/personal-details-validation")
-        .withPayload(payload)
+        .withPayload(PayloadWithNino)
         .throwing(exception)
 
-      connector.passToValidation(personalDetails).value.futureValue shouldBe Left(ProcessingError(
+      connector.passToValidation(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
         s"Call to POST http://host/personal-details-validation threw: $exception"
       ))
     }
@@ -139,13 +139,13 @@ class FuturedPersonalDetailsSenderSpec
   private trait Setup extends HttpClientStubSetup {
     implicit val headerCarrier = HeaderCarrier()
 
-    val personalDetails = personalDetailsObjects.generateOne
+    val personalDetailsWithNino = personalDetailsObjects.generateOne
 
-    val payload = Json.obj(
-      "firstName" -> personalDetails.firstName.toString(),
-      "lastName" -> personalDetails.lastName.toString(),
-      "dateOfBirth" -> personalDetails.dateOfBirth,
-      "nino" -> personalDetails.nino.toString()
+    val PayloadWithNino = Json.obj(
+      "firstName" -> personalDetailsWithNino.firstName.toString(),
+      "lastName" -> personalDetailsWithNino.lastName.toString(),
+      "dateOfBirth" -> personalDetailsWithNino.dateOfBirth,
+      "nino" -> personalDetailsWithNino.nino.toString()
     )
 
     val personalDetailsWithPostcode = personalDetailsObjectsWithPostcode.generateOne

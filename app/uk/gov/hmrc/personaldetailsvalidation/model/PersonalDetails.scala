@@ -19,7 +19,8 @@ package uk.gov.hmrc.personaldetailsvalidation.model
 import java.time.LocalDate
 
 import uk.gov.hmrc.domain.Nino
-trait PersonalDetails
+
+sealed trait PersonalDetails
 
 case class PersonalDetailsWithNino(firstName: NonEmptyString,
                                      lastName: NonEmptyString,
