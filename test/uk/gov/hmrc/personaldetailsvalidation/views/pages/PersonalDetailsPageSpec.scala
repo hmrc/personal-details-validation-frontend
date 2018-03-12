@@ -123,7 +123,7 @@ class PersonalDetailsPageSpec
         "dateOfBirth.day" -> personalDetailsWithPostcode.dateOfBirth.getDayOfMonth.toString,
         "dateOfBirth.month" -> personalDetailsWithPostcode.dateOfBirth.getMonthValue.toString,
         "dateOfBirth.year" -> personalDetailsWithPostcode.dateOfBirth.getYear.toString,
-        "postcode" -> personalDetailsWithPostcode.postcode.toString()
+        "postcode" -> personalDetailsWithPostcode.postCode.toString()
       )
 
       val response = personalDetailsPage.bindFromRequest
@@ -139,7 +139,7 @@ class PersonalDetailsPageSpec
         "dateOfBirth.day" -> personalDetailsWithPostcode.dateOfBirth.getDayOfMonth.toString.surroundWithWhitespaces,
         "dateOfBirth.month" -> personalDetailsWithPostcode.dateOfBirth.getMonthValue.toString.surroundWithWhitespaces,
         "dateOfBirth.year" -> personalDetailsWithPostcode.dateOfBirth.getYear.toString.surroundWithWhitespaces,
-        "postcode" -> personalDetailsWithPostcode.postcode.toString().surroundWithWhitespaces
+        "postcode" -> personalDetailsWithPostcode.postCode.toString().surroundWithWhitespaces
       )
 
       val response = personalDetailsPage.bindFromRequest
@@ -333,7 +333,7 @@ class PersonalDetailsPageSpec
           "dateOfBirth.day" -> personalDetailsWithPostcode.dateOfBirth.getDayOfMonth.toString,
           "dateOfBirth.month" -> personalDetailsWithPostcode.dateOfBirth.getMonthValue.toString,
           "dateOfBirth.year" -> personalDetailsWithPostcode.dateOfBirth.getYear.toString,
-          "postcode" -> personalDetailsWithPostcode.postcode.toString
+          "postcode" -> personalDetailsWithPostcode.postCode.toString
         ) ++ replace).toSeq: _*
       )
 

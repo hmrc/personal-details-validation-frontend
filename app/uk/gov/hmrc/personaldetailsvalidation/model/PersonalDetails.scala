@@ -28,6 +28,6 @@ case class PersonalDetailsWithNino(firstName: NonEmptyString,
                                      dateOfBirth: LocalDate) extends PersonalDetails
 
 case class PersonalDetailsWithPostcode(firstName: NonEmptyString,
-                                     lastName: NonEmptyString,
-                                     postcode: NonEmptyString,
-                                     dateOfBirth: LocalDate) extends PersonalDetails
+                                       lastName: NonEmptyString,
+                                       postCode: NonEmptyString,
+                                       dateOfBirth: LocalDate) extends PersonalDetails

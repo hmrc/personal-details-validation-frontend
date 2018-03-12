@@ -154,7 +154,7 @@ class FuturedPersonalDetailsSenderSpec
       "firstName" -> personalDetailsWithPostcode.firstName.toString(),
       "lastName" -> personalDetailsWithPostcode.lastName.toString(),
       "dateOfBirth" -> personalDetailsWithPostcode.dateOfBirth,
-      "postcode" -> personalDetailsWithPostcode.postcode.toString()
+      "postCode" -> personalDetailsWithPostcode.postCode.toString()
     )
 
     private val connectorConfig = new ConnectorConfig(mock[Configuration]) {

@@ -84,7 +84,7 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
         "firstName" -> personalDetails.firstName,
         "lastName" -> personalDetails.lastName,
         "dateOfBirth" -> personalDetails.dateOfBirth,
-        "postcode" -> personalDetails.postcode
+        "postCode" -> personalDetails.postCode
       )
   }
 
