@@ -17,17 +17,24 @@
 package uk.gov.hmrc.personaldetailsvalidation.generators
 
 import org.scalacheck.Gen
-import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetails
+import uk.gov.hmrc.personaldetailsvalidation.model.{PersonalDetailsWithNino, PersonalDetailsWithPostcode}
 
 object ObjectGenerators {
 
   import generators.Generators._
   import ValuesGenerators._
 
-  implicit val personalDetailsObjects: Gen[PersonalDetails] = for {
+  implicit val personalDetailsObjects: Gen[PersonalDetailsWithNino] = for {
     firstName <- nonEmptyStringObjects
     lastName <- nonEmptyStringObjects
     dateOfBirth <- localDates
     nino <- ninos
-  } yield PersonalDetails(firstName, lastName, nino, dateOfBirth)
+  } yield PersonalDetailsWithNino(firstName, lastName, nino, dateOfBirth)
+
+  implicit val personalDetailsObjectsWithPostcode: Gen[PersonalDetailsWithPostcode] = for {
+    firstName <- nonEmptyStringObjects
+    lastName <- nonEmptyStringObjects
+    dateOfBirth <- localDates
+    postcode <- nonEmptyStringObjects
+  } yield PersonalDetailsWithPostcode(firstName, lastName, postcode, dateOfBirth)
 }

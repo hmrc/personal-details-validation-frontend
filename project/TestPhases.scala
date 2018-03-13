@@ -3,8 +3,14 @@ import sbt.Tests.{Group, SubProcess}
 
 private object TestPhases {
 
-  def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] =
+  def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = {
+    val browserProperty = Option(System.getProperty("browser")).map(browser => s"-Dbrowser=$browser")
     tests map {
-      test => Group(test.name, Seq(test), SubProcess(ForkOptions(runJVMOptions = Seq("-Dtest.name=" + test.name))))
+      test => Group(
+        test.name,
+        Seq(test),
+        SubProcess(ForkOptions(runJVMOptions = browserProperty.getOrElse("") :: s"-Dtest.name=${test.name}" :: Nil))
+      )
     }
+  }
 }

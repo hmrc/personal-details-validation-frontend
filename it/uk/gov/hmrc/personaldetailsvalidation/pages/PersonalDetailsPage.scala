@@ -19,10 +19,19 @@ case class PersonalDetailsPage(completionUrl: String, verifyThisPageDisplayedWit
     currentUrl.query shouldBe url.query
   }
 
-  def fillIn(firstName: String, lastName: String, nino: Nino, dob: LocalDate): Unit = {
+  def fillInWithNino(firstName: String, lastName: String, nino: Nino, dob: LocalDate): Unit = {
     textField("firstName").value = firstName
     textField("lastName").value = lastName
-    textField("nino").value = nino.toString()
+    textField("nino").value = nino.value
+    numberField("dateOfBirth.day").value = dob.getDayOfMonth.toString
+    numberField("dateOfBirth.month").value = dob.getMonthValue.toString
+    numberField("dateOfBirth.year").value = dob.getYear.toString
+  }
+
+  def fillInWithPostcode(firstName: String, lastName: String, postCode: String, dob: LocalDate): Unit = {
+    textField("firstName").value = firstName
+    textField("lastName").value = lastName
+    textField("postcode").value = postCode
     numberField("dateOfBirth.day").value = dob.getDayOfMonth.toString
     numberField("dateOfBirth.month").value = dob.getMonthValue.toString
     numberField("dateOfBirth.year").value = dob.getYear.toString

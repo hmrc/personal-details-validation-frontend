@@ -20,7 +20,14 @@ import java.time.LocalDate
 
 import uk.gov.hmrc.domain.Nino
 
-case class PersonalDetails(firstName: NonEmptyString,
-                           lastName: NonEmptyString,
-                           nino: Nino,
-                           dateOfBirth: LocalDate)
+sealed trait PersonalDetails
+
+case class PersonalDetailsWithNino(firstName: NonEmptyString,
+                                     lastName: NonEmptyString,
+                                     nino: Nino,
+                                     dateOfBirth: LocalDate) extends PersonalDetails
+
+case class PersonalDetailsWithPostcode(firstName: NonEmptyString,
+                                       lastName: NonEmptyString,
+                                       postCode: NonEmptyString,
+                                       dateOfBirth: LocalDate) extends PersonalDetails

@@ -23,7 +23,7 @@ import org.scalatestplus.play.OneAppPerSuite
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Request}
 import setups.views.ViewSetup
 import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
-import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.personalDetailsObjects
+import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.test.UnitSpec
@@ -115,6 +115,38 @@ class PersonalDetailsPageSpec
       response shouldBe Right(personalDetails)
     }
 
+    "return PersonalDetails with Postcode when data provided on the form is valid" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = request.withFormUrlEncodedBody(
+        "firstName" -> personalDetailsWithPostcode.firstName.toString(),
+        "lastName" -> personalDetailsWithPostcode.lastName.toString(),
+        "dateOfBirth.day" -> personalDetailsWithPostcode.dateOfBirth.getDayOfMonth.toString,
+        "dateOfBirth.month" -> personalDetailsWithPostcode.dateOfBirth.getMonthValue.toString,
+        "dateOfBirth.year" -> personalDetailsWithPostcode.dateOfBirth.getYear.toString,
+        "postcode" -> personalDetailsWithPostcode.postCode.toString()
+      )
+
+      val response = personalDetailsPage.bindFromRequest
+
+      response shouldBe Right(personalDetailsWithPostcode)
+    }
+
+    "return PersonalDetails with Postcode when data provided on the form is valid but surrounded with whitespaces" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = request.withFormUrlEncodedBody(
+        "firstName" -> personalDetailsWithPostcode.firstName.toString().surroundWithWhitespaces,
+        "lastName" -> personalDetailsWithPostcode.lastName.toString().surroundWithWhitespaces,
+        "dateOfBirth.day" -> personalDetailsWithPostcode.dateOfBirth.getDayOfMonth.toString.surroundWithWhitespaces,
+        "dateOfBirth.month" -> personalDetailsWithPostcode.dateOfBirth.getMonthValue.toString.surroundWithWhitespaces,
+        "dateOfBirth.year" -> personalDetailsWithPostcode.dateOfBirth.getYear.toString.surroundWithWhitespaces,
+        "postcode" -> personalDetailsWithPostcode.postCode.toString().surroundWithWhitespaces
+      )
+
+      val response = personalDetailsPage.bindFromRequest
+
+      response shouldBe Right(personalDetailsWithPostcode)
+    }
+
     "return 'personal-details.firstname.required' error message " +
       "when first name is blank" in new Setup with BindFromRequestTooling {
 
@@ -145,7 +177,7 @@ class PersonalDetailsPageSpec
       page.errorFor("lastName") shouldBe messages("personal-details.lastname.required")
     }
 
-    "return 'personal-details.nino.required' error message " +
+    "return 'personal-details.ninoOrPostcode.required' error message " +
       "when nino is blank" in new Setup with BindFromRequestTooling {
 
       implicit val requestWithFormData = validRequest(replace = "nino" -> " ")
@@ -155,9 +187,33 @@ class PersonalDetailsPageSpec
       val page: Document = response
 
       page.errorsSummary.heading shouldBe messages("error-summary.heading")
-      page.errorsSummary.content shouldBe messages("personal-details.nino.required")
+      page.errorsSummary.content shouldBe messages("personal-details.ninoOrPostcode.required")
+    }
 
-      page.errorFor("nino") shouldBe messages("personal-details.nino.required")
+    "return 'personal-details.ninoOrPostcode.required' error message " +
+      "when postcode is blank" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = validRequestWithPostcode(replace = "postcode" -> " ")
+
+      val Left(response) = personalDetailsPage.bindFromRequest
+
+      val page: Document = response
+
+      page.errorsSummary.heading shouldBe messages("error-summary.heading")
+      page.errorsSummary.content shouldBe messages("personal-details.ninoOrPostcode.required")
+    }
+
+    "return 'personal-details.ninoOrPostcode.required' error message " +
+      "when both nino and postcode is present" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = validRequest(replace = "postcode"-> "replaceMeWithAnActualPostcode")
+
+      val Left(response) = personalDetailsPage.bindFromRequest
+
+      val page: Document = response
+
+      page.errorsSummary.heading shouldBe messages("error-summary.heading")
+      page.errorsSummary.content shouldBe messages("personal-details.ninoOrPostcode.required")
     }
 
     "return 'personal-details.nino.invalid' error message " +
@@ -264,6 +320,20 @@ class PersonalDetailsPageSpec
           "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
           "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
           "nino" -> personalDetails.nino.toString()
+        ) ++ replace).toSeq: _*
+      )
+
+    val personalDetailsWithPostcode = personalDetailsObjectsWithPostcode.generateOne
+
+    def validRequestWithPostcode(replace: (String, String)*): Request[AnyContentAsFormUrlEncoded] =
+      request.withFormUrlEncodedBody((
+        Map(
+          "firstName" -> personalDetailsWithPostcode.firstName.toString(),
+          "lastName" -> personalDetailsWithPostcode.lastName.toString(),
+          "dateOfBirth.day" -> personalDetailsWithPostcode.dateOfBirth.getDayOfMonth.toString,
+          "dateOfBirth.month" -> personalDetailsWithPostcode.dateOfBirth.getMonthValue.toString,
+          "dateOfBirth.year" -> personalDetailsWithPostcode.dateOfBirth.getYear.toString,
+          "postcode" -> personalDetailsWithPostcode.postCode.toString
         ) ++ replace).toSeq: _*
       )
 

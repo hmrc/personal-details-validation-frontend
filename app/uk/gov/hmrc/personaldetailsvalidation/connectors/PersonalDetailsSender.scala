@@ -22,10 +22,10 @@ import javax.inject.{Inject, Singleton}
 import cats.data.EitherT
 import play.api.http.HeaderNames._
 import play.api.http.Status.CREATED
-import play.api.libs.json.{Format, JsObject, Json}
+import play.api.libs.json.{Format, Json, Writes}
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
-import uk.gov.hmrc.personaldetailsvalidation.model.{NonEmptyString, PersonalDetails}
+import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.voa.valuetype.play.formats.ValueTypeFormat._
 
@@ -54,7 +54,7 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
     httpClient
       .POST(
         url,
-        body = personalDetails.toJson
+        body = Json.toJson(personalDetails)
       ).recover(toProcessingError)
   }
 
@@ -71,13 +71,21 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
 
   private implicit val nonEmptyStringFormat: Format[NonEmptyString] = format(NonEmptyString.apply)
 
-  private implicit class PersonalDetailsSerializer(personalDetails: PersonalDetails) {
-    lazy val toJson: JsObject = Json.obj(
-      "firstName" -> personalDetails.firstName,
-      "lastName" -> personalDetails.lastName,
-      "dateOfBirth" -> personalDetails.dateOfBirth,
-      "nino" -> personalDetails.nino
-    )
+  private implicit val personalDetailsWrites = Writes[PersonalDetails] {
+    case personalDetails : PersonalDetailsWithNino =>
+      Json.obj(
+        "firstName" -> personalDetails.firstName,
+        "lastName" -> personalDetails.lastName,
+        "dateOfBirth" -> personalDetails.dateOfBirth,
+        "nino" -> personalDetails.nino
+      )
+    case personalDetails : PersonalDetailsWithPostcode =>
+      Json.obj(
+        "firstName" -> personalDetails.firstName,
+        "lastName" -> personalDetails.lastName,
+        "dateOfBirth" -> personalDetails.dateOfBirth,
+        "postCode" -> personalDetails.postCode
+      )
   }
 
   private val toProcessingError: PartialFunction[Throwable, Either[ProcessingError, URI]] = {
