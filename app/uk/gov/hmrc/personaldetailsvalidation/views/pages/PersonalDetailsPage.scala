@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.views.pages
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
-import play.api.data.Form
+import play.api.data.{Form, Mapping}
 import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
@@ -63,15 +63,26 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   private val form: Form[PersonalDetails] = Form(mapping(
     "firstName" -> mandatoryText("personal-details.firstname.required"),
     "lastName" -> mandatoryText("personal-details.lastname.required"),
-    "nino" -> optionalText
-      .verifying("personal-details.nino.invalid", nonEmptyString => nonEmptyString.forall(nonEmptyString => Try(Nino(nonEmptyString.value)).isSuccess))
-      .transform[Option[Nino]](_.map(nonEmptyString => Nino(nonEmptyString.value)), _.map(nino => NonEmptyString(nino.value))),
+    "nino" -> ninoValidation(),
     "dateOfBirth" -> mandatoryLocalDate("personal-details"),
-    "postcode" -> optionalText
+    "postcode" -> postcodeValidation()
   )(personalDetailsParser)(Some(_))
     .verifying("personal-details.nino.required", ninoAndPostcodeMutuallyExclusive)
     .transform(createPersonalDetails, createPersonalDetailsData)
   )
+
+  private def ninoValidation(): Mapping[Option[Nino]] = {
+    optionalText
+      .verifying("personal-details.nino.invalid", nonEmptyString => nonEmptyString.forall(nonEmptyString => Try(Nino(nonEmptyString.value)).isSuccess))
+      .transform[Option[Nino]](_.map(nonEmptyString => Nino(nonEmptyString.value)), _.map(nino => NonEmptyString(nino.value)))
+  }
+
+  private def postcodeValidation(): Mapping[Option[NonEmptyString]] = {
+    optionalText.verifying("personal-details.postcode.invalid", nonEmptyString => nonEmptyString.forall(postcode => postcodeFormatValidation(postcode)))
+  }
+
+  private def postcodeFormatValidation(postcode: NonEmptyString) =
+    postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
   def render(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
     personal_details(form, completionUrl)

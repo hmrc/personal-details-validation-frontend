@@ -24,7 +24,7 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Request}
 import setups.views.ViewSetup
 import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
-import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
+import uk.gov.hmrc.personaldetailsvalidation.generators.{ObjectGenerators, ValuesGenerators}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.test.UnitSpec
 import collection.JavaConverters._
@@ -268,8 +268,8 @@ class PersonalDetailsPageSpec
 
     "return 'personal-details.ninoOrPostcode.required' error message " +
       "when both nino and postcode is present" in new Setup with BindFromRequestTooling {
-      pending
-      implicit val requestWithFormData = validRequest(replace = "postcode"-> "replaceMeWithAnActualPostcode")
+
+      implicit val requestWithFormData = validRequest(replace = "postcode"-> ValuesGenerators.postCode.generateOne.toString())
 
       val Left(response) = personalDetailsPage.bindFromRequest
 
@@ -277,6 +277,22 @@ class PersonalDetailsPageSpec
 
       page.errorsSummary.heading shouldBe messages("error-summary.heading")
       page.errorsSummary.content shouldBe messages("personal-details.ninoOrPostcode.required")
+    }
+
+    List("LE2 OAJ", "AO1 9KK", "N7 0f8", "D8 JJ") foreach { invalidPostcode =>
+
+      "return 'personal-details.postcode.invalid' error message " +
+        s"when postcode $invalidPostcode contains invalid characters" in new Setup with BindFromRequestTooling {
+        implicit val requestWithFormData = validRequestWithPostcode(replace = "postcode" -> invalidPostcode)
+
+        val Left(response) = personalDetailsPage.bindFromRequest
+
+        val page: Document = response
+
+        page.errorsSummary.heading shouldBe messages("error-summary.heading")
+        page.errorFor("postcode") shouldBe messages("personal-details.postcode.invalid")
+
+      }
     }
 
     "return 'personal-details.nino.invalid' error message " +

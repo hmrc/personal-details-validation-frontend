@@ -35,7 +35,7 @@ object ObjectGenerators {
     firstName <- nonEmptyStringObjects
     lastName <- nonEmptyStringObjects
     dateOfBirth <- localDates
-    postcode <- nonEmptyStringObjects
+    postcode <- postCode
   } yield PersonalDetailsWithPostcode(firstName, lastName, postcode, dateOfBirth)
 
   implicit val personalDetailsValidationObjects: Gen[PersonalDetailsValidation] = for {
