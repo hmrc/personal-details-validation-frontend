@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/hmrc/personal-details-validation-frontend.svg)](https://travis-ci.org/hmrc/personal-details-validation-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/personal-details-validation-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/personal-details-validation-frontend/_latestVersion)
 
-personal-details-validation-frontend service is used to capture name, surname, date of birth and nino of the user and make it available to all the services.
+personal-details-validation-frontend service is used to capture name, surname, date of birth and either nino or postcode of the user and make it available to all the services.
 
 # API
 
