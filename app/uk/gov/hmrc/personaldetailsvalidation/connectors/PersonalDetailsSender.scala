@@ -26,6 +26,7 @@ import play.api.libs.json.{Format, Json, Writes}
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model._
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.voa.valuetype.play.formats.ValueTypeFormat._
 
@@ -40,8 +41,10 @@ private[personaldetailsvalidation] trait PersonalDetailsSender[Interpretation[_]
 }
 
 @Singleton
-private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(httpClient: HttpClient,
-                                                                                connectorConfig: ConnectorConfig)
+private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
+                                                   httpClient: HttpClient,
+                                                   connectorConfig: ConnectorConfig,
+                                                   pdvMetrics: PdvMetrics)
   extends PersonalDetailsSender[Future] {
 
   import connectorConfig.personalDetailsValidationBaseUrl
@@ -51,11 +54,12 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
   override def passToValidation(personalDetails: PersonalDetails)
                                (implicit headerCarrier: HeaderCarrier,
                                 executionContext: ExecutionContext): EitherT[Future, ProcessingError, URI] = EitherT {
-    httpClient
-      .POST(
-        url,
-        body = Json.toJson(personalDetails)
-      ).recover(toProcessingError)
+    pdvMetrics.matchPersonalDetails(personalDetails)
+
+    httpClient.POST(
+      url,
+      body = Json.toJson(personalDetails)
+    ).recover(toProcessingError)
   }
 
   private implicit val personalDetailsSubmissionReads: HttpReads[Either[ProcessingError, URI]] = new HttpReads[Either[ProcessingError, URI]] {
