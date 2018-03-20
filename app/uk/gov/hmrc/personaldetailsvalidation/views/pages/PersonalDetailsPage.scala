@@ -69,7 +69,7 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
     "dateOfBirth" -> mandatoryLocalDate("personal-details"),
     "postcode" -> optionalText
   )(personalDetailsParser)(Some(_))
-    .verifying("personal-details.ninoOrPostcode.required", ninoAndPostcodeMutuallyExclusive)
+    .verifying("personal-details.nino.required", ninoAndPostcodeMutuallyExclusive)
     .transform(createPersonalDetails, createPersonalDetailsData)
   )
 
