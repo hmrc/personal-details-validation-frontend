@@ -28,7 +28,7 @@ object PersonalDetailsService {
         status = CREATED,
         body = Json.obj(
           "validationStatus" -> (if(validationSuccess) "success" else "failure") ,
-          "validationId" -> validationId
+          "id" -> validationId
         )
       )
   }

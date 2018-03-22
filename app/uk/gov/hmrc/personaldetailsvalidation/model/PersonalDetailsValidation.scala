@@ -25,7 +25,7 @@ case object FailedPersonalDetailsValidation extends PersonalDetailsValidation
 
 object PersonalDetailsValidation {
   implicit val reads: Reads[PersonalDetailsValidation] = (
-    (__ \ "validationStatus").read[String] and (__ \ "validationId").read[String]
+    (__ \ "validationStatus").read[String] and (__ \ "id").read[String]
     ).tupled.map {
     case ("success", validationId) => SuccessfulPersonalDetailsValidation(ValidationId(validationId))
     case ("failure", _) => FailedPersonalDetailsValidation

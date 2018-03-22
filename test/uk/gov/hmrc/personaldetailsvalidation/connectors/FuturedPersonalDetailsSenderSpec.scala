@@ -46,7 +46,7 @@ class FuturedPersonalDetailsSenderSpec
         .withPayload(payloadWithNino)
         .returning(status = CREATED, Json.obj(
           "validationStatus" -> "success",
-          "validationId" -> validationId.value
+          "id" -> validationId.value
         ))
 
       connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Right(SuccessfulPersonalDetailsValidation(validationId))
@@ -58,7 +58,7 @@ class FuturedPersonalDetailsSenderSpec
         .withPayload(payloadWithNino)
         .returning(status = CREATED, Json.obj(
           "validationStatus" -> "failure",
-          "validationId" -> validationIds.generateOne.value
+          "id" -> validationIds.generateOne.value
         ))
 
       connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Right(FailedPersonalDetailsValidation)
@@ -97,7 +97,7 @@ class FuturedPersonalDetailsSenderSpec
         .withPayload(payloadWithPostcode)
         .returning(status = CREATED, Json.obj(
           "validationStatus" -> "success",
-          "validationId" -> validationId.value
+          "id" -> validationId.value
         ))
 
       connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Right(SuccessfulPersonalDetailsValidation(validationId))
@@ -110,7 +110,7 @@ class FuturedPersonalDetailsSenderSpec
         .withPayload(payloadWithPostcode)
         .returning(status = CREATED, Json.obj(
           "validationStatus" -> "failure",
-          "validationId" -> validationId.value
+          "id" -> validationId.value
         ))
 
       connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Right(FailedPersonalDetailsValidation)
