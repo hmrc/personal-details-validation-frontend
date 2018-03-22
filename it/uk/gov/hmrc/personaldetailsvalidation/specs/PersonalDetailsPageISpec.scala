@@ -5,10 +5,11 @@ import java.time.LocalDate
 
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
-import uk.gov.hmrc.personaldetailsvalidation.pages.{CompletionPage, ErrorPage, PersonalDetailsPage}
+import uk.gov.hmrc.personaldetailsvalidation.pages.{CompletionPage, ErrorPage}
+import uk.gov.hmrc.personaldetailsvalidation.pages.PersonalDetailsPage._
 import uk.gov.hmrc.personaldetailsvalidation.services.PersonalDetailsService
 import uk.gov.hmrc.personaldetailsvalidation.services.PersonalDetailsService.PersonalDetailsData
-import uk.gov.hmrc.personaldetailsvalidation.support.{BaseIntegrationSpec, FormErrors}
+import uk.gov.hmrc.personaldetailsvalidation.support.BaseIntegrationSpec
 import uk.gov.hmrc.personaldetailsvalidation.support.wiremock.WiremockedService
 
 class PersonalDetailsPageISpec
@@ -50,17 +51,17 @@ class PersonalDetailsPageISpec
       goTo(s"/personal-details?completionUrl=$completionUrl")
 
       Then("I should see the Personal Details page")
-      val personalDetailsPage = PersonalDetailsPage(completionUrl)
-      on(personalDetailsPage)
+      val page = personalDetailsPage(completionUrl)
+      on(page)
 
       When("I fill in the fields with valid data")
-      personalDetailsPage.fillInWithNino(testData.firstName, testData.lastName, testData.nino.get, testData.dateOfBirth)
+      page.fillInWithNino(testData.firstName, testData.lastName, testData.nino.get, testData.dateOfBirth)
 
       And("I know the personal-details-validation service validates the data successfully")
       PersonalDetailsService validatesSuccessfully testData
 
       And("when I submit the data")
-      personalDetailsPage.submitForm()
+      page.submitForm()
 
       Then("I should get redirected to my completion url")
       on(CompletionPage(completionUrl))
@@ -79,31 +80,31 @@ class PersonalDetailsPageISpec
       goTo(s"/personal-details?completionUrl=$completionUrl")
 
       Then("I should see the Personal Details page")
-      val personalDetailsPage = PersonalDetailsPage(completionUrl)
-      on(personalDetailsPage)
+      val page = personalDetailsPage(completionUrl)
+      on(page)
 
       When("I fill in the fields with valid data")
-      personalDetailsPage.fillInWithNino(testData.firstName, testData.lastName, testData.nino.get, testData.dateOfBirth)
+      page.fillInWithNino(testData.firstName, testData.lastName, testData.nino.get, testData.dateOfBirth)
 
       And("I know the personal-details-validation service validates the data successfully")
       PersonalDetailsService validatesUnsuccessfully testData
 
       And("when I submit the data")
-      personalDetailsPage.submitForm()
+      page.submitForm()
 
       Then("I should see the Personal Details error page")
-      val personalDetailsErrorPage = new PersonalDetailsPage(completionUrl, true) with FormErrors
-      on(personalDetailsErrorPage)
+      val errorPage = personalDetailsErrorPage(completionUrl)
+      on(errorPage)
 
       And("I should not see the data I entered")
-      personalDetailsErrorPage.verifyDataBlank()
+      errorPage.verifyDataBlank()
 
       And("I should see errors")
-      personalDetailsErrorPage.summaryErrors shouldBe List(
+      errorPage.summaryErrors shouldBe List(
         "The information you've entered doesn't match our records." +
           " Check your details and try again."
       )
-      personalDetailsErrorPage.fieldErrors shouldBe Map.empty
+      errorPage.fieldErrors shouldBe Map.empty
     }
 
     scenario("validation successful when personal Details page submitted with valid personal details containing postcode") {
@@ -121,17 +122,17 @@ class PersonalDetailsPageISpec
       goTo(s"/personal-details?completionUrl=$completionUrl")
 
       Then("I should see the Personal Details page")
-      val personalDetailsPage = PersonalDetailsPage(completionUrl)
-      on(personalDetailsPage)
+      val page = personalDetailsPage(completionUrl)
+      on(page)
 
       When("I fill in the fields with valid data")
-      personalDetailsPage.fillInWithPostcode(testData.firstName, testData.lastName, testData.postcode.get, testData.dateOfBirth)
+      page.fillInWithPostcode(testData.firstName, testData.lastName, testData.postcode.get, testData.dateOfBirth)
 
       And("I know the personal-details-validation service validates the data successfully")
       PersonalDetailsService validatesSuccessfully testData
 
       And("when I submit the data")
-      personalDetailsPage.submitForm()
+      page.submitForm()
 
       Then("I should get redirected to my completion url")
       on(CompletionPage(completionUrl))
@@ -152,31 +153,31 @@ class PersonalDetailsPageISpec
       goTo(s"/personal-details?completionUrl=$completionUrl")
 
       Then("I should see the Personal Details page")
-      val personalDetailsPage = PersonalDetailsPage(completionUrl)
-      on(personalDetailsPage)
+      val page = personalDetailsPage(completionUrl)
+      on(page)
 
       When("I fill in the fields with valid data")
-      personalDetailsPage.fillInWithPostcode(testData.firstName, testData.lastName, testData.postcode.get, testData.dateOfBirth)
+      page.fillInWithPostcode(testData.firstName, testData.lastName, testData.postcode.get, testData.dateOfBirth)
 
       And("I know the personal-details-validation service validates the data successfully")
       PersonalDetailsService validatesUnsuccessfully testData
 
       And("when I submit the data")
-      personalDetailsPage.submitForm()
+      page.submitForm()
 
       Then("I should see the Personal Details error page")
-      val personalDetailsErrorPage = new PersonalDetailsPage(completionUrl, true) with FormErrors
-      on(personalDetailsErrorPage)
+      val errorPage = personalDetailsErrorPage(completionUrl)
+      on(errorPage)
 
       And("I should not see the data I entered")
-      personalDetailsErrorPage.verifyDataBlank()
+      errorPage.verifyDataBlank()
 
       And("I should see errors")
-      personalDetailsErrorPage.summaryErrors shouldBe List(
+      errorPage.summaryErrors shouldBe List(
         "The information you've entered doesn't match our records." +
           " Check your details and try again."
       )
-      personalDetailsErrorPage.fieldErrors shouldBe Map.empty
+      errorPage.fieldErrors shouldBe Map.empty
     }
 
     scenario("Personal Details page submitted with invalid personal details") {
@@ -185,23 +186,23 @@ class PersonalDetailsPageISpec
       goTo(s"/personal-details?completionUrl=$completionUrl")
 
       Then("I should see the Personal Details page")
-      val personalDetailsPage = PersonalDetailsPage(completionUrl)
-      on(personalDetailsPage)
+      val page = personalDetailsPage(completionUrl)
+      on(page)
 
       When("I submit some invalid data")
-      personalDetailsPage.fillInWithNino(" ", " ", Nino("AA000003C"), LocalDate.of(1948, 12, 23))
-      personalDetailsPage.submitForm()
+      page.fillInWithNino(" ", " ", Nino("AA000003C"), LocalDate.of(1948, 12, 23))
+      page.submitForm()
 
       Then("I should see the Personal Details error page")
-      val personalDetailsErrorPage = new PersonalDetailsPage(completionUrl, true) with FormErrors
-      on(personalDetailsErrorPage)
+      val errorPage = personalDetailsErrorPage(completionUrl)
+      on(errorPage)
 
       And("I should still see the data I entered")
-      personalDetailsErrorPage.verifyDataPresent(" ", " ", Nino("AA000003C"), LocalDate.of(1948, 12, 23))
+      errorPage.verifyDataPresent(" ", " ", Nino("AA000003C"), LocalDate.of(1948, 12, 23))
 
       And("I should see errors for invalid values")
-      personalDetailsErrorPage.summaryErrors shouldBe List("Enter your first name.", "Enter your last name.")
-      personalDetailsErrorPage.fieldErrors shouldBe Map(
+      errorPage.summaryErrors shouldBe List("Enter your first name.", "Enter your last name.")
+      errorPage.fieldErrors shouldBe Map(
         "firstName" -> "Enter your first name.",
         "lastName" -> "Enter your last name."
       )
