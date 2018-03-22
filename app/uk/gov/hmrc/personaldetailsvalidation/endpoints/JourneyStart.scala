@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import javax.inject.{Inject, Singleton}
-
 import cats.Monad
 import cats.implicits._
+import javax.inject.{Inject, Singleton}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedValidationIdValidator, ValidationIdValidator}
-import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamSerializer._
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, ValidationId}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,17 +33,14 @@ import scala.language.{higherKinds, implicitConversions}
 
 @Singleton
 private class FuturedJourneyStart @Inject()(validationIdValidator: FuturedValidationIdValidator,
-                                            redirectComposer: RedirectComposer,
                                             logger: Logger)
-  extends JourneyStart[Future](validationIdValidator, redirectComposer, logger)
+  extends JourneyStart[Future](validationIdValidator, logger)
 
 private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: ValidationIdValidator[Interpretation],
-                                                      redirectComposer: RedirectComposer,
                                                       logger: Logger) {
 
   import PersonalDetailsSubmission._
   import validationIdValidator._
-  import redirectComposer._
 
   def findRedirect(completionUrl: CompletionUrl)
                   (implicit request: Request[_], headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Interpretation[Result] =
@@ -55,17 +52,17 @@ private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: Val
           .map(findRedirectUsing(_, sessionValidationId, completionUrl))
           .valueOr { error =>
             logger.error(error)
-            redirectWithTechnicalErrorParameter(completionUrl)
+            Redirect(completionUrl.value, error.serialize)
           }
     }
 
-  private def findValidationIdInSession(implicit request: Request[_]): Option[String] =
-    request.session.get(validationIdSessionKey)
+  private def findValidationIdInSession(implicit request: Request[_]): Option[ValidationId] =
+    request.session.get(validationIdSessionKey).map(ValidationId)
 
-  private def findRedirectUsing(validationResult: Boolean, validationId: String,
+  private def findRedirectUsing(validationResult: Boolean, validationId: ValidationId,
                                 completionUrl: CompletionUrl): Result = validationResult match {
     case false => Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
-    case true => redirect(completionUrl, validationId)
+    case true => Redirect(completionUrl.value, validationId.serialize)
   }
 
   private implicit def pure[R](value: R): Interpretation[R] =

@@ -32,6 +32,6 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def submit(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    personalDetailsSubmission.bindValidateAndRedirect(completionUrl)
+    personalDetailsSubmission.submit(completionUrl)
   }
 }

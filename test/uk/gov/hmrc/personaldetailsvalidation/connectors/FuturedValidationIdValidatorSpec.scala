@@ -25,6 +25,8 @@ import play.api.test.Helpers._
 import setups.connectors.HttpClientStubSetup
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.validationIds
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
@@ -81,7 +83,7 @@ class FuturedValidationIdValidatorSpec
 
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-    val validationId = nonEmptyStrings.generateOne
+    val validationId = validationIds.generateOne
 
     val baseUrl = "http://host"
     private val connectorConfig = new ConnectorConfig(mock[Configuration]) {

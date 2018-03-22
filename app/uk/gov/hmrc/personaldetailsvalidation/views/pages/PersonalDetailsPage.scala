@@ -73,9 +73,11 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
     .transform(createPersonalDetails, createPersonalDetailsData)
   )
 
-  def render(implicit completionUrl: CompletionUrl,
-             request: Request[_]): Html =
+  def render(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
     personal_details(form, completionUrl)
+
+  def renderValidationFailure(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
+    personal_details(form.withGlobalError("personal-details.validation.failed"), completionUrl)
 
   def bindFromRequest(implicit request: Request[_],
                       completionUrl: CompletionUrl): Either[Html, PersonalDetails] =

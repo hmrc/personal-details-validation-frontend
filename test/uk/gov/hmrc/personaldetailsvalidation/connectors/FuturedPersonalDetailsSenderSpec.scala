@@ -20,7 +20,6 @@ import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import play.api.Configuration
-import play.api.http.HeaderNames.LOCATION
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import setups.connectors.HttpClientStubSetup
@@ -28,6 +27,7 @@ import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators._
+import uk.gov.hmrc.personaldetailsvalidation.model.{FailedPersonalDetailsValidation, SuccessfulPersonalDetailsValidation}
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
@@ -37,28 +37,31 @@ class FuturedPersonalDetailsSenderSpec
     with MockFactory
     with ScalaFutures {
 
-  "passToValidation" should {
+  "submitValidationRequest" should {
 
-    "pass returned Location from POST to /personal-details-validation" in new Setup {
+    "returned SuccessfulPersonalDetailsValidation from POST to /personal-details-validation with nino" in new Setup {
 
-      val locationUri = uris.generateOne
+      val validationId = validationIds.generateOne
       expectPost(toUrl = "http://host/personal-details-validation")
-        .withPayload(PayloadWithNino)
-        .returning(status = CREATED, headers = LOCATION -> locationUri.toString)
+        .withPayload(payloadWithNino)
+        .returning(status = CREATED, Json.obj(
+          "validationStatus" -> "success",
+          "validationId" -> validationId.value
+        ))
 
-      connector.passToValidation(personalDetailsWithNino).value.futureValue shouldBe Right(locationUri)
+      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Right(SuccessfulPersonalDetailsValidation(validationId))
     }
 
-    s"return a ProcessingError when there is no $LOCATION header " +
-      "in the response from POST to /personal-details-validation" in new Setup {
+    "returned FailedPersonalDetailsValidation from POST to /personal-details-validation with nino" in new Setup {
 
       expectPost(toUrl = "http://host/personal-details-validation")
-        .withPayload(PayloadWithNino)
-        .returning(status = CREATED)
+        .withPayload(payloadWithNino)
+        .returning(status = CREATED, Json.obj(
+          "validationStatus" -> "failure",
+          "validationId" -> validationIds.generateOne.value
+        ))
 
-      connector.passToValidation(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
-        "No Location header in the response from POST http://host/personal-details-validation"
-      ))
+      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Right(FailedPersonalDetailsValidation)
     }
 
     Set(OK, NO_CONTENT, NOT_FOUND, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
@@ -66,10 +69,10 @@ class FuturedPersonalDetailsSenderSpec
       s"return a ProcessingError when POST to /personal-details-validation/ returns $unexpectedStatus" in new Setup {
 
         expectPost(toUrl = "http://host/personal-details-validation")
-          .withPayload(PayloadWithNino)
+          .withPayload(payloadWithNino)
           .returning(unexpectedStatus, "some response body")
 
-        connector.passToValidation(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
+        connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
           s"Unexpected response from POST http://host/personal-details-validation with status: '$unexpectedStatus' and body: some response body"
         ))
       }
@@ -79,34 +82,38 @@ class FuturedPersonalDetailsSenderSpec
 
       val exception = new RuntimeException("message")
       expectPost(toUrl = "http://host/personal-details-validation")
-        .withPayload(PayloadWithNino)
+        .withPayload(payloadWithNino)
         .throwing(exception)
 
-      connector.passToValidation(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
+      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
         s"Call to POST http://host/personal-details-validation threw: $exception"
       ))
     }
 
-    "pass with postcode returned Location from POST to /personal-details-validation" in new Setup {
+    "returned SuccessfulPersonalDetailsValidation from POST to /personal-details-validation with postcode" in new Setup {
 
-      val locationUri = uris.generateOne
+      val validationId = validationIds.generateOne
       expectPost(toUrl = "http://host/personal-details-validation")
         .withPayload(payloadWithPostcode)
-        .returning(status = CREATED, headers = LOCATION -> locationUri.toString)
+        .returning(status = CREATED, Json.obj(
+          "validationStatus" -> "success",
+          "validationId" -> validationId.value
+        ))
 
-      connector.passToValidation(personalDetailsWithPostcode).value.futureValue shouldBe Right(locationUri)
+      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Right(SuccessfulPersonalDetailsValidation(validationId))
     }
 
-    s"return a ProcessingError when there is no $LOCATION header " +
-      "in the response from POST with postcode to /personal-details-validation" in new Setup {
+    "returned FailedPersonalDetailsValidation from POST to /personal-details-validation with postcode" in new Setup {
 
+      val validationId = validationIds.generateOne
       expectPost(toUrl = "http://host/personal-details-validation")
         .withPayload(payloadWithPostcode)
-        .returning(status = CREATED)
+        .returning(status = CREATED, Json.obj(
+          "validationStatus" -> "failure",
+          "validationId" -> validationId.value
+        ))
 
-      connector.passToValidation(personalDetailsWithPostcode).value.futureValue shouldBe Left(ProcessingError(
-        "No Location header in the response from POST http://host/personal-details-validation"
-      ))
+      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Right(FailedPersonalDetailsValidation)
     }
 
     Set(OK, NO_CONTENT, NOT_FOUND, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
@@ -117,7 +124,7 @@ class FuturedPersonalDetailsSenderSpec
           .withPayload(payloadWithPostcode)
           .returning(unexpectedStatus, "some response body")
 
-        connector.passToValidation(personalDetailsWithPostcode).value.futureValue shouldBe Left(ProcessingError(
+        connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Left(ProcessingError(
           s"Unexpected response from POST http://host/personal-details-validation with status: '$unexpectedStatus' and body: some response body"
         ))
       }
@@ -130,7 +137,7 @@ class FuturedPersonalDetailsSenderSpec
         .withPayload(payloadWithPostcode)
         .throwing(exception)
 
-      connector.passToValidation(personalDetailsWithPostcode).value.futureValue shouldBe Left(ProcessingError(
+      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Left(ProcessingError(
         s"Call to POST http://host/personal-details-validation threw: $exception"
       ))
     }
@@ -141,7 +148,7 @@ class FuturedPersonalDetailsSenderSpec
 
     val personalDetailsWithNino = personalDetailsObjects.generateOne
 
-    val PayloadWithNino = Json.obj(
+    val payloadWithNino = Json.obj(
       "firstName" -> personalDetailsWithNino.firstName.toString(),
       "lastName" -> personalDetailsWithNino.lastName.toString(),
       "dateOfBirth" -> personalDetailsWithNino.dateOfBirth,

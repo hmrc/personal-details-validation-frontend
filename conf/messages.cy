@@ -28,3 +28,4 @@ personal-details.dateOfBirth.month.required=Nodwch fis eich dyddiad geni.
 personal-details.dateOfBirth.month.invalid=Mae''r mis yr ydych wedi''i nodi''n annilys. Nodwch rif rhwng 1 a 12.
 personal-details.dateOfBirth.year.required=Nodwch flwyddyn eich dyddiad geni.
 personal-details.dateOfBirth.year.invalid=Mae''r flwyddyn yr ydych wedi''i nodi yn annilys. Nodwch y flwyddyn y cawsoch eich geni.
+personal-details.validation.failed=Nid yw''r wybodaeth rydych wedi''i nodi''n cyd-fynd â''n cofnodion. Gwiriwch eich manylion a rhowch gynnig arall arni.

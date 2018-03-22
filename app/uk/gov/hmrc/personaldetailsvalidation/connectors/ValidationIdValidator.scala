@@ -17,18 +17,18 @@
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 import javax.inject.{Inject, Singleton}
-
 import cats.data.EitherT
 import play.api.http.Status.{NOT_FOUND, OK}
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
 private[personaldetailsvalidation] trait ValidationIdValidator[Interpretation[_]] {
-  def verify(validationId: String)
+  def verify(validationId: ValidationId)
             (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): EitherT[Interpretation, ProcessingError, Boolean]
 }
 
@@ -39,11 +39,11 @@ private[personaldetailsvalidation] class FuturedValidationIdValidator @Inject()(
 
   import connectorConfig.personalDetailsValidationBaseUrl
 
-  override def verify(validationId: String)
+  override def verify(validationId: ValidationId)
                      (implicit headerCarrier: HeaderCarrier,
                       executionContext: ExecutionContext): EitherT[Future, ProcessingError, Boolean] = EitherT {
 
-    val url = s"$personalDetailsValidationBaseUrl/personal-details-validation/$validationId"
+    val url = s"$personalDetailsValidationBaseUrl/personal-details-validation/${validationId.value}"
 
     httpClient
       .GET(url)
