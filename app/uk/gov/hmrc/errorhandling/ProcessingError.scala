@@ -16,4 +16,14 @@
 
 package uk.gov.hmrc.errorhandling
 
+import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter
+
 case class ProcessingError(message: String)
+
+object ProcessingError {
+  implicit val queryParamCOnverter: QueryParamConverter[ProcessingError] = new QueryParamConverter[ProcessingError] {
+    override def toQueryParam(queryParam: ProcessingError) = {
+      Map("technicalError" -> Seq(""))
+    }
+  }
+}

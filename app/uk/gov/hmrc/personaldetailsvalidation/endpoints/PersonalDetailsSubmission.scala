@@ -27,7 +27,7 @@ import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedPersonalDetailsSender, PersonalDetailsSender}
-import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamSerializer._
+import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersonalDetailsValidation, PersonalDetailsValidation, SuccessfulPersonalDetailsValidation}
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 
@@ -63,13 +63,13 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
   private def errorToRedirect(to: CompletionUrl): ProcessingError => Result = {
     error =>
       logger.error(error)
-      Redirect(to.value, error.serialize)
+      Redirect(to.value, error.toQueryParam)
   }
 
   private def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation)
                       (implicit request: Request[_]): Result = personalDetailsValidation match {
     case SuccessfulPersonalDetailsValidation(validationId) =>
-      Redirect(completionUrl.value, validationId.serialize).addingToSession(validationIdSessionKey -> validationId.value)
+      Redirect(completionUrl.value, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
     case FailedPersonalDetailsValidation => Ok(personalDetailsPage.renderValidationFailure(completionUrl, request))
   }
 

@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-case class ValidationId(value: String) {
-  override val toString: String = value
+trait QueryParamConverter[T] {
+  def toQueryParam(value: T): Map[String, Seq[String]]
 }
 
-object ValidationId {
-  implicit val queryParamConverter: QueryParamConverter[ValidationId] = new QueryParamConverter[ValidationId] {
-    override def toQueryParam(queryParam: ValidationId) = Map("validationId" -> Seq(queryParam.value))
+object QueryParamConverter {
+
+  implicit class QueryParamConverterOps[T](target: T) {
+    def toQueryParam(implicit converter: QueryParamConverter[T]): Map[String, Seq[String]] = converter.toQueryParam(target)
   }
 }
+

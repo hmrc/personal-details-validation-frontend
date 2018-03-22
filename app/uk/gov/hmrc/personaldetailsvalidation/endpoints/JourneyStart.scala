@@ -24,7 +24,7 @@ import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedValidationIdValidator, ValidationIdValidator}
-import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamSerializer._
+import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, ValidationId}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -52,17 +52,17 @@ private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: Val
           .map(findRedirectUsing(_, sessionValidationId, completionUrl))
           .valueOr { error =>
             logger.error(error)
-            Redirect(completionUrl.value, error.serialize)
+            Redirect(completionUrl.value, error.toQueryParam)
           }
     }
 
   private def findValidationIdInSession(implicit request: Request[_]): Option[ValidationId] =
-    request.session.get(validationIdSessionKey).map(ValidationId)
+    request.session.get(validationIdSessionKey).map(ValidationId(_))
 
   private def findRedirectUsing(validationResult: Boolean, validationId: ValidationId,
                                 completionUrl: CompletionUrl): Result = validationResult match {
     case false => Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
-    case true => Redirect(completionUrl.value, validationId.serialize)
+    case true => Redirect(completionUrl.value, validationId.toQueryParam)
   }
 
   private implicit def pure[R](value: R): Interpretation[R] =
