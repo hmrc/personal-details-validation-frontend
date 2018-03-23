@@ -62,7 +62,7 @@ class PersonalDetailsCollectionControllerSpec
 
       val redirectUrl = s"${completionUrl.value}?validationId=${UUID.randomUUID()}"
 
-      (personalDetailsSubmitter.bindValidateAndRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+      (personalDetailsSubmitter.submit(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
         .expects(completionUrl, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returning(Future.successful(Redirect(redirectUrl)))
 

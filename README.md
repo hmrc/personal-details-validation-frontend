@@ -12,10 +12,9 @@ personal-details-validation-frontend service is used to capture name, surname, d
     
 ## GET /personal-details-validation/start?completionUrl=:completionUrl
 Displays a page to capture user's details. After capturing user's details, these details are checked against citizen details database. 
-If they match, this information is stored by [personal-details-validation](https://github.com/hmrc/personal-details-validation) backend service. Then the user is redirected to the completionUrl regardless of citizen details check outcome. 
-`validationId` query parameter will be appended to the completionUrl. It is a UUID and it can be used to retrieve the validation outcome and personal-details (if validation was successful) later using [personal-details-validation](https://github.com/hmrc/personal-details-validation#get-personal-details-validationvalidationid) backend service.
+If they match, this information is stored by [personal-details-validation](https://github.com/hmrc/personal-details-validation) backend service and the user is redirected to the completionUrl with `validationId` query parameter. It is a UUID and it can be used to retrieve the validation outcome and personal-details (if validation was successful) later using [personal-details-validation](https://github.com/hmrc/personal-details-validation#get-personal-details-validationvalidationid) backend service.
+If the details do not match, then the user is shown the blank form with an error at the top of the form.
 Also, if there is technical error in personal-details-validation component, then user is redirected to the completionUrl with `technicalError` query parameter.
-NOTE: User should be redirected to this page. It shouldn't be called directly from a micro-service.
 
 ### Parameters
 | Name          | Description                                   |

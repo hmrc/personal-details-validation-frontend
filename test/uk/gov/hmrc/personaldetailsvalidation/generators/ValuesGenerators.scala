@@ -21,21 +21,24 @@ import java.net.URI
 import org.scalacheck.Gen
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
-import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, NonEmptyString}
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, NonEmptyString, ValidationId}
 
 object ValuesGenerators {
 
   import generators.Generators._
 
-  implicit val completionUrls: Gen[CompletionUrl] = Gen.nonEmptyListOf(strings(10))
-    .map(_.mkString("/"))
-    .map { path =>
-      completionUrl(s"/$path").fold(throw _, identity)
-    }
+  implicit val uris: Gen[URI] = for {
+    path <- Gen.nonEmptyListOf(strings(5, 10)).map(_.mkString("/"))
+    paramCount <- positiveInts(3)
+    keys <- Gen.listOfN(paramCount, strings(5, 10))
+    values <- Gen.listOfN(paramCount, strings(5, 10))
+    queryParams = keys.zip(values).map { case (key, value) => s"$key=$value"}.mkString("&")
+  } yield new URI(s"/$path?$queryParams")
 
-  implicit val uris: Gen[URI] = Gen.nonEmptyListOf(strings(10))
-    .map(_.mkString("/"))
-    .map(path => new URI(s"/$path"))
+  implicit val completionUrls: Gen[CompletionUrl] = uris
+    .map { uri =>
+      completionUrl(uri.toString).fold(throw _, identity)
+    }
 
   implicit val nonEmptyStringObjects: Gen[NonEmptyString] =
     nonEmptyStrings.map(NonEmptyString.apply)
@@ -44,4 +47,6 @@ object ValuesGenerators {
     val ninoGenerator = new Generator()
     Gen.identifier.map(_ => ninoGenerator.nextNino)
   }
+
+  implicit val validationIds: Gen[ValidationId] = Gen.uuid.map(aUUID => ValidationId(aUUID.toString))
 }

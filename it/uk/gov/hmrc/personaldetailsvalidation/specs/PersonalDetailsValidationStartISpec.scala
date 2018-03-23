@@ -2,7 +2,8 @@ package uk.gov.hmrc.personaldetailsvalidation.specs
 
 import java.net.URLEncoder
 
-import uk.gov.hmrc.personaldetailsvalidation.pages.{ErrorPage, PersonalDetailsPage}
+import uk.gov.hmrc.personaldetailsvalidation.pages.ErrorPage
+import uk.gov.hmrc.personaldetailsvalidation.pages.PersonalDetailsPage.personalDetailsPage
 import uk.gov.hmrc.personaldetailsvalidation.support.BaseIntegrationSpec
 
 class PersonalDetailsValidationStartISpec extends BaseIntegrationSpec {
@@ -16,7 +17,7 @@ class PersonalDetailsValidationStartISpec extends BaseIntegrationSpec {
       goTo(s"/start?completionUrl=$completionUrl")
 
       Then("I should get redirected to the Personal Details page")
-      on(PersonalDetailsPage(completionUrl))
+      on(personalDetailsPage(completionUrl))
     }
 
     scenario("Personal Details Validation journey started without a completionUrl parameter") {

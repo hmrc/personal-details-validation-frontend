@@ -3,18 +3,14 @@ package uk.gov.hmrc.personaldetailsvalidation.pages
 import java.time.LocalDate
 
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.personaldetailsvalidation.support.WebPage
+import uk.gov.hmrc.personaldetailsvalidation.support.{FormErrors, WebPage}
 
-case class PersonalDetailsPage(completionUrl: String, verifyThisPageDisplayedWithError: Boolean = false ) extends WebPage {
+class PersonalDetailsPage private[PersonalDetailsPage](title: String, completionUrl: String) extends WebPage {
 
   val url: String = s"/personal-details-validation/personal-details?completionUrl=$completionUrl"
 
   def verifyThisPageDisplayed(): Unit = {
-    if(verifyThisPageDisplayedWithError){
-        pageTitle shouldBe "Error: Enter your details - Confirm your identity - GOV.UK"
-    }else{
-        pageTitle shouldBe "Enter your details - Confirm your identity - GOV.UK"
-    }
+    pageTitle shouldBe title
     currentUrl.path shouldBe url.path
     currentUrl.query shouldBe url.query
   }
@@ -46,17 +42,13 @@ case class PersonalDetailsPage(completionUrl: String, verifyThisPageDisplayedWit
     numberField("dateOfBirth.year").value shouldBe dob.getYear.toString
   }
 
-  def containsErrors(errors: String*): Unit = errors foreach { error =>
-
-    find(cssSelector(".error-summary--show")) match {
-      case Some(element) => element.text should include(error)
-      case _ => fail(s"'$errors' not found in the Errors Summary box")
-    }
-
-    find(cssSelector("form label")) match {
-      case Some(element) => element.text should include(error)
-      case _ => fail(s"'$errors' not found in the field description")
-    }
+  def verifyDataBlank(): Unit = {
+    textField("firstName").value shouldBe ""
+    textField("lastName").value shouldBe ""
+    textField("nino").value shouldBe ""
+    numberField("dateOfBirth.day").value shouldBe ""
+    numberField("dateOfBirth.month").value shouldBe ""
+    numberField("dateOfBirth.year").value shouldBe ""
   }
 
   def submitForm(): Unit =
@@ -64,4 +56,13 @@ case class PersonalDetailsPage(completionUrl: String, verifyThisPageDisplayedWit
       case Some(element) => click on element
       case _ => fail("Continue button not found")
     }
+}
+
+object PersonalDetailsPage {
+
+  def personalDetailsPage(completionUrl: String): PersonalDetailsPage =
+    new PersonalDetailsPage("Enter your details - Confirm your identity - GOV.UK", completionUrl)
+
+  def personalDetailsErrorPage(completionUrl: String): PersonalDetailsPage with FormErrors =
+    new PersonalDetailsPage("Error: Enter your details - Confirm your identity - GOV.UK", completionUrl) with FormErrors
 }
