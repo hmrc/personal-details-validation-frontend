@@ -41,8 +41,7 @@ class PersonalDetailsPageSpec
 
       html.title() shouldBe s"${messages("personal-details.title")} - GOV.UK"
 
-      html.select(".faded-text").text() shouldBe messages("personal-details.faded-heading")
-      html.select(".faded-text ~ h1.heading-xlarge").text() shouldBe messages("personal-details.header")
+      html.select("h1.heading-xlarge").text() shouldBe messages("personal-details.faded-heading") + " " + messages("personal-details.header")
       html.select("h1.heading-xlarge ~ p").text() shouldBe messages("personal-details.paragraph")
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
@@ -61,7 +60,7 @@ class PersonalDetailsPageSpec
       val ninoFieldset = fieldsets.next()
       ninoFieldset.select("label[for=nino] .form-label-bold").text() shouldBe messages("personal-details.nino")
       val ninoHints = ninoFieldset.select("label[for=nino] .form-hint")
-      ninoHints.first().text() shouldBe messages("personal-details.nino.hint")
+      ninoHints.first().text() contains messages("personal-details.nino.hint")
       ninoFieldset.select("label[for=nino] input[type=text][name=nino]").isEmpty shouldBe false
 
       val dateFieldset = fieldsets.next().select("fieldset")
@@ -87,8 +86,7 @@ class PersonalDetailsPageSpec
 
       html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
 
-      html.select(".faded-text").text() shouldBe messages("personal-details.faded-heading")
-      html.select(".faded-text ~ h1.heading-xlarge").text() shouldBe messages("personal-details.header")
+      html.select("h1.heading-xlarge").text() shouldBe messages("personal-details.faded-heading") + " " + messages("personal-details.header")
       html.select("h1.heading-xlarge ~ p").text() shouldBe messages("personal-details.paragraph")
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl, true).url

@@ -38,10 +38,6 @@
         )
     }
 
-    <p class="faded-text">
-    @messages("personal-details.faded-heading")
-    </p>
-
 
     <h1 class="heading-xlarge">
         <span class="heading-secondary">
@@ -82,9 +78,6 @@
                 '_inputHint -> Html(Messages("personal-details.postcode.hint")),
                 '_labelClass -> "soft--ends"
             )
-            <span class="form-field--submit display-block">
-                <a  href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = false)"> @Messages("personal-details.postcode.unavailable")</a>
-            </span>
         </div>
         <fieldset class="form-group">
         @date(
