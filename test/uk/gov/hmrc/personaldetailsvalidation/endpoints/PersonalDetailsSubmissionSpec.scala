@@ -16,9 +16,12 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
+import java.net.URI
+
 import cats.Id
 import cats.data.EitherT
 import generators.Generators.Implicits._
+import generators.Generators.nonEmptyStrings
 import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.mvc.Results._
@@ -33,6 +36,10 @@ import uk.gov.hmrc.personaldetailsvalidation.connectors.PersonalDetailsSender
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{personalDetailsObjects, successfulPersonalDetailsValidationObjects}
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.completionUrls
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersonalDetailsValidation, PersonalDetails, PersonalDetailsValidation}
+import uk.gov.hmrc.personaldetailsvalidation.connectors.{PersonalDetailsSender, ValidationIdFetcher}
+import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.{completionUrls, uris}
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, PersonalDetails}
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -52,8 +59,8 @@ class PersonalDetailsSubmissionSpec
 
       val completionUrl = completionUrls.generateOne
 
-      (page.bindFromRequest(_: Request[_], _: CompletionUrl))
-        .expects(request, completionUrl)
+      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(false, request, completionUrl)
         .returning(Left(Html("page with errors")))
 
       val result = submitter.submit(completionUrl)
@@ -63,17 +70,19 @@ class PersonalDetailsSubmissionSpec
       result.session.get(validationIdSessionKey) shouldBe None
     }
 
-    "bind the request to PersonalDetails, " +
+    "bind the request to PersonalDetailsWithNino, " +
       "post it to the validation service, " +
       "return redirect to completionUrl with appended validationId query parameter" +
-      "if post to the validation service returned successful personal details validation" in new Setup {
+      "if post to the validation service returned successful personal details validation"in new Setup {
 
       val completionUrl = completionUrls.generateOne
       val personalDetails = personalDetailsObjects.generateOne
       val personalDetailsValidation = successfulPersonalDetailsValidationObjects.generateOne
-      (page.bindFromRequest(_: Request[_], _: CompletionUrl))
-        .expects(request, completionUrl)
+
+      (page.bindFromRequest(_: Boolean)(_:Request[_], _: CompletionUrl))
+        .expects(false,request, completionUrl)
         .returning(Right(personalDetails))
+
 
       (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
         .expects(personalDetails, headerCarrier, executionContext)
@@ -85,6 +94,33 @@ class PersonalDetailsSubmissionSpec
       result.session.get(validationIdSessionKey) shouldBe Some(personalDetailsValidation.validationId.value)
     }
 
+    "bind the request to PersonalDetailsWithPostcode, " +
+      "post it to the validation service, " +
+      "fetch validationId from the validation service and " +
+      "return redirect to completionUrl with appended validationId query parameter" in new Setup {
+
+      val completionUrl = completionUrls.generateOne
+      val personalDetails = personalDetailsObjectsWithPostcode.generateOne
+      val personalDetailsValidation = successfulPersonalDetailsValidationObjects.generateOne
+
+      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(true, request, completionUrl)
+        .returning(Right(personalDetails))
+
+
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, headerCarrier, executionContext)
+        .returning(EitherT.rightT[Id, ProcessingError](personalDetailsValidation))
+
+      val result = submitter.bindValidateAndRedirect(completionUrl, true)
+
+      val result = submitter.submit(completionUrl)
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(s"${completionUrl.value}&validationId=${personalDetailsValidation.validationId}")
+      result.session.get(validationIdSessionKey) shouldBe Some(personalDetailsValidation.validationId.value)
+    }
+
+
     "bind the request to PersonalDetails, " +
       "post it to the validation service, " +
       "render the form with error" +
@@ -93,8 +129,8 @@ class PersonalDetailsSubmissionSpec
       val completionUrl = completionUrls.generateOne
       val personalDetails = personalDetailsObjects.generateOne
 
-      (page.bindFromRequest(_: Request[_], _: CompletionUrl))
-        .expects(request, completionUrl)
+      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(false, request, completionUrl)
         .returning(Right(personalDetails))
 
       (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
@@ -119,8 +155,8 @@ class PersonalDetailsSubmissionSpec
 
       val completionUrl = completionUrls.generateOne
       val personalDetails = personalDetailsObjects.generateOne
-      (page.bindFromRequest(_: Request[_], _: CompletionUrl))
-        .expects(request, completionUrl)
+      (page.bindFromRequest(_:Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(true, request, completionUrl)
         .returning(Right(personalDetails))
 
       val error = ProcessingError("some message")

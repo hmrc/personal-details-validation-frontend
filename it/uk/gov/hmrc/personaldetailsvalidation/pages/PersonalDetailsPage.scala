@@ -42,6 +42,26 @@ class PersonalDetailsPage private[PersonalDetailsPage](title: String, completion
     numberField("dateOfBirth.year").value shouldBe dob.getYear.toString
   }
 
+  def verifyPostcodeDataPresent(firstName: String, lastName: String, postcode: String, dob: LocalDate): Unit = {
+    textField("firstName").value shouldBe firstName
+    textField("lastName").value shouldBe lastName
+    textField("postcode").value shouldBe postcode
+    numberField("dateOfBirth.day").value shouldBe dob.getDayOfMonth.toString
+    numberField("dateOfBirth.month").value shouldBe dob.getMonthValue.toString
+    numberField("dateOfBirth.year").value shouldBe dob.getYear.toString
+  }
+
+  def containsErrors(errors: String*): Unit = errors foreach { error =>
+
+    find(cssSelector(".error-summary--show")) match {
+      case Some(element) => element.text should include(error)
+      case _ => fail(s"'$errors' not found in the Errors Summary box")
+    }
+
+    find(cssSelector("form label")) match {
+      case Some(element) => element.text should include(error)
+      case _ => fail(s"'$errors' not found in the field description")
+    }
   def verifyDataBlank(): Unit = {
     textField("firstName").value shouldBe ""
     textField("lastName").value shouldBe ""
@@ -56,6 +76,13 @@ class PersonalDetailsPage private[PersonalDetailsPage](title: String, completion
       case Some(element) => click on element
       case _ => fail("Continue button not found")
     }
+
+  def selectPostcodeOption(): Unit =
+    find(linkText("I don't have a National Insurance number")) match {
+      case Some(text) => click on text
+      case _ => fail("postcode option not found")
+    }
+
 }
 
 object PersonalDetailsPage {

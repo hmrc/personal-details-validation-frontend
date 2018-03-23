@@ -27,11 +27,11 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     personalDetailsSubmission: FuturedPersonalDetailsSubmission)
   extends FrontendController {
 
-  def showPage(implicit completionUrl: CompletionUrl): Action[AnyContent] = Action { implicit request =>
-    Ok(page.render)
+  def showPage(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean = false): Action[AnyContent] = Action { implicit request =>
+    Ok(page.render(alternativeVersion))
   }
 
-  def submit(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    personalDetailsSubmission.submit(completionUrl)
+  def submit(completionUrl: CompletionUrl, alternativeVersion: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    personalDetailsSubmission.submit(completionUrl, alternativeVersion)
   }
 }

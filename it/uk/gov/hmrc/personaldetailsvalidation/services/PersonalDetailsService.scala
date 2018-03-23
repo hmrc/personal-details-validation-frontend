@@ -45,7 +45,7 @@ object PersonalDetailsService {
              | "nino":"${dataWithNino.nino.get}"
              |}
              | """.stripMargin
-        case dataWithPostcode if dataWithPostcode.nino.isDefined =>
+        case dataWithPostcode if dataWithPostcode.postcode.isDefined =>
           s"""{
              | "firstName":"${dataWithPostcode.firstName}",
              | "lastName":"${dataWithPostcode.lastName}",

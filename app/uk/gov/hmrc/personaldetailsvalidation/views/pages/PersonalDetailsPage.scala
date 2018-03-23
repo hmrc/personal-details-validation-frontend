@@ -26,7 +26,7 @@ import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.views.html.template.personal_details
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.views.ViewConfig
 
 import scala.util.Try
@@ -38,62 +38,52 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
 
   import uk.gov.hmrc.formmappings.Mappings._
 
-  type PersonalDetailsData = Tuple5[NonEmptyString,NonEmptyString,Option[Nino],LocalDate,Option[NonEmptyString]]
-
-  private lazy val personalDetailsParser: (NonEmptyString,NonEmptyString,Option[Nino],LocalDate,Option[NonEmptyString]) => PersonalDetailsData =
-    (_,_,_,_,_)
-
-  private val createPersonalDetails: PersonalDetailsData=> PersonalDetails = {
-      case (firstName, lastName, Some(nino), dateOfBirth, None) => PersonalDetailsWithNino(firstName, lastName, nino, dateOfBirth)
-      case (firstName, lastName, None, dateOfBirth, Some(postcode)) => PersonalDetailsWithPostcode(firstName, lastName, postcode, dateOfBirth)
-      case _ => throw new IllegalStateException("Either of nino or postcode should be present")
-    }
-
-  private val createPersonalDetailsData: PersonalDetails=> PersonalDetailsData ={
-    case PersonalDetailsWithNino(firstName, lastName, nino, dateOfBirth) => (firstName, lastName, Some(nino), dateOfBirth, None)
-    case PersonalDetailsWithPostcode(firstName, lastName, postcode, dateOfBirth) => (firstName, lastName, None, dateOfBirth, Some(postcode))
-  }
-
-  private val ninoAndPostcodeMutuallyExclusive: PersonalDetailsData => Boolean = {
-    case (_, _, Some(_), _, Some(_)) => false
-    case (_, _, None, _, None) => false
-    case _ => true
-  }
-
-  private val form: Form[PersonalDetails] = Form(mapping(
+  private val formWithNino: Form[PersonalDetailsWithNino] = Form(mapping(
     "firstName" -> mandatoryText("personal-details.firstname.required"),
     "lastName" -> mandatoryText("personal-details.lastname.required"),
     "nino" -> ninoValidation(),
-    "dateOfBirth" -> mandatoryLocalDate("personal-details"),
-    "postcode" -> postcodeValidation()
-  )(personalDetailsParser)(Some(_))
-    .verifying("personal-details.nino.required", ninoAndPostcodeMutuallyExclusive)
-    .transform(createPersonalDetails, createPersonalDetailsData)
-  )
+    "dateOfBirth" -> mandatoryLocalDate("personal-details")
+  )(PersonalDetailsWithNino.apply)(PersonalDetailsWithNino.unapply))
 
-  private def ninoValidation(): Mapping[Option[Nino]] = {
-    optionalText
-      .verifying("personal-details.nino.invalid", nonEmptyString => nonEmptyString.forall(nonEmptyString => Try(Nino(nonEmptyString.value)).isSuccess))
-      .transform[Option[Nino]](_.map(nonEmptyString => Nino(nonEmptyString.value)), _.map(nino => NonEmptyString(nino.value)))
+  private val formWithPostcode: Form[PersonalDetailsWithPostcode] = Form(mapping(
+    "firstName" -> mandatoryText("personal-details.firstname.required"),
+    "lastName" -> mandatoryText("personal-details.lastname.required"),
+    "postcode" -> postcodeValidation(),
+    "dateOfBirth" -> mandatoryLocalDate("personal-details")
+  )(PersonalDetailsWithPostcode.apply)(PersonalDetailsWithPostcode.unapply))
+
+  private def ninoValidation(): Mapping[Nino] = {
+    mandatoryText("personal-details.nino.required")
+      .verifying("personal-details.nino.invalid", nonEmptyString => Try(Nino(nonEmptyString.value)).isSuccess)
+      .transform[Nino](validatedNonEmptyNino => Nino(validatedNonEmptyNino.value), nino => NonEmptyString(nino.toString))
   }
 
-  private def postcodeValidation(): Mapping[Option[NonEmptyString]] = {
-    optionalText.verifying("personal-details.postcode.invalid", nonEmptyString => nonEmptyString.forall(postcode => postcodeFormatValidation(postcode)))
+  private def postcodeValidation(): Mapping[NonEmptyString] = {
+    mandatoryText("personal-details.postcode.invalid").
+      verifying("personal-details.postcode.invalid", postcodeFormatValidation _)
   }
 
   private def postcodeFormatValidation(postcode: NonEmptyString) =
     postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
-  def render(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
-    personal_details(form, completionUrl)
+  def render(showPostcodePage: Boolean = false)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
+    if(showPostcodePage) personal_details_postcode(formWithPostcode, completionUrl) else
+    personal_details_nino(formWithNino, completionUrl)
 
   def renderValidationFailure(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
     personal_details(form.withGlobalError("personal-details.validation.failed"), completionUrl)
 
-  def bindFromRequest(implicit request: Request[_],
+  def bindFromRequest(showPostcodePage: Boolean = false)(implicit request: Request[_],
                       completionUrl: CompletionUrl): Either[Html, PersonalDetails] =
-    form.bindFromRequest().fold(
-      formWithErrors => Left(personal_details(formWithErrors, completionUrl)),
-      personalDetails => Right(personalDetails)
-    )
+    if(showPostcodePage) {
+      formWithPostcode.bindFromRequest().fold(
+        formWithErrors => Left(personal_details_postcode(formWithErrors, completionUrl)),
+        personalDetails => Right(personalDetails)
+      )
+    } else {
+      formWithNino.bindFromRequest().fold(
+        formWithErrors => Left(personal_details_nino(formWithErrors, completionUrl)),
+        personalDetails => Right(personalDetails)
+      )
+    }
 }
