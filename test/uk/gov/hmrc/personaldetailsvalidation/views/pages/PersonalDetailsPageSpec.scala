@@ -130,12 +130,11 @@ class PersonalDetailsPageSpec
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
       "and a continue button and validation error" in new Setup {
-      val html: Document = personalDetailsPage.renderValidationFailure
+      val html: Document = personalDetailsPage.renderValidationFailure()
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
-      html.select(".faded-text").text() shouldBe messages("personal-details.faded-heading")
-      html.select(".faded-text ~ h1.heading-xlarge").text() shouldBe messages("personal-details.header")
+      html.select("h1.heading-xlarge").text() shouldBe messages("personal-details.faded-heading") + " " + messages("personal-details.header")
       html.select("h1.heading-xlarge ~ p").text() shouldBe messages("personal-details.paragraph")
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
@@ -155,7 +154,7 @@ class PersonalDetailsPageSpec
       val ninoFieldset = fieldsets.next()
       ninoFieldset.select("label[for=nino] .form-label-bold").text() shouldBe messages("personal-details.nino")
       val ninoHints = ninoFieldset.select("label[for=nino] .form-hint")
-      ninoHints.first().text() shouldBe messages("personal-details.nino.hint")
+      ninoHints.first().text() contains messages("personal-details.nino.hint")
       ninoFieldset.select("label[for=nino] input[type=text][name=nino]").isEmpty shouldBe false
 
       val dateFieldset = fieldsets.next().select("fieldset")
@@ -173,6 +172,11 @@ class PersonalDetailsPageSpec
       yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
 
       html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
+    }
+
+    "return a personal details page containing first name, last name, postcode, date of birth inputs " +
+      "and a continue button and validation error" in new Setup {
+      fail("Fix this")
     }
   }
 
@@ -276,38 +280,12 @@ class PersonalDetailsPageSpec
       "when nino is blank" in new Setup with BindFromRequestTooling {
       implicit val requestWithFormData = validRequest(replace = "nino" -> " ")
 
-      val Left(response) = personalDetailsPage.bindFromRequest
-
-      val page: Document = response
-
-      page.errorsSummary.heading shouldBe messages("error-summary.heading")
-      page.errorsSummary.content shouldBe messages("personal-details.nino.required")
-    }
-
-    "return 'personal-details.ninoOrPostcode.required' error message " +
-      "when nino is blank" in new Setup with BindFromRequestTooling {
-      pending
-      implicit val requestWithFormData = validRequest(replace = "nino" -> " ")
-
       val Left(response) = personalDetailsPage.bindFromRequest()
 
       val page: Document = response
 
       page.errorsSummary.heading shouldBe messages("error-summary.heading")
       page.errorsSummary.content shouldBe messages("personal-details.nino.required")
-    }
-
-    "return 'personal-details.postcode.invalid' error message " +
-      "when postcode is blank" in new Setup with BindFromRequestTooling {
-      pending
-      implicit val requestWithFormData = validRequestWithPostcode(replace = "postcode" -> " ")
-
-      val Left(response) = personalDetailsPage.bindFromRequest(true)
-
-      val page: Document = response
-
-      page.errorsSummary.heading shouldBe messages("error-summary.heading")
-      page.errorsSummary.content shouldBe messages("personal-details.postcode.invalid")
     }
 
     List("LE2 OAJ", "AO1 9KK", "N7 0f8", "D8 JJ") foreach { invalidPostcode =>

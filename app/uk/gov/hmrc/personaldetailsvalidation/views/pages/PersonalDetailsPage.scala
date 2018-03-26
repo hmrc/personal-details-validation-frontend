@@ -70,8 +70,9 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
     if(showPostcodePage) personal_details_postcode(formWithPostcode, completionUrl) else
     personal_details_nino(formWithNino, completionUrl)
 
-  def renderValidationFailure(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
-    personal_details(form.withGlobalError("personal-details.validation.failed"), completionUrl)
+  def renderValidationFailure(showPostcodePage: Boolean = false)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
+    if(showPostcodePage) personal_details_postcode(formWithPostcode.withGlobalError("personal-details.validation.failed"), completionUrl) else
+      personal_details_nino(formWithNino.withGlobalError("personal-details.validation.failed"), completionUrl)
 
   def bindFromRequest(showPostcodePage: Boolean = false)(implicit request: Request[_],
                       completionUrl: CompletionUrl): Either[Html, PersonalDetails] =
