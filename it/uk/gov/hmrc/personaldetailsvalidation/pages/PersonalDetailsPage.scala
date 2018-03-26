@@ -78,7 +78,7 @@ class PersonalDetailsPage private[PersonalDetailsPage](title: String, completion
     }
 
   def selectPostcodeOption(): Unit =
-    find(linkText("I don't have a National Insurance number")) match {
+    find(cssSelector("a[href*='postcodeVersion=true']")) match {
       case Some(text) => click on text
       case _ => fail("postcode option not found")
     }

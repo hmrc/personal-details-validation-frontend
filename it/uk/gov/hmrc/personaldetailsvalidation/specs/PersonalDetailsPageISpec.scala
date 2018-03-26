@@ -124,7 +124,7 @@ class PersonalDetailsPageISpec
       personalDetailsPage.selectPostcodeOption()
 
       Then("I should see the Personal Details page")
-      val newCompletionUrl = "%2Ffoobar%3Fparam1%3Dvalue1&alternativeVersion=true"
+      val newCompletionUrl = "%2Ffoobar%3Fparam1%3Dvalue1&postcodeVersion=true"
       val personalDetailsPostcodePage = PersonalDetailsPage(newCompletionUrl)
       on(personalDetailsPostcodePage)
 
@@ -152,7 +152,7 @@ class PersonalDetailsPageISpec
       personalDetailsPage.selectPostcodeOption()
 
       Then("I should see the Personal Details page")
-      val newCompletionUrl = "%2Ffoobar%3Fparam1%3Dvalue1&alternativeVersion=true"
+      val newCompletionUrl = "%2Ffoobar%3Fparam1%3Dvalue1&postcodeVersion=true"
       val personalDetailsPostcodePage = PersonalDetailsPage(newCompletionUrl)
       on(personalDetailsPostcodePage)
 

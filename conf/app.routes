@@ -4,7 +4,7 @@ GET        /language/:language        uk.gov.hmrc.language.ChangeLanguageEndpoin
 
 GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: CompletionUrl)
 
-GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false)
-POST       /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submit(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false)
+GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, postcodeVersion: Boolean ?= false)
+POST       /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submit(completionUrl: CompletionUrl, postcodeVersion: Boolean ?= false)
 
 GET         /assets/*file             controllers.Assets.at(path="/public", file)

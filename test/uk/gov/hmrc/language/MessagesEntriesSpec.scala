@@ -57,8 +57,7 @@ class MessagesEntriesSpec extends UnitSpec with OneAppPerSuite {
     "attorney.banner.link",
     "common.previousLoginTime",
     "common.signOut",
-    "label.beta",
-    "personal-details.nino.unavailable"
+    "label.beta"
   )
   private val excludedKeysSet: Set[String] =
     keysForPendingTranslations ++: keysNotNeeded
