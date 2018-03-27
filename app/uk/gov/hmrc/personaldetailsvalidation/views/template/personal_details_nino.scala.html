@@ -21,7 +21,8 @@
 @import uk.gov.hmrc.views.html.components.date
 @import uk.gov.hmrc.views.html.template.{main_template, error_prefix}
 
-@(pageForm: Form[PersonalDetails],
+@import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetailsWithNino
+@(pageForm: Form[PersonalDetailsWithNino],
   completionUrl: CompletionUrl)(
   implicit request: Request[_],
   messages: Messages,
@@ -37,12 +38,12 @@
         )
     }
 
-    <p class="faded-text">
-        @messages("personal-details.faded-heading")
-    </p>
-
-
-    <h1 class="heading-xlarge">@messages("personal-details.header")</h1>
+    <h1 class="heading-xlarge">
+        <span class="heading-secondary">
+            @messages("personal-details.faded-heading")
+        </span>
+        @messages("personal-details.header")
+    </h1>
 
 
     <p>@messages("personal-details.paragraph")</p>
@@ -73,9 +74,12 @@
                 '_label -> messages("personal-details.nino"),
                 '_inputClass -> "input--medium input--cleared",
                 '_labelTextClass -> "form-label-bold",
-                '_inputHint -> messages("personal-details.nino.hint"),
+                '_inputHint -> Html(Messages("personal-details.nino.hint")),
                 '_labelClass -> "soft--ends"
             )
+            <span class="form-field--submit display-block">
+                <a  href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, postcodeVersion = true)"> @Messages("personal-details.nino.unavailable")</a>
+            </span>
         </div>
         <fieldset class="form-group">
             @date(

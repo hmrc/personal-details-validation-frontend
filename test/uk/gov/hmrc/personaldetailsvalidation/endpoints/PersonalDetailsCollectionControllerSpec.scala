@@ -46,11 +46,11 @@ class PersonalDetailsCollectionControllerSpec
   "showPage" should {
 
     "return OK with HTML body rendered using PersonalDetailsPage" in new Setup {
-      (page.render(_: CompletionUrl, _: Request[_]))
-        .expects(completionUrl, request)
+      (page.render(_: Boolean)(_: CompletionUrl, _: Request[_]))
+        .expects(false, completionUrl, request)
         .returning(Html("content"))
 
-      val result = controller.showPage(completionUrl)(request)
+      val result = controller.showPage(completionUrl, postcodeVersion = false)(request)
 
       verify(result).has(statusCode = OK, content = "content")
     }
@@ -62,11 +62,11 @@ class PersonalDetailsCollectionControllerSpec
 
       val redirectUrl = s"${completionUrl.value}?validationId=${UUID.randomUUID()}"
 
-      (personalDetailsSubmitter.bindValidateAndRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(completionUrl, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+      (personalDetailsSubmitter.submit(_: CompletionUrl, _: Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(completionUrl, false, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returning(Future.successful(Redirect(redirectUrl)))
 
-      val result = controller.submit(completionUrl)(request)
+      val result = controller.submit(completionUrl, postcodeVersion = false)(request)
 
       redirectLocation(result) shouldBe Some(redirectUrl)
     }

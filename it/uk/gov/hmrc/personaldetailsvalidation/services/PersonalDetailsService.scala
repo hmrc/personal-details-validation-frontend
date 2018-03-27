@@ -1,13 +1,12 @@
 package uk.gov.hmrc.personaldetailsvalidation.services
 
-import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import java.util.UUID
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import play.api.http.HeaderNames.LOCATION
-import play.api.http.Status.{CREATED, OK}
-import play.api.libs.json.Json
+import play.api.http.Status.CREATED
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.domain.Nino
 
 object PersonalDetailsService {
@@ -18,17 +17,20 @@ object PersonalDetailsService {
     implicit val writes = Json.writes[PersonalDetailsData]
   }
 
-  def validatesSuccessfully(personalDetails: PersonalDetailsData): Unit = {
+  def validatesSuccessfully(personalDetails: PersonalDetailsData): Unit = validate(personalDetails, validationSuccess = true)
+  def validatesUnsuccessfully(personalDetails: PersonalDetailsData): Unit = validate(personalDetails, validationSuccess = false)
+
+  private def validate(personalDetails: PersonalDetailsData, validationSuccess: Boolean): Unit = {
     val validationId = UUID.randomUUID().toString
 
     `POST /personal-details-validation`(personalDetails)
       .toReturn(
         status = CREATED,
-        header = LOCATION -> s"/personal-details-validation?validationId=$validationId"
+        body = Json.obj(
+          "validationStatus" -> (if(validationSuccess) "success" else "failure") ,
+          "id" -> validationId
+        )
       )
-
-    `GET /personal-details-validation?validationId=`(validationId)
-      .toReturn(OK)
   }
 
   private def `POST /personal-details-validation`(personalDetails: PersonalDetailsData) = new {
@@ -43,7 +45,7 @@ object PersonalDetailsService {
              | "nino":"${dataWithNino.nino.get}"
              |}
              | """.stripMargin
-        case dataWithPostcode if dataWithPostcode.nino.isDefined =>
+        case dataWithPostcode if dataWithPostcode.postcode.isDefined =>
           s"""{
              | "firstName":"${dataWithPostcode.firstName}",
              | "lastName":"${dataWithPostcode.lastName}",
@@ -54,23 +56,13 @@ object PersonalDetailsService {
       }
     }
 
-    def toReturn(status: Int, header: (String, String)) =
+    def toReturn(status: Int, body: JsValue) =
       stubFor(
         post(urlEqualTo("/personal-details-validation"))
           .withRequestBody(equalToJson(expectedJson(personalDetails), true, false))
           .willReturn(aResponse()
             .withStatus(status)
-            .withHeader(header._1, header._2)
-          ))
-  }
-
-  private def `GET /personal-details-validation?validationId=`(validationId: String) = new {
-    def toReturn(status: Int) =
-      stubFor(
-        get(urlEqualTo(s"/personal-details-validation?validationId=$validationId"))
-          .willReturn(aResponse()
-            .withStatus(OK)
-            .withBody(s""" |{"id":"$validationId"}""".stripMargin)
+              .withBody(body.toString())
           ))
   }
 }

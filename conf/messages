@@ -10,11 +10,14 @@ personal-details.firstname.required=Enter your first name.
 personal-details.lastname=Last name
 personal-details.lastname.required=Enter your last name.
 personal-details.nino=National Insurance number
-personal-details.nino.hint=It''s on your National Insurance card, benefit letter, payslip or P60. For example, QQ123456C
+personal-details.nino.hint=It''s on your National Insurance card, benefit letter, payslip or P60.<br />For example, QQ123456C
 personal-details.nino.required=Enter your National Insurance number.
 personal-details.nino.invalid=Enter your National Insurance number in the correct format. For example QQ123456C.
 personal-details.ninoOrPostcode.required=Enter either your National Insurance number or Postcode not both.
-personal-details.postcode.invalid=Enter your Postcode in the correct format. For example AB12CD.
+personal-details.nino.unavailable=I don''t have a National Insurance number
+personal-details.postcode=Postcode
+personal-details.postcode.hint=For example: AB12 3YZ
+personal-details.postcode.invalid=Enter your current postcode in the correct format. For example: AB12 3YZ
 personal-details.dateOfBirth=Date of birth
 personal-details.dateOfBirth.hint=For example, 31 3 1980
 personal-details.dateOfBirth.day=Day
@@ -28,6 +31,7 @@ personal-details.dateOfBirth.month.required=Enter the month from your date of bi
 personal-details.dateOfBirth.month.invalid=The month you have entered is invalid. Enter a number between 1 and 12.
 personal-details.dateOfBirth.year.required=Enter the year from your date of birth.
 personal-details.dateOfBirth.year.invalid=The year you have entered is invalid. Enter the year you were born.
+personal-details.validation.failed=The information you''ve entered doesn''t match our records. Check your details and try again.
 
 # errors
 global.error.InternalServerError500.title=Sorry, we are experiencing technical difficulties

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.errorhandling
+package uk.gov.hmrc.personaldetailsvalidation.model
 
-import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter
+trait QueryParamConverter[T] {
+  def toQueryParam(value: T): Map[String, Seq[String]]
+}
 
-case class ProcessingError(message: String)
+object QueryParamConverter {
 
-object ProcessingError {
-  implicit val queryParamCOnverter: QueryParamConverter[ProcessingError] = new QueryParamConverter[ProcessingError] {
-    override def toQueryParam(queryParam: ProcessingError) = {
-      Map("technicalError" -> Seq(""))
-    }
+  implicit class QueryParamConverterOps[T](target: T) {
+    def toQueryParam(implicit converter: QueryParamConverter[T]): Map[String, Seq[String]] = converter.toQueryParam(target)
   }
 }
+

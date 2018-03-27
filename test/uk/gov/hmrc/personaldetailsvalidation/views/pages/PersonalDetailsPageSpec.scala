@@ -24,9 +24,10 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Request}
 import setups.views.ViewSetup
 import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
-import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
+import uk.gov.hmrc.personaldetailsvalidation.generators.{ObjectGenerators, ValuesGenerators}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.test.UnitSpec
+import collection.JavaConverters._
 
 class PersonalDetailsPageSpec
   extends UnitSpec
@@ -36,12 +37,11 @@ class PersonalDetailsPageSpec
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
       "and a continue button" in new Setup {
-      val html: Document = personalDetailsPage.render
+      val html: Document = personalDetailsPage.render(showPostcodePage = false)
 
-      html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
+      html.title() shouldBe s"${messages("personal-details.title")} - GOV.UK"
 
-      html.select(".faded-text").text() shouldBe messages("personal-details.faded-heading")
-      html.select(".faded-text ~ h1.heading-xlarge").text() shouldBe messages("personal-details.header")
+      html.select("h1.heading-xlarge").text() shouldBe messages("personal-details.faded-heading") + " " + messages("personal-details.header")
       html.select("h1.heading-xlarge ~ p").text() shouldBe messages("personal-details.paragraph")
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
@@ -60,8 +60,148 @@ class PersonalDetailsPageSpec
       val ninoFieldset = fieldsets.next()
       ninoFieldset.select("label[for=nino] .form-label-bold").text() shouldBe messages("personal-details.nino")
       val ninoHints = ninoFieldset.select("label[for=nino] .form-hint")
-      ninoHints.first().text() shouldBe messages("personal-details.nino.hint")
+      ninoHints.first().text() contains messages("personal-details.nino.hint")
       ninoFieldset.select("label[for=nino] input[type=text][name=nino]").isEmpty shouldBe false
+
+      val dateFieldset = fieldsets.next().select("fieldset")
+      dateFieldset.select(".form-label-bold").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select(".form-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
+      val dateElementDivs = dateFieldset.select(".form-date .form-group")
+      val dayElement = dateElementDivs.first()
+      dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
+      dayElement.select("label[for=dateOfBirth.day] input[type=number][name=dateOfBirth.day]").isEmpty shouldBe false
+      val monthElement = dateElementDivs.next()
+      monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
+      monthElement.select("label[for=dateOfBirth.month] input[type=number][name=dateOfBirth.month]").isEmpty shouldBe false
+      val yearElement = dateElementDivs.next()
+      yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
+      yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+
+      html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
+    }
+
+    "return a personal details page containing first name, last name, postcode, date of birth inputs " +
+      "and a continue button" in new Setup {
+      val html: Document = personalDetailsPage.render(showPostcodePage = true)
+
+      html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
+
+      html.select("h1.heading-xlarge").text() shouldBe messages("personal-details.faded-heading") + " " + messages("personal-details.header")
+      html.select("h1.heading-xlarge ~ p").text() shouldBe messages("personal-details.paragraph")
+
+      html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl, true).url
+
+      html.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
+
+      val fieldsets = html.select("form .form-group")
+      val firstNameFieldset = fieldsets.first()
+      firstNameFieldset.select("label[for=firstname]").text() shouldBe messages("personal-details.firstname")
+      firstNameFieldset.select("label[for=firstname] input[type=text][name=firstName]").isEmpty shouldBe false
+
+      val lastNameFieldset = fieldsets.next()
+      lastNameFieldset.select("label[for=lastname]").text() shouldBe messages("personal-details.lastname")
+      lastNameFieldset.select("label[for=lastname] input[type=text][name=lastName]").isEmpty shouldBe false
+
+      val postcodeFieldset = fieldsets.next()
+      postcodeFieldset.select("label[for=postcode] .form-label-bold").text() shouldBe messages("personal-details.postcode")
+      val postcodeHints = postcodeFieldset.select("label[for=postcode] .form-hint")
+      postcodeHints.first().text() shouldBe messages("personal-details.postcode.hint")
+      postcodeFieldset.select("label[for=postcode] input[type=text][name=postcode]").isEmpty shouldBe false
+
+      val dateFieldset = fieldsets.next().select("fieldset")
+      dateFieldset.select(".form-label-bold").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select(".form-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
+      val dateElementDivs = dateFieldset.select(".form-date .form-group")
+      val dayElement = dateElementDivs.first()
+      dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
+      dayElement.select("label[for=dateOfBirth.day] input[type=number][name=dateOfBirth.day]").isEmpty shouldBe false
+      val monthElement = dateElementDivs.next()
+      monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
+      monthElement.select("label[for=dateOfBirth.month] input[type=number][name=dateOfBirth.month]").isEmpty shouldBe false
+      val yearElement = dateElementDivs.next()
+      yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
+      yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+
+      html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
+    }
+  }
+
+  "renderValidationFailure" should {
+
+    "return a personal details page containing first name, last name, nino, date of birth inputs " +
+      "and a continue button and validation error" in new Setup {
+      val html: Document = personalDetailsPage.renderValidationFailure(showPostcodePage = false)
+
+      html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
+
+      html.select("h1.heading-xlarge").text() shouldBe messages("personal-details.faded-heading") + " " + messages("personal-details.header")
+      html.select("h1.heading-xlarge ~ p").text() shouldBe messages("personal-details.paragraph")
+
+      html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
+
+      val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
+      errors shouldBe List("The information you've entered doesn't match our records. Check your details and try again.")
+
+      val fieldsets = html.select("form .form-group")
+      val firstNameFieldset = fieldsets.first()
+      firstNameFieldset.select("label[for=firstname]").text() shouldBe messages("personal-details.firstname")
+      firstNameFieldset.select("label[for=firstname] input[type=text][name=firstName]").isEmpty shouldBe false
+
+      val lastNameFieldset = fieldsets.next()
+      lastNameFieldset.select("label[for=lastname]").text() shouldBe messages("personal-details.lastname")
+      lastNameFieldset.select("label[for=lastname] input[type=text][name=lastName]").isEmpty shouldBe false
+
+      val ninoFieldset = fieldsets.next()
+      ninoFieldset.select("label[for=nino] .form-label-bold").text() shouldBe messages("personal-details.nino")
+      val ninoHints = ninoFieldset.select("label[for=nino] .form-hint")
+      ninoHints.first().text() contains messages("personal-details.nino.hint")
+      ninoFieldset.select("label[for=nino] input[type=text][name=nino]").isEmpty shouldBe false
+
+      val dateFieldset = fieldsets.next().select("fieldset")
+      dateFieldset.select(".form-label-bold").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select(".form-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
+      val dateElementDivs = dateFieldset.select(".form-date .form-group")
+      val dayElement = dateElementDivs.first()
+      dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
+      dayElement.select("label[for=dateOfBirth.day] input[type=number][name=dateOfBirth.day]").isEmpty shouldBe false
+      val monthElement = dateElementDivs.next()
+      monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
+      monthElement.select("label[for=dateOfBirth.month] input[type=number][name=dateOfBirth.month]").isEmpty shouldBe false
+      val yearElement = dateElementDivs.next()
+      yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
+      yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+
+      html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
+    }
+
+    "return a personal details page containing first name, last name, postcode, date of birth inputs " +
+      "and a continue button and validation error" in new Setup {
+      val html: Document = personalDetailsPage.renderValidationFailure(showPostcodePage = true)
+
+      html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
+
+      html.select("h1.heading-xlarge").text() shouldBe messages("personal-details.faded-heading") + " " + messages("personal-details.header")
+      html.select("h1.heading-xlarge ~ p").text() shouldBe messages("personal-details.paragraph")
+
+      html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl, true).url
+
+      val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
+      errors shouldBe List("The information you've entered doesn't match our records. Check your details and try again.")
+
+      val fieldsets = html.select("form .form-group")
+      val firstNameFieldset = fieldsets.first()
+      firstNameFieldset.select("label[for=firstname]").text() shouldBe messages("personal-details.firstname")
+      firstNameFieldset.select("label[for=firstname] input[type=text][name=firstName]").isEmpty shouldBe false
+
+      val lastNameFieldset = fieldsets.next()
+      lastNameFieldset.select("label[for=lastname]").text() shouldBe messages("personal-details.lastname")
+      lastNameFieldset.select("label[for=lastname] input[type=text][name=lastName]").isEmpty shouldBe false
+
+      val postcodeFieldset = fieldsets.next()
+      postcodeFieldset.select("label[for=postcode] .form-label-bold").text() shouldBe messages("personal-details.postcode")
+      val postcodeHints = postcodeFieldset.select("label[for=postcode] .form-hint")
+      postcodeHints.first().text() shouldBe messages("personal-details.postcode.hint")
+      postcodeFieldset.select("label[for=postcode] input[type=text][name=postcode]").isEmpty shouldBe false
 
       val dateFieldset = fieldsets.next().select("fieldset")
       dateFieldset.select(".form-label-bold").text() shouldBe messages("personal-details.dateOfBirth")
@@ -94,7 +234,7 @@ class PersonalDetailsPageSpec
         "nino" -> personalDetails.nino.toString()
       )
 
-      val response = personalDetailsPage.bindFromRequest
+      val response = personalDetailsPage.bindFromRequest(showPostcodePage = false)
 
       response shouldBe Right(personalDetails)
     }
@@ -110,7 +250,7 @@ class PersonalDetailsPageSpec
         "nino" -> personalDetails.nino.toString().surroundWithWhitespaces
       )
 
-      val response = personalDetailsPage.bindFromRequest
+      val response = personalDetailsPage.bindFromRequest(false)
 
       response shouldBe Right(personalDetails)
     }
@@ -126,7 +266,7 @@ class PersonalDetailsPageSpec
         "postcode" -> personalDetailsWithPostcode.postCode.toString()
       )
 
-      val response = personalDetailsPage.bindFromRequest
+      val response = personalDetailsPage.bindFromRequest(true)
 
       response shouldBe Right(personalDetailsWithPostcode)
     }
@@ -142,7 +282,7 @@ class PersonalDetailsPageSpec
         "postcode" -> personalDetailsWithPostcode.postCode.toString().surroundWithWhitespaces
       )
 
-      val response = personalDetailsPage.bindFromRequest
+      val response = personalDetailsPage.bindFromRequest(true)
 
       response shouldBe Right(personalDetailsWithPostcode)
     }
@@ -152,7 +292,7 @@ class PersonalDetailsPageSpec
 
       implicit val requestWithFormData = validRequest(replace = "firstName" -> " ")
 
-      val Left(response) = personalDetailsPage.bindFromRequest
+      val Left(response) = personalDetailsPage.bindFromRequest(false)
 
       val page: Document = response
 
@@ -167,7 +307,7 @@ class PersonalDetailsPageSpec
 
       implicit val requestWithFormData = validRequest(replace = "lastName" -> " ")
 
-      val Left(response) = personalDetailsPage.bindFromRequest
+      val Left(response) = personalDetailsPage.bindFromRequest(false)
 
       val page: Document = response
 
@@ -177,43 +317,32 @@ class PersonalDetailsPageSpec
       page.errorFor("lastName") shouldBe messages("personal-details.lastname.required")
     }
 
-    "return 'personal-details.ninoOrPostcode.required' error message " +
+    "return 'personal-details.nino.required' error message " +
       "when nino is blank" in new Setup with BindFromRequestTooling {
-
       implicit val requestWithFormData = validRequest(replace = "nino" -> " ")
 
-      val Left(response) = personalDetailsPage.bindFromRequest
+      val Left(response) = personalDetailsPage.bindFromRequest(false)
 
       val page: Document = response
 
       page.errorsSummary.heading shouldBe messages("error-summary.heading")
-      page.errorsSummary.content shouldBe messages("personal-details.ninoOrPostcode.required")
+      page.errorsSummary.content shouldBe messages("personal-details.nino.required")
     }
 
-    "return 'personal-details.ninoOrPostcode.required' error message " +
-      "when postcode is blank" in new Setup with BindFromRequestTooling {
+    List("LE2 OAJ", "AO1 9KK", "N7 0f8", "D8 JJ") foreach { invalidPostcode =>
 
-      implicit val requestWithFormData = validRequestWithPostcode(replace = "postcode" -> " ")
+      "return 'personal-details.postcode.invalid' error message " +
+        s"when postcode $invalidPostcode contains invalid characters" in new Setup with BindFromRequestTooling {
+        implicit val requestWithFormData = validRequestWithPostcode(replace = "postcode" -> invalidPostcode)
 
-      val Left(response) = personalDetailsPage.bindFromRequest
+        val Left(response) = personalDetailsPage.bindFromRequest(true)
 
-      val page: Document = response
+        val page: Document = response
 
-      page.errorsSummary.heading shouldBe messages("error-summary.heading")
-      page.errorsSummary.content shouldBe messages("personal-details.ninoOrPostcode.required")
-    }
+        page.errorsSummary.heading shouldBe messages("error-summary.heading")
+        page.errorFor("postcode") shouldBe messages("personal-details.postcode.invalid")
 
-    "return 'personal-details.ninoOrPostcode.required' error message " +
-      "when both nino and postcode is present" in new Setup with BindFromRequestTooling {
-
-      implicit val requestWithFormData = validRequest(replace = "postcode"-> "replaceMeWithAnActualPostcode")
-
-      val Left(response) = personalDetailsPage.bindFromRequest
-
-      val page: Document = response
-
-      page.errorsSummary.heading shouldBe messages("error-summary.heading")
-      page.errorsSummary.content shouldBe messages("personal-details.ninoOrPostcode.required")
+      }
     }
 
     "return 'personal-details.nino.invalid' error message " +
@@ -221,7 +350,7 @@ class PersonalDetailsPageSpec
 
       implicit val requestWithFormData = validRequest(replace = "nino" -> "AA11")
 
-      val Left(response) = personalDetailsPage.bindFromRequest
+      val Left(response) = personalDetailsPage.bindFromRequest(false)
 
       val page: Document = response
 
@@ -238,7 +367,7 @@ class PersonalDetailsPageSpec
         replace = "dateOfBirth.day" -> " ", "dateOfBirth.month" -> "", "dateOfBirth.year" -> ""
       )
 
-      val Left(response) = personalDetailsPage.bindFromRequest
+      val Left(response) = personalDetailsPage.bindFromRequest(false)
 
       val page: Document = response
 
@@ -255,7 +384,7 @@ class PersonalDetailsPageSpec
         replace = "dateOfBirth.day" -> "29", "dateOfBirth.month" -> "2", "dateOfBirth.year" -> "2017"
       )
 
-      val Left(response) = personalDetailsPage.bindFromRequest
+      val Left(response) = personalDetailsPage.bindFromRequest(false)
 
       val page: Document = response
 
@@ -272,7 +401,7 @@ class PersonalDetailsPageSpec
 
         implicit val requestWithFormData = validRequest(replace = s"dateOfBirth.$datePartName" -> " ")
 
-        val Left(response) = personalDetailsPage.bindFromRequest
+        val Left(response) = personalDetailsPage.bindFromRequest(false)
 
         val page: Document = response
 
@@ -287,7 +416,7 @@ class PersonalDetailsPageSpec
 
         implicit val requestWithFormData = validRequest(replace = s"dateOfBirth.$datePartName" -> "dd")
 
-        val Left(response) = personalDetailsPage.bindFromRequest
+        val Left(response) = personalDetailsPage.bindFromRequest(false)
 
         val page: Document = response
 

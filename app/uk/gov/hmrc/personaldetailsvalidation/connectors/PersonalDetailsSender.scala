@@ -16,74 +16,63 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
-import java.net.URI
-import javax.inject.{Inject, Singleton}
-
 import cats.data.EitherT
-import play.api.http.HeaderNames._
+import javax.inject.{Inject, Singleton}
 import play.api.http.Status.CREATED
 import play.api.libs.json.{Format, Json, Writes}
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.voa.valuetype.play.formats.ValueTypeFormat._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
+sealed trait PersonalDetail
+
 private[personaldetailsvalidation] trait PersonalDetailsSender[Interpretation[_]] {
 
-  def passToValidation(personalDetails: PersonalDetails)
-                      (implicit headerCarrier: HeaderCarrier,
-                       executionContext: ExecutionContext): EitherT[Interpretation, ProcessingError, URI]
+  def submitValidationRequest(personalDetails: PersonalDetails)
+                             (implicit headerCarrier: HeaderCarrier,
+                              executionContext: ExecutionContext): EitherT[Interpretation, ProcessingError, PersonalDetailsValidation]
 }
 
 @Singleton
-private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
-                                                   httpClient: HttpClient,
-                                                   connectorConfig: ConnectorConfig,
-                                                   pdvMetrics: PdvMetrics)
+private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(httpClient: HttpClient,
+                                                                                connectorConfig: ConnectorConfig)
   extends PersonalDetailsSender[Future] {
 
   import connectorConfig.personalDetailsValidationBaseUrl
 
   private val url = s"$personalDetailsValidationBaseUrl/personal-details-validation"
 
-  override def passToValidation(personalDetails: PersonalDetails)
-                               (implicit headerCarrier: HeaderCarrier,
-                                executionContext: ExecutionContext): EitherT[Future, ProcessingError, URI] = EitherT {
-    pdvMetrics.matchPersonalDetails(personalDetails)
-
-    httpClient.POST(
-      url,
-      body = Json.toJson(personalDetails)
-    ).recover(toProcessingError)
+  override def submitValidationRequest(personalDetails: PersonalDetails)
+                                      (implicit headerCarrier: HeaderCarrier,
+                                       executionContext: ExecutionContext): EitherT[Future, ProcessingError, PersonalDetailsValidation] = EitherT {
+    httpClient.POST(url, body = Json.toJson(personalDetails)).recover(toProcessingError)
   }
 
-  private implicit val personalDetailsSubmissionReads: HttpReads[Either[ProcessingError, URI]] = new HttpReads[Either[ProcessingError, URI]] {
-    override def read(method: String, url: String, response: HttpResponse): Either[ProcessingError, URI] = response.status match {
-      case CREATED => response.header(LOCATION) match {
-        case Some(location) => Right(new URI(location))
-        case None => Left(ProcessingError(s"No $LOCATION header in the response from $method $url"))
+  private implicit val personalDetailsSubmissionReads: HttpReads[Either[ProcessingError, PersonalDetailsValidation]] = new HttpReads[Either[ProcessingError, PersonalDetailsValidation]] {
+
+    override def read(method: String, url: String, response: HttpResponse): Either[ProcessingError, PersonalDetailsValidation] =
+      response.status match {
+        case CREATED => Right(response.json.as[PersonalDetailsValidation])
+        case other => Left(ProcessingError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
       }
-      case other =>
-        Left(ProcessingError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
-    }
   }
 
   private implicit val nonEmptyStringFormat: Format[NonEmptyString] = format(NonEmptyString.apply)
 
   private implicit val personalDetailsWrites = Writes[PersonalDetails] {
-    case personalDetails : PersonalDetailsWithNino =>
+    case personalDetails: PersonalDetailsWithNino =>
       Json.obj(
         "firstName" -> personalDetails.firstName,
         "lastName" -> personalDetails.lastName,
         "dateOfBirth" -> personalDetails.dateOfBirth,
         "nino" -> personalDetails.nino
       )
-    case personalDetails : PersonalDetailsWithPostcode =>
+    case personalDetails: PersonalDetailsWithPostcode =>
       Json.obj(
         "firstName" -> personalDetails.firstName,
         "lastName" -> personalDetails.lastName,
@@ -92,7 +81,7 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
       )
   }
 
-  private val toProcessingError: PartialFunction[Throwable, Either[ProcessingError, URI]] = {
+  private val toProcessingError: PartialFunction[Throwable, Either[ProcessingError, PersonalDetailsValidation]] = {
     case exception => Left(ProcessingError(s"Call to POST $url threw: $exception"))
   }
 }
