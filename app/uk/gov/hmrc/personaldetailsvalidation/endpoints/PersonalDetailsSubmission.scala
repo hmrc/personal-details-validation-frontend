@@ -48,14 +48,14 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
   import PersonalDetailsSubmission._
   import personalDetailsValidationConnector._
 
-  def submit(completionUrl: CompletionUrl)
+  def submit(completionUrl: CompletionUrl, usePostcodeForm: Boolean = false)
             (implicit request: Request[_],
                               headerCarrier: HeaderCarrier,
                               executionContext: ExecutionContext): Interpretation[Result] = {
     for {
-      personalDetails <- pure(personalDetailsPage.bindFromRequest(request, completionUrl)) leftMap pageWithErrorToBadRequest
+      personalDetails <- pure(personalDetailsPage.bindFromRequest(usePostcodeForm)(request, completionUrl)) leftMap pageWithErrorToBadRequest
       personalDetailsValidation <- submitValidationRequest(personalDetails) leftMap errorToRedirect(to = completionUrl)
-    } yield result(completionUrl, personalDetailsValidation)
+    } yield result(completionUrl, personalDetailsValidation, usePostcodeForm)
   }.merge
 
   private val pageWithErrorToBadRequest: Html => Result = BadRequest(_)
@@ -66,11 +66,11 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
       Redirect(to.value, error.toQueryParam)
   }
 
-  private def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation)
+  private def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation, usePostcodeForm: Boolean = false)
                       (implicit request: Request[_]): Result = personalDetailsValidation match {
     case SuccessfulPersonalDetailsValidation(validationId) =>
       Redirect(completionUrl.value, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
-    case FailedPersonalDetailsValidation => Ok(personalDetailsPage.renderValidationFailure(completionUrl, request))
+    case FailedPersonalDetailsValidation => Ok(personalDetailsPage.renderValidationFailure(usePostcodeForm)(completionUrl, request))
   }
 
   private def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =

@@ -93,7 +93,7 @@ class PersonalDetailsPageISpec
       page.submitForm()
 
       Then("I should see the Personal Details error page")
-      val errorPage = personalDetailsErrorPage(completionUrl)
+      val errorPage = personalDetailsNinoErrorPage(completionUrl)
       on(errorPage)
 
       And("I should not see the data I entered")
@@ -109,55 +109,84 @@ class PersonalDetailsPageISpec
 
     scenario("validation successful when personal Details page submitted with valid personal details containing postcode") {
 
-      pending
-
       val testData = PersonalDetailsData(
         firstName = NonEmptyString("Jim").value,
         lastName = NonEmptyString("Ferguson").value,
-        postcode = Some("AA00 03D"),
+        postcode = Some("LE2 6JP"),
         dateOfBirth = LocalDate.of(1948, 4, 23)
       )
 
       When("I navigate to /personal-details-validation/personal-details with valid completionUrl")
       goTo(s"/personal-details?completionUrl=$completionUrl")
 
-      Then("I should see the Personal Details page")
+      And("I select the 'I don't have a National Insurance number' option")
       val page = personalDetailsPage(completionUrl)
-      on(page)
+      val postcodePage = page.selectPostcodeOption()
+
+      Then("I should see the Personal Details page")
+      on(postcodePage)
 
       When("I fill in the fields with valid data")
-      page.fillInWithPostcode(testData.firstName, testData.lastName, testData.postcode.get, testData.dateOfBirth)
+      postcodePage.fillInWithPostcode(testData.firstName, testData.lastName, testData.postcode.get, testData.dateOfBirth)
 
       And("I know the personal-details-validation service validates the data successfully")
       PersonalDetailsService validatesSuccessfully testData
 
       And("when I submit the data")
-      page.submitForm()
+      postcodePage.submitForm()
 
       Then("I should get redirected to my completion url")
       on(CompletionPage(completionUrl))
     }
 
-    scenario("validation failed when personal Details page submitted with valid personal details containing postcode") {
+    scenario("Personal Details page submitted with invalid postcode details") {
 
-      pending
+      When("I navigate to /personal-details-validation/personal-details with valid completionUrl")
+      goTo(s"/personal-details?completionUrl=$completionUrl")
+
+      And("I select the 'I don't have a National Insurance number' option")
+      val page = personalDetailsPage(completionUrl)
+      val postcodePage = page.selectPostcodeOption()
+
+      Then("I should see the Personal Details page")
+      on(postcodePage)
+
+      When("I submit some invalid data")
+      postcodePage.fillInWithPostcode("Jim", "Ferguson", "some-invalid-postcode", LocalDate.of(1948, 4, 23))
+      postcodePage.submitForm()
+
+      Then("I should see the Personal Details page")
+      val errorPage = personalDetailsPostcodeErrorPage(postcodePage.completionUrl)
+      on(errorPage)
+
+      Then("I should stay on the Personal Details page")
+      on(errorPage)
+
+      And("I should still see the data I entered")
+      errorPage.verifyPostcodeDataPresent("Jim", "Ferguson", "some-invalid-postcode", LocalDate.of(1948, 4, 23))
+    }
+
+    scenario("validation failed when personal Details page submitted with valid personal details containing postcode") {
 
       val testData = PersonalDetailsData(
         firstName = NonEmptyString("Jim").value,
         lastName = NonEmptyString("Ferguson").value,
-        postcode = Some("AA00 03D"),
+        postcode = Some("LE2 6JP"),
         dateOfBirth = LocalDate.of(1948, 4, 23)
       )
 
       When("I navigate to /personal-details-validation/personal-details with valid completionUrl")
       goTo(s"/personal-details?completionUrl=$completionUrl")
 
-      Then("I should see the Personal Details page")
+      And("I select the 'I don't have a National Insurance number' option")
       val page = personalDetailsPage(completionUrl)
-      on(page)
+      val postcodePage = page.selectPostcodeOption()
+
+      Then("I should see the Personal Details page")
+      on(postcodePage)
 
       When("I fill in the fields with valid data")
-      page.fillInWithPostcode(testData.firstName, testData.lastName, testData.postcode.get, testData.dateOfBirth)
+      postcodePage.fillInWithPostcode(testData.firstName, testData.lastName, testData.postcode.get, testData.dateOfBirth)
 
       And("I know the personal-details-validation service validates the data successfully")
       PersonalDetailsService validatesUnsuccessfully testData
@@ -166,7 +195,7 @@ class PersonalDetailsPageISpec
       page.submitForm()
 
       Then("I should see the Personal Details error page")
-      val errorPage = personalDetailsErrorPage(completionUrl)
+      val errorPage = personalDetailsPostcodeErrorPage(completionUrl)
       on(errorPage)
 
       And("I should not see the data I entered")
@@ -194,11 +223,11 @@ class PersonalDetailsPageISpec
       page.submitForm()
 
       Then("I should see the Personal Details error page")
-      val errorPage = personalDetailsErrorPage(completionUrl)
+      val errorPage = personalDetailsNinoErrorPage(completionUrl)
       on(errorPage)
 
       And("I should still see the data I entered")
-      errorPage.verifyDataPresent(" ", " ", Nino("AA000003C"), LocalDate.of(1948, 12, 23))
+      errorPage.verifyNinoDataPresent(" ", " ", Nino("AA000003C"), LocalDate.of(1948, 12, 23))
 
       And("I should see errors for invalid values")
       errorPage.summaryErrors shouldBe List("Enter your first name.", "Enter your last name.")
