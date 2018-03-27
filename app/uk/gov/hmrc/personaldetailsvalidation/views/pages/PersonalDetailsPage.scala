@@ -66,15 +66,15 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   private def postcodeFormatValidation(postcode: NonEmptyString) =
     postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
-  def render(showPostcodePage: Boolean = false)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
+  def render(showPostcodePage: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
     if(showPostcodePage) personal_details_postcode(formWithPostcode, completionUrl) else
     personal_details_nino(formWithNino, completionUrl)
 
-  def renderValidationFailure(showPostcodePage: Boolean = false)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
+  def renderValidationFailure(showPostcodePage: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
     if(showPostcodePage) personal_details_postcode(formWithPostcode.withGlobalError("personal-details.validation.failed"), completionUrl) else
       personal_details_nino(formWithNino.withGlobalError("personal-details.validation.failed"), completionUrl)
 
-  def bindFromRequest(showPostcodePage: Boolean = false)(implicit request: Request[_],
+  def bindFromRequest(showPostcodePage: Boolean)(implicit request: Request[_],
                       completionUrl: CompletionUrl): Either[Html, PersonalDetails] =
     if(showPostcodePage) {
       formWithPostcode.bindFromRequest().fold(
