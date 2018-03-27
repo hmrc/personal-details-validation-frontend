@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
+import com.kenshoo.play.metrics.Metrics
 import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
@@ -27,7 +28,8 @@ import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators._
-import uk.gov.hmrc.personaldetailsvalidation.model.{FailedPersonalDetailsValidation, SuccessfulPersonalDetailsValidation}
+import uk.gov.hmrc.personaldetailsvalidation.model._
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
@@ -141,6 +143,38 @@ class FuturedPersonalDetailsSenderSpec
         s"Call to POST http://host/personal-details-validation threw: $exception"
       ))
     }
+
+    "increment the nino counter when successfully calling personal details validation" in new Setup {
+      val counterBeforeTest = pdvMetrics.ninoCounter
+
+      val validationId = validationIds.generateOne
+      expectPost(toUrl = "http://host/personal-details-validation")
+        .withPayload(payloadWithNino)
+        .returning(status = CREATED, Json.obj(
+          "validationStatus" -> "success",
+          "id" -> validationId.value
+        ))
+
+      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Right(SuccessfulPersonalDetailsValidation(validationId))
+
+      pdvMetrics.ninoCounter shouldBe counterBeforeTest + 1
+    }
+
+    "increment the postcode counter when successfully calling personal details validation" in new Setup {
+      val counterBeforeTest = pdvMetrics.postCodeCounter
+
+      val validationId = validationIds.generateOne
+      expectPost(toUrl = "http://host/personal-details-validation")
+        .withPayload(payloadWithPostcode)
+        .returning(status = CREATED, Json.obj(
+          "validationStatus" -> "success",
+          "id" -> validationId.value
+        ))
+
+      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Right(SuccessfulPersonalDetailsValidation(validationId))
+
+      pdvMetrics.postCodeCounter shouldBe counterBeforeTest + 1
+    }
   }
 
   private trait Setup extends HttpClientStubSetup {
@@ -168,6 +202,21 @@ class FuturedPersonalDetailsSenderSpec
       override lazy val personalDetailsValidationBaseUrl = "http://host"
     }
 
-    val connector = new FuturedPersonalDetailsSender(httpClient, connectorConfig)
+    val metrics = mock[Metrics]
+    val pdvMetrics = new MockPdvMetrics
+    val connector = new FuturedPersonalDetailsSender(httpClient, connectorConfig, pdvMetrics)
+
+    class MockPdvMetrics extends PdvMetrics(metrics) {
+      var ninoCounter = 0
+      var postCodeCounter = 0
+      var errorCounter = 0
+      override def matchPersonalDetails(details: PersonalDetails): Unit = {
+        details match {
+          case _ : PersonalDetailsWithNino => ninoCounter += 1
+          case _ : PersonalDetailsWithPostcode => postCodeCounter += 1
+          case _ => errorCounter += 1
+        }
+      }
+    }
   }
 }
