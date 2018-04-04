@@ -108,7 +108,7 @@ class PersonalDetailsPageISpec
       errorPage.fieldErrors shouldBe Map.empty
 
       And("The error summary contains an exit link for the first ValidationId")
-      val decodedUrl = URLDecoder.decode(completionUrl)
+      val decodedUrl = URLDecoder.decode(completionUrl, "UTF-8")
       errorPage.exitLinkToCompletionUrlExists(decodedUrl) shouldBe true
     }
 
@@ -214,7 +214,7 @@ class PersonalDetailsPageISpec
       )
       errorPage.fieldErrors shouldBe Map.empty
       And("The error summary contains an exit link for the first ValidationId")
-      val decodedUrl = URLDecoder.decode(completionUrl)
+      val decodedUrl = URLDecoder.decode(completionUrl, "UTF-8")
       errorPage.exitLinkToCompletionUrlExists(decodedUrl) shouldBe true
     }
 

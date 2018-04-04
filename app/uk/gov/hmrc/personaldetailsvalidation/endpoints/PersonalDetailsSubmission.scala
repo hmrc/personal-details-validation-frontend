@@ -68,8 +68,6 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
 
   private def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation, usePostcodeForm: Boolean = false)
                       (implicit request: Request[_]): Result = {
-
-    println("ITSSSS HEREEEEEEEEEEE " + completionUrl)
     personalDetailsValidation match {
       case SuccessfulPersonalDetailsValidation(validationId) =>
         Redirect(completionUrl.value, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)

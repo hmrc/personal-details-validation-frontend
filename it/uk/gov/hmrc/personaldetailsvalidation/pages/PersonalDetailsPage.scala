@@ -33,9 +33,7 @@ abstract class PersonalDetailsPage(title: String, val completionUrl: String) ext
     }
 
   def exitLinkToCompletionUrlExists(completionUrl: String): Boolean = {
-    println("HEHHEHEHHEHEHEHHEHE" + completionUrl)
-
-    find(cssSelector(s".error-summary a[href^=$completionUrl]")) match {
+    find(cssSelector(s".error-summary a[href='$completionUrl']")) match {
       case Some(_) => true
       case _ => false
     }

@@ -49,7 +49,7 @@
 
     <p>@messages("personal-details.paragraph")</p>
 
-    @form(routes.PersonalDetailsCollectionController.submit(completionUrl, postcodeVersion = true), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
+    @form(routes.PersonalDetailsCollectionController.submit(completionUrl, alternativeVersion = true), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
 
         <div class="form-group">
         @input(
