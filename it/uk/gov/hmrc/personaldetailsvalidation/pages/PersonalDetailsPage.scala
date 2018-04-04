@@ -1,7 +1,9 @@
 package uk.gov.hmrc.personaldetailsvalidation.pages
 
+import java.net.URL
 import java.time.LocalDate
 
+import org.openqa.selenium.WebElement
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.personaldetailsvalidation.support.{FormErrors, WebPage}
 
@@ -29,6 +31,15 @@ abstract class PersonalDetailsPage(title: String, val completionUrl: String) ext
       case Some(element) => click on element
       case _ => fail("Continue button not found")
     }
+
+  def exitLinkToCompletionUrlExists(completionUrl: String): Boolean = {
+    println("HEHHEHEHHEHEHEHHEHE" + completionUrl)
+
+    find(cssSelector(s".error-summary a[href^=$completionUrl]")) match {
+      case Some(_) => true
+      case _ => false
+    }
+  }
 }
 
 class PersonalDetailsNinoPage (title: String, override val completionUrl: String) extends PersonalDetailsPage(title, completionUrl) {
