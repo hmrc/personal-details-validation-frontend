@@ -140,7 +140,7 @@ class PersonalDetailsPageSpec
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
 
       val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
-      errors shouldBe List("The information you've entered doesn't match our records. Check your details and try again.")
+      errors shouldBe List("We couldn't find any records that match the details you entered. Please try again, checking that all your details are correct, or contact HMRC to get help")
 
       val fieldsets = html.select("form .form-group")
       val firstNameFieldset = fieldsets.first()
@@ -186,7 +186,7 @@ class PersonalDetailsPageSpec
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl, true).url
 
       val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
-      errors shouldBe List("The information you've entered doesn't match our records. Check your details and try again.")
+      errors shouldBe List("We couldn't find any records that match the details you entered. Please try again, checking that all your details are correct, or contact HMRC to get help")
 
       val fieldsets = html.select("form .form-group")
       val firstNameFieldset = fieldsets.first()

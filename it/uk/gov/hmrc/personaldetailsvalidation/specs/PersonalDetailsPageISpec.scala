@@ -209,10 +209,11 @@ class PersonalDetailsPageISpec
       And("I should see errors")
       errorPage.summaryErrorsHeading shouldBe "There is a problem"
       errorPage.summaryErrors shouldBe List(
-        "The information you've entered doesn't match our records." +
-          " Check your details and try again."
+        "We couldn't find any records that match the details you entered. " +
+          "Please try again, checking that all your details are correct, or contact HMRC to get help"
       )
       errorPage.fieldErrors shouldBe Map.empty
+      
       And("The error summary contains an exit link for the first ValidationId")
       val decodedUrl = URLDecoder.decode(completionUrl, "UTF-8")
       errorPage.exitLinkToCompletionUrlExists(decodedUrl) shouldBe true

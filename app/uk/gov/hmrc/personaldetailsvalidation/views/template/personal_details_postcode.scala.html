@@ -31,11 +31,24 @@
 
 @main_template(title = error_prefix(pageForm) + messages("personal-details.title")) {
 
-    @if(pageForm.hasErrors) {
-        @errorSummary(
-            heading = Messages("error-summary.heading"),
-            form = pageForm
-        )
+    @if(pageForm.hasGlobalErrors) {
+        <div class="flash error-summary error-summary--show" id="error-summary-display" role="alert" aria-labelledby="error-summary-display" tabindex="-1">
+            <h2 id="error-summary-heading" class="h3-heading">@Messages("validation.error-summary.heading")</h2>
+            <ul class="js-error-summary-messages">
+                <li role="tooltip">
+                    @Messages("validation.error-summary.before-link-text")
+                    <a href="@completionUrl">@Messages("validation.error-summary.link-text")</a>
+                    @Messages("validation.error-summary.after-link-text")
+                </li>
+            </ul>
+        </div>
+    } else {
+        @if(pageForm.hasErrors) {
+            @errorSummary(
+                heading = Messages("error-summary.heading"),
+                form = pageForm
+            )
+        }
     }
 
 
