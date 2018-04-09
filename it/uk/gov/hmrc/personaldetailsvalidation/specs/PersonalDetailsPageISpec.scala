@@ -1,6 +1,6 @@
 package uk.gov.hmrc.personaldetailsvalidation.specs
 
-import java.net.URLEncoder
+import java.net.{URLDecoder, URLEncoder}
 import java.time.LocalDate
 
 import uk.gov.hmrc.domain.Nino
@@ -83,10 +83,10 @@ class PersonalDetailsPageISpec
       val page = personalDetailsPage(completionUrl)
       on(page)
 
-      When("I fill in the fields with valid data")
+      When("I fill in the fields with invalid data")
       page.fillInWithNino(testData.firstName, testData.lastName, testData.nino.get, testData.dateOfBirth)
 
-      And("I know the personal-details-validation service validates the data successfully")
+      And("I know the personal-details-validation service does not validate the data successfully")
       PersonalDetailsService validatesUnsuccessfully testData
 
       And("when I submit the data")
@@ -100,11 +100,16 @@ class PersonalDetailsPageISpec
       errorPage.verifyDataBlank()
 
       And("I should see errors")
+      errorPage.summaryErrorsHeading shouldBe "There is a problem"
       errorPage.summaryErrors shouldBe List(
-        "The information you've entered doesn't match our records." +
-          " Check your details and try again."
+       "We couldn't find any records that match the details you entered. " +
+         "Please try again, checking that all your details are correct, or contact HMRC to get help"
       )
       errorPage.fieldErrors shouldBe Map.empty
+
+      And("The error summary contains an exit link for the first ValidationId")
+      val decodedUrl = URLDecoder.decode(completionUrl, "UTF-8")
+      errorPage.exitLinkToCompletionUrlExists(decodedUrl) shouldBe true
     }
 
     scenario("validation successful when personal Details page submitted with valid personal details containing postcode") {
@@ -202,11 +207,16 @@ class PersonalDetailsPageISpec
       errorPage.verifyDataBlank()
 
       And("I should see errors")
+      errorPage.summaryErrorsHeading shouldBe "There is a problem"
       errorPage.summaryErrors shouldBe List(
-        "The information you've entered doesn't match our records." +
-          " Check your details and try again."
+        "We couldn't find any records that match the details you entered. " +
+          "Please try again, checking that all your details are correct, or contact HMRC to get help"
       )
       errorPage.fieldErrors shouldBe Map.empty
+      
+      And("The error summary contains an exit link for the first ValidationId")
+      val decodedUrl = URLDecoder.decode(completionUrl, "UTF-8")
+      errorPage.exitLinkToCompletionUrlExists(decodedUrl) shouldBe true
     }
 
     scenario("Personal Details page submitted with invalid personal details") {

@@ -50,7 +50,7 @@ class PersonalDetailsCollectionControllerSpec
         .expects(false, completionUrl, request)
         .returning(Html("content"))
 
-      val result = controller.showPage(completionUrl, postcodeVersion = false)(request)
+      val result = controller.showPage(completionUrl, alternativeVersion = false)(request)
 
       verify(result).has(statusCode = OK, content = "content")
     }
@@ -66,7 +66,7 @@ class PersonalDetailsCollectionControllerSpec
         .expects(completionUrl, false, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returning(Future.successful(Redirect(redirectUrl)))
 
-      val result = controller.submit(completionUrl, postcodeVersion = false)(request)
+      val result = controller.submit(completionUrl, alternativeVersion = false)(request)
 
       redirectLocation(result) shouldBe Some(redirectUrl)
     }

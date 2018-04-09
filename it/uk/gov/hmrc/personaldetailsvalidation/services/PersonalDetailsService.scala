@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE
 import java.util.UUID
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status.CREATED
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.domain.Nino
@@ -56,7 +57,7 @@ object PersonalDetailsService {
       }
     }
 
-    def toReturn(status: Int, body: JsValue) =
+    def toReturn(status: Int, body: JsValue): StubMapping =
       stubFor(
         post(urlEqualTo("/personal-details-validation"))
           .withRequestBody(equalToJson(expectedJson(personalDetails), true, false))

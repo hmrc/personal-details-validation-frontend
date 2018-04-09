@@ -29,6 +29,9 @@ abstract class PersonalDetailsPage(title: String, val completionUrl: String) ext
       case Some(element) => click on element
       case _ => fail("Continue button not found")
     }
+
+  def exitLinkToCompletionUrlExists(completionUrl: String): Boolean =
+    find(cssSelector(s".error-summary a[href='$completionUrl']")).isDefined
 }
 
 class PersonalDetailsNinoPage (title: String, override val completionUrl: String) extends PersonalDetailsPage(title, completionUrl) {
@@ -55,7 +58,7 @@ class PersonalDetailsNinoPage (title: String, override val completionUrl: String
   protected override def verifyOtherFields = textField("nino").value shouldBe ""
 
   def selectPostcodeOption(): PersonalDetailsPostcodePage = {
-    find(cssSelector("a[href*='postcodeVersion=true']")) match {
+    find(cssSelector("a[href*='alternativeVersion=true']")) match {
       case Some(text) => click on text
       case _ => fail("postcode option not found")
     }
@@ -64,7 +67,7 @@ class PersonalDetailsNinoPage (title: String, override val completionUrl: String
 }
 
 class PersonalDetailsPostcodePage (title: String, override val completionUrl: String) extends PersonalDetailsPage(title, completionUrl) {
-  override val url: String = s"/personal-details-validation/personal-details?completionUrl=$completionUrl&postcodeVersion=true"
+  override val url: String = s"/personal-details-validation/personal-details?completionUrl=$completionUrl&alternativeVersion=true"
 
   def fillInWithPostcode(firstName: String, lastName: String, postCode: String, dob: LocalDate): Unit = {
     textField("firstName").value = firstName

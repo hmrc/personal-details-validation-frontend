@@ -67,12 +67,13 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
   }
 
   private def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation, usePostcodeForm: Boolean = false)
-                      (implicit request: Request[_]): Result = personalDetailsValidation match {
-    case SuccessfulPersonalDetailsValidation(validationId) =>
-      Redirect(completionUrl.value, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
-    case FailedPersonalDetailsValidation => Ok(personalDetailsPage.renderValidationFailure(usePostcodeForm)(completionUrl, request))
+                      (implicit request: Request[_]): Result = {
+    personalDetailsValidation match {
+      case SuccessfulPersonalDetailsValidation(validationId) =>
+        Redirect(completionUrl.value, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
+      case FailedPersonalDetailsValidation => Ok(personalDetailsPage.renderValidationFailure(usePostcodeForm)(completionUrl, request))
+    }
   }
-
   private def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =
     EitherT(implicitly[Monad[Interpretation]].pure(maybeValue))
 }
