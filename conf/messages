@@ -31,7 +31,10 @@ personal-details.dateOfBirth.month.required=Enter the month from your date of bi
 personal-details.dateOfBirth.month.invalid=The month you have entered is invalid. Enter a number between 1 and 12.
 personal-details.dateOfBirth.year.required=Enter the year from your date of birth.
 personal-details.dateOfBirth.year.invalid=The year you have entered is invalid. Enter the year you were born.
-personal-details.validation.failed=The information you''ve entered doesn''t match our records. Check your details and try again.
+validation.error-summary.before-link-text=We couldn''t find any records that match the details you entered. Please try again, checking that all your details are correct, or
+validation.error-summary.link-text=contact HMRC
+validation.error-summary.after-link-text=to get help
+validation.error-summary.heading=There is a problem
 
 # errors
 global.error.InternalServerError500.title=Sorry, we are experiencing technical difficulties
