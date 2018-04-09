@@ -18,7 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidation.monitoring
 
 import com.codahale.metrics.{Counter, MetricRegistry}
 import uk.gov.hmrc.play.test.UnitSpec
-import com.kenshoo.play.metrics.Metrics
+import com.kenshoo.play.metrics.{DisabledMetrics, Metrics}
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 
 class PdvMetricsSpec extends UnitSpec {
@@ -41,6 +41,14 @@ class PdvMetricsSpec extends UnitSpec {
 
       mockedRegistry.counter(WITH_POSTCODE_COUNTER).getCount shouldBe countBefore + 1
     }
+
+    "not increment any counters if the metrics are disbaled and using a Nino" in new Setup {
+      pdvWithDisabledMetrics.matchPersonalDetails(detailsWithNino)
+    }
+
+    "not increment any counters if the metrics are disbaled and using a Postcode" in new Setup {
+      pdvWithDisabledMetrics.matchPersonalDetails(detailsWithPostcode)
+    }
   }
 
   // ScalaMock does not currently handle classes.
@@ -51,6 +59,7 @@ class PdvMetricsSpec extends UnitSpec {
     val mockedMetrics : Metrics = new MockMetrics
     val mockedRegistry : MetricRegistry = new MetricRegistry()
     val pdvMetrics = new PdvMetrics(mockedMetrics)
+    val pdvWithDisabledMetrics = new PdvMetrics(new DisabledMetrics)
 
     private class MockMetrics extends Metrics {
       override def defaultRegistry: MetricRegistry = mockedRegistry

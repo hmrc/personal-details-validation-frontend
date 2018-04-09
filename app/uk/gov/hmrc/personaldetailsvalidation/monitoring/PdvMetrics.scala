@@ -18,7 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidation.monitoring
 
 import javax.inject._
 
-import com.kenshoo.play.metrics.Metrics
+import com.kenshoo.play.metrics.{DisabledMetrics, Metrics}
 import uk.gov.hmrc.personaldetailsvalidation.model._
 
 class PdvMetrics @Inject()(metrics: Metrics) {
@@ -27,6 +27,10 @@ class PdvMetrics @Inject()(metrics: Metrics) {
       case _ : PersonalDetailsWithNino => "match-user.nino"
       case _ : PersonalDetailsWithPostcode => "match-user.postcode"
     }
-    metrics.defaultRegistry.counter(counterName).inc()
+
+    metrics match {
+      case _ : DisabledMetrics => // Do Nothing
+      case _ => metrics.defaultRegistry.counter(counterName).inc()
+    }
   }
 }
