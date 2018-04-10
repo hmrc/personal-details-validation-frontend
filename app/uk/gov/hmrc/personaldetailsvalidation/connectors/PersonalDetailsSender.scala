@@ -43,8 +43,7 @@ private[personaldetailsvalidation] trait PersonalDetailsSender[Interpretation[_]
 @Singleton
 private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
                                                    httpClient: HttpClient,
-                                                   connectorConfig: ConnectorConfig,
-                                                   pdvMetrics: PdvMetrics)
+                                                   connectorConfig: ConnectorConfig)
   extends PersonalDetailsSender[Future] {
 
   import connectorConfig.personalDetailsValidationBaseUrl
@@ -54,8 +53,6 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
   override def submitValidationRequest(personalDetails: PersonalDetails)
                                       (implicit headerCarrier: HeaderCarrier,
                                        executionContext: ExecutionContext): EitherT[Future, ProcessingError, PersonalDetailsValidation] = EitherT {
-    pdvMetrics.matchPersonalDetails(personalDetails)
-
     httpClient.POST(url, body = Json.toJson(personalDetails)).recover(toProcessingError)
   }
 

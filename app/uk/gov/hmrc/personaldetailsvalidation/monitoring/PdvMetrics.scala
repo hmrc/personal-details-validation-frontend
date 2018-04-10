@@ -22,15 +22,23 @@ import com.kenshoo.play.metrics.{DisabledMetrics, Metrics}
 import uk.gov.hmrc.personaldetailsvalidation.model._
 
 class PdvMetrics @Inject()(metrics: Metrics) {
-  def matchPersonalDetails(details: PersonalDetails) = {
+  /**
+    * increment the GA metrics counter to note whether we are trying to match against Nino or Post Code
+    * @param details The personal details of the person we are trying to match
+    * @return `true` if we managed to update the counter, otherwise `false`
+    */
+  def matchPersonalDetails(details: PersonalDetails) : Boolean = {
     val counterName = details match {
       case _ : PersonalDetailsWithNino => "match-user.nino"
       case _ : PersonalDetailsWithPostcode => "match-user.postcode"
     }
 
     metrics match {
-      case _ : DisabledMetrics => // Do Nothing
-      case _ => metrics.defaultRegistry.counter(counterName).inc()
+      case _ : DisabledMetrics =>
+        false
+      case _ =>
+        metrics.defaultRegistry.counter(counterName).inc()
+        true
     }
   }
 }

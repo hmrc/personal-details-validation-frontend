@@ -29,7 +29,7 @@ class PdvMetricsSpec extends UnitSpec {
     "increment the count when a Nino is used in the designated details page" in new Setup {
       val countBefore = mockedRegistry.counter(WITH_NINO_COUNTER).getCount
 
-      pdvMetrics.matchPersonalDetails(detailsWithNino)
+      pdvMetrics.matchPersonalDetails(detailsWithNino) shouldBe true
 
       mockedRegistry.counter(WITH_NINO_COUNTER).getCount shouldBe countBefore + 1
     }
@@ -37,17 +37,17 @@ class PdvMetricsSpec extends UnitSpec {
     "increment the count when a Postcode is used in the designated details page" in new Setup {
       val countBefore = mockedRegistry.counter(WITH_POSTCODE_COUNTER).getCount
 
-      pdvMetrics.matchPersonalDetails(detailsWithPostcode)
+      pdvMetrics.matchPersonalDetails(detailsWithPostcode) shouldBe true
 
       mockedRegistry.counter(WITH_POSTCODE_COUNTER).getCount shouldBe countBefore + 1
     }
 
     "not increment any counters if the metrics are disbaled and using a Nino" in new Setup {
-      pdvWithDisabledMetrics.matchPersonalDetails(detailsWithNino)
+      pdvWithDisabledMetrics.matchPersonalDetails(detailsWithNino) shouldBe false
     }
 
     "not increment any counters if the metrics are disbaled and using a Postcode" in new Setup {
-      pdvWithDisabledMetrics.matchPersonalDetails(detailsWithPostcode)
+      pdvWithDisabledMetrics.matchPersonalDetails(detailsWithPostcode) shouldBe false
     }
   }
 
