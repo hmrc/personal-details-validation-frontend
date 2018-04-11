@@ -23,10 +23,11 @@
 
 @import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetailsWithNino
 @(pageForm: Form[PersonalDetailsWithNino],
-  completionUrl: CompletionUrl)(
+        completionUrl: CompletionUrl,
+        showPostCodeLink: Boolean)(
   implicit request: Request[_],
-  messages: Messages,
-  viewConfig: ViewConfig
+        messages: Messages,
+        viewConfig: ViewConfig
 )
 
 @main_template(title = error_prefix(pageForm) + messages("personal-details.title")) {
@@ -90,9 +91,11 @@
                 '_inputHint -> Html(Messages("personal-details.nino.hint")),
                 '_labelClass -> "soft--ends"
             )
-            <span class="form-field--submit display-block">
-                <a  href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"> @Messages("personal-details.nino.unavailable")</a>
-            </span>
+            @if(showPostCodeLink) {
+                <span class="form-field--submit display-block">
+                    <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"> @Messages("personal-details.nino.unavailable")</a>
+                </span>
+            }
         </div>
         <fieldset class="form-group">
             @date(

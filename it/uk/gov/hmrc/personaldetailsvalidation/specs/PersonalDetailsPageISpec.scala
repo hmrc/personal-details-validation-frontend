@@ -16,6 +16,8 @@ class PersonalDetailsPageISpec
   extends BaseIntegrationSpec
     with WiremockedService {
 
+  override protected lazy val additionalConfiguration: Map[String, Any] = wiremockAdditionalConfiguration + ("feature.postcode-lookup" -> "true")
+
   wiremock("personal-details-validation").on("localhost", 11111)
 
   feature("Personal Details Page") {
