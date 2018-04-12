@@ -24,6 +24,7 @@ import play.api.data.Forms.mapping
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
+import uk.gov.hmrc.config.AppConfig
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
@@ -32,7 +33,7 @@ import uk.gov.hmrc.views.ViewConfig
 import scala.util.Try
 
 @Singleton
-private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit val messagesApi: MessagesApi,
+private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig: AppConfig) (implicit val messagesApi: MessagesApi,
                                                                        viewConfig: ViewConfig)
   extends I18nSupport {
 
@@ -66,24 +67,30 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(implicit 
   private def postcodeFormatValidation(postcode: NonEmptyString) =
     postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
-  def render(showPostcodePage: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
-    if(showPostcodePage) personal_details_postcode(formWithPostcode, completionUrl) else
-    personal_details_nino(formWithNino, completionUrl)
+  def render(postCodePageRequested: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
+    if (showPostCodePage(postCodePageRequested))
+      personal_details_postcode(formWithPostcode, completionUrl)
+    else
+      personal_details_nino(formWithNino, completionUrl, appConfig.isPostCodeLookupEnabled)
 
-  def renderValidationFailure(showPostcodePage: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
-    if(showPostcodePage) personal_details_postcode(formWithPostcode.withGlobalError("personal-details.validation.failed"), completionUrl) else
-      personal_details_nino(formWithNino.withGlobalError("personal-details.validation.failed"), completionUrl)
+  private def showPostCodePage(postCodePageRequested: Boolean) : Boolean = appConfig.isPostCodeLookupEnabled && postCodePageRequested
 
-  def bindFromRequest(showPostcodePage: Boolean)(implicit request: Request[_],
+  def renderValidationFailure(postCodePageRequested: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
+    if (showPostCodePage(postCodePageRequested))
+      personal_details_postcode(formWithPostcode.withGlobalError("personal-details.validation.failed"), completionUrl)
+    else
+      personal_details_nino(formWithNino.withGlobalError("personal-details.validation.failed"), completionUrl, appConfig.isPostCodeLookupEnabled)
+
+  def bindFromRequest(postCodePageRequested: Boolean)(implicit request: Request[_],
                       completionUrl: CompletionUrl): Either[Html, PersonalDetails] =
-    if(showPostcodePage) {
+    if(showPostCodePage(postCodePageRequested)) {
       formWithPostcode.bindFromRequest().fold(
         formWithErrors => Left(personal_details_postcode(formWithErrors, completionUrl)),
         personalDetails => Right(personalDetails)
       )
     } else {
       formWithNino.bindFromRequest().fold(
-        formWithErrors => Left(personal_details_nino(formWithErrors, completionUrl)),
+        formWithErrors => Left(personal_details_nino(formWithErrors, completionUrl, appConfig.isPostCodeLookupEnabled)),
         personalDetails => Right(personalDetails)
       )
     }
