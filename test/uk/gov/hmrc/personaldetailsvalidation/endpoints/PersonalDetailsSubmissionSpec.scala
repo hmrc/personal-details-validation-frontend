@@ -18,6 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import cats.Id
 import cats.data.EitherT
+import com.kenshoo.play.metrics.Metrics
 import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
@@ -33,7 +34,8 @@ import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.PersonalDetailsSender
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{personalDetailsObjects, successfulPersonalDetailsValidationObjects, _}
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.completionUrls
-import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersonalDetailsValidation, PersonalDetails, PersonalDetailsValidation}
+import uk.gov.hmrc.personaldetailsvalidation.model._
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -67,17 +69,20 @@ class PersonalDetailsSubmissionSpec
 
     "bind the request to PersonalDetailsWithNino, " +
       "post it to the validation service, " +
-      "return redirect to completionUrl with appended validationId query parameter" +
-      "if post to the validation service returned successful personal details validation" in new Setup {
+      "return redirect to completionUrl with appended validationId query parameter " +
+      "if post to the validation service returned successful personal details validation " +
+      "and we update the GA counter for Ninos" in new Setup {
 
       val completionUrl = completionUrls.generateOne
       val personalDetails = personalDetailsObjects.generateOne
       val personalDetailsValidation = successfulPersonalDetailsValidationObjects.generateOne
 
+      val ninoCounterBefore = pdvMetrics.ninoCounter
+      val postCodeCounterBefore = pdvMetrics.postCodeCounter
+
       (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
         .expects(false, request, completionUrl)
         .returning(Right(personalDetails))
-
 
       (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
         .expects(personalDetails, headerCarrier, executionContext)
@@ -87,21 +92,27 @@ class PersonalDetailsSubmissionSpec
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(s"${completionUrl.value}&validationId=${personalDetailsValidation.validationId}")
       result.session.get(validationIdSessionKey) shouldBe Some(personalDetailsValidation.validationId.value)
+
+      pdvMetrics.ninoCounter shouldBe (ninoCounterBefore + 1)
+      postCodeCounterBefore shouldBe pdvMetrics.postCodeCounter
     }
 
     "bind the request to PersonalDetailsWithPostcode, " +
       "post it to the validation service, " +
-      "return redirect to completionUrl with appended validationId query parameter" +
-    "if post to the validation service returned successful personal details validation" in new Setup {
+      "return redirect to completionUrl with appended validationId query parameter " +
+      "if post to the validation service returned successful personal details validation " +
+      "and we update the GA counter for PostCode" in new Setup {
 
       val completionUrl = completionUrls.generateOne
       val personalDetails = personalDetailsObjectsWithPostcode.generateOne
       val personalDetailsValidation = successfulPersonalDetailsValidationObjects.generateOne
 
+      val ninoCounterBefore = pdvMetrics.ninoCounter
+      val postCodeCounterBefore = pdvMetrics.postCodeCounter
+
       (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
         .expects(true, request, completionUrl)
         .returning(Right(personalDetails))
-
 
       (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
         .expects(personalDetails, headerCarrier, executionContext)
@@ -111,8 +122,68 @@ class PersonalDetailsSubmissionSpec
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(s"${completionUrl.value}&validationId=${personalDetailsValidation.validationId}")
       result.session.get(validationIdSessionKey) shouldBe Some(personalDetailsValidation.validationId.value)
+
+      ninoCounterBefore shouldBe pdvMetrics.ninoCounter
+      (postCodeCounterBefore + 1) shouldBe pdvMetrics.postCodeCounter
     }
 
+    "bind the request to PersonalDetailsWithNino, " +
+      "post it to the validation service, " +
+      "the service returns an error of some kind" +
+      "and we do not update the GA counter for Nino" in new Setup {
+
+      val completionUrl = completionUrls.generateOne
+      val personalDetails = personalDetailsObjects.generateOne
+      val usePostCode = false
+
+      val ninoCounterBefore = pdvMetrics.ninoCounter
+      val postCodeCounterBefore = pdvMetrics.postCodeCounter
+
+      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(usePostCode, request, completionUrl)
+        .returning(Right(personalDetails))
+
+      val error = ProcessingError("some message")
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, headerCarrier, executionContext)
+        .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
+
+      (logger.error(_: ProcessingError)).expects(error)
+
+      val result = submitter.submit(completionUrl, usePostCode)
+
+      ninoCounterBefore shouldBe pdvMetrics.ninoCounter
+      postCodeCounterBefore shouldBe pdvMetrics.postCodeCounter
+    }
+
+    "bind the request to PersonalDetailsWithPostcode, " +
+      "post it to the validation service, " +
+      "the service returns an error of some kind" +
+      "and we do not update the GA counter for PostCode" in new Setup {
+
+      val completionUrl = completionUrls.generateOne
+      val personalDetails = personalDetailsObjects.generateOne
+      val usePostCode = true
+
+      val ninoCounterBefore = pdvMetrics.ninoCounter
+      val postCodeCounterBefore = pdvMetrics.postCodeCounter
+
+      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(usePostCode, request, completionUrl)
+        .returning(Right(personalDetails))
+
+      val error = ProcessingError("some message")
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, headerCarrier, executionContext)
+        .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
+
+      (logger.error(_: ProcessingError)).expects(error)
+
+      val result = submitter.submit(completionUrl, usePostCode)
+
+      ninoCounterBefore shouldBe pdvMetrics.ninoCounter
+      postCodeCounterBefore shouldBe pdvMetrics.postCodeCounter
+    }
 
     val usePostcodeFormOptions = List(true, false)
 
@@ -184,7 +255,28 @@ class PersonalDetailsSubmissionSpec
     val page = mock[PersonalDetailsPage]
     val personalDetailsValidationConnector = mock[PersonalDetailsSender[Id]]
     val logger = mock[Logger]
+    val metrics = mock[Metrics]
+    val pdvMetrics = new MockPdvMetrics
 
-    val submitter = new PersonalDetailsSubmission[Id](page, personalDetailsValidationConnector, logger)
+    class MockPdvMetrics extends PdvMetrics(metrics) {
+      var ninoCounter = 0
+      var postCodeCounter = 0
+      var errorCounter = 0
+      override def matchPersonalDetails(details: PersonalDetails): Boolean = {
+        details match {
+          case _ : PersonalDetailsWithNino =>
+            ninoCounter += 1
+            true
+          case _ : PersonalDetailsWithPostcode =>
+            postCodeCounter += 1
+            true
+          case _ =>
+            errorCounter += 1
+            false
+        }
+      }
+    }
+
+    val submitter = new PersonalDetailsSubmission[Id](page, personalDetailsValidationConnector, pdvMetrics, logger)
   }
 }

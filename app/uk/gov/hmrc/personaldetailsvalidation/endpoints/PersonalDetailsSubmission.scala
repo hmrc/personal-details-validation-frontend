@@ -29,6 +29,7 @@ import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedPersonalDetailsSender, PersonalDetailsSender}
 import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersonalDetailsValidation, PersonalDetailsValidation, SuccessfulPersonalDetailsValidation}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,11 +39,13 @@ import scala.language.{higherKinds, implicitConversions}
 @Singleton
 private class FuturedPersonalDetailsSubmission @Inject()(personalDetailsPage: PersonalDetailsPage,
                                                          personalDetailsValidationConnector: FuturedPersonalDetailsSender,
+                                                         pdvMetrics: PdvMetrics,
                                                          logger: Logger)
-  extends PersonalDetailsSubmission[Future](personalDetailsPage, personalDetailsValidationConnector, logger)
+  extends PersonalDetailsSubmission[Future](personalDetailsPage, personalDetailsValidationConnector, pdvMetrics, logger)
 
 private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetailsPage: PersonalDetailsPage,
                                                                    personalDetailsValidationConnector: PersonalDetailsSender[Interpretation],
+                                                                   pdvMetrics: PdvMetrics,
                                                                    logger: Logger) {
 
   import PersonalDetailsSubmission._
@@ -55,6 +58,7 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
     for {
       personalDetails <- pure(personalDetailsPage.bindFromRequest(usePostcodeForm)(request, completionUrl)) leftMap pageWithErrorToBadRequest
       personalDetailsValidation <- submitValidationRequest(personalDetails) leftMap errorToRedirect(to = completionUrl)
+      counterUpdated = pdvMetrics.matchPersonalDetails(personalDetails)
     } yield result(completionUrl, personalDetailsValidation, usePostcodeForm)
   }.merge
 

@@ -18,11 +18,13 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 import cats.data.EitherT
 import javax.inject.{Inject, Singleton}
+
 import play.api.http.Status.CREATED
 import play.api.libs.json.{Format, Json, Writes}
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model._
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.voa.valuetype.play.formats.ValueTypeFormat._
 
@@ -39,8 +41,9 @@ private[personaldetailsvalidation] trait PersonalDetailsSender[Interpretation[_]
 }
 
 @Singleton
-private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(httpClient: HttpClient,
-                                                                                connectorConfig: ConnectorConfig)
+private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
+                                                   httpClient: HttpClient,
+                                                   connectorConfig: ConnectorConfig)
   extends PersonalDetailsSender[Future] {
 
   import connectorConfig.personalDetailsValidationBaseUrl
