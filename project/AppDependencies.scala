@@ -7,11 +7,11 @@ private object AppDependencies {
 
   private val compile = Seq(
     "org.typelevel" %% "cats-core" % "1.0.0-RC1",
-    "uk.gov.hmrc" %% "bootstrap-play-25" % "1.5.0",
-    "uk.gov.hmrc" %% "domain" % "5.0.0",
+    "uk.gov.hmrc" %% "bootstrap-play-25" % "1.6.0",
+    "uk.gov.hmrc" %% "domain" % "5.1.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.15.0",
     "uk.gov.hmrc" %% "play-language" % "3.4.0",
-    "uk.gov.hmrc" %% "play-ui" % "7.13.0",
+    "uk.gov.hmrc" %% "play-ui" % "7.17.0",
     "uk.gov.hmrc" %% "valuetype" % "1.1.0",
     ws
   )
