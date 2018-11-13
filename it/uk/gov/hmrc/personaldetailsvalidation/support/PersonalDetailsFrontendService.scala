@@ -13,6 +13,6 @@ trait PersonalDetailsFrontendService extends GuiceOneServerPerSuite {
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder().configure(additionalConfiguration).build()
 
-  override lazy val port: Int = 9000
+  override lazy val port: Int = 6009
 
 }
