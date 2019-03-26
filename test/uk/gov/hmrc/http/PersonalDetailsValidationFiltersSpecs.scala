@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class PersonalDetailsValidationFiltersSpecs extends UnitSpec with MockFactory {
 
     val configuration = Configuration.from(Map("security.headers.filter.enabled" -> false))
 
-    val frontendFilters = new FrontendFilters(configuration, null, null, null, null, null, null,null, null, null, null){
+    val frontendFilters = new FrontendFilters(configuration, null, null, null, null, null, null, null, null, null, null, null){
       override val filters = originalFilters
     }
 

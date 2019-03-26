@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package setups.connectors
 
+import akka.actor.ActorSystem
+import com.typesafe.config.Config
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.Matchers._
 import play.api.Configuration
@@ -111,6 +113,10 @@ trait HttpClientStubSetup extends MockFactory {
     override def doGet(url: String)
                       (implicit hc: HeaderCarrier): Future[HttpResponse] =
       getStubbing(url)
+
+    override protected def actorSystem: ActorSystem = ActorSystem()
+
+    override protected def configuration: Option[Config] = None
   }
 
   val httpClient: HttpClientStub = new HttpClientStub()
