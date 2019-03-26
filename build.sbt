@@ -11,12 +11,27 @@ lazy val playSettings: Seq[Setting[_]] = Seq(
     "uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl"
   )
 )
+lazy val scoverageSettings = {
+  import scoverage._
+
+  Seq(
+    ScoverageKeys.coverageExcludedPackages :=
+      """<empty>;
+        |Reverse.*;
+        |.*BuildInfo.*;
+        |.*views.*;
+        |.*Routes.*;
+        |.*RoutesPrefix.*;""".stripMargin,
+    ScoverageKeys.coverageMinimum := 80,
+    ScoverageKeys.coverageFailOnMinimum := false,
+    ScoverageKeys.coverageHighlighting := true
+  )}
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory): _*)
   .settings(majorVersion := 0)
   .settings(scalaSettings: _*)
-  .settings(playSettings: _*)
+  .settings(playSettings ++ scoverageSettings: _*)
   .settings(publishingSettings: _*)
   .settings(defaultSettings(): _*)
   .settings(

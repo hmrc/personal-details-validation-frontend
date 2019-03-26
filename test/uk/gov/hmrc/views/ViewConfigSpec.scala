@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,7 @@ class ViewConfigSpec
   private val scenarios = Tables.Table(
     ("propertyName",   "propertyAccessor",                            "configKey"),
     ("analyticsHost",  (config: ViewConfig) => config.analyticsHost,  "google-analytics.host"),
-    ("analyticsToken", (config: ViewConfig) => config.analyticsToken, "google-analytics.token"),
-    ("assetsUrl",      (config: ViewConfig) => config.assetsUrl,      "assets.url"),
-    ("assetsVersion",  (config: ViewConfig) => config.assetsVersion,  "assets.version")
+    ("analyticsToken", (config: ViewConfig) => config.analyticsToken, "google-analytics.token")
   )
 
   forAll(scenarios) { (propertyName, propertyAccessor, configKey) =>
@@ -49,36 +47,6 @@ class ViewConfigSpec
         whenConfigEntriesExists() { config =>
           a[RuntimeException] should be thrownBy propertyAccessor(config)
         }
-      }
-    }
-  }
-
-  "optimizelyBaseUrl" should {
-
-    "return value associated with 'optimizely.url'" in new Setup {
-      whenConfigEntriesExists("optimizely.url" -> "some-value") { config =>
-        config.optimizelyBaseUrl shouldBe "some-value"
-      }
-    }
-
-    "return empty String if there's no value for 'optimizely.url'" in new Setup {
-      whenConfigEntriesExists() { config =>
-        config.optimizelyBaseUrl shouldBe ""
-      }
-    }
-  }
-
-  "optimizelyProjectId" should {
-
-    "return value associated with 'optimizely.projectId'" in new Setup {
-      whenConfigEntriesExists("optimizely.projectId" -> "some-value") { config =>
-        config.optimizelyProjectId shouldBe Some("some-value")
-      }
-    }
-
-    "return None if there's no value for 'optimizely.projectId'" in new Setup {
-      whenConfigEntriesExists() { config =>
-        config.optimizelyProjectId shouldBe None
       }
     }
   }

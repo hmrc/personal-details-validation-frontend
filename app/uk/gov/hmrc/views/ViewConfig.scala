@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,16 +27,7 @@ import uk.gov.hmrc.config.implicits._
 
 @Singleton
 class ViewConfig @Inject()(protected val configuration: Configuration, protected val messagesApi: MessagesApi)
-  extends LanguagesConfig
-    with AssetsConfig
-    with OptimizelyConfig {
-
-  override lazy val assetsUrl: String = configuration.loadMandatory("assets.url")
-  override lazy val assetsVersion: String = configuration.loadMandatory("assets.version")
-
-  override lazy val optimizelyBaseUrl: String = configuration.load("optimizely.url", "")
-  override lazy val optimizelyProjectId: Option[String] = configuration.loadOptional("optimizely.projectId")
-
+  extends LanguagesConfig {
   lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
   lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
 }
