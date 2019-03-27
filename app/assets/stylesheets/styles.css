@@ -1,3 +1,8 @@
 #error-summary-display:focus{
     outline: 3px solid #ffbf47;
 }
+@media (min-width: 641px) and (max-width: 768px) {
+    .content__body {
+        width: 100%;
+    }
+}
