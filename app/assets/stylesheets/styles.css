@@ -6,3 +6,13 @@
         width: 100%;
     }
 }
+.form-date .form-group-day span {
+    display: block;
+}
+.form-date .form-group-day {
+    width: auto;
+}
+
+.form-date .form-group.form-group-day input {
+    width: 50px;
+}
