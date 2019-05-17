@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.views.pages
 
-import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 import play.api.data.{Form, Mapping}
@@ -38,6 +37,8 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig
   extends I18nSupport {
 
   import uk.gov.hmrc.formmappings.Mappings._
+
+  implicit lazy val helpDesk: String = appConfig.helpDeskURL
 
   private val formWithNino: Form[PersonalDetailsWithNino] = Form(mapping(
     "firstName" -> mandatoryText("personal-details.firstname.required"),

@@ -27,7 +27,8 @@
         showPostCodeLink: Boolean)(
   implicit request: Request[_],
         messages: Messages,
-        viewConfig: ViewConfig
+        viewConfig: ViewConfig,
+        helpDesk: String
 )
 
 @main_template(title = error_prefix(pageForm) + messages("personal-details.title")) {
@@ -38,7 +39,7 @@
             <ul class="js-error-summary-messages">
                 <li role="tooltip">
                     @Messages("validation.error-summary.before-link-text")
-                    <a href="@completionUrl">@Messages("validation.error-summary.link-text")</a>
+                    <a href="@helpDesk">@Messages("validation.error-summary.link-text")</a>
                     @Messages("validation.error-summary.after-link-text")
                 </li>
             </ul>

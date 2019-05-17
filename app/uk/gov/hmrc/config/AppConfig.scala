@@ -23,4 +23,7 @@ import play.api.Configuration
 @Singleton
 class AppConfig @Inject()(configuration: Configuration)  {
   def isPostCodeLookupEnabled : Boolean = configuration.getBoolean("feature.postcode-lookup").getOrElse(false)
+
+  val defaultHelpDeskUrl = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/online-services-helpdesk"
+  val helpDeskURL: String = configuration.getString("helpDeskURL").getOrElse(defaultHelpDeskUrl)
 }

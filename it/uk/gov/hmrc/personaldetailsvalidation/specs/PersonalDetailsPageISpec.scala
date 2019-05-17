@@ -110,7 +110,7 @@ class PersonalDetailsPageISpec
       errorPage.fieldErrors shouldBe Map.empty
 
       And("The error summary contains an exit link for the first ValidationId")
-      val decodedUrl = URLDecoder.decode(completionUrl, "UTF-8")
+      val decodedUrl = URLDecoder.decode(helpDeskURL, "UTF-8")
       errorPage.exitLinkToCompletionUrlExists(decodedUrl) shouldBe true
     }
 
@@ -217,7 +217,7 @@ class PersonalDetailsPageISpec
       errorPage.fieldErrors shouldBe Map.empty
       
       And("The error summary contains an exit link for the first ValidationId")
-      val decodedUrl = URLDecoder.decode(completionUrl, "UTF-8")
+      val decodedUrl = URLDecoder.decode(helpDeskURL, "UTF-8")
       errorPage.exitLinkToCompletionUrlExists(decodedUrl) shouldBe true
     }
 
@@ -252,4 +252,5 @@ class PersonalDetailsPageISpec
 
   val completionUrl = URLEncoder.encode("/foobar?param1=value1&param2=value2", "utf-8")
 
+  val helpDeskURL = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/online-services-helpdesk"
 }
