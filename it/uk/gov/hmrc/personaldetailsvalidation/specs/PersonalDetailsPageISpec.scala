@@ -250,6 +250,6 @@ class PersonalDetailsPageISpec
     }
   }
 
-  val completionUrl = URLEncoder.encode("/foobar?param1=value1&param2=value2", "utf-8")
+  private val completionUrl = URLEncoder.encode("/foobar?param1=value1&param2=value2", "utf-8")
 
 }

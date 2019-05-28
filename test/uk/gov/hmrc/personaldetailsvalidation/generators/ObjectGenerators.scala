@@ -41,10 +41,13 @@ object ObjectGenerators {
   implicit val personalDetailsValidationObjects: Gen[PersonalDetailsValidation] = for {
     boolean <- booleans
     validationId <- validationIds
-  } yield if(boolean) SuccessfulPersonalDetailsValidation(validationId) else FailedPersonalDetailsValidation
+  } yield if(boolean) SuccessfulPersonalDetailsValidation(validationId) else FailedPersonalDetailsValidation(validationId)
 
   implicit val successfulPersonalDetailsValidationObjects: Gen[SuccessfulPersonalDetailsValidation] = for {
     validationId <- validationIds
   } yield SuccessfulPersonalDetailsValidation(validationId)
 
+  implicit val failedPersonalDetailsValidationObjects: Gen[FailedPersonalDetailsValidation] = for {
+    validationId <- validationIds
+  } yield FailedPersonalDetailsValidation(validationId)
 }

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
+import akka.stream.Materializer
 import cats.Id
 import cats.data.EitherT
 import com.kenshoo.play.metrics.Metrics
@@ -23,6 +24,7 @@ import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatestplus.play.OneAppPerSuite
+import play.api.http.HeaderNames
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
@@ -38,6 +40,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
@@ -196,6 +199,8 @@ class PersonalDetailsSubmissionSpec
 
         val completionUrl = completionUrls.generateOne
         val personalDetails = personalDetailsObjects.generateOne
+        val failedPersonalDetailsValidation = failedPersonalDetailsValidationObjects.generateOne
+        val completionUrlWithValidationId = CompletionUrl(Redirect(completionUrl.value, failedPersonalDetailsValidation.validationId.toQueryParam).header.headers.getOrElse(HeaderNames.LOCATION, completionUrl.value))
 
         (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
           .expects(usePostcodeForm, request, completionUrl)
@@ -203,18 +208,20 @@ class PersonalDetailsSubmissionSpec
 
         (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
           .expects(personalDetails, headerCarrier, executionContext)
-          .returning(EitherT.rightT[Id, ProcessingError](FailedPersonalDetailsValidation))
+          .returning(EitherT.rightT[Id, ProcessingError](failedPersonalDetailsValidation))
 
         val html = Html("OK")
 
         (page.renderValidationFailure(_: Boolean)(_: CompletionUrl, _: Request[_]))
-          .expects(usePostcodeForm, completionUrl, request)
+          .expects(usePostcodeForm, completionUrlWithValidationId, request)
           .returning(html)
 
         val result = submitter.submit(completionUrl, usePostcodeForm)
 
-        result shouldBe Ok(html)
-        result.session.get(validationIdSessionKey) shouldBe None
+        status(result) shouldBe OK
+        bodyOf(result) shouldBe html.toString()
+
+        result.session.get(validationIdSessionKey) shouldBe Some(failedPersonalDetailsValidation.validationId.value)
       }
     }
 
@@ -251,6 +258,7 @@ class PersonalDetailsSubmissionSpec
   private trait Setup {
     implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+    implicit val materializer: Materializer = mock[Materializer]
 
     val page = mock[PersonalDetailsPage]
     val personalDetailsValidationConnector = mock[PersonalDetailsSender[Id]]

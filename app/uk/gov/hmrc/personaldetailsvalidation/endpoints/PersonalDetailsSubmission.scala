@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import cats.Monad
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
+import play.api.http.HeaderNames
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
 import play.twirl.api.Html
@@ -32,6 +32,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersona
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.{higherKinds, implicitConversions}
@@ -75,7 +76,9 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
     personalDetailsValidation match {
       case SuccessfulPersonalDetailsValidation(validationId) =>
         Redirect(completionUrl.value, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
-      case FailedPersonalDetailsValidation => Ok(personalDetailsPage.renderValidationFailure(usePostcodeForm)(completionUrl, request))
+      case FailedPersonalDetailsValidation(validationId) =>
+        val redirectUrl = Redirect(completionUrl.value, validationId.toQueryParam).header.headers.getOrElse(HeaderNames.LOCATION, completionUrl.value)
+        Ok(personalDetailsPage.renderValidationFailure(usePostcodeForm)(CompletionUrl(redirectUrl), request)).addingToSession(validationIdSessionKey -> validationId.value)
     }
   }
   private def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =

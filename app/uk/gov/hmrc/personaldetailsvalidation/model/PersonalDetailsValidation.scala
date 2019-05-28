@@ -21,13 +21,13 @@ import play.api.libs.json.{Reads, __}
 sealed trait PersonalDetailsValidation
 
 final case class SuccessfulPersonalDetailsValidation(validationId: ValidationId) extends PersonalDetailsValidation
-case object FailedPersonalDetailsValidation extends PersonalDetailsValidation
+case class FailedPersonalDetailsValidation(validationId: ValidationId) extends PersonalDetailsValidation
 
 object PersonalDetailsValidation {
   implicit val reads: Reads[PersonalDetailsValidation] = (
     (__ \ "validationStatus").read[String] and (__ \ "id").read[String]
     ).tupled.map {
     case ("success", validationId) => SuccessfulPersonalDetailsValidation(ValidationId(validationId))
-    case ("failure", _) => FailedPersonalDetailsValidation
+    case ("failure", validationId) => FailedPersonalDetailsValidation(ValidationId(validationId))
   }
 }
