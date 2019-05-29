@@ -31,7 +31,7 @@ abstract class PersonalDetailsPage(title: String, val completionUrl: String) ext
     }
 
   def exitLinkToCompletionUrlExists(completionUrl: String): Boolean =
-    find(cssSelector(s".error-summary a[href='$completionUrl']")).isDefined
+    find(cssSelector(s".error-summary a[href^='$completionUrl&validationId']")).isDefined
 }
 
 class PersonalDetailsNinoPage (title: String, override val completionUrl: String) extends PersonalDetailsPage(title, completionUrl) {

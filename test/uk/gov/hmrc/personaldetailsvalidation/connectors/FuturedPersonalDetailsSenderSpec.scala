@@ -56,14 +56,16 @@ class FuturedPersonalDetailsSenderSpec
 
     "returned FailedPersonalDetailsValidation from POST to /personal-details-validation with nino" in new Setup {
 
+      val validationId = validationIds.generateOne
+
       expectPost(toUrl = "http://host/personal-details-validation")
         .withPayload(payloadWithNino)
         .returning(status = CREATED, Json.obj(
           "validationStatus" -> "failure",
-          "id" -> validationIds.generateOne.value
+          "id" -> validationId.value
         ))
 
-      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Right(FailedPersonalDetailsValidation)
+      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Right(FailedPersonalDetailsValidation(validationId))
     }
 
     Set(OK, NO_CONTENT, NOT_FOUND, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
@@ -115,7 +117,7 @@ class FuturedPersonalDetailsSenderSpec
           "id" -> validationId.value
         ))
 
-      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Right(FailedPersonalDetailsValidation)
+      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Right(FailedPersonalDetailsValidation(validationId))
     }
 
     Set(OK, NO_CONTENT, NOT_FOUND, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
