@@ -79,7 +79,7 @@ class PersonalDetailsPageSpec
       yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
       yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
 
-      html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
+      html.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
 
     "return a personal details page containing first name, last name, postcode, date of birth inputs " +
@@ -149,7 +149,7 @@ class PersonalDetailsPageSpec
       ninoFieldset.select("span.form-field--submit a").size() shouldBe 0
 
       val dateFieldset = fieldsets.get(3)
-      dateFieldset.select("legend span").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
     }
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
@@ -172,7 +172,7 @@ class PersonalDetailsPageSpec
       ninoFieldset.select("span.form-field--submit a").size() shouldBe 0
 
       val dateFieldset = fieldsets.get(3)
-      dateFieldset.select("legend span").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
     }
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
@@ -195,7 +195,7 @@ class PersonalDetailsPageSpec
       ninoFieldset.select("span.form-field--submit a").size() shouldBe 1
 
       val dateFieldset = fieldsets.get(3)
-      dateFieldset.select("legend span").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
     }
 
     "return a personal details page containing first name, last name, post code, date of birth inputs " +
@@ -217,7 +217,7 @@ class PersonalDetailsPageSpec
       ninoFieldset.select("label span").first().text() shouldBe messages("personal-details.postcode")
 
       val dateFieldset = fieldsets.get(3)
-      dateFieldset.select("legend span").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
     }
   }
 
@@ -266,7 +266,7 @@ class PersonalDetailsPageSpec
       yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
       yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
 
-      html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
+      html.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
 
     "return a personal details page containing first name, last name, postcode, date of birth inputs " +
@@ -337,7 +337,7 @@ class PersonalDetailsPageSpec
       ninoFieldset.select("span.form-field--submit").size() shouldBe 0
 
       val dateFieldset = fieldsets.get(3)
-      dateFieldset.select("legend span").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
     }
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
@@ -360,7 +360,7 @@ class PersonalDetailsPageSpec
       ninoFieldset.select("span.form-field--submit").size() shouldBe 1
 
       val dateFieldset = fieldsets.get(3)
-      dateFieldset.select("legend span").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
     }
 
     "return a personal details page containing first name, last name, post code, date of birth inputs " +
@@ -382,7 +382,7 @@ class PersonalDetailsPageSpec
       ninoFieldset.select("label span").first().text() shouldBe messages("personal-details.postcode")
 
       val dateFieldset = fieldsets.get(3)
-      dateFieldset.select("legend span").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
     }
   }
 
