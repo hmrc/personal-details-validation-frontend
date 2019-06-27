@@ -17,58 +17,61 @@
 @import uk.gov.hmrc.play.views.html.helpers._
 
 @(form: Form[_],
-  fieldName: String,
-  labelKeyPrefix: String,
-  hintKeySuffix: Option[String] = None)(
-  implicit request: Request[_],
-  messages: Messages)
+fieldName: String,
+labelKeyPrefix: String,
+hintKeySuffix: Option[String] = None)(
+implicit request: Request[_],
+messages: Messages)
 
 @dateErrors = @{
-    form(fieldName).errors
+form(fieldName).errors
 }
 
-<div class="form-group @if(dateErrors.nonEmpty) {form-field--error} soft--ends" id="@fieldName">
+<div class="form-group @if(dateErrors.nonEmpty) {form-field--error} soft--ends">
+    <fieldset id="@fieldName">
 
+        <legend class="form-label-bold">
+            @messages(s"$labelKeyPrefix.$fieldName")
+        </legend>
 
-    <legend><span class="form-label-bold">@messages(s"$labelKeyPrefix.$fieldName")</span></legend>
-
-    @hintKeySuffix.map { key =>
+        @hintKeySuffix.map { key =>
         <span class="form-hint">@messages(s"$labelKeyPrefix.$fieldName.$key")</span>
-    }
+        }
 
-    @dateErrors.map(err => (err.message, err.args)).distinct.map { case (msg, args) =>
+        @dateErrors.map(err => (err.message, err.args)).distinct.map { case (msg, args) =>
         <span class="error-notification">@messages(msg, args: _*)</span>
-    }
+        }
 
-    <div class="form-date">
-        <div class="form-group form-group-day">
-            @input(
+        <div class="form-date">
+            <div class="form-group form-group-day">
+                @input(
                 field = form(s"$fieldName.day"),
                 '_label -> messages(s"$labelKeyPrefix.$fieldName.day"),
                 '_type -> "number",
                 '_labelClass -> "form-label",
                 '_inputClass -> "form-control"
-            )
-        </div>
+                )
+            </div>
 
-        <div class="form-group form-group-month">
-            @input(
+            <div class="form-group form-group-month">
+                @input(
                 field = form(s"$fieldName.month"),
                 '_label -> messages(s"$labelKeyPrefix.$fieldName.month"),
                 '_type -> "number",
                 '_labelClass -> "form-label",
                 '_inputClass -> "form-control"
-            )
-        </div>
+                )
+            </div>
 
-        <div class="form-group form-group-year">
-            @input(
+            <div class="form-group form-group-year">
+                @input(
                 field = form(s"$fieldName.year"),
                 '_label -> messages(s"$labelKeyPrefix.$fieldName.year"),
                 '_type -> "number",
                 '_labelClass -> "form-label",
                 '_inputClass -> "form-control"
-            )
+                )
+            </div>
         </div>
-    </div>
+    </fieldset>
 </div>
