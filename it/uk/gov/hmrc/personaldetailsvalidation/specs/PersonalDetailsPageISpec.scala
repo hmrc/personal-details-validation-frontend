@@ -69,6 +69,79 @@ class PersonalDetailsPageISpec
       on(CompletionPage(completionUrl))
     }
 
+    scenario("Correct completionUrl when personal Details page submitted with invalid personal details containing nino more than once") {
+
+      val testData = PersonalDetailsData(
+        firstName = NonEmptyString("Jim").value,
+        lastName = NonEmptyString("Ferguson").value,
+        nino = Some(Nino("AA000003D")),
+        dateOfBirth = LocalDate.of(1948, 4, 23)
+      )
+
+      When("I navigate to /personal-details-validation/personal-details with valid completionUrl")
+      goTo(s"/personal-details?completionUrl=$completionUrl")
+
+      Then("I should see the Personal Details page")
+      val page = personalDetailsPage(completionUrl)
+      on(page)
+
+      When("I fill in the fields with valid data")
+      page.fillInWithNino(testData.firstName, testData.lastName, testData.nino.get, testData.dateOfBirth)
+
+      And("I know the personal-details-validation service does not validate the data successfully")
+      PersonalDetailsService validatesUnsuccessfully testData
+
+      And("when I submit the data")
+      page.submitForm()
+
+      Then("I should see the Personal Details error page")
+      val errorPage = personalDetailsNinoErrorPage(completionUrl)
+      on(errorPage)
+
+      And("I should not see the data I entered")
+      errorPage.verifyDataBlank()
+
+      And("I should see errors")
+      errorPage.summaryErrorsHeading shouldBe "There is a problem"
+      errorPage.summaryErrors shouldBe List(
+        "We could not find any records that match the details you entered. " +
+          "Please try again, checking that all your details are correct, or contact HMRC to get help"
+      )
+      errorPage.fieldErrors shouldBe Map.empty
+
+      And("The error summary contains an exit link for the first ValidationId")
+      val decodedUrl = URLDecoder.decode(completionUrl, "UTF-8")
+      errorPage.exitLinkToCompletionUrlExists(decodedUrl) shouldBe true
+
+      //do it again
+      errorPage.fillInWithNino(testData.firstName, testData.lastName, testData.nino.get, testData.dateOfBirth)
+      PersonalDetailsService validatesUnsuccessfully testData
+
+      And("when I submit the data")
+      page.submitForm()
+
+      Then("I should see the Personal Details error page")
+      val errorPage2 = personalDetailsNinoErrorPage(completionUrl)
+      on(errorPage2)
+
+      And("I should not see the data I entered")
+      errorPage2.verifyDataBlank()
+
+      And("I should see errors")
+      errorPage2.summaryErrorsHeading shouldBe "There is a problem"
+      errorPage2.summaryErrors shouldBe List(
+        "We could not find any records that match the details you entered. " +
+          "Please try again, checking that all your details are correct, or contact HMRC to get help"
+      )
+      errorPage2.fieldErrors shouldBe Map.empty
+
+      And("The error summary contains an exit link for the first ValidationId")
+      val decodedUrl2 = URLDecoder.decode(completionUrl, "UTF-8")
+      errorPage.exitLinkToCompletionUrlExists(decodedUrl2) shouldBe true
+
+
+    }
+
     scenario("validation failed when personal Details page submitted with valid personal details containing nino") {
 
       val testData = PersonalDetailsData(
@@ -250,6 +323,6 @@ class PersonalDetailsPageISpec
     }
   }
 
-  private val completionUrl = URLEncoder.encode("/foobar?param1=value1&param2=value2", "utf-8")
+  private val completionUrl = URLEncoder.encode("/foobar", "utf-8")
 
 }

@@ -10,7 +10,6 @@ abstract class PersonalDetailsPage(title: String, val completionUrl: String) ext
   def verifyThisPageDisplayed(): Unit = {
     pageTitle shouldBe title
     currentUrl.path shouldBe url.path
-    currentUrl.query shouldBe url.query
   }
 
   protected def verifyOtherFields(): Unit
@@ -31,7 +30,8 @@ abstract class PersonalDetailsPage(title: String, val completionUrl: String) ext
     }
 
   def exitLinkToCompletionUrlExists(completionUrl: String): Boolean =
-    find(cssSelector(s".error-summary a[href^='$completionUrl&validationId']")).isDefined
+    find(cssSelector(s".error-summary a[href^='$completionUrl?validationId']")).isDefined &&
+    find(cssSelector(s".error-summary a[href*='&validationId']")).isEmpty // this ensures multiple validationIds are not appended
 }
 
 class PersonalDetailsNinoPage (title: String, override val completionUrl: String) extends PersonalDetailsPage(title, completionUrl) {
