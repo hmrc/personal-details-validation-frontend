@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
+import java.util.UUID
+
 import cats.Monad
 import cats.data.EitherT
 import cats.implicits._
@@ -28,11 +30,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedPersonalDetailsSender, PersonalDetailsSender}
 import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
-import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersonalDetailsValidation, PersonalDetailsValidation, SuccessfulPersonalDetailsValidation}
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersonalDetailsValidation, PersonalDetailsValidation, SuccessfulPersonalDetailsValidation, ValidationId}
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
-
 import javax.inject.{Inject, Singleton}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.{higherKinds, implicitConversions}
@@ -71,13 +73,19 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
       Redirect(to.value, error.toQueryParam)
   }
 
+  private val UUIDRegex = """[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}"""
+
+  private def stripValidationId(redirectUrl: String): String =
+    redirectUrl.replaceAll(s"""[?&]validationId=$UUIDRegex""", "")
+
   private def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation, usePostcodeForm: Boolean = false)
-                      (implicit request: Request[_]): Result = {
+                    (implicit request: Request[_]): Result = {
+    val strippedCompletionUrl = stripValidationId(completionUrl.value)
     personalDetailsValidation match {
       case SuccessfulPersonalDetailsValidation(validationId) =>
-        Redirect(completionUrl.value, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
+        Redirect(strippedCompletionUrl, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
       case FailedPersonalDetailsValidation(validationId) =>
-        val redirectUrl = Redirect(completionUrl.value, validationId.toQueryParam).header.headers.getOrElse(HeaderNames.LOCATION, completionUrl.value)
+        val redirectUrl = Redirect(strippedCompletionUrl,validationId.toQueryParam).header.headers.getOrElse(HeaderNames.LOCATION, strippedCompletionUrl)
         Ok(personalDetailsPage.renderValidationFailure(usePostcodeForm)(CompletionUrl(redirectUrl), request)).addingToSession(validationIdSessionKey -> validationId.value)
     }
   }
