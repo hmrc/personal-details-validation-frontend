@@ -21,7 +21,7 @@ import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
 import play.api.Configuration
 import play.api.i18n.{Lang, MessagesApi}
 import setups.configs.ConfigSetup
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 class ViewConfigSpec
   extends UnitSpec

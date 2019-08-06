@@ -17,7 +17,7 @@
 package uk.gov.hmrc.config
 
 import play.api.Configuration
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 class AppConfigSpec  extends UnitSpec {
 

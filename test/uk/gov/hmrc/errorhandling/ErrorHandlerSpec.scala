@@ -26,7 +26,7 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import setups.views.ViewSetup
 import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 import scala.concurrent.Future
 
@@ -81,7 +81,7 @@ class ErrorHandlerSpec
 
     val errorHandler: ErrorHandler = new ErrorHandler()
 
-    def verify(result: Future[Result]) = new {
+    def verify(result: Result) = new {
       lazy val containsTechnicalErrorPage = {
         val html: Document = Html(bodyOf(result))
 

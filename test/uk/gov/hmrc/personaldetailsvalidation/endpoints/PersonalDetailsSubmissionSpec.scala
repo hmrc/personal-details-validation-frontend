@@ -39,11 +39,11 @@ import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.complet
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext.Implicits.{global ⇒ executionContext}
 
 class PersonalDetailsSubmissionSpec
   extends UnitSpec
@@ -66,7 +66,7 @@ class PersonalDetailsSubmissionSpec
       val result = submitter.submit(completionUrl)
 
       status(result) shouldBe BAD_REQUEST
-      contentAsString(result) shouldBe "page with errors"
+      contentAsString(Future.successful(result)) shouldBe "page with errors"
       result.session.get(validationIdSessionKey) shouldBe None
     }
 

@@ -18,7 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidation.model
 
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 class NonEmptyStringSpec
   extends UnitSpec

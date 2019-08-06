@@ -25,7 +25,7 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import play.api.data.FormError
 import play.api.data.Forms.mapping
 import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 class MappingsSpec
   extends UnitSpec

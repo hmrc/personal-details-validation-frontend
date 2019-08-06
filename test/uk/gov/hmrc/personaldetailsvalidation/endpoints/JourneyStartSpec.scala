@@ -21,7 +21,7 @@ import cats.data.EitherT
 import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
 import play.api.test.Helpers.redirectLocation
@@ -31,10 +31,10 @@ import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.ValidationIdValidator
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.{completionUrls, validationIds}
 import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 import scala.concurrent.ExecutionContext
-import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
+import scala.concurrent.ExecutionContext.Implicits.{global ⇒ executionContext}
 import play.api.test.Helpers._
 
 class JourneyStartSpec
@@ -94,7 +94,7 @@ class JourneyStartSpec
   }
 
   private trait Setup {
-    implicit val request = FakeRequest()
+    implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
     val completionUrl = completionUrls.generateOne
