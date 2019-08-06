@@ -22,7 +22,7 @@ import org.scalamock.scalatest.MockFactory
 import play.api.mvc.{Cookie, RequestHeader, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderNames.googleAnalyticUserId
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 import scala.concurrent.Future
 

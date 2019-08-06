@@ -28,7 +28,7 @@ import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 import collection.JavaConverters._
 
 class PersonalDetailsPageSpec

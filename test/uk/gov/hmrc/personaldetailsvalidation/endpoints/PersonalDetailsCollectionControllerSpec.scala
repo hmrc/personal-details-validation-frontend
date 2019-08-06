@@ -32,9 +32,10 @@ import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
+import scala.concurrent.duration._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scalamock.MockArgumentMatchers
 
 class PersonalDetailsCollectionControllerSpec
@@ -68,7 +69,7 @@ class PersonalDetailsCollectionControllerSpec
 
       val result = controller.submit(completionUrl, alternativeVersion = false)(request)
 
-      redirectLocation(result) shouldBe Some(redirectUrl)
+      redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
     }
   }
 

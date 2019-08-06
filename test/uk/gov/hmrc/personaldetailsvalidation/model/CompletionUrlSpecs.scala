@@ -21,7 +21,7 @@ import generators.Generators.strings
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 class CompletionUrlSpecs
   extends UnitSpec

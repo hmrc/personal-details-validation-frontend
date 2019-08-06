@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.binders
 import java.net.URLEncoder
 
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 class CompletionUrlQueryBindableSpec extends UnitSpec {
 

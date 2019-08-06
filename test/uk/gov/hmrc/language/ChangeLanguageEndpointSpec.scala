@@ -27,7 +27,7 @@ import play.twirl.api.Html
 import setups.views.ViewConfigMockFactory
 import uk.gov.hmrc.errorhandling.ErrorHandler
 import uk.gov.hmrc.play.language.LanguageUtils.FlashWithSwitchIndicator
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 import uk.gov.hmrc.views.ViewConfig
 
 class ChangeLanguageEndpointSpec extends UnitSpec with ScalaFutures {

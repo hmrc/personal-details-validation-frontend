@@ -18,7 +18,7 @@ package uk.gov.hmrc.http
 
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.Configuration
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 class PlayHttpFilterConfigurationSpecs extends UnitSpec with OneAppPerSuite {
 

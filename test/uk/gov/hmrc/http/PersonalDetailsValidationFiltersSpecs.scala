@@ -20,7 +20,7 @@ import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
 import play.api.mvc.EssentialFilter
 import uk.gov.hmrc.play.bootstrap.filters.FrontendFilters
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 class PersonalDetailsValidationFiltersSpecs extends UnitSpec with MockFactory {
 

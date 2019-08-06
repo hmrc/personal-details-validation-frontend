@@ -18,7 +18,7 @@ package uk.gov.hmrc.language
 
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.MessagesApi
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 class MessagesEntriesSpec extends UnitSpec with OneAppPerSuite {
 

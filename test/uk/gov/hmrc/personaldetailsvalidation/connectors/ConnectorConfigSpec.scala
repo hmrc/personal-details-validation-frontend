@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
 import setups.configs.ConfigSetup
-import uk.gov.hmrc.play.test.UnitSpec
+import support.UnitSpec
 
 class ConnectorConfigSpec
   extends UnitSpec
