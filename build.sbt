@@ -1,4 +1,5 @@
 import TestPhases.oneForkedJvmPerTest
+import play.sbt.PlayImport.PlayKeys.playDefaultPort
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
@@ -33,6 +34,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(scalaSettings: _*)
   .settings(playSettings ++ scoverageSettings: _*)
   .settings(publishingSettings: _*)
+  .settings(playDefaultPort := 9968)
   .settings(defaultSettings(): _*)
   .settings(
     libraryDependencies ++= AppDependencies(),

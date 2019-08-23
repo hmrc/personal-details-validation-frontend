@@ -404,6 +404,22 @@ class PersonalDetailsPageSpec
       response shouldBe Right(personalDetails)
     }
 
+    "return PersonalDetails when data provided on the form is valid but nino is in lowercase" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = request.withFormUrlEncodedBody(
+        "firstName" -> personalDetails.firstName.toString(),
+        "lastName" -> personalDetails.lastName.toString(),
+        "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
+        "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
+        "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
+        "nino" -> personalDetails.nino.toString().toLowerCase
+      )
+
+      val response = personalDetailsPage.bindFromRequest(postCodePageRequested = false)
+
+      response shouldBe Right(personalDetails)
+    }
+
     "return PersonalDetails when data provided on the form is valid but surrounded with whitespaces" in new Setup with BindFromRequestTooling {
 
       implicit val requestWithFormData = request.withFormUrlEncodedBody(

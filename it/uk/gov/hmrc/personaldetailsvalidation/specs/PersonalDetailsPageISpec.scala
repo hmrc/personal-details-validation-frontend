@@ -69,6 +69,35 @@ class PersonalDetailsPageISpec
       on(CompletionPage(completionUrl))
     }
 
+    scenario("validation successful when personal Details page submitted with valid personal details containing nino in lowercase") {
+
+      val testData = PersonalDetailsData(
+        firstName = NonEmptyString("Jim").value,
+        lastName = NonEmptyString("Ferguson").value,
+        nino = Some(Nino("AA000003D")),
+        dateOfBirth = LocalDate.of(1948, 4, 23)
+      )
+
+      When("I navigate to /personal-details-validation/personal-details with valid completionUrl")
+      goTo(s"/personal-details?completionUrl=$completionUrl")
+
+      Then("I should see the Personal Details page")
+      val page = personalDetailsPage(completionUrl)
+      on(page)
+
+      When("I fill in the fields with valid data (nino in lowercase)")
+      page.fillInWithNinoLowerCase(testData.firstName, testData.lastName, testData.nino.get, testData.dateOfBirth)
+
+      And("I know the personal-details-validation service validates the data successfully")
+      PersonalDetailsService validatesSuccessfully testData
+
+      And("when I submit the data")
+      page.submitForm()
+
+      Then("I should get redirected to my completion url")
+      on(CompletionPage(completionUrl))
+    }
+
     scenario("Correct completionUrl when personal Details page submitted with invalid personal details containing nino more than once") {
 
       val testData = PersonalDetailsData(

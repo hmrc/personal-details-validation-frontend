@@ -46,6 +46,15 @@ class PersonalDetailsNinoPage (title: String, override val completionUrl: String
     numberField("dateOfBirth.year").value = dob.getYear.toString
   }
 
+  def fillInWithNinoLowerCase(firstName: String, lastName: String, nino: Nino, dob: LocalDate): Unit = {
+    textField("firstName").value = firstName
+    textField("lastName").value = lastName
+    textField("nino").value = nino.value.toLowerCase
+    numberField("dateOfBirth.day").value = dob.getDayOfMonth.toString
+    numberField("dateOfBirth.month").value = dob.getMonthValue.toString
+    numberField("dateOfBirth.year").value = dob.getYear.toString
+  }
+
   def verifyNinoDataPresent(firstName: String, lastName: String, nino: Nino, dob: LocalDate): Unit = {
     textField("firstName").value shouldBe firstName
     textField("lastName").value shouldBe lastName
