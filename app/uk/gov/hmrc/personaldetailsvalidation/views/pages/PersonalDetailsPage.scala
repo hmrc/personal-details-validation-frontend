@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.views.pages
 
-import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 import play.api.data.{Form, Mapping}
@@ -55,8 +54,8 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig
 
   private def ninoValidation(): Mapping[Nino] = {
     mandatoryText("personal-details.nino.required")
-      .verifying("personal-details.nino.invalid", nonEmptyString => Try(Nino(nonEmptyString.value)).isSuccess)
-      .transform[Nino](validatedNonEmptyNino => Nino(validatedNonEmptyNino.value), nino => NonEmptyString(nino.toString))
+      .verifying("personal-details.nino.invalid", nonEmptyString => Try(Nino(nonEmptyString.value.toUpperCase)).isSuccess)
+      .transform[Nino](validatedNonEmptyNino => Nino(validatedNonEmptyNino.value.toUpperCase), nino => NonEmptyString(nino.toString.toUpperCase))
   }
 
   private def postcodeValidation(): Mapping[NonEmptyString] = {
