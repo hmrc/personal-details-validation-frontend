@@ -16,16 +16,15 @@
 
 package uk.gov.hmrc.formmappings
 
-import java.time.{LocalDate, Year}
+import java.time.LocalDate
 
 import generators.Generators.Implicits._
-import generators.Generators._
 import org.scalacheck.Gen
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import play.api.data.FormError
 import play.api.data.Forms.mapping
-import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
 import support.UnitSpec
+import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
 
 class MappingsSpec
   extends UnitSpec
@@ -73,9 +72,9 @@ class MappingsSpec
 
   "mandatoryLocalDate.bind" should {
 
-    "bind successfully when given year, month and day are valid" in new DateMappingSetup with DateMapping {
+    "bind successfully when given year, month and day are valid and the user is 15 years and 9 months old or above." in new DateMappingSetup with DateMapping {
 
-      forAll { date: LocalDate =>
+      legalLocalDates.map { date: LocalDate =>
 
         val bindResult = dateMapping.bind(Map(
           s"$dateFieldName.year" -> date.getYear.toString,
@@ -215,17 +214,31 @@ class MappingsSpec
     "return the additional verification error if date parts are valid but does not meet the additional constraints" in {
 
       val dateMapping = mapping(
-        "date" -> mandatoryLocalDate("error.key").verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
+        "date" -> mandatoryLocalDate("error.key").verifying("special.error", _.isAfter(LocalDate.of(2000, 11, 24)))
       )(identity)(Some.apply)
 
       val bindResult = dateMapping.bind(Map(
-        "date.year" -> "2017",
+        "date.year" -> "2000",
         "date.month" -> "11",
         "date.day" -> "24"
       ))
 
       bindResult shouldBe Left(Seq(FormError("date", "special.error")))
     }
+
+    "return the 'tooYoung' error if date shows that the user is less than 15 years and 9 months old" in new DateMappingSetup with DateMapping {
+
+      val partsWithInvalids = Map(
+        s"$dateFieldName.year" -> "2017",
+        s"$dateFieldName.month" -> "2",
+        s"$dateFieldName.day" -> "2"
+      )
+
+      val bindResult = dateMapping.bind(partsWithInvalids)
+
+      bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.tooYoung")))
+    }
+
   }
 
   "mandatoryLocalDate.unbind" should {
@@ -281,7 +294,7 @@ class MappingsSpec
     )(identity)(Some.apply)
   }
 
-  private trait DateMappingSetup {
+  private trait DateMappingSetup extends generators.Generators {
 
     val dateFieldName = "date"
     val errorKeyPrefix = "error.key"
@@ -293,7 +306,7 @@ class MappingsSpec
     val generatedPartNames: Gen[String] = Gen.oneOf(partNames).suchThat(partNames.contains)
 
     val validDateParts: Gen[Seq[(String, String)]] = for {
-      date <- localDates
+      date <- legalLocalDates
     } yield Seq(
       s"$dateFieldName.year" -> date.getYear.toString,
       s"$dateFieldName.month" -> date.getMonthValue.toString,

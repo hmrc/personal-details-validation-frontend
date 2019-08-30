@@ -24,8 +24,6 @@ import scala.language.implicitConversions
 
 trait Generators {
 
-  import DatesAndTimes._
-
   implicit val booleans: Gen[Boolean] = Gen.oneOf(true, false)
 
   def probableBoolean(percentTrue: Int): Gen[Boolean] = Gen.choose(1, 100).map(_ <= percentTrue)
@@ -52,7 +50,7 @@ trait Generators {
 
   implicit val instants: Gen[Instant] = Gen.choose(minTimestamp, maxTimestamp).map(Instant.ofEpochMilli)
 
-  implicit val localDates: Gen[LocalDate] = instants.map(toDate)
+  implicit val legalLocalDates: Gen[LocalDate] = instants.map(toDate)
 
   object Implicits {
 
@@ -95,17 +93,16 @@ trait Generators {
           }
         }
     }
+
   }
 
-  private object DatesAndTimes {
+  private val EuropeLondon = ZoneId.of("Europe/London")
 
-    private val EuropeLondon = ZoneId.of("Europe/London")
+  val minTimestamp: Long = Instant.parse("1900-01-01T00:00:00.000Z").toEpochMilli
+  val maxTimestamp: Long = Instant.parse("2003-01-01T00:00:00.000Z").toEpochMilli
 
-    val minTimestamp = Instant.parse("1900-01-01T00:00:00.000Z").toEpochMilli
-    val maxTimestamp = Instant.parse("2100-01-01T00:00:00.000Z").toEpochMilli
+  def toDate(i: Instant): LocalDate = ZonedDateTime.ofInstant(i, EuropeLondon).toLocalDate
 
-    def toDate(i: Instant) = ZonedDateTime.ofInstant(i, EuropeLondon).toLocalDate
-  }
 }
 
 object Generators extends Generators

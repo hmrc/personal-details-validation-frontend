@@ -27,14 +27,14 @@ object ObjectGenerators {
   implicit val personalDetailsObjects: Gen[PersonalDetailsWithNino] = for {
     firstName <- nonEmptyStringObjects
     lastName <- nonEmptyStringObjects
-    dateOfBirth <- localDates
+    dateOfBirth <- legalLocalDates
     nino <- ninos
   } yield PersonalDetailsWithNino(firstName, lastName, nino, dateOfBirth)
 
   implicit val personalDetailsObjectsWithPostcode: Gen[PersonalDetailsWithPostcode] = for {
     firstName <- nonEmptyStringObjects
     lastName <- nonEmptyStringObjects
-    dateOfBirth <- localDates
+    dateOfBirth <- legalLocalDates
     postcode <- postCode
   } yield PersonalDetailsWithPostcode(firstName, lastName, postcode, dateOfBirth)
 
