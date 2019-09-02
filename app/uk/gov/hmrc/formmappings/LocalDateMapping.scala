@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.formmappings
 
-import java.time.temporal.ChronoField
 import java.time.temporal.ChronoField._
+import java.time.temporal.{ChronoField, ChronoUnit}
 import java.time.{DateTimeException, LocalDate}
 
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
@@ -133,6 +133,7 @@ private object LocalDateMapping {
           .toValidatedSeqOfParts
           .leftMap(toSingleErrorIfAllPartsMissing)
           .flatMap(toDate)
+          .flatMap(checkAge)
 
       private[ValidatedPartsOps] lazy val toValidatedSeqOfParts: ValidatedNel[String, Seq[Int]] =
         seqOfValidatedParts.foldLeft(Validated.validNel[String, List[Int]](Nil)) {
@@ -152,6 +153,13 @@ private object LocalDateMapping {
           Validated.catchOnly[DateTimeException](LocalDate.of(year, month, day))
             .leftMap(_ => NonEmptyList.of(dateFieldError(suffixed = "invalid")))
         case _ => Validated.invalidNel(dateFieldError(suffixed = "invalid"))
+      }
+
+      private def checkAge(birthDate: LocalDate): ValidatedNel[String, LocalDate] = {
+        val MINIMUM_AGE_REQUIRED_IN_MONTHS: Int = 189 //15yrs and 9 months
+        val currentDate = LocalDate.now()
+        if (ChronoUnit.MONTHS.between(birthDate, currentDate) < MINIMUM_AGE_REQUIRED_IN_MONTHS) Validated.invalidNel(dateFieldError(suffixed = "tooYoung"))
+        else Validated.valid(birthDate)
       }
 
       private def dateFieldError(suffixed: String) = key match {

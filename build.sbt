@@ -12,6 +12,7 @@ lazy val playSettings: Seq[Setting[_]] = Seq(
     "uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl"
   )
 )
+
 lazy val scoverageSettings = {
   import scoverage._
 

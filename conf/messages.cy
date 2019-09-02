@@ -25,6 +25,7 @@ personal-details.dateOfBirth.day=Diwrnod
 personal-details.dateOfBirth.month=Mis
 personal-details.dateOfBirth.year=Blwyddyn
 personal-details.dateOfBirth.required=Nodwch eich dyddiad geni.
+personal-details.dateOfBirth.tooYoung=Mae’n rhaid i chi fod yn 15 mlwydd a 9 mis oed o leiaf i ddefnyddio’r gwasanaeth hwn.
 personal-details.dateOfBirth.invalid=Nodwch eich dyddiad geni yn y fformat cywir. Er enghraifft, 31 3 1980.
 personal-details.dateOfBirth.day.required=Nodwch ddiwrnod o’r mis o’ch dyddiad geni.
 personal-details.dateOfBirth.day.invalid=Mae’r dyddiad yr ydych wedi’i nodi’n annilys. Nodwch rif rhwng 1 a 31.

@@ -168,7 +168,6 @@ class PersonalDetailsPageISpec
       val decodedUrl2 = URLDecoder.decode(completionUrl, "UTF-8")
       errorPage.exitLinkToCompletionUrlExists(decodedUrl2) shouldBe true
 
-
     }
 
     scenario("validation failed when personal Details page submitted with valid personal details containing nino") {
@@ -349,6 +348,30 @@ class PersonalDetailsPageISpec
         "firstName" -> "Enter your first name.",
         "lastName" -> "Enter your last name."
       )
+    }
+
+    scenario("Personal Details page submitted with some one is less than 15 years and 9 months old") {
+
+      When("I navigate to /personal-details-validation/personal-details with valid completionUrl")
+      goTo(s"/personal-details?completionUrl=$completionUrl")
+
+      Then("I should see the Personal Details page")
+      val page = personalDetailsPage(completionUrl)
+      on(page)
+
+      When("I submit some invalid data")
+      page.fillInWithNino("Jim", "Ferguson", Nino("AA000003D"), LocalDate.of(2015, 12, 23))
+      page.submitForm()
+
+      Then("I should see the Personal Details error page")
+      val errorPage = personalDetailsNinoErrorPage(completionUrl)
+      on(errorPage)
+
+      And("I should still see the data I entered")
+      errorPage.verifyNinoDataPresent("Jim", "Ferguson", Nino("AA000003D"), LocalDate.of(2015, 12, 23))
+
+      And("I should see age error")
+      errorPage.summaryErrors shouldBe List("You must be at least 15 years and 9 months old to use this service.")
     }
   }
 
