@@ -343,10 +343,10 @@ class PersonalDetailsPageISpec
       errorPage.verifyNinoDataPresent(" ", " ", Nino("AA000003C"), LocalDate.of(1948, 12, 23))
 
       And("I should see errors for invalid values")
-      errorPage.summaryErrors shouldBe List("Enter your first name.", "Enter your last name.")
+      errorPage.summaryErrors shouldBe List("Enter your first name", "Enter your last name")
       errorPage.fieldErrors shouldBe Map(
-        "firstName" -> "Enter your first name.",
-        "lastName" -> "Enter your last name."
+        "firstName" -> "Enter your first name",
+        "lastName" -> "Enter your last name"
       )
     }
 
@@ -371,7 +371,7 @@ class PersonalDetailsPageISpec
       errorPage.verifyNinoDataPresent("Jim", "Ferguson", Nino("AA000003D"), LocalDate.of(2015, 12, 23))
 
       And("I should see age error")
-      errorPage.summaryErrors shouldBe List("You must be at least 15 years and 9 months old to use this service.")
+      errorPage.summaryErrors shouldBe List("You must be at least 15 years and 9 months old to use this service")
     }
   }
 
