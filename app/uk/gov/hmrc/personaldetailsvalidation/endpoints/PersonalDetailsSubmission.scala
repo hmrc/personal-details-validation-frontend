@@ -30,7 +30,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedPersonalDetailsSender, PersonalDetailsSender}
 import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
-import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersonalDetailsValidation, PersonalDetailsValidation, SuccessfulPersonalDetailsValidation, ValidationId}
+import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import javax.inject.{Inject, Singleton}
@@ -52,16 +52,25 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
                                                                    logger: Logger) {
 
   import PersonalDetailsSubmission._
-  import personalDetailsValidationConnector._
+
+  def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, usePostcodeForm: Boolean = false)
+                           (implicit request: Request[_],
+                            headerCarrier: HeaderCarrier,
+                            executionContext: ExecutionContext) : EitherT[Interpretation, Result, PersonalDetailsValidation] = {
+    for {
+      pd <- pure(Right(personalDetails))
+      personalDetailsValidation <- personalDetailsValidationConnector.submitValidationRequest(pd) leftMap errorToRedirect(to = completionUrl)
+      counterUpdated = pdvMetrics.matchPersonalDetails(personalDetails)
+    } yield personalDetailsValidation
+  }
 
   def submit(completionUrl: CompletionUrl, usePostcodeForm: Boolean = false)
             (implicit request: Request[_],
-                              headerCarrier: HeaderCarrier,
-                              executionContext: ExecutionContext): Interpretation[Result] = {
+             headerCarrier: HeaderCarrier,
+             executionContext: ExecutionContext): Interpretation[Result] = {
     for {
       personalDetails <- pure(personalDetailsPage.bindFromRequest(usePostcodeForm)(request, completionUrl)) leftMap pageWithErrorToBadRequest
-      personalDetailsValidation <- submitValidationRequest(personalDetails) leftMap errorToRedirect(to = completionUrl)
-      counterUpdated = pdvMetrics.matchPersonalDetails(personalDetails)
+      personalDetailsValidation <- submitPersonalDetails(personalDetails, completionUrl, usePostcodeForm)
     } yield result(completionUrl, personalDetailsValidation, usePostcodeForm)
   }.merge
 
@@ -78,7 +87,7 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
   private def stripValidationId(redirectUrl: String): String =
     redirectUrl.replaceAll(s"""[?&]validationId=$UUIDRegex""", "")
 
-  private def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation, usePostcodeForm: Boolean = false)
+  def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation, usePostcodeForm: Boolean = false)
                     (implicit request: Request[_]): Result = {
     val strippedCompletionUrl = stripValidationId(completionUrl.value)
     personalDetailsValidation match {

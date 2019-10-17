@@ -1,9 +1,11 @@
 continue.button.text=Continue
+button.back.text=Back
 error.prefix=Error:
 error-summary.heading=There are errors on the page
 personal-details.title=Enter your details - Confirm your identity
 personal-details.faded-heading=Confirm your identity
 personal-details.header=Enter your details
+personal-details.header.postcode=Enter your postcode instead
 personal-details.paragraph=This is to help us confirm who you are, so we know what questions to ask you.
 personal-details.firstname=First name
 personal-details.firstname.required=Enter your first name

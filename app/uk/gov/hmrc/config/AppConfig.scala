@@ -23,4 +23,5 @@ import play.api.Configuration
 @Singleton
 class AppConfig @Inject()(configuration: Configuration)  {
   def isPostCodeLookupEnabled : Boolean = configuration.getBoolean("feature.postcode-lookup").getOrElse(false)
+  def isMultiPageEnabled : Boolean = configuration.getBoolean("feature.multi-page.enabled").getOrElse(false)
 }
