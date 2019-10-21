@@ -22,21 +22,6 @@ import support.UnitSpec
 class AppConfigSpec  extends UnitSpec {
 
   "AppConfig" should {
-
-    "return that the post code lookup is disabled by default." in new Setup {
-      appConfig.isPostCodeLookupEnabled shouldBe false
-    }
-
-    "return that the post code lookup is enabled when specified." in new Setup {
-      override val testConfig = Map("feature.postcode-lookup" -> "true")
-      appConfig.isPostCodeLookupEnabled shouldBe true
-    }
-
-    "return that the post code lookup is disabled when specified." in new Setup {
-      override val testConfig = Map("feature.postcode-lookup" -> "false")
-      appConfig.isPostCodeLookupEnabled shouldBe false
-    }
-
     "return that the multi page flag is enabled when specified." in new Setup {
       override val testConfig: Map[String, Any] = Map("feature.multi-page.enabled" -> true)
       appConfig.isMultiPageEnabled shouldBe true

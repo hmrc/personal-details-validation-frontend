@@ -67,29 +67,27 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig
     postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
   def render(postCodePageRequested: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
-    if (showPostCodePage(postCodePageRequested))
+    if (postCodePageRequested)
       personal_details_postcode(formWithPostcode, completionUrl)
     else
-      personal_details_nino(formWithNino, completionUrl, appConfig.isPostCodeLookupEnabled)
-
-  private def showPostCodePage(postCodePageRequested: Boolean) : Boolean = appConfig.isPostCodeLookupEnabled && postCodePageRequested
+      personal_details_nino(formWithNino, completionUrl)
 
   def renderValidationFailure(postCodePageRequested: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
-    if (showPostCodePage(postCodePageRequested))
+    if (postCodePageRequested)
       personal_details_postcode(formWithPostcode.withGlobalError("personal-details.validation.failed"), completionUrl)
     else
-      personal_details_nino(formWithNino.withGlobalError("personal-details.validation.failed"), completionUrl, appConfig.isPostCodeLookupEnabled)
+      personal_details_nino(formWithNino.withGlobalError("personal-details.validation.failed"), completionUrl)
 
   def bindFromRequest(postCodePageRequested: Boolean)(implicit request: Request[_],
                       completionUrl: CompletionUrl): Either[Html, PersonalDetails] =
-    if(showPostCodePage(postCodePageRequested)) {
+    if(postCodePageRequested) {
       formWithPostcode.bindFromRequest().fold(
         formWithErrors => Left(personal_details_postcode(formWithErrors, completionUrl)),
         personalDetails => Right(personalDetails)
       )
     } else {
       formWithNino.bindFromRequest().fold(
-        formWithErrors => Left(personal_details_nino(formWithErrors, completionUrl, appConfig.isPostCodeLookupEnabled)),
+        formWithErrors => Left(personal_details_nino(formWithErrors, completionUrl)),
         personalDetails => Right(personalDetails)
       )
     }
