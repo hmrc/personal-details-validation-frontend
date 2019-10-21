@@ -134,7 +134,7 @@ class PersonalDetailsPageISpec
       errorPage.summaryErrorsHeading shouldBe "There is a problem"
       errorPage.summaryErrors shouldBe List(
         "We could not find any records that match the details you entered. " +
-          "Please try again, checking that all your details are correct, or contact HMRC to get help"
+          "Please try again, or contact HMRC to get help"
       )
       errorPage.fieldErrors shouldBe Map.empty
 
@@ -160,7 +160,7 @@ class PersonalDetailsPageISpec
       errorPage2.summaryErrorsHeading shouldBe "There is a problem"
       errorPage2.summaryErrors shouldBe List(
         "We could not find any records that match the details you entered. " +
-          "Please try again, checking that all your details are correct, or contact HMRC to get help"
+          "Please try again, or contact HMRC to get help"
       )
       errorPage2.fieldErrors shouldBe Map.empty
 
@@ -206,7 +206,7 @@ class PersonalDetailsPageISpec
       errorPage.summaryErrorsHeading shouldBe "There is a problem"
       errorPage.summaryErrors shouldBe List(
        "We could not find any records that match the details you entered. " +
-         "Please try again, checking that all your details are correct, or contact HMRC to get help"
+         "Please try again, or contact HMRC to get help"
       )
       errorPage.fieldErrors shouldBe Map.empty
 
@@ -313,7 +313,7 @@ class PersonalDetailsPageISpec
       errorPage.summaryErrorsHeading shouldBe "There is a problem"
       errorPage.summaryErrors shouldBe List(
         "We could not find any records that match the details you entered. " +
-          "Please try again, checking that all your details are correct, or contact HMRC to get help"
+          "Please try again, or contact HMRC to get help"
       )
       errorPage.fieldErrors shouldBe Map.empty
 
