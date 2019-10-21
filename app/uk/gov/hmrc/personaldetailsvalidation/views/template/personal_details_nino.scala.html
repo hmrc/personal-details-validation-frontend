@@ -23,8 +23,7 @@
 
 @import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetailsWithNino
 @(pageForm: Form[PersonalDetailsWithNino],
-        completionUrl: CompletionUrl,
-        showPostCodeLink: Boolean)(
+        completionUrl: CompletionUrl)(
   implicit request: Request[_],
         messages: Messages,
         viewConfig: ViewConfig
@@ -93,11 +92,9 @@
                 '_inputHint -> Html(Messages("personal-details.nino.hint")),
                 '_labelClass -> "soft--ends"
             )
-            @if(showPostCodeLink) {
-                <span class="form-field--submit display-block">
-                    <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"> @Messages("personal-details.nino.unavailable")</a>
-                </span>
-            }
+            <span class="form-field--submit display-block">
+                <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"> @Messages("personal-details.nino.unavailable")</a>
+            </span>
         </div>
         <div class="form-group">
             @date(

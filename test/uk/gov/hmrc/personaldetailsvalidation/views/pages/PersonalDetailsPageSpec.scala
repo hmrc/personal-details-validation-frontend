@@ -84,8 +84,6 @@ class PersonalDetailsPageSpec
 
     "return a personal details page containing first name, last name, postcode, date of birth inputs " +
       "and a continue button" in new Setup {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
       val html: Document = personalDetailsPage.render(postCodePageRequested = true)
 
       html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
@@ -130,55 +128,7 @@ class PersonalDetailsPageSpec
     }
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
-      "and not include a link to postcode when asking for nino but the feature is disabled" in new Setup {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "false")
-
-      val html: Document = personalDetailsPage.render(postCodePageRequested = false)
-
-      html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
-
-      val fieldsets = html.select("form .form-group")
-      val firstNameFieldset = fieldsets.get(0)
-      firstNameFieldset.select("label span").text() shouldBe messages("personal-details.firstname")
-
-      val lastNameFieldset = fieldsets.get(1)
-      lastNameFieldset.select("label span").text() shouldBe messages("personal-details.lastname")
-
-      val ninoFieldset = fieldsets.get(2)
-      ninoFieldset.select("label span").first().text() shouldBe messages("personal-details.nino")
-      ninoFieldset.select("span.form-field--submit a").size() shouldBe 0
-
-      val dateFieldset = fieldsets.get(3)
-      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
-    }
-
-    "return a personal details page containing first name, last name, nino, date of birth inputs " +
-      "and not include a link to postcode when asking for postcode but the feature is disabled" in new Setup {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "false")
-
-      val html: Document = personalDetailsPage.render(postCodePageRequested = true)
-
-      html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
-
-      val fieldsets = html.select("form .form-group")
-      val firstNameFieldset = fieldsets.get(0)
-      firstNameFieldset.select("label span").text() shouldBe messages("personal-details.firstname")
-
-      val lastNameFieldset = fieldsets.get(1)
-      lastNameFieldset.select("label span").text() shouldBe messages("personal-details.lastname")
-
-      val ninoFieldset = fieldsets.get(2)
-      ninoFieldset.select("label span").first().text() shouldBe messages("personal-details.nino")
-      ninoFieldset.select("span.form-field--submit a").size() shouldBe 0
-
-      val dateFieldset = fieldsets.get(3)
-      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
-    }
-
-    "return a personal details page containing first name, last name, nino, date of birth inputs " +
-      "and include a link to postcode when asking for nino when the postcode feature is enabled" in new Setup {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
+      "and include a link to postcode when asking for nino" in new Setup {
       val html: Document = personalDetailsPage.render(postCodePageRequested = false)
 
       html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
@@ -199,9 +149,7 @@ class PersonalDetailsPageSpec
     }
 
     "return a personal details page containing first name, last name, post code, date of birth inputs " +
-      "and a continue button when asking for postcode and the feature is enabled" in new Setup {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
+      "and a continue button when asking for postcode" in new Setup {
       val html: Document = personalDetailsPage.render(postCodePageRequested = true)
 
       html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
@@ -271,8 +219,6 @@ class PersonalDetailsPageSpec
 
     "return a personal details page containing first name, last name, postcode, date of birth inputs " +
       "and a continue button and validation error" in new Setup {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
       val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = true)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
@@ -318,32 +264,7 @@ class PersonalDetailsPageSpec
     }
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
-      "and not include a link to postcode when asking for postcode but the feature is disabled" in new Setup {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "false")
-
-      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = true)
-
-      html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
-
-      val fieldsets = html.select("form .form-group")
-      val firstNameFieldset = fieldsets.get(0)
-      firstNameFieldset.select("label span").text() shouldBe messages("personal-details.firstname")
-
-      val lastNameFieldset = fieldsets.get(1)
-      lastNameFieldset.select("label span").text() shouldBe messages("personal-details.lastname")
-
-      val ninoFieldset = fieldsets.get(2)
-      ninoFieldset.select("label span").first().text() shouldBe messages("personal-details.nino")
-      ninoFieldset.select("span.form-field--submit").size() shouldBe 0
-
-      val dateFieldset = fieldsets.get(3)
-      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
-    }
-
-    "return a personal details page containing first name, last name, nino, date of birth inputs " +
-      "and include a link to postcode when asking for nino when the postcode feature is enabled" in new Setup {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
+      "and include a link to postcode when asking for nino" in new Setup {
       val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
@@ -364,9 +285,7 @@ class PersonalDetailsPageSpec
     }
 
     "return a personal details page containing first name, last name, post code, date of birth inputs " +
-      "and a continue button when asking for postcode and the feature is enabled" in new Setup {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
+      "and a continue button when asking for postcode" in new Setup {
       val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = true)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
@@ -437,8 +356,6 @@ class PersonalDetailsPageSpec
     }
 
     "return PersonalDetails with Postcode when data provided on the form is valid" in new Setup with BindFromRequestTooling {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
       implicit val requestWithFormData = request.withFormUrlEncodedBody(
         "firstName" -> personalDetailsWithPostcode.firstName.toString(),
         "lastName" -> personalDetailsWithPostcode.lastName.toString(),
@@ -454,8 +371,6 @@ class PersonalDetailsPageSpec
     }
 
     "return PersonalDetails with Postcode when data provided on the form is valid but surrounded with whitespaces" in new Setup with BindFromRequestTooling {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
       implicit val requestWithFormData = request.withFormUrlEncodedBody(
         "firstName" -> personalDetailsWithPostcode.firstName.toString().surroundWithWhitespaces,
         "lastName" -> personalDetailsWithPostcode.lastName.toString().surroundWithWhitespaces,
@@ -516,8 +431,6 @@ class PersonalDetailsPageSpec
 
       "return 'personal-details.postcode.invalid' error message " +
         s"when postcode $invalidPostcode contains invalid characters" in new Setup with BindFromRequestTooling {
-        override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
         implicit val requestWithFormData = validRequestWithPostcode(replace = "postcode" -> invalidPostcode)
 
         val Left(response) = personalDetailsPage.bindFromRequest(true)
@@ -612,9 +525,7 @@ class PersonalDetailsPageSpec
       }
     }
 
-    "return 'Nino' error page, with link, when not requesting postcode, and when the feature is enabled" in new Setup with BindFromRequestTooling {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
+    "return 'Nino' error page, with link, when not requesting postcode" in new Setup with BindFromRequestTooling {
       implicit val requestWithFormData = validRequest(replace = "firstName" -> " ")
 
       val Left(response) = personalDetailsPage.bindFromRequest(postCodePageRequested = false)
@@ -626,37 +537,7 @@ class PersonalDetailsPageSpec
       ninoField.select("span.form-field--submit a").size() shouldBe 1
     }
 
-    "return 'Nino' error page, without the link, when not requesting postcode, and when the feature is disabled" in new Setup with BindFromRequestTooling {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "false")
-
-      implicit val requestWithFormData = validRequest(replace = "firstName" -> " ")
-
-      val Left(response) = personalDetailsPage.bindFromRequest(postCodePageRequested = false)
-
-      val page: Document = response
-
-      val ninoField = page.select(".form-group").get(2)
-      ninoField.select("span.form-label-bold").first().text() shouldBe messages("personal-details.nino")
-      ninoField.select("span.form-field--submit a").size() shouldBe 0
-    }
-
-    "return 'Nino' error page when requesting postcode, when the feature is disabled" in new Setup with BindFromRequestTooling {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "false")
-
-      implicit val requestWithFormData = validRequest(replace = "firstName" -> " ")
-
-      val Left(response) = personalDetailsPage.bindFromRequest(postCodePageRequested = true)
-
-      val page: Document = response
-
-      val ninoField = page.select(".form-group").get(2)
-      ninoField.select("span.form-label-bold").first().text() shouldBe messages("personal-details.nino")
-      ninoField.select("span.form-field--submit a").size() shouldBe 0
-    }
-
-    "return 'PostCode' error page when requesting postcode, when the feature is enabled" in new Setup with BindFromRequestTooling {
-      override lazy val testConfig = Map("feature.postcode-lookup" -> "true")
-
+    "return 'PostCode' error page when requesting postcode" in new Setup with BindFromRequestTooling {
       implicit val requestWithFormData = validRequest(replace = "firstName" -> " ")
 
       val Left(response) = personalDetailsPage.bindFromRequest(postCodePageRequested = true)
