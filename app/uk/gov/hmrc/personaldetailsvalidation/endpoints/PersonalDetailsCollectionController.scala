@@ -41,6 +41,10 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   import uk.gov.hmrc.formmappings.Mappings._
 
+  private final val FIRST_NAME_KEY = "firstName"
+  private final val LAST_NAME_KEY = "lastName"
+  private final val DOB_KEY = "dob"
+
   private val initialForm: Form[InitialPersonalDetails] = Form(mapping(
     "firstName" -> mandatoryText("personal-details.firstname.required"),
     "lastName" -> mandatoryText("personal-details.lastname.required"),
@@ -55,11 +59,11 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   private val pdvSessionKeys : List[String] = List("firstName", "lastName", "dob")
 
-  private lazy val ninoForm: Form[NinoDetails] = Form(mapping(
+  private val ninoForm: Form[NinoDetails] = Form(mapping(
     "nino" -> ninoValidation()
   )(NinoDetails.apply)(NinoDetails.unapply))
 
-  private lazy val postcodeForm: Form[PostcodeDetails] = Form(mapping(
+  private val postcodeForm: Form[PostcodeDetails] = Form(mapping(
     "postcode" -> postcodeValidation()
   )(PostcodeDetails.apply)(PostcodeDetails.unapply))
 
@@ -73,9 +77,9 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   def showPage(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean): Action[AnyContent] = Action { implicit request =>
     if (appConfig.isMultiPageEnabled) {
-      val form: Form[InitialPersonalDetails] = (request.session.get("firstName"), request.session.get("lastName"), request.session.get("dob")) match {
-        case (Some(fn), Some(ln), Some(dob)) =>
-          val pd = InitialPersonalDetails(NonEmptyString(fn), NonEmptyString(ln), LocalDate.parse(dob))
+      val form: Form[InitialPersonalDetails] = retrieveMainDetails match {
+        case (Some(firstName), Some(lastName), Some(dob)) =>
+          val pd = InitialPersonalDetails(NonEmptyString(firstName), NonEmptyString(lastName), LocalDate.parse(dob))
           initialForm.fill(pd)
         case _ => initialForm
       }
@@ -90,9 +94,9 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
       formWithErrors => Future.successful(Ok(personal_details_main(formWithErrors, completionUrl))),
       mainDetails => {
         val updatedSessionData = request.session.data ++ Map(
-          "firstName" -> mainDetails.firstName.value,
-          "lastName" -> mainDetails.lastName.value,
-          "dob" -> mainDetails.dateOfBirth.toString
+          FIRST_NAME_KEY -> mainDetails.firstName.value,
+          LAST_NAME_KEY -> mainDetails.lastName.value,
+          DOB_KEY -> mainDetails.dateOfBirth.toString
         )
         Future.successful(Redirect(routes.PersonalDetailsCollectionController.showNinoForm(completionUrl))
           .withSession(Session(updatedSessionData))
@@ -102,10 +106,10 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def showNinoForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    (request.session.get("firstName"), request.session.get("lastName"), request.session.get("dob")) match {
-      case (Some(firstName), Some(lastName), Some(dob)) if appConfig.isMultiPageEnabled => Future.successful(Ok(enter_your_details_nino(ninoForm, completionUrl)))
-      case _ => Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false)))
-    }
+    if (hasMainDetailsAndIsMultiPage)
+      Future.successful(Ok(enter_your_details_nino(ninoForm, completionUrl)))
+    else
+      Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false)))
   }
 
   def submitNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
@@ -113,10 +117,12 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
       ninoForm.bindFromRequest().fold(
         formWithErrors => Future.successful(Ok(enter_your_details_nino(formWithErrors, completionUrl))),
         ninoForm => {
-          val personalDetails: PersonalDetails = (request.session.get("firstName"), request.session.get("lastName"), request.session.get("dob")) match {
-            case (Some(fn), Some(ln), Some(dob)) => PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln), ninoForm.nino, LocalDate.parse(dob))
+          retrieveMainDetails match {
+            case (Some(fn), Some(ln), Some(dob)) =>
+              val personalDetails = PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln), ninoForm.nino, LocalDate.parse(dob))
+              submitPersonalDetails(personalDetails, completionUrl)
+            case _ => EitherT.rightT[Future, Result](BadRequest)
           }
-          submitPersonalDetails(personalDetails, completionUrl)
         }.merge
       )
     } else {
@@ -125,10 +131,10 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def showPostCodeForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    (request.session.get("firstName"), request.session.get("lastName"), request.session.get("dob")) match {
-      case (Some(firstName), Some(lastName), Some(dob)) if appConfig.isMultiPageEnabled => Future.successful(Ok(enter_your_details_postcode(postcodeForm, completionUrl)))
-      case _ => Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false)))
-    }
+    if (hasMainDetailsAndIsMultiPage)
+      Future.successful(Ok(enter_your_details_postcode(postcodeForm, completionUrl)))
+    else
+      Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false)))
   }
 
   def submitPostcode(completionUrl: CompletionUrl) = Action.async { implicit request =>
@@ -136,10 +142,12 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
       postcodeForm.bindFromRequest().fold (
         formWithErrors => Future.successful(Ok(enter_your_details_postcode(formWithErrors, completionUrl))),
         postCodeForm => {
-          val personalDetails : PersonalDetails = (request.session.get("firstName"), request.session.get("lastName"), request.session.get("dob")) match {
-            case (Some(fn), Some(ln), Some(dob)) => PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln),postCodeForm.postcode, LocalDate.parse(dob))
+          retrieveMainDetails match {
+            case (Some(fn), Some(ln), Some(dob)) =>
+              val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln),postCodeForm.postcode, LocalDate.parse(dob))
+              submitPersonalDetails(personalDetails, completionUrl)
+            case _ => EitherT.rightT[Future, Result](BadRequest)
           }
-          submitPersonalDetails(personalDetails, completionUrl)
         }.merge
       )
     } else {
@@ -159,6 +167,15 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
       }
     } yield result
   }
+
+  private def retrieveMainDetails(implicit request: Request[_]): (Option[String], Option[String], Option[String]) =
+    (request.session.get(FIRST_NAME_KEY), request.session.get(LAST_NAME_KEY), request.session.get(DOB_KEY))
+
+  private def hasMainDetailsAndIsMultiPage(implicit request: Request[_]): Boolean =
+    retrieveMainDetails match {
+      case (Some(_), Some(_), Some(_)) if appConfig.isMultiPageEnabled => true
+      case _ => false
+    }
 
   def submit(completionUrl: CompletionUrl, alternativeVersion: Boolean): Action[AnyContent] = Action.async { implicit request =>
     personalDetailsSubmission.submit(completionUrl, alternativeVersion)

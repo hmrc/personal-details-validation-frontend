@@ -58,8 +58,7 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
                             headerCarrier: HeaderCarrier,
                             executionContext: ExecutionContext) : EitherT[Interpretation, Result, PersonalDetailsValidation] = {
     for {
-      pd <- pure(Right(personalDetails))
-      personalDetailsValidation <- personalDetailsValidationConnector.submitValidationRequest(pd) leftMap errorToRedirect(to = completionUrl)
+      personalDetailsValidation <- personalDetailsValidationConnector.submitValidationRequest(personalDetails) leftMap errorToRedirect(to = completionUrl)
       counterUpdated = pdvMetrics.matchPersonalDetails(personalDetails)
     } yield personalDetailsValidation
   }

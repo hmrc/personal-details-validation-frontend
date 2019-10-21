@@ -724,6 +724,15 @@ class PersonalDetailsCollectionControllerSpec
       returnedSession.get("journeyId") shouldBe defined
       returnedSession.get("journeyId").get shouldBe "1234567890"
     }
+
+    "Bad Request if the initial details are not present in the request" in new Setup {
+      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
+
+      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false).url
+      val result = controller.submitNino(completionUrl)(request.withFormUrlEncodedBody("nino" -> "AA000001A"))
+
+      status(result) shouldBe BAD_REQUEST
+    }
   }
 
   "submitPostcode" should {
@@ -821,6 +830,15 @@ class PersonalDetailsCollectionControllerSpec
       document.errorsSummary.content shouldBe messages("personal-details.postcode.invalid")
 
       document.errorFor("postcode") shouldBe messages("personal-details.postcode.invalid")
+    }
+
+    "Bad Request if the initial details are not present in the request" in new Setup {
+      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
+
+      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false).url
+      val result = controller.submitPostcode(completionUrl)(request.withFormUrlEncodedBody("postcode" -> "BN11 1NN"))
+
+      status(result) shouldBe BAD_REQUEST
     }
 
     "redirect to showPage if no details found" in new Setup {
