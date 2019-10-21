@@ -7,4 +7,12 @@ GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endp
 GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false)
 POST       /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submit(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false)
 
-GET         /assets/*file             controllers.Assets.at(path="/public", file)
+POST       /main-personal-details     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitMainDetails(completionUrl: CompletionUrl)
+
+GET        /personal-details-nino     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showNinoForm(completionUrl: CompletionUrl)
+POST       /personal-details-nino     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitNino(completionUrl: CompletionUrl)
+
+GET        /personal-details-postcode uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPostCodeForm(completionUrl: CompletionUrl)
+POST       /personal-details-postcode uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitPostcode(completionUrl: CompletionUrl)
+
+GET        /assets/*file              controllers.Assets.at(path="/public", file)
