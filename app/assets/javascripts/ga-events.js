@@ -81,10 +81,11 @@ $(function() {
         			ga('send', 'event', 'checkbox-selected', title, $('[name="' + getName + '"]').closest('fieldset').attr('id') + " - " + allVals)
         		}
         	});
-
-        	if($(this).attr("id") === 'error-feedback-form'){
-                ga('send', 'event', 'deskpro-form-submitted', title);
-            }
         });
+
+        $(document).on('submit','#error-feedback-form', function(){
+            ga('send', 'event', 'deskpro-form-submitted', title);
+        });
+
     }
 });
