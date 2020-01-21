@@ -83,8 +83,9 @@ $(function() {
         	});
         });
 
-        $(document).on('submit','#error-feedback-form', function(){
-            ga('send', 'event', 'deskpro-form-submitted', title);
+        // Click event on submit button for Deskpro form loaded into the page with ajax
+        $(document).on('click','#report-submit', function(){
+            ga('send', 'event', 'deskpro-form-submit', title);
         });
 
     }
