@@ -2,6 +2,7 @@ continue.button.text=Yn eich blaen
 button.back.text=Yn ôl
 error.prefix=Gwall:
 error-summary.heading=Mae gwallau ar y dudalen hon
+logo.title=Cyllid a Thollau EM
 personal-details.title=Nodwch eich manylion - Cadarnhau pwy ydych
 personal-details.faded-heading=Cadarnhau pwy ydych
 personal-details.header=Nodwch eich manylion
