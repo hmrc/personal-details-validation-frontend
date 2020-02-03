@@ -1,5 +1,5 @@
 @*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@
 )
 
 @import layouts.{govuk_template => hmrcGovUkTemplate}
+@import uk.gov.hmrc.views.html.template.helper
 @import uk.gov.hmrc.play.views.html.{helpers => uiHelpers, layouts => uiLayouts}
 
 @headScripts = {
@@ -76,10 +77,9 @@
 @footerLinks = {}
 
 @serviceInfo = {
-    @uiLayouts.serviceInfo(
-      betaBanner = HtmlFormat.empty,
-      includeGridWrapper = false,
-      serviceInfoContent = Some(serviceInfoContent))
+@helper.serviceInfo(
+    includeGridWrapper = false,
+    serviceInfoContent = Some(serviceInfoContent))
 }
 
 @mainContentHeader = {

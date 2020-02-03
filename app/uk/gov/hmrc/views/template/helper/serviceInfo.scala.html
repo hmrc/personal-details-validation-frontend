@@ -14,7 +14,11 @@
  * limitations under the License.
  *@
 
-@(form: Form[_])(implicit messages: Messages)
-@if(form.hasErrors){
-    @Messages("error.prefix")
-}
+@(includeGridWrapper: Boolean, serviceInfoContent: Option[Html], includeHMRCBranding: Boolean = true)(implicit messages: Messages)
+
+<div class="service-info">
+    <div class="logo">
+        <span class="organisation-logo organisation-logo-medium">@messages("logo.title")</span>
+    </div>
+    @serviceInfoContent
+</div>
