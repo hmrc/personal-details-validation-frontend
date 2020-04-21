@@ -20,9 +20,9 @@ import cats.implicits._
 import javax.inject.Inject
 import play.api.data.{Form, Mapping}
 import play.api.data.Forms.mapping
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.Messages
 import play.api.mvc._
-import uk.gov.hmrc.config.AppConfig
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
@@ -30,14 +30,17 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.views.ViewConfig
 import java.time.LocalDate
+
 import cats.data.EitherT
+import uk.gov.hmrc.language.DwpI18nSupport
+
 import scala.concurrent.Future
 import scala.util.Try
 
 class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     personalDetailsSubmission: FuturedPersonalDetailsSubmission,
-                                                    appConfig: AppConfig)(implicit val messagesApi: MessagesApi, viewConfig: ViewConfig)
-  extends FrontendController with I18nSupport {
+                                                    appConfig: AppConfig)(implicit val dwpMessagesApi: DwpMessagesApi, viewConfig: ViewConfig)
+  extends FrontendController with DwpI18nSupport {
 
   import uk.gov.hmrc.formmappings.Mappings._
 
@@ -76,6 +79,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
   def showPage(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean): Action[AnyContent] = Action { implicit request =>
+    val messages: Messages = request2Messages
     if (appConfig.isMultiPageEnabled) {
       val form: Form[InitialPersonalDetails] = retrieveMainDetails match {
         case (Some(firstName), Some(lastName), Some(dob)) =>

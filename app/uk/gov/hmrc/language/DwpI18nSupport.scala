@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.views
+package uk.gov.hmrc.language
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-//import play.api.i18n.MessagesApi
+import play.api.Play.current
+import play.api.i18n.{I18nSupport, Messages}
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.config.DwpMessagesApi
-import uk.gov.hmrc.language.LanguagesConfig
-import uk.gov.hmrc.play.config.{AssetsConfig, OptimizelyConfig}
-import uk.gov.hmrc.config.ops._
-import uk.gov.hmrc.config.implicits._
+import play.api.i18n.Messages.Implicits.applicationMessagesApi
 
-@Singleton
-class ViewConfig @Inject()(protected val configuration: Configuration, protected val messagesApi: DwpMessagesApi)
-  extends LanguagesConfig {
-  lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
-  lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
+trait DwpI18nSupport
+  extends I18nSupport {
+
+  def dwpMessagesApi: DwpMessagesApi
+
+  lazy val messagesApi = applicationMessagesApi
+
+  override implicit def request2Messages(implicit request: RequestHeader): Messages = {
+    request.session.get("loginOrigin") match {
+      case Some("dwp-iv") => dwpMessagesApi.preferred(request)
+      case _ => messagesApi.preferred(request)
+    }
+  }
 }
