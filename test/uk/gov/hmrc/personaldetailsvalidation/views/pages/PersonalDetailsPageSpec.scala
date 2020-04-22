@@ -20,15 +20,19 @@ import generators.Generators.Implicits._
 import org.jsoup.nodes.Document
 import org.scalacheck.Gen
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.Configuration
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Request}
+import play.api.{Configuration, mvc}
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Cookie, Request}
+import play.api.test.Helpers.REFERER
 import setups.views.ViewSetup
-import uk.gov.hmrc.config.AppConfig
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
 import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import support.UnitSpec
+import uk.gov.hmrc.errorhandling.ErrorHandler
+import uk.gov.hmrc.language.ChangeLanguageEndpoint
+
 import collection.JavaConverters._
 
 class PersonalDetailsPageSpec
@@ -261,6 +265,44 @@ class PersonalDetailsPageSpec
       yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
 
       html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
+    }
+
+    "return a personal details page containing DWP validation error if journeyOrigin is 'dwp-iv" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = validRequestDwp(replace = "nino" -> "AA123456A")
+
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
+
+      html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
+
+      val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
+      errors shouldBe List("We could not find any records that match the details you entered. Please try again, or confirm your identity another way")
+    }
+
+    "return a personal details page containing HMRC validation error if journeyOrigin is NOT 'dwp-iv" in new Setup with BindFromRequestTooling {
+
+      implicit val requestWithFormData = validRequestHMRC(replace = "nino" -> "AA123456A")
+
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
+
+      html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
+
+      val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
+      errors shouldBe List("We could not find any records that match the details you entered. Please try again, or contact HMRC to get help")
+    }
+
+    "return a personal details page containing DWP validation error in welsh if journeyOrigin is 'dwp-iv' and language is welsh" in new Setup with BindFromRequestTooling {
+
+      override implicit val messages = welshMessages
+
+      implicit val requestWithFormData = validRequestDwpCy(replace = "nino" -> "AA123456A")
+
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
+
+      html.title() shouldBe s"${welshMessages("error.prefix")} ${welshMessages("personal-details.title")} - GOV.UK"
+
+      val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
+      errors shouldBe List("Nid oeddem yn gallu dod o hyd i unrhyw gofnodion sy’n cyd-fynd â’r manylion a nodwyd gennych. Rhowch gynnig arall arni, neu cadarnhewch pwy ydych gan ddefnyddio dull arall")
     }
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
@@ -555,6 +597,8 @@ class PersonalDetailsPageSpec
 
     lazy val appConfig = new AppConfig(Configuration.from(testConfig))
 
+    implicit val mockDwpMessagesApi = app.injector.instanceOf[DwpMessagesApi]
+
     val personalDetailsPage = new PersonalDetailsPage(appConfig)
   }
 
@@ -574,7 +618,44 @@ class PersonalDetailsPageSpec
           "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
           "nino" -> personalDetails.nino.toString()
         ) ++ replace).toSeq: _*
-      )
+      ).withSession(request.session + "loginOrigin" -> "dwp-iv")
+
+    def validRequestHMRC(replace: (String, String)*): Request[AnyContentAsFormUrlEncoded] =
+      request.withFormUrlEncodedBody((
+        Map(
+          "firstName" -> personalDetails.firstName.toString(),
+          "lastName" -> personalDetails.lastName.toString(),
+          "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
+          "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
+          "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
+          "nino" -> personalDetails.nino.toString()
+        ) ++ replace).toSeq: _*
+      ).withSession(request.session + "loginOrigin" -> "ma")
+
+    def validRequestDwp(replace: (String, String)*): Request[AnyContentAsFormUrlEncoded] =
+      request.withFormUrlEncodedBody((
+        Map(
+          "firstName" -> personalDetails.firstName.toString(),
+          "lastName" -> personalDetails.lastName.toString(),
+          "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
+          "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
+          "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
+          "nino" -> personalDetails.nino.toString()
+        ) ++ replace).toSeq: _*
+      ).withSession("loginOrigin" -> "dwp-iv")
+
+    def validRequestDwpCy(replace: (String, String)*): Request[AnyContentAsFormUrlEncoded] =
+      request.withFormUrlEncodedBody((
+        Map(
+          "firstName" -> personalDetails.firstName.toString(),
+          "lastName" -> personalDetails.lastName.toString(),
+          "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
+          "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
+          "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
+          "nino" -> personalDetails.nino.toString()
+        ) ++ replace).toSeq: _*
+      ).withSession("loginOrigin" -> "dwp-iv").withCookies(Cookie("PLAY_LANG", "cy"))
+
 
     val personalDetailsWithPostcode = personalDetailsObjectsWithPostcode.generateOne
 

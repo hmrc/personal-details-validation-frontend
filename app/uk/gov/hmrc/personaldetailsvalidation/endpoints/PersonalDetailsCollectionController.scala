@@ -40,7 +40,7 @@ import scala.util.Try
 class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     personalDetailsSubmission: FuturedPersonalDetailsSubmission,
                                                     appConfig: AppConfig)(implicit val dwpMessagesApi: DwpMessagesApi, viewConfig: ViewConfig)
-  extends FrontendController with DwpI18nSupport {
+  extends DwpI18nSupport(appConfig) with FrontendController {
 
   import uk.gov.hmrc.formmappings.Mappings._
 
@@ -79,7 +79,6 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
   def showPage(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean): Action[AnyContent] = Action { implicit request =>
-    val messages: Messages = request2Messages
     if (appConfig.isMultiPageEnabled) {
       val form: Form[InitialPersonalDetails] = retrieveMainDetails match {
         case (Some(firstName), Some(lastName), Some(dob)) =>

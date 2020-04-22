@@ -48,7 +48,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersona
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import support.UnitSpec
-import uk.gov.hmrc.config.AppConfig
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.views.ViewConfig
@@ -943,6 +943,7 @@ class PersonalDetailsCollectionControllerSpec
     val personalDetailsSubmitter = mock[FuturedPersonalDetailsSubmission]
     val mockAppConfig = mock[AppConfig]
     implicit val mockViewConfig = app.injector.instanceOf[ViewConfig]
+    implicit val mockDwpMessagesApi = app.injector.instanceOf[DwpMessagesApi]
 
     val controller = new PersonalDetailsCollectionController(page, personalDetailsSubmitter, mockAppConfig)
   }

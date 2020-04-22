@@ -32,8 +32,8 @@ import scala.util.Try
 
 @Singleton
 private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig: AppConfig) (implicit val dwpMessagesApi: DwpMessagesApi,
-                                                                       viewConfig: ViewConfig)
-  extends DwpI18nSupport {
+                                                                                              viewConfig: ViewConfig)
+  extends DwpI18nSupport(appConfig) {
 
   import uk.gov.hmrc.formmappings.Mappings._
 

@@ -18,7 +18,6 @@ package uk.gov.hmrc.views
 
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
-//import play.api.i18n.MessagesApi
 import uk.gov.hmrc.config.DwpMessagesApi
 import uk.gov.hmrc.language.LanguagesConfig
 import uk.gov.hmrc.play.config.{AssetsConfig, OptimizelyConfig}

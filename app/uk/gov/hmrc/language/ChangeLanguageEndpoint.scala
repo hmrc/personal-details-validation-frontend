@@ -19,7 +19,7 @@ package uk.gov.hmrc.language
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.Lang
 import play.api.mvc.{Action, AnyContent, Controller}
-import uk.gov.hmrc.config.DwpMessagesApi
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
 import uk.gov.hmrc.errorhandling.ErrorHandler
 import uk.gov.hmrc.play.language.LanguageUtils.FlashWithSwitchIndicator
 import uk.gov.hmrc.language.DwpI18nSupport
@@ -28,10 +28,10 @@ import scala.language.implicitConversions
 
 @Singleton
 class ChangeLanguageEndpoint @Inject()(config: LanguagesConfig,
-                                       errorHandler: ErrorHandler)
-                                      (implicit val dwpMessagesApi: DwpMessagesApi)
-  extends Controller
-    with DwpI18nSupport {
+                                       errorHandler: ErrorHandler,
+                                       appConfig: AppConfig)(implicit val dwpMessagesApi: DwpMessagesApi)
+  extends DwpI18nSupport(appConfig)
+    with Controller {
 
   def switchTo(language: String): Action[AnyContent] = Action { implicit request =>
     request.headers.get(REFERER) match {
