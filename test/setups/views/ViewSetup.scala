@@ -34,7 +34,9 @@ abstract class ViewSetup(implicit app: Application) extends MockFactory {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val lang: Lang = Lang("en")
-  implicit val messages: Messages = Messages.Implicits.applicationMessages
+  implicit val messages: Messages = Messages.Implicits.applicationMessages(lang, app)
+  val welshLang: Lang = Lang("cy")
+  val welshMessages: Messages = Messages.Implicits.applicationMessages(welshLang, app)
 
   implicit def asDocument(html: Html): Document = Jsoup.parse(html.toString())
 }

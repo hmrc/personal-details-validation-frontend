@@ -27,6 +27,7 @@ import play.twirl.api.Html
 import setups.views.ViewSetup
 import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
 import support.UnitSpec
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
 
 import scala.concurrent.Future
 
@@ -79,7 +80,10 @@ class ErrorHandlerSpec
   private trait Setup extends ViewSetup {
     implicit val materializer: Materializer = mock[Materializer]
 
-    val errorHandler: ErrorHandler = new ErrorHandler()
+    val mockAppConfig = mock[AppConfig]
+    implicit val dwpMessagesApi: DwpMessagesApi = app.injector.instanceOf[DwpMessagesApi]
+    
+    val errorHandler: ErrorHandler = new ErrorHandler(mockAppConfig)
 
     def verify(result: Result) = new {
       lazy val containsTechnicalErrorPage = {

@@ -17,16 +17,15 @@
 package uk.gov.hmrc.views
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.Configuration
-import play.api.i18n.MessagesApi
+import uk.gov.hmrc.config.DwpMessagesApi
 import uk.gov.hmrc.language.LanguagesConfig
 import uk.gov.hmrc.play.config.{AssetsConfig, OptimizelyConfig}
 import uk.gov.hmrc.config.ops._
 import uk.gov.hmrc.config.implicits._
 
 @Singleton
-class ViewConfig @Inject()(protected val configuration: Configuration, protected val messagesApi: MessagesApi)
+class ViewConfig @Inject()(protected val configuration: Configuration, protected val messagesApi: DwpMessagesApi)
   extends LanguagesConfig {
   lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
   lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")

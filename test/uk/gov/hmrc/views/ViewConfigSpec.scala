@@ -18,10 +18,11 @@ package uk.gov.hmrc.views
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
-import play.api.Configuration
-import play.api.i18n.{Lang, MessagesApi}
+import play.api.{Configuration, Environment}
+import play.api.i18n.{DefaultLangs, Lang, MessagesApi}
 import setups.configs.ConfigSetup
 import support.UnitSpec
+import uk.gov.hmrc.config.DwpMessagesApi
 
 class ViewConfigSpec
   extends UnitSpec
@@ -73,7 +74,7 @@ class ViewConfigSpec
       }
     }
 
-    "throw a runtime exception when there's no messages file defined for a code from 'play.i18n.langs'" in new Setup {
+    "throw a runtime exception when there's no messages file defined for a code from 'play.i18n.langs'" in new Setup2 {
       expectMessagesFilesExistsFor("default")
 
       whenConfigEntriesExists(
@@ -97,15 +98,22 @@ class ViewConfigSpec
   }
 
   private trait Setup extends ConfigSetup[ViewConfig] {
-    val messagesApi = mock[MessagesApi]
+    val configuration = Configuration.from(Map("play.i18n.langs" -> List("en", "cy"), "play.i18n.path" -> null))
+    val messagesApi = new DwpMessagesApi(Environment.simple(), configuration, new DefaultLangs(configuration))
     val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, messagesApi)
 
     def expectMessagesFilesExistsFor(codes: String*) = {
-      val messagesMap = codes.map(_ -> Map.empty[String, String]).toMap
-      (messagesApi.messages _)
-        .expects()
-        .returning(messagesMap)
-        .repeat(messagesMap.size)
+      messagesApi.messages
+    }
+  }
+
+  private trait Setup2 extends ConfigSetup[ViewConfig] {
+    val configuration = Configuration.from(Map("play.i18n.langs" -> List("default"), "play.i18n.path" -> null))
+    val messagesApi = new DwpMessagesApi(Environment.simple(), configuration, new DefaultLangs(configuration))
+    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, messagesApi)
+
+    def expectMessagesFilesExistsFor(codes: String*) = {
+      messagesApi.messages
     }
   }
 }

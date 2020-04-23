@@ -19,7 +19,9 @@ package uk.gov.hmrc.language
 import akka.stream.Materializer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
-import play.api.i18n.{Lang, MessagesApi}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.{Configuration, Environment}
+import play.api.i18n.{Lang, Langs, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, Flash, Request, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -28,39 +30,39 @@ import setups.views.ViewConfigMockFactory
 import uk.gov.hmrc.errorhandling.ErrorHandler
 import uk.gov.hmrc.play.language.LanguageUtils.FlashWithSwitchIndicator
 import support.UnitSpec
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
 import uk.gov.hmrc.views.ViewConfig
 
-class ChangeLanguageEndpointSpec extends UnitSpec with ScalaFutures {
+class ChangeLanguageEndpointSpec
+  extends UnitSpec
+    with ScalaFutures
+    with GuiceOneAppPerSuite {
 
   "switchTo" should {
 
     "return Redirect to a Referer with the requested language set " +
-      "if the Referer is present in the request" in new Setup with Mocks {
+      "if the Referer is present in the request" in new Setup {
       assume(viewConfig.languagesMap.nonEmpty)
 
       viewConfig.languagesMap foreach { case (languageName, lang) =>
         withClue(s"case when language is: $languageName") {
-          val redirect = mock[Result]
-          expectRedirect(to = "referer-url", withLang = lang)
-            .returning(redirect)
 
-          val result = controller.switchTo(languageName)(request.withHeaders(REFERER -> "referer-url"))
+          val result = await(controller.switchTo(languageName)(request.withHeaders(REFERER -> "referer-url")))
 
-          result.futureValue shouldBe redirect
+          status(result) shouldBe SEE_OTHER
+          result.header.headers("Set-Cookie") should include(s"PLAY_LANG=${lang.code}")
         }
       }
     }
 
     "return Redirect to a Referer with the default lang " +
-      "if the Referer is present in the request but requested language is unknown" in new Setup with Mocks {
+      "if the Referer is present in the request but requested language is unknown" in new Setup {
       val redirect = mock[Result]
-      expectRedirect(to = "referer-url", withLang = Lang.defaultLang)
-        .returning(redirect)
 
-      val result = controller.switchTo("non-defined-lang")(request.withHeaders(REFERER -> "referer-url"))
+      val result = await(controller.switchTo("non-defined-lang")(request.withHeaders(REFERER -> "referer-url")))
 
-      result.futureValue shouldBe redirect
-    }
+      status(result) shouldBe SEE_OTHER
+      result.header.headers("Set-Cookie") should include(s"PLAY_LANG=${Lang.defaultLang.code}")    }
 
     "return Bad request with Internal server error page " +
       "if there is no Referer in the request" in new Setup {
@@ -68,44 +70,26 @@ class ChangeLanguageEndpointSpec extends UnitSpec with ScalaFutures {
         .expects(request)
         .returning(Html("error page"))
 
-      val result = controller.switchTo(viewConfig.languagesMap.head._1)(request)
+      val result = await(controller.switchTo(viewConfig.languagesMap.head._1)(request))
 
       status(result) shouldBe BAD_REQUEST
-      bodyOf(result).futureValue shouldBe "error page"
+      bodyOf(result) shouldBe "error page"
     }
   }
 
   private trait Setup extends MockFactory {
     implicit val materializer: Materializer = mock[Materializer]
 
-    implicit val messagesApi: MessagesApi = mock[MessagesApi]
+    implicit val dwpMessagesApi: DwpMessagesApi = app.injector.instanceOf[DwpMessagesApi]
 
     val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     val viewConfig: ViewConfig = ViewConfigMockFactory()
 
+    lazy val testConfig: Map[String, Any] = Map("dwp.originLabel" -> "dwp-iv")
+
+    lazy val appConfig = new AppConfig(Configuration.from(testConfig))
+
     val errorHandler = mock[ErrorHandler]
-    val controller = new ChangeLanguageEndpoint(viewConfig, errorHandler)
-  }
-
-  private trait Mocks {
-    self: Setup =>
-
-    def expectRedirect(to: String, withLang: Lang) = new {
-      def returning(result: Result) = {
-        val redirectWithLang: Result = mock[Result]
-        (redirectWithLang.flashing(_: Flash))
-          .expects(FlashWithSwitchIndicator)
-          .returning(result)
-
-        (messagesApi.setLang(_: Result, _: Lang))
-          .expects(redirect(to), withLang)
-          .returning(redirectWithLang)
-      }
-    }
-
-    private def redirect(url: String) = argAssert { (result: Result) =>
-      result.header.status shouldBe SEE_OTHER
-      result.header.headers(LOCATION) shouldBe url
-    }
+    val controller = new ChangeLanguageEndpoint(viewConfig, errorHandler, appConfig)
   }
 }

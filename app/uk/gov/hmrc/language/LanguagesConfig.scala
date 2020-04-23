@@ -18,7 +18,8 @@ package uk.gov.hmrc.language
 
 import com.google.inject.ImplementedBy
 import play.api.Configuration
-import play.api.i18n.{Lang, MessagesApi}
+import play.api.i18n.Lang
+import uk.gov.hmrc.config.DwpMessagesApi
 import uk.gov.hmrc.views.ViewConfig
 import uk.gov.hmrc.config.ops._
 import uk.gov.hmrc.config.implicits._
@@ -28,7 +29,7 @@ trait LanguagesConfig {
 
   protected def configuration: Configuration
 
-  protected def messagesApi: MessagesApi
+  protected def messagesApi: DwpMessagesApi
 
   lazy val languagesMap: Map[String, Lang] =
     configuration.load[Seq[String]]("play.i18n.langs", default = Nil)

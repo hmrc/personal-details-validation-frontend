@@ -17,14 +17,13 @@
 package uk.gov.hmrc.personaldetailsvalidation.views.pages
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.data.{Form, Mapping}
 import play.api.data.Forms.mapping
-import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.config.AppConfig
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.views.ViewConfig
@@ -32,9 +31,9 @@ import uk.gov.hmrc.views.ViewConfig
 import scala.util.Try
 
 @Singleton
-private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig: AppConfig) (implicit val messagesApi: MessagesApi,
-                                                                       viewConfig: ViewConfig)
-  extends I18nSupport {
+private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig: AppConfig) (implicit val dwpMessagesApi: DwpMessagesApi,
+                                                                                              viewConfig: ViewConfig)
+  extends DwpI18nSupport(appConfig) {
 
   import uk.gov.hmrc.formmappings.Mappings._
 

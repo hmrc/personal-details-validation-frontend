@@ -17,13 +17,15 @@
 package setups.views
 
 import org.scalamock.scalatest.MockFactory
-import play.api.Configuration
-import play.api.i18n.MessagesApi
+import org.scalatestplus.play.OneAppPerSuite
+import play.api.{Configuration, Environment}
+import play.api.i18n.{DefaultLangs, DefaultMessagesApi, MessagesApi}
+import uk.gov.hmrc.config.DwpMessagesApi
 import uk.gov.hmrc.views.ViewConfig
 
 import scala.collection.JavaConverters._
 
-object ViewConfigMockFactory extends MockFactory {
+object ViewConfigMockFactory extends MockFactory with OneAppPerSuite {
 
   private def configuration: Configuration = {
     val configMock = mock[Configuration]
@@ -41,14 +43,15 @@ object ViewConfigMockFactory extends MockFactory {
     configMock
   }
 
-  private def messagesApi: MessagesApi = {
-    val messagesApi = stub[MessagesApi]
+  private def messagesApi: DwpMessagesApi = {
 
-    (messagesApi.messages _)
-      .when()
-      .returns(Map("default" -> Map.empty, "cy" -> Map.empty))
+    val dwpMessagesApi = new DwpMessagesApi(
+      environment = Environment.simple(),
+      configuration = app.configuration,
+      langs = new DefaultLangs(app.configuration)
+    )
 
-    messagesApi
+    dwpMessagesApi
   }
 
   def apply(): ViewConfig =
