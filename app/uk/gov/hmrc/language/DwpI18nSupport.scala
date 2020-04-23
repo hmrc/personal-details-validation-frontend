@@ -19,12 +19,14 @@ package uk.gov.hmrc.language
 import com.google.inject.Inject
 import play.api.Play.current
 import play.api.i18n.{I18nSupport, Messages}
-import play.api.mvc.RequestHeader
+import play.api.mvc.{Request, RequestHeader}
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
 import play.api.i18n.Messages.Implicits.applicationMessagesApi
+import play.twirl.api.Html
+import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 
 abstract class DwpI18nSupport @Inject()(appConfig: AppConfig)
-  extends I18nSupport {
+  extends FrontendErrorHandler with I18nSupport {
 
   def dwpMessagesApi: DwpMessagesApi
 
@@ -36,4 +38,7 @@ abstract class DwpI18nSupport @Inject()(appConfig: AppConfig)
       case _ => messagesApi.preferred(request)
     }
   }
+
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html  = ???
 }
+
