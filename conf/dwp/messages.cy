@@ -39,3 +39,5 @@ validation.error-summary.before-link-text=Nid oeddem yn gallu dod o hyd i unrhyw
 validation.error-summary.link-text=cadarnhewch pwy ydych gan ddefnyddio dull arall
 validation.error-summary.after-link-text=
 validation.error-summary.heading=Mae problem wedi codi
+
+get_help.label=Os ydych yn cael anhawster gyda’r dudalen hon

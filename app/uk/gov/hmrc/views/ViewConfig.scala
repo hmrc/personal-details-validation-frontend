@@ -29,4 +29,6 @@ class ViewConfig @Inject()(protected val configuration: Configuration, protected
   extends LanguagesConfig {
   lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
   lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
+  lazy val originDwp: String = configuration.getString("dwp.originLabel").getOrElse("dwp-iv")
+  lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")
 }

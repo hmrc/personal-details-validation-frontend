@@ -39,6 +39,8 @@ object ViewConfigMockFactory extends MockFactory with OneAppPerSuite {
     (configMock.getStringList _).expects("play.i18n.langs").returning(Some(List("en", "cy").asJava))
     (configMock.getString _).expects("play.i18n.descriptions.en", *).returning(Some("english"))
     (configMock.getString _).expects("play.i18n.descriptions.cy", *).returning(Some("cymraeg"))
+    (configMock.getString _).expects("dwp.originLabel", *).returning(Some("dwp-iv"))
+    (configMock.getString _).expects("dwp.getHelpUrl", *).returning(Some("someGetHelpUrl"))
 
     configMock
   }
