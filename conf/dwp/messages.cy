@@ -40,4 +40,4 @@ validation.error-summary.link-text=cadarnhewch pwy ydych gan ddefnyddio dull ara
 validation.error-summary.after-link-text=
 validation.error-summary.heading=Mae problem wedi codi
 
-get_help.label=Os ydych yn cael anhawster gyda’r dudalen hon
+report.a.problem.link=Os ydych yn cael anhawster gyda’r dudalen hon
