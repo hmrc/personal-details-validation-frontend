@@ -267,15 +267,28 @@ class PersonalDetailsPageSpec
       html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
     }
 
-    "return a personal details page containing DWP validation error if journeyOrigin is 'dwp-iv" in new Setup with BindFromRequestTooling {
+    "return a personal details page containing DWP validation error and validationId link if journeyOrigin is 'dwp-iv" in new Setup with BindFromRequestTooling {
 
+      implicit val requestWithFormData = validRequestDwpWithValidationId(replace = "nino" -> "AA123456A")
+
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
+
+      html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
+      html.toString should include(s"${viewConfig.dwpGetHelpUrl}/Missing?validationId=aValidationId")
+
+      val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
+      errors shouldBe List("We could not find any records that match the details you entered. Please try again, or confirm your identity another way")
+    }
+
+
+    "return a personal details page containing DWP validation error if journeyOrigin is 'dwp-iv" in new Setup with BindFromRequestTooling {
       implicit val requestWithFormData = validRequestDwp(replace = "nino" -> "AA123456A")
 
       val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
-
-      html.toString should include(viewConfig.dwpGetHelpUrl)
+      html.toString should include(s"${viewConfig.dwpGetHelpUrl}/Missing")
+      html.toString should not include(s"?validationId")
 
       val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
       errors shouldBe List("We could not find any records that match the details you entered. Please try again, or confirm your identity another way")
@@ -647,6 +660,18 @@ class PersonalDetailsPageSpec
           "nino" -> personalDetails.nino.toString()
         ) ++ replace).toSeq: _*
       ).withSession("loginOrigin" -> "dwp-iv")
+
+    def validRequestDwpWithValidationId(replace: (String, String)*): Request[AnyContentAsFormUrlEncoded] =
+      request.withFormUrlEncodedBody((
+        Map(
+          "firstName" -> personalDetails.firstName.toString(),
+          "lastName" -> personalDetails.lastName.toString(),
+          "dateOfBirth.day" -> personalDetails.dateOfBirth.getDayOfMonth.toString,
+          "dateOfBirth.month" -> personalDetails.dateOfBirth.getMonthValue.toString,
+          "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
+          "nino" -> personalDetails.nino.toString()
+        ) ++ replace).toSeq: _*
+      ).withSession("loginOrigin" -> "dwp-iv", "ValidationId" -> "aValidationId")
 
     def validRequestDwpCy(replace: (String, String)*): Request[AnyContentAsFormUrlEncoded] =
       request.withFormUrlEncodedBody((
