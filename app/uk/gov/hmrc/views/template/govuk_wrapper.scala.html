@@ -18,6 +18,7 @@
 
 @import uk.gov.hmrc.views.ViewConfig
 
+@import uk.gov.hmrc.config.AppConfig
 @(title: String,
   mainClass: Option[String] = None,
   mainDataAttributes: Option[Html] = None,
@@ -95,10 +96,20 @@
     }
 }
 
-@getHelpForm = @{uiHelpers.reportAProblemLink(
-    ajaxFormPartialUrl = "/contact/problem_reports_ajax?service=personal-details-validation-frontend",
-    nonJSFormPageUrl = "/contact/problem_reports_nonjs?service=personal-details-validation-frontend"
-)}
+@getHelpForm = @{
+    request.session.get("loginOrigin") match {
+        case Some(viewConfig.originDwp) =>
+            val journeyId = request.session.get("journeyId").getOrElse("Missing")
+            val validationId = request.session.get("ValidationId").getOrElse("Missing")
+            val userExitUrl = s"${viewConfig.dwpGetHelpUrl}/$journeyId?validationId=$validationId"
+            uiHelpers.reportAProblemLink(ajaxFormPartialUrl = userExitUrl, nonJSFormPageUrl = userExitUrl)
+        case _ => uiHelpers.reportAProblemLink(
+            ajaxFormPartialUrl = "/contact/problem_reports_ajax?service=personal-details-validation-frontend",
+            nonJSFormPageUrl = "/contact/problem_reports_nonjs?service=personal-details-validation-frontend"
+        )
+    }
+
+}
 
 @content = {
     @uiLayouts.main_content(

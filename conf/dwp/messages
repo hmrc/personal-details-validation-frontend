@@ -42,3 +42,5 @@ validation.error-summary.heading=There is a problem
 
 # errors
 global.error.InternalServerError500.title=Sorry, we are experiencing technical difficulties
+
+report.a.problem.link=If you are having trouble with this page

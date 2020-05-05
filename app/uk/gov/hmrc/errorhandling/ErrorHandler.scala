@@ -35,7 +35,6 @@ import scala.language.implicitConversions
 class ErrorHandler @Inject()(appConfig: AppConfig)(implicit val dwpMessagesApi: DwpMessagesApi,
                                viewConfig: ViewConfig)
   extends DwpI18nSupport(appConfig) {
-
   import ErrorHandler.bindingError
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)

@@ -23,5 +23,5 @@ import play.api.Configuration
 @Singleton
 class AppConfig @Inject()(configuration: Configuration)  {
   def isMultiPageEnabled : Boolean = configuration.getBoolean("feature.multi-page.enabled").getOrElse(false)
-  lazy val  originDwp: String = configuration.getString("dwp.originLabel").getOrElse("dwp-iv")
+  lazy val originDwp: String = configuration.getString("dwp.originLabel").getOrElse("dwp-iv")
 }
