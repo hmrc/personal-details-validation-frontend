@@ -99,9 +99,7 @@
 @getHelpForm = @{
     request.session.get("loginOrigin") match {
         case Some(viewConfig.originDwp) =>
-            val journeyId = request.session.get("journeyId").getOrElse("Missing")
-            val validationIdQueryParam = request.session.get("ValidationId").fold("")(v => s"?validationId=$v")
-            val userExitUrl = s"${viewConfig.dwpGetHelpUrl}/$journeyId$validationIdQueryParam"
+            val userExitUrl = s"${viewConfig.dwpGetHelpUrl}/${request.session.get("journeyId").getOrElse("Missing")}"
             uiHelpers.reportAProblemLink(ajaxFormPartialUrl = userExitUrl, nonJSFormPageUrl = userExitUrl)
         case _ => uiHelpers.reportAProblemLink(
             ajaxFormPartialUrl = "/contact/problem_reports_ajax?service=personal-details-validation-frontend",
