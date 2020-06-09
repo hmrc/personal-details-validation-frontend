@@ -6,6 +6,7 @@
 .flash.error-summary li {
     color: #d4351c;
     margin-bottom: 5px;
+    font-weight: bold;
 }
 
 .govuk-error-summary_list a:link, .govuk-error-summarylist a:visited, .govuk-error-summarylist a:hover, .govuk-error-summary_list a:active {
@@ -20,11 +21,29 @@
     border-left: 5px solid #d4351c;
 }
 
-#error-summary-display:focus{
-    outline: none;
+@media (min-width: 641px) {
+
+    .form-field--error .error-notification {
+        font-size: 19px;
+    }
 }
 
-.input--medium:focus {
+.form-field-group--error, .form-field--error{
+    border-left: 5px solid #d4351c;
+
+    input[type=text], input[type=number] {
+        border: 4px solid #d4351c;
+
+        &:focus {
+            border-color: #0b0c0c;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+        }
+    }
+}
+
+.input--medium:focus,
+.input--small:focus {
     outline: 3px solid #fd0;
     outline-offset: 0;
     -webkit-box-shadow: inset 0 0 0 2px;

@@ -84,14 +84,20 @@
             )
         </div>
         <div class="form-group">
-            @input(
-                field = pageForm("nino"),
-                '_label -> messages("personal-details.nino"),
-                '_inputClass -> "input--medium input--cleared",
-                '_labelTextClass -> "form-label-bold",
-                '_inputHint -> Html(Messages("personal-details.nino.hint")),
-                '_labelClass -> "soft--ends"
-            )
+            <label for="nino" class="soft--ends@if(pageForm("nino").hasErrors){ form-field--error}">
+                <span class="form-label-bold">
+                    @messages("personal-details.nino")
+                </span>
+                <span class="form-hint" id="hint-nino">
+                @Html(Messages("personal-details.nino.hint"))
+                </span>
+                @pageForm("nino").errors.map { error =>
+                    <span class="error-notification" role="tooltip" data-journey="search-page:error:nino">
+                        @Messages(s"${error.message}")
+                    </span>
+                }
+                <input aria-describedby="hint-nino" type="text" class="input--medium input--cleared" name="nino" id="nino" value='@pageForm.data.getOrElse("nino","")'>
+            </label>
             <span class="form-field--submit display-block">
                 <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"> @Messages("personal-details.nino.unavailable")</a>
             </span>
