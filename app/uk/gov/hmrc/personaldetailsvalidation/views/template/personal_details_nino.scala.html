@@ -83,23 +83,22 @@
                 '_autoComplete -> "family-name"
             )
         </div>
-        <div class="form-group">
-            <label for="nino" class="soft--ends@if(pageForm("nino").hasErrors){ form-field--error}">
+        <div class="form-group@if(pageForm("nino").hasErrors){ form-field--error}"">
+            <label for="nino" class="soft--ends">
                 <span class="form-label-bold">
                     @messages("personal-details.nino")
                 </span>
-                <span class="form-hint" id="hint-nino">
-                    @Html(Messages("personal-details.nino.hint"))
-                </span>
-
-                @pageForm("nino").errors.map { error =>
-                    <span class="error-notification" role="tooltip" data-journey="search-page:error:nino">
-                        @Messages(s"${error.message}")
-                    </span>
-                }
-
-                <input type="text" class="input--medium input--cleared" name="nino" id="nino" value="">
             </label>
+            <span class="form-hint" id="hint-nino">
+            @Html(Messages("personal-details.nino.hint"))
+            </span>
+            @pageForm("nino").errors.map { error =>
+                <span class="error-notification" role="tooltip" data-journey="search-page:error:nino">
+                    @Messages(s"${error.message}")
+                </span>
+            }
+            <input aria-describedby="hint-nino" type="text" class="input--medium input--cleared" name="nino" id="nino" value="">
+
             <span class="form-field--submit display-block">
                 <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"> @Messages("personal-details.nino.unavailable")</a>
             </span>
