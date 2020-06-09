@@ -75,13 +75,13 @@ class PersonalDetailsPageSpec
       val dateElementDivs = dateFieldset.select(".form-date .form-group")
       val dayElement = dateElementDivs.first()
       dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
-      dayElement.select("label[for=dateOfBirth.day] input[type=number][name=dateOfBirth.day]").isEmpty shouldBe false
+      dayElement.select("label[for=dateOfBirth.day] input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
       val monthElement = dateElementDivs.next()
       monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
-      monthElement.select("label[for=dateOfBirth.month] input[type=number][name=dateOfBirth.month]").isEmpty shouldBe false
+      monthElement.select("label[for=dateOfBirth.month] input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
       val yearElement = dateElementDivs.next()
       yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
-      yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+      yearElement.select("label[for=dateOfBirth.year] input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
 
       html.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
@@ -120,13 +120,13 @@ class PersonalDetailsPageSpec
       val dateElementDivs = dateFieldset.select(".form-date .form-group")
       val dayElement = dateElementDivs.first()
       dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
-      dayElement.select("label[for=dateOfBirth.day] input[type=number][name=dateOfBirth.day]").isEmpty shouldBe false
+      dayElement.select("label[for=dateOfBirth.day] input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
       val monthElement = dateElementDivs.next()
       monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
-      monthElement.select("label[for=dateOfBirth.month] input[type=number][name=dateOfBirth.month]").isEmpty shouldBe false
+      monthElement.select("label[for=dateOfBirth.month] input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
       val yearElement = dateElementDivs.next()
       yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
-      yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+      yearElement.select("label[for=dateOfBirth.year] input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
 
       html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
     }
@@ -210,13 +210,13 @@ class PersonalDetailsPageSpec
       val dateElementDivs = dateFieldset.select(".form-date .form-group")
       val dayElement = dateElementDivs.first()
       dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
-      dayElement.select("label[for=dateOfBirth.day] input[type=number][name=dateOfBirth.day]").isEmpty shouldBe false
+      dayElement.select("label[for=dateOfBirth.day] input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
       val monthElement = dateElementDivs.next()
       monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
-      monthElement.select("label[for=dateOfBirth.month] input[type=number][name=dateOfBirth.month]").isEmpty shouldBe false
+      monthElement.select("label[for=dateOfBirth.month] input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
       val yearElement = dateElementDivs.next()
       yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
-      yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+      yearElement.select("label[for=dateOfBirth.year] input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
 
       html.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
@@ -256,13 +256,13 @@ class PersonalDetailsPageSpec
       val dateElementDivs = dateFieldset.select(".form-date .form-group")
       val dayElement = dateElementDivs.first()
       dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
-      dayElement.select("label[for=dateOfBirth.day] input[type=number][name=dateOfBirth.day]").isEmpty shouldBe false
+      dayElement.select("label[for=dateOfBirth.day] input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
       val monthElement = dateElementDivs.next()
       monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
-      monthElement.select("label[for=dateOfBirth.month] input[type=number][name=dateOfBirth.month]").isEmpty shouldBe false
+      monthElement.select("label[for=dateOfBirth.month] input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
       val yearElement = dateElementDivs.next()
       yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
-      yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+      yearElement.select("label[for=dateOfBirth.year] input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
 
       html.select("form fieldset ~ div button[type=submit]").text() shouldBe messages("continue.button.text")
     }

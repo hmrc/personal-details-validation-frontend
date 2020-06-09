@@ -111,13 +111,13 @@ class PersonalDetailsCollectionControllerSpec
       val dateElementDivs = dateFieldset.select(".form-date .form-group")
       val dayElement = dateElementDivs.first()
       dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
-      dayElement.select("label[for=dateOfBirth.day] input[type=number][name=dateOfBirth.day]").isEmpty shouldBe false
+      dayElement.select("label[for=dateOfBirth.day] input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
       val monthElement = dateElementDivs.next()
       monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
-      monthElement.select("label[for=dateOfBirth.month] input[type=number][name=dateOfBirth.month]").isEmpty shouldBe false
+      monthElement.select("label[for=dateOfBirth.month] input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
       val yearElement = dateElementDivs.next()
       yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
-      yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+      yearElement.select("label[for=dateOfBirth.year] input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
 
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
@@ -167,15 +167,15 @@ class PersonalDetailsCollectionControllerSpec
       val dateElementDivs = dateFieldset.select(".form-date .form-group")
       val dayElement = dateElementDivs.first()
       dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
-      dayElement.select("label[for=dateOfBirth.day] input[type=number][name=dateOfBirth.day]").isEmpty shouldBe false
+      dayElement.select("label[for=dateOfBirth.day] input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
       dayElement.select("input[name=dateOfBirth.day]").first().attr("value") shouldBe "1"
       val monthElement = dateElementDivs.next()
       monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
-      monthElement.select("label[for=dateOfBirth.month] input[type=number][name=dateOfBirth.month]").isEmpty shouldBe false
+      monthElement.select("label[for=dateOfBirth.month] input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
       monthElement.select("input[name=dateOfBirth.month]").first().attr("value") shouldBe "9"
       val yearElement = dateElementDivs.next()
       yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
-      yearElement.select("label[for=dateOfBirth.year] input[type=number][name=dateOfBirth.year]").isEmpty shouldBe false
+      yearElement.select("label[for=dateOfBirth.year] input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
       yearElement.select("input[name=dateOfBirth.year]").first().attr("value") shouldBe "1939"
 
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")

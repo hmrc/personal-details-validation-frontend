@@ -14,8 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.html.helpers._
-
 @(form: Form[_],
 fieldName: String,
 labelKeyPrefix: String,
@@ -35,42 +33,33 @@ form(fieldName).errors
         </legend>
 
         @hintKeySuffix.map { key =>
-        <span class="form-hint">@messages(s"$labelKeyPrefix.$fieldName.$key")</span>
+        <span class="form-hint" id="date">@messages(s"$labelKeyPrefix.$fieldName.$key")</span>
         }
 
         @dateErrors.map(err => (err.message, err.args)).distinct.map { case (msg, args) =>
         <span class="error-notification">@messages(msg, args: _*)</span>
         }
 
-        <div class="form-date">
+        <div class="form-date" aria-describedby="date">
             <div class="form-group form-group-day">
-                @input(
-                field = form(s"$fieldName.day"),
-                '_label -> messages(s"$labelKeyPrefix.$fieldName.day"),
-                '_type -> "number",
-                '_labelClass -> "form-label",
-                '_inputClass -> "form-control"
-                )
+                <label for="@messages(s"$fieldName.day")" class="form-label">
+                    <span>@messages(s"$labelKeyPrefix.$fieldName.day")</span>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control" name="@messages(s"$fieldName.day")" id="@messages(s"$fieldName.day")" value="">
+                </label>
             </div>
 
             <div class="form-group form-group-month">
-                @input(
-                field = form(s"$fieldName.month"),
-                '_label -> messages(s"$labelKeyPrefix.$fieldName.month"),
-                '_type -> "number",
-                '_labelClass -> "form-label",
-                '_inputClass -> "form-control"
-                )
+                <label for="@messages(s"$fieldName.month")" class="form-label">
+                    <span>@messages(s"$labelKeyPrefix.$fieldName.month")</span>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control" name="@messages(s"$fieldName.month")" id="@messages(s"$fieldName.month")" value="">
+                </label>
             </div>
 
             <div class="form-group form-group-year">
-                @input(
-                field = form(s"$fieldName.year"),
-                '_label -> messages(s"$labelKeyPrefix.$fieldName.year"),
-                '_type -> "number",
-                '_labelClass -> "form-label",
-                '_inputClass -> "form-control"
-                )
+                <label for="@messages(s"$fieldName.year")" class="form-label">
+                    <span>@messages(s"$labelKeyPrefix.$fieldName.year")</span>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control" name="@messages(s"$fieldName.year")" id="@messages(s"$fieldName.year")" value="">
+                </label>
             </div>
         </div>
     </fieldset>
