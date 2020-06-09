@@ -96,7 +96,7 @@
                         @Messages(s"${error.message}")
                     </span>
                 }
-                <input aria-describedby="hint-nino" type="text" class="input--medium input--cleared" name="nino" id="nino" value="">
+                <input aria-describedby="hint-nino" type="text" class="input--medium input--cleared" name="nino" id="nino" value='@pageForm.getOrElse("nino","")'>
             </label>
             <span class="form-field--submit display-block">
                 <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"> @Messages("personal-details.nino.unavailable")</a>
