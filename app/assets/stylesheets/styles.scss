@@ -65,6 +65,11 @@
 .form-date .form-group.form-group-day input {
     width: 50px;
 }
+
+.form-hint, .heading-xlarge .heading-secondary {
+    color: #505a5f; // For AAA color contrast
+}
+
 // =========================
 // focus states
 // changes made to bring in line with
