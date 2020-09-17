@@ -18,11 +18,12 @@ package uk.gov.hmrc.views
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
+import play.api.http.HttpConfiguration
+import play.api.i18n.{DefaultLangsProvider, Lang}
 import play.api.{Configuration, Environment}
-import play.api.i18n.{DefaultLangs, Lang, MessagesApi}
 import setups.configs.ConfigSetup
 import support.UnitSpec
-import uk.gov.hmrc.config.DwpMessagesApi
+import uk.gov.hmrc.config.DwpMessagesApiProvider
 
 class ViewConfigSpec
   extends UnitSpec
@@ -61,7 +62,7 @@ class ViewConfigSpec
         "play.i18n.langs" -> List("en", "cy"),
         "play.i18n.descriptions" -> Map("en" -> "english", "cy" -> "cymraeg")
       ) { config =>
-        config.languagesMap shouldBe Map(
+        config.languageMap shouldBe Map(
           "english" -> Lang("en"),
           "cymraeg" -> Lang("cy")
         )
@@ -70,7 +71,7 @@ class ViewConfigSpec
 
     "return an empty map when there's no value for 'play.i18n.langs'" in new Setup {
       whenConfigEntriesExists() { config =>
-        config.languagesMap shouldBe Map.empty
+        config.languageMap shouldBe Map.empty
       }
     }
 
@@ -81,7 +82,7 @@ class ViewConfigSpec
         "play.i18n.langs" -> List("en", "cy"),
         "play.i18n.descriptions" -> Map("en" -> "english", "cy" -> "cymraeg")
       ) { config =>
-        a[RuntimeException] should be thrownBy config.languagesMap
+        a[RuntimeException] should be thrownBy config.languageMap
       }
     }
 
@@ -92,28 +93,47 @@ class ViewConfigSpec
         "play.i18n.langs" -> List("en", "cy", "pl"),
         "play.i18n.descriptions" -> Map("en" -> "english", "cy" -> "cymraeg")
       ) { config =>
-        a[RuntimeException] should be thrownBy config.languagesMap
+        a[RuntimeException] should be thrownBy config.languageMap
       }
     }
   }
 
   private trait Setup extends ConfigSetup[ViewConfig] {
-    val configuration = Configuration.from(Map("play.i18n.langs" -> List("en", "cy"), "play.i18n.path" -> null))
-    val messagesApi = new DwpMessagesApi(Environment.simple(), configuration, new DefaultLangs(configuration))
-    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, messagesApi)
+
+    val configuration = Configuration.from(Map(
+      "play.i18n.langs" -> List("en", "cy"),
+      "play.i18n.path" -> null,
+      "play.i18n.langCookieName" -> "PLAY_LANG",
+      "play.i18n.langCookieSecure" -> true,
+      "play.i18n.langCookieHttpOnly" -> false
+    ))
+
+    val dwpMessagesApiProvider = new DwpMessagesApiProvider(Environment.simple(), configuration,
+      new DefaultLangsProvider(configuration).get, HttpConfiguration())
+
+    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, dwpMessagesApiProvider)
 
     def expectMessagesFilesExistsFor(codes: String*) = {
-      messagesApi.messages
+      dwpMessagesApiProvider.get.messages
     }
   }
 
   private trait Setup2 extends ConfigSetup[ViewConfig] {
-    val configuration = Configuration.from(Map("play.i18n.langs" -> List("default"), "play.i18n.path" -> null))
-    val messagesApi = new DwpMessagesApi(Environment.simple(), configuration, new DefaultLangs(configuration))
+
+    val configuration = Configuration.from(Map(
+      "play.i18n.langs" -> List("default"),
+      "play.i18n.path" -> null,
+      "play.i18n.langCookieName" -> "PLAY_LANG",
+      "play.i18n.langCookieSecure" -> true,
+      "play.i18n.langCookieHttpOnly" -> false
+    ))
+
+    val messagesApi = new DwpMessagesApiProvider(Environment.simple(), configuration,
+      new DefaultLangsProvider(configuration).get, HttpConfiguration())
     val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, messagesApi)
 
     def expectMessagesFilesExistsFor(codes: String*) = {
-      messagesApi.messages
+      messagesApi.get.messages
     }
   }
 }

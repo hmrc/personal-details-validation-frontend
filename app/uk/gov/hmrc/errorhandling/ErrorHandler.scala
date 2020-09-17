@@ -22,7 +22,7 @@ import play.api.mvc.Results.NotFound
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.mvc.Http.Status._
 import play.twirl.api.Html
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 import uk.gov.hmrc.views.ViewConfig
@@ -32,9 +32,10 @@ import scala.concurrent.Future
 import scala.language.implicitConversions
 
 @Singleton
-class ErrorHandler @Inject()(appConfig: AppConfig)(implicit val dwpMessagesApi: DwpMessagesApi,
-                               viewConfig: ViewConfig)
+class ErrorHandler @Inject()(appConfig: AppConfig)
+                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, viewConfig: ViewConfig)
   extends DwpI18nSupport(appConfig) {
+
   import ErrorHandler.bindingError
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)

@@ -19,25 +19,22 @@ package uk.gov.hmrc.personaldetailsvalidation.views.pages
 import generators.Generators.Implicits._
 import org.jsoup.nodes.Document
 import org.scalacheck.Gen
-import org.scalatestplus.play.OneAppPerSuite
-import play.api.{Configuration, mvc}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.Configuration
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Cookie, Request}
-import play.api.test.Helpers.REFERER
 import setups.views.ViewSetup
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
+import support.UnitSpec
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-import support.UnitSpec
-import uk.gov.hmrc.errorhandling.ErrorHandler
-import uk.gov.hmrc.language.ChangeLanguageEndpoint
 
-import collection.JavaConverters._
+import scala.collection.JavaConverters._
 
 class PersonalDetailsPageSpec
   extends UnitSpec
-    with OneAppPerSuite {
+    with GuiceOneAppPerSuite {
 
   "render" should {
 
@@ -600,7 +597,7 @@ class PersonalDetailsPageSpec
 
     lazy val appConfig = new AppConfig(Configuration.from(testConfig))
 
-    implicit val mockDwpMessagesApi = app.injector.instanceOf[DwpMessagesApi]
+    implicit val mockDwpMessagesApi = app.injector.instanceOf[DwpMessagesApiProvider]
 
     val personalDetailsPage = new PersonalDetailsPage(appConfig)
   }

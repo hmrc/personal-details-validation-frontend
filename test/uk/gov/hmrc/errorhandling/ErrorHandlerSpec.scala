@@ -19,21 +19,19 @@ package uk.gov.hmrc.errorhandling
 import akka.stream.Materializer
 import org.jsoup.nodes.Document
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import setups.views.ViewSetup
-import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
 import support.UnitSpec
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
-
-import scala.concurrent.Future
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
+import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
 
 class ErrorHandlerSpec
   extends UnitSpec
-    with OneAppPerSuite
+    with GuiceOneAppPerSuite
     with ScalaFutures {
 
   "standardErrorTemplate" should {
@@ -78,10 +76,11 @@ class ErrorHandlerSpec
   }
 
   private trait Setup extends ViewSetup {
+
     implicit val materializer: Materializer = mock[Materializer]
 
     val mockAppConfig = mock[AppConfig]
-    implicit val dwpMessagesApi: DwpMessagesApi = app.injector.instanceOf[DwpMessagesApi]
+    implicit val dwpMessagesApi: DwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
     
     val errorHandler: ErrorHandler = new ErrorHandler(mockAppConfig)
 

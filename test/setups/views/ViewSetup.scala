@@ -29,6 +29,7 @@ import uk.gov.hmrc.views.ViewConfig
 import scala.language.implicitConversions
 
 abstract class ViewSetup(implicit app: Application) extends MockFactory {
+
   implicit val viewConfig: ViewConfig = ViewConfigMockFactory()
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 

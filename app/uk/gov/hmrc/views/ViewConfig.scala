@@ -18,17 +18,41 @@ package uk.gov.hmrc.views
 
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
-import uk.gov.hmrc.config.DwpMessagesApi
-import uk.gov.hmrc.language.LanguagesConfig
-import uk.gov.hmrc.play.config.{AssetsConfig, OptimizelyConfig}
-import uk.gov.hmrc.config.ops._
+import play.api.i18n.Lang
+import play.api.mvc.Call
+import uk.gov.hmrc.config.DwpMessagesApiProvider
 import uk.gov.hmrc.config.implicits._
+import uk.gov.hmrc.config.ops._
+import uk.gov.hmrc.language.routes
 
 @Singleton
-class ViewConfig @Inject()(protected val configuration: Configuration, protected val messagesApi: DwpMessagesApi)
-  extends LanguagesConfig {
+class ViewConfig @Inject()(val configuration: Configuration,
+                           protected val dwpMessagesApiProvider: DwpMessagesApiProvider)
+{
   lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
   lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
-  lazy val originDwp: String = configuration.getString("dwp.originLabel").getOrElse("dwp-iv")
+  lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
   lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")
+
+  def languageMap: Map[String, Lang] =
+    configuration.load[Seq[String]]("play.i18n.langs", default = Nil)
+      .map(verifyMessagesExists)
+      .map(toLangNameAndLangTuples)
+      .toMap
+
+  private def toLangNameAndLangTuples(code: String): (String, Lang) =
+    configuration.loadMandatory[String](s"play.i18n.descriptions.$code") -> Lang(code)
+
+  private def verifyMessagesExists(code: String): String = {
+    val validatedCode = if (code == "en") "default" else code
+    dwpMessagesApiProvider.get.messages.keySet.find(_ == validatedCode) match {
+      case Some(_) => code
+      case None => throw new RuntimeException(s"No messages.$code defined")
+    }
+  }
+
+  def routeToSwitchLanguage: String => Call =
+    (lang: String) => routes.ChangeLanguageEndpoint.switchToLanguage(lang)
+
+
 }

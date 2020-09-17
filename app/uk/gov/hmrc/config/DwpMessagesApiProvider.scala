@@ -19,21 +19,25 @@ package uk.gov.hmrc.config
 import java.net.URL
 
 import com.google.inject.Inject
+import play.api.http.HttpConfiguration
+import play.api.i18n.{DefaultMessagesApiProvider, Langs, Messages}
 import play.api.{Configuration, Environment, Logger}
-import play.api.i18n.{DefaultMessagesApi, Langs, Messages}
 import play.utils.Resources
 
 
-class DwpMessagesApi @Inject() (environment: Environment, configuration: Configuration, langs: Langs)
-  extends DefaultMessagesApi(environment, configuration, langs) {
+class DwpMessagesApiProvider @Inject()(environment: Environment,
+                                       configuration: Configuration,
+                                       langs: Langs,
+                                       httpConfiguration: HttpConfiguration)
+  extends DefaultMessagesApiProvider(environment, configuration, langs, httpConfiguration) {
 
   override protected def loadMessages(file: String): Map[String, String] = {
     import scala.collection.JavaConverters._
 
-    val dwpMessagesPrefix = configuration.getString("dwp.messages")
+    val dwpMessagesPrefix = configuration.getOptional[String]("dwp.messages")
 
     environment.classLoader.getResources(joinPaths(dwpMessagesPrefix, file)).asScala.toList match {
-      case r if r.size == 0 => {
+      case r if r.isEmpty => {
         Logger.warn(s"DWP messages directory in 'dwp.messages' : $dwpMessagesPrefix is not valid")
         getMessages(environment.classLoader.getResources(file).asScala.toList)
       }
@@ -55,11 +59,10 @@ class DwpMessagesApi @Inject() (environment: Environment, configuration: Configu
     case _ => directory + "/"
   }
 
-  private def joinPaths(first: Option[String], second: String): String = first match {
+  override protected def joinPaths(first: Option[String], second: String): String = first match {
     case Some(parent) => new java.io.File(isDirectory(parent), second).getPath
-    case None => {
+    case None =>
       Logger.warn(s"DWP messages file location property 'dwp.messages' not set in app config")
       second
-    }
   }
 }

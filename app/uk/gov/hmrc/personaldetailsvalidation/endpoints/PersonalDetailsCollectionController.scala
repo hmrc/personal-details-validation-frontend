@@ -20,27 +20,33 @@ import cats.implicits._
 import javax.inject.Inject
 import play.api.data.{Form, Mapping}
 import play.api.data.Forms.mapping
-import play.api.i18n.Messages
 import play.api.mvc._
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.views.ViewConfig
 import java.time.LocalDate
 
 import cats.data.EitherT
+import play.api.i18n.MessagesApi
 import uk.gov.hmrc.language.DwpI18nSupport
+import uk.gov.hmrc.play.bootstrap.frontend.controller.{FrontendBaseController, FrontendController}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
 class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     personalDetailsSubmission: FuturedPersonalDetailsSubmission,
-                                                    appConfig: AppConfig)(implicit val dwpMessagesApi: DwpMessagesApi, viewConfig: ViewConfig)
-  extends DwpI18nSupport(appConfig) with FrontendController {
+                                                    appConfig: AppConfig,
+                                                    val controllerComponents: MessagesControllerComponents)
+                                                   (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider,
+                                                    viewConfig: ViewConfig,
+                                                    ec: ExecutionContext)
+  extends DwpI18nSupport(appConfig) with FrontendBaseController {
+
+  override implicit lazy val messagesApi: MessagesApi = controllerComponents.messagesApi
 
   import uk.gov.hmrc.formmappings.Mappings._
 

@@ -33,7 +33,7 @@ class LoggerSpec
       underlyingLogger.expects('error)(argAssert {
         (message: () => String) =>
           message() shouldBe "message"
-      })
+      }, *)
 
       logger.error(error)
     }

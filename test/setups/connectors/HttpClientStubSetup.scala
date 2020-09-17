@@ -17,17 +17,19 @@
 package setups.connectors
 
 import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import com.typesafe.config.Config
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.Matchers._
 import play.api.Configuration
 import play.api.libs.json.{JsObject, JsValue, Writes}
+import play.api.libs.ws.WSClient
 import uk.gov.hmrc.http.hooks.HttpHook
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.integration.servicemanager.AhcWsClientFactory
 import uk.gov.hmrc.play.http.ws.WSHttp
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait HttpClientStubSetup extends MockFactory {
 
@@ -40,18 +42,19 @@ trait HttpClientStubSetup extends MockFactory {
     def withPayload(payload: JsObject) = new {
 
       def returning(status: Int): Unit =
-        returning(HttpResponse(status))
+        returning(HttpResponse(status, ""))
 
       def returning(status: Int, body: JsValue): Unit =
-        returning(HttpResponse(status, responseJson = Some(body)))
+        returning(HttpResponse(status, json = body, Map.empty))
 
       def returning(status: Int, body: String): Unit =
-        returning(HttpResponse(status, responseString = Some(body)))
+        returning(HttpResponse(status, body))
 
       def returning(status: Int, headers: (String, String)*): Unit =
         returning(HttpResponse(
           status,
-          responseHeaders = headers.toMap.mapValues(List.apply(_))
+          "",
+          headers = headers.toMap.mapValues(List.apply(_))
         ))
 
       def returning(response: HttpResponse): Unit =
@@ -73,13 +76,13 @@ trait HttpClientStubSetup extends MockFactory {
   protected def expectGet(toUrl: String) = new {
 
     def returning(status: Int, body: JsValue): Unit =
-      returning(HttpResponse(status, responseJson = Some(body)))
+      returning(HttpResponse(status, json = body, Map.empty))
 
     def returning(status: Int): Unit =
-      returning(HttpResponse(status, responseJson = None))
+      returning(HttpResponse(status, ""))
 
     def returning(status: Int, body: String): Unit =
-      returning(HttpResponse(status, responseString = Some(body)))
+      returning(HttpResponse(status, body))
 
     def returning(response: HttpResponse): Unit =
       httpClient.getStubbing = (actualUrl: String) => Future.successful {
@@ -98,6 +101,10 @@ trait HttpClientStubSetup extends MockFactory {
     extends HttpClient
       with WSHttp {
 
+    implicit val mat: ActorMaterializer = ActorMaterializer()(actorSystem)
+
+    override val wsClient: WSClient = AhcWsClientFactory.createClient()
+
     override val hooks: Seq[HttpHook] = Nil
 
     private[HttpClientStubSetup] var postStubbing: (String, JsObject) => Future[HttpResponse] =
@@ -107,11 +114,11 @@ trait HttpClientStubSetup extends MockFactory {
       (_) => throw new IllegalStateException("HttpClientStub not configured")
 
     override def doPost[A](url: String, body: A, headers: Seq[(String, String)])
-                          (implicit wts: Writes[A], hc: HeaderCarrier): Future[HttpResponse] =
+                          (implicit wts: Writes[A], hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
       postStubbing(url, body.asInstanceOf[JsObject])
 
-    override def doGet(url: String)
-                      (implicit hc: HeaderCarrier): Future[HttpResponse] =
+    override def doGet(url: String, headers: Seq[(String, String)])
+                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
       getStubbing(url)
 
     override protected def actorSystem: ActorSystem = ActorSystem()

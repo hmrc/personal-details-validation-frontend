@@ -1,6 +1,6 @@
 # microservice specific routes
 
-GET        /language/:language        uk.gov.hmrc.language.ChangeLanguageEndpoint.switchTo(language: String)
+GET        /language/:language        uk.gov.hmrc.language.ChangeLanguageEndpoint.switchToLanguage(language: String)
 
 GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: CompletionUrl)
 

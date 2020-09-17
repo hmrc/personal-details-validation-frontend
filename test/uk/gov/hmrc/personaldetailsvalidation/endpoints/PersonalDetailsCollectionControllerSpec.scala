@@ -26,18 +26,18 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import cats.data._
 import cats.instances.future._
-import scalamock.MockArgumentMatchers
+import scalamock.{AsyncMockArgumentMatchers, MockArgumentMatchers}
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{personalDetailsObjects, personalDetailsObjectsWithPostcode}
 import generators.Generators.Implicits._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalacheck.Gen
-import org.scalamock.scalatest.MockFactory
+import org.scalamock.scalatest.{AsyncMockFactory, MockFactory}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.Messages
+import play.api.i18n.{Lang, Messages}
 import play.api.mvc.Results._
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Request, Result}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, DefaultActionBuilder, DefaultMessagesActionBuilderImpl, DefaultMessagesControllerComponents, MessagesControllerComponents, Request, RequestHeader, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
@@ -48,22 +48,23 @@ import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersona
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import support.UnitSpec
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.views.ViewConfig
 
 class PersonalDetailsCollectionControllerSpec
   extends UnitSpec
-    with MockFactory
-    with MockArgumentMatchers
+    with AsyncMockFactory
+    with AsyncMockArgumentMatchers
     with GuiceOneAppPerSuite
     with ScalaFutures {
 
   "showPage" should {
 
     "return OK with HTML body rendered using PersonalDetailsPage when the multi page flag is disabled" in new Setup {
-      (page.render(_: Boolean)(_: CompletionUrl, _: Request[_]))
+
+      (pageMock.render(_: Boolean)(_: CompletionUrl, _: Request[_]))
         .expects(false, completionUrl, request)
         .returning(Html("content"))
 
@@ -579,11 +580,11 @@ class PersonalDetailsCollectionControllerSpec
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitter.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
         .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returns(pdv)
 
-      (personalDetailsSubmitter.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
+      (personalDetailsSubmitterMock.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
         .expects(*, *, *, *)
         .returns(expectedRedirect)
 
@@ -675,7 +676,7 @@ class PersonalDetailsCollectionControllerSpec
         "journeyId" -> "1234567890"
       )
 
-      (personalDetailsSubmitter.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
         .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returns(pdv)
 
@@ -757,11 +758,11 @@ class PersonalDetailsCollectionControllerSpec
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitter.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
         .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returns(pdv)
 
-      (personalDetailsSubmitter.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
+      (personalDetailsSubmitterMock.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
         .expects(*, *, *, *)
         .returns(expectedRedirect)
 
@@ -862,7 +863,7 @@ class PersonalDetailsCollectionControllerSpec
         "journeyId" -> "1234567890"
       )
 
-      (personalDetailsSubmitter.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
         .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returns(pdv)
 
@@ -919,7 +920,7 @@ class PersonalDetailsCollectionControllerSpec
 
       val redirectUrl = s"${completionUrl.value}?validationId=${UUID.randomUUID()}"
 
-      (personalDetailsSubmitter.submit(_: CompletionUrl, _: Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+      (personalDetailsSubmitterMock.submit(_: CompletionUrl, _: Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
         .expects(completionUrl, false, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
         .returning(Future.successful(Redirect(redirectUrl)))
 
@@ -930,6 +931,7 @@ class PersonalDetailsCollectionControllerSpec
   }
 
   private trait Setup {
+
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
     val completionUrl = ValuesGenerators.completionUrls.generateOne
@@ -937,15 +939,26 @@ class PersonalDetailsCollectionControllerSpec
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
 
+    implicit val lang: Lang = Lang("en-GB")
     implicit val messages: Messages = Messages.Implicits.applicationMessages
 
-    val page: PersonalDetailsPage = mock[PersonalDetailsPage]
-    val personalDetailsSubmitter = mock[FuturedPersonalDetailsSubmission]
+    val pageMock: PersonalDetailsPage = mock[PersonalDetailsPage]
+    val personalDetailsSubmitterMock = mock[FuturedPersonalDetailsSubmission]
     val mockAppConfig = mock[AppConfig]
     implicit val mockViewConfig = app.injector.instanceOf[ViewConfig]
-    implicit val mockDwpMessagesApi = app.injector.instanceOf[DwpMessagesApi]
+    implicit val dwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
 
-    val controller = new PersonalDetailsCollectionController(page, personalDetailsSubmitter, mockAppConfig)
+    def stubMessagesControllerComponents() : MessagesControllerComponents = {
+      val stub = stubControllerComponents()
+      DefaultMessagesControllerComponents(
+        new DefaultMessagesActionBuilderImpl(stubBodyParser(AnyContentAsEmpty), dwpMessagesApiProvider.get)(stub.executionContext),
+        DefaultActionBuilder(stub.actionBuilder.parser)(stub.executionContext), stub.parsers, dwpMessagesApiProvider.get, stub.langs, stub.fileMimeTypes,
+        stub.executionContext
+      )
+    }
+
+    val controller = new PersonalDetailsCollectionController(
+      pageMock, personalDetailsSubmitterMock, mockAppConfig, stubMessagesControllerComponents())
   }
 
   private trait BindFromRequestTooling {

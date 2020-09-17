@@ -14,11 +14,9 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.language.routes.ChangeLanguageEndpoint
-
 @import uk.gov.hmrc.views.ViewConfig
+@import play.twirl.api.HtmlFormat
 
-@import uk.gov.hmrc.config.AppConfig
 @(title: String,
   mainClass: Option[String] = None,
   mainDataAttributes: Option[Html] = None,
@@ -87,13 +85,13 @@
     @if(contentHeader.isDefined) {
         @uiLayouts.main_content_header(contentHeader = contentHeader.get)
     }
-    @if(viewConfig.languagesMap.size > 1) {
-        @views.html.language_selection(
-            viewConfig.languagesMap,
-            ChangeLanguageEndpoint.switchTo,
-            customClass = Some("label--inline-right")
-        )
-    }
+
+    @views.html.language_selection(
+        viewConfig.languageMap,
+        viewConfig.routeToSwitchLanguage,
+        customClass = Some("label--inline-right")
+    )
+
 }
 
 @getHelpForm = @{

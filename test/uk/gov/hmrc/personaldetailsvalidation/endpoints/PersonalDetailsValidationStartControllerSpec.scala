@@ -17,24 +17,26 @@
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import generators.Generators.Implicits._
-import org.scalamock.scalatest.MockFactory
+import org.scalamock.scalatest.{AsyncMockFactory, MockFactory}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.Results.Redirect
-import play.api.mvc.{AnyContentAsEmpty, Request, Result}
+import play.api.mvc.{AnyContentAsEmpty, DefaultActionBuilder, DefaultMessagesActionBuilderImpl, DefaultMessagesControllerComponents, MessagesControllerComponents, Request, Result}
 import play.api.test.FakeRequest
+import play.api.test.Helpers.{stubBodyParser, stubControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import support.UnitSpec
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
-import scalamock.MockArgumentMatchers
+import scalamock.{AsyncMockArgumentMatchers, MockArgumentMatchers}
 
 class PersonalDetailsValidationStartControllerSpec
   extends UnitSpec
-    with MockFactory
-    with MockArgumentMatchers
+    with AsyncMockFactory
+    with AsyncMockArgumentMatchers
     with ScalaFutures {
 
   "start" should {
@@ -68,6 +70,15 @@ class PersonalDetailsValidationStartControllerSpec
 
     val url = ValuesGenerators.completionUrls.generateOne
 
-    val controller = new PersonalDetailsValidationStartController(journeyStart)
+    def stubMessagesControllerComponents() : MessagesControllerComponents = {
+      val stub = stubControllerComponents()
+      DefaultMessagesControllerComponents(
+        new DefaultMessagesActionBuilderImpl(stubBodyParser(AnyContentAsEmpty),stub.messagesApi)(stub.executionContext),
+        DefaultActionBuilder(stub.actionBuilder.parser)(stub.executionContext), stub.parsers, stub.messagesApi, stub.langs, stub.fileMimeTypes,
+        stub.executionContext
+      )
+    }
+
+    val controller = new PersonalDetailsValidationStartController(journeyStart, stubMessagesControllerComponents())
   }
 }

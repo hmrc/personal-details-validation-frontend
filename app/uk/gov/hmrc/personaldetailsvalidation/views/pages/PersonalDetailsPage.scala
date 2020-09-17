@@ -21,7 +21,7 @@ import play.api.data.{Form, Mapping}
 import play.api.data.Forms.mapping
 import play.api.mvc.Request
 import play.twirl.api.Html
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.model._
@@ -31,7 +31,8 @@ import uk.gov.hmrc.views.ViewConfig
 import scala.util.Try
 
 @Singleton
-private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig: AppConfig) (implicit val dwpMessagesApi: DwpMessagesApi,
+private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig: AppConfig)
+                                                                      (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider,
                                                                                               viewConfig: ViewConfig)
   extends DwpI18nSupport(appConfig) {
 
