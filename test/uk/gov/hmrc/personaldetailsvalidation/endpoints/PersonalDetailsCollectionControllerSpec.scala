@@ -19,40 +19,38 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import java.time.LocalDate
 import java.util.UUID
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import cats.data._
-import cats.instances.future._
-import scalamock.{AsyncMockArgumentMatchers, MockArgumentMatchers}
-import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{personalDetailsObjects, personalDetailsObjectsWithPostcode}
+import cats.implicits.catsStdInstancesForFuture
 import generators.Generators.Implicits._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalacheck.Gen
-import org.scalamock.scalatest.{AsyncMockFactory, MockFactory}
+import org.scalamock.scalatest.AsyncMockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages}
 import play.api.mvc.Results._
-import play.api.mvc.{AnyContent, AnyContentAsEmpty, AnyContentAsFormUrlEncoded, DefaultActionBuilder, DefaultMessagesActionBuilderImpl, DefaultMessagesControllerComponents, MessagesControllerComponents, Request, RequestHeader, Result}
+import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
+import scalamock.AsyncMockArgumentMatchers
 import setups.controllers.ResultVerifiers._
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
-import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersonalDetailsValidation, NonEmptyString, PersonalDetails, PersonalDetailsValidation, PersonalDetailsWithNino, PersonalDetailsWithPostcode, SuccessfulPersonalDetailsValidation, ValidationId}
-import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import support.UnitSpec
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{personalDetailsObjects, personalDetailsObjectsWithPostcode}
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
+import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main}
+import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.views.ViewConfig
+
+import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class PersonalDetailsCollectionControllerSpec
   extends UnitSpec
@@ -582,7 +580,7 @@ class PersonalDetailsCollectionControllerSpec
       )
 
       (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
       (personalDetailsSubmitterMock.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
@@ -678,7 +676,7 @@ class PersonalDetailsCollectionControllerSpec
       )
 
       (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
       val result = controller.submitNino(completionUrl)(req)
@@ -760,7 +758,7 @@ class PersonalDetailsCollectionControllerSpec
       )
 
       (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
       (personalDetailsSubmitterMock.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
@@ -865,7 +863,7 @@ class PersonalDetailsCollectionControllerSpec
       )
 
       (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
       val result = controller.submitPostcode(completionUrl)(req)
@@ -922,7 +920,7 @@ class PersonalDetailsCollectionControllerSpec
       val redirectUrl = s"${completionUrl.value}?validationId=${UUID.randomUUID()}"
 
       (personalDetailsSubmitterMock.submit(_: CompletionUrl, _: Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(completionUrl, false, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+        .expects(completionUrl, false, request, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returning(Future.successful(Redirect(redirectUrl)))
 
       val result = controller.submit(completionUrl, alternativeVersion = false)(request)
@@ -958,14 +956,11 @@ class PersonalDetailsCollectionControllerSpec
       )
     }
 
-    private val enter_your_details_postcode: enter_your_details_postcode = app
-      .injector.instanceOf[enter_your_details_postcode]
+    private val enter_your_details_postcode: enter_your_details_postcode = app.injector.instanceOf[enter_your_details_postcode]
 
-    private val enter_your_details_nino: enter_your_details_nino = app
-      .injector.instanceOf[enter_your_details_nino]
+    private val enter_your_details_nino: enter_your_details_nino = app.injector.instanceOf[enter_your_details_nino]
 
-    private val personal_details_main: personal_details_main = app.injector
-      .instanceOf[personal_details_main]
+    private val personal_details_main: personal_details_main = app.injector.instanceOf[personal_details_main]
 
     val controller = new PersonalDetailsCollectionController(
       pageMock,

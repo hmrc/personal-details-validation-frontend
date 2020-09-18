@@ -27,23 +27,24 @@ import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedValidationIdVali
 import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, ValidationId}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.{higherKinds, implicitConversions}
 
 @Singleton
 private class FuturedJourneyStart @Inject()(validationIdValidator: FuturedValidationIdValidator,
                                             logger: Logger)
+                                           (implicit ec: ExecutionContext)
   extends JourneyStart[Future](validationIdValidator, logger)
 
 private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: ValidationIdValidator[Interpretation],
-                                                      logger: Logger) {
+                                                      logger: Logger)
+                                                     (implicit ec: ExecutionContext) {
 
   import PersonalDetailsSubmission._
   import validationIdValidator._
 
   def findRedirect(completionUrl: CompletionUrl)
-                  (implicit request: Request[_], headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Interpretation[Result] =
+                  (implicit request: Request[_], headerCarrier: HeaderCarrier): Interpretation[Result] =
     findValidationIdInSession match {
       case None =>
         Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))

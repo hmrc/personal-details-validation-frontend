@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import java.util.UUID
-
 import cats.Monad
 import cats.data.EitherT
 import cats.implicits._
+import javax.inject.{Inject, Singleton}
 import play.api.http.HeaderNames
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
@@ -33,9 +32,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
-import javax.inject.{Inject, Singleton}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.{higherKinds, implicitConversions}
 
@@ -44,6 +41,7 @@ private class FuturedPersonalDetailsSubmission @Inject()(personalDetailsPage: Pe
                                                          personalDetailsValidationConnector: FuturedPersonalDetailsSender,
                                                          pdvMetrics: PdvMetrics,
                                                          logger: Logger)
+                                                        (implicit ec: ExecutionContext)
   extends PersonalDetailsSubmission[Future](personalDetailsPage, personalDetailsValidationConnector, pdvMetrics, logger)
 
 private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetailsPage: PersonalDetailsPage,

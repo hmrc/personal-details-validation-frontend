@@ -17,21 +17,20 @@
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import generators.Generators.Implicits._
-import org.scalamock.scalatest.{AsyncMockFactory, MockFactory}
+import org.scalamock.scalatest.AsyncMockFactory
 import org.scalatest.concurrent.ScalaFutures
 import play.api.mvc.Results.Redirect
-import play.api.mvc.{AnyContentAsEmpty, DefaultActionBuilder, DefaultMessagesActionBuilderImpl, DefaultMessagesControllerComponents, MessagesControllerComponents, Request, Result}
+import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{stubBodyParser, stubControllerComponents}
+import scalamock.AsyncMockArgumentMatchers
+import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
-import support.UnitSpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
-import scalamock.{AsyncMockArgumentMatchers, MockArgumentMatchers}
 
 class PersonalDetailsValidationStartControllerSpec
   extends UnitSpec
@@ -45,8 +44,8 @@ class PersonalDetailsValidationStartControllerSpec
 
       val redirect: Result = Redirect("some-url")
 
-      (journeyStart.findRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(url, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+      (journeyStart.findRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier))
+        .expects(url, request, instanceOf[HeaderCarrier])
         .returning(Future.successful(redirect))
 
       controller.start(url)(request).futureValue shouldBe redirect
@@ -54,8 +53,8 @@ class PersonalDetailsValidationStartControllerSpec
 
     "throw an exception when fetchRedirect returns one" in new Setup {
 
-      (journeyStart.findRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(url, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+      (journeyStart.findRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier))
+        .expects(url, request, instanceOf[HeaderCarrier])
         .returning(Future.failed(new RuntimeException("Unrecoverable error")))
 
       a[RuntimeException] should be thrownBy controller.start(url)(request).futureValue
