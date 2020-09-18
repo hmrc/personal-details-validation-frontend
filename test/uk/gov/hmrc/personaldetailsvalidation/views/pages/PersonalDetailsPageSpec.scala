@@ -29,6 +29,7 @@ import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{personal_details_nino, personal_details_postcode}
 
 import scala.collection.JavaConverters._
 
@@ -599,7 +600,17 @@ class PersonalDetailsPageSpec
 
     implicit val mockDwpMessagesApi = app.injector.instanceOf[DwpMessagesApiProvider]
 
-    val personalDetailsPage = new PersonalDetailsPage(appConfig)
+    private val personal_details_postcode: personal_details_postcode = app
+      .injector.instanceOf[personal_details_postcode]
+
+    private val personal_details_nino: personal_details_nino = app.injector
+      .instanceOf[personal_details_nino]
+
+    val personalDetailsPage = new PersonalDetailsPage(
+      appConfig,
+      personal_details_postcode,
+      personal_details_nino
+    )
   }
 
   private trait BindFromRequestTooling {

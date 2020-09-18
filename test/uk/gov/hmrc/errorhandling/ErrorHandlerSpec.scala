@@ -28,6 +28,7 @@ import setups.views.ViewSetup
 import support.UnitSpec
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
+import uk.gov.hmrc.views.html.template.error_template
 
 class ErrorHandlerSpec
   extends UnitSpec
@@ -82,7 +83,7 @@ class ErrorHandlerSpec
     val mockAppConfig = mock[AppConfig]
     implicit val dwpMessagesApi: DwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
     
-    val errorHandler: ErrorHandler = new ErrorHandler(mockAppConfig)
+    val errorHandler: ErrorHandler = new ErrorHandler(mockAppConfig, app.injector.instanceOf[error_template])
 
     def verify(result: Result) = new {
       lazy val containsTechnicalErrorPage = {

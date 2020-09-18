@@ -14,12 +14,9 @@
  * limitations under the License.
  *@
 
-@(form: Form[_],
-fieldName: String,
-labelKeyPrefix: String,
-hintKeySuffix: Option[String] = None)(
-implicit request: Request[_],
-messages: Messages)
+@this()
+@(form: Form[_], fieldName: String, labelKeyPrefix: String, hintKeySuffix: Option[String] = None
+)(implicit request: Request[_], messages: Messages)
 
 @dateErrors = @{
 form(fieldName).errors

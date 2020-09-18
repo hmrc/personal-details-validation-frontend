@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@(includeGridWrapper: Boolean, serviceInfoContent: Option[Html], includeHMRCBranding: Boolean = true)(implicit messages: Messages)
+@this()
+@(includeGridWrapper: Boolean, serviceInfoContent: Option[Html], includeHMRCBranding: Boolean = true
+)(implicit messages: Messages)
 
 <div class="service-info">
    @serviceInfoContent

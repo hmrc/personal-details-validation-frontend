@@ -16,23 +16,23 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import cats.implicits._
-import javax.inject.Inject
-import play.api.data.{Form, Mapping}
-import play.api.data.Forms.mapping
-import play.api.mvc._
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
-import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
-import uk.gov.hmrc.views.ViewConfig
 import java.time.LocalDate
 
 import cats.data.EitherT
+import cats.implicits._
+import javax.inject.Inject
+import play.api.data.Forms.mapping
+import play.api.data.{Form, Mapping}
 import play.api.i18n.MessagesApi
+import play.api.mvc._
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.language.DwpI18nSupport
-import uk.gov.hmrc.play.bootstrap.frontend.controller.{FrontendBaseController, FrontendController}
+import uk.gov.hmrc.personaldetailsvalidation.model._
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main}
+import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import uk.gov.hmrc.views.ViewConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -40,7 +40,10 @@ import scala.util.Try
 class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     personalDetailsSubmission: FuturedPersonalDetailsSubmission,
                                                     appConfig: AppConfig,
-                                                    val controllerComponents: MessagesControllerComponents)
+                                                    val controllerComponents: MessagesControllerComponents,
+                                                    enterYourDetailsNino: enter_your_details_nino,
+                                                    enterYourDetailsPostcode: enter_your_details_postcode,
+                                                    personalDetailsMain: personal_details_main)
                                                    (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider,
                                                     viewConfig: ViewConfig,
                                                     ec: ExecutionContext)
@@ -92,7 +95,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
           initialForm.fill(pd)
         case _ => initialForm
       }
-      Ok(personal_details_main(form, completionUrl))
+      Ok(personalDetailsMain(form, completionUrl))
     } else {
       Ok(page.render(alternativeVersion))
     }
@@ -100,7 +103,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   def submitMainDetails(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
     initialForm.bindFromRequest().fold (
-      formWithErrors => Future.successful(Ok(personal_details_main(formWithErrors, completionUrl))),
+      formWithErrors => Future.successful(Ok(personalDetailsMain(formWithErrors, completionUrl))),
       mainDetails => {
         val updatedSessionData = request.session.data ++ Map(
           FIRST_NAME_KEY -> mainDetails.firstName.value,
@@ -116,7 +119,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   def showNinoForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (hasMainDetailsAndIsMultiPage)
-      Future.successful(Ok(enter_your_details_nino(ninoForm, completionUrl)))
+      Future.successful(Ok(enterYourDetailsNino(ninoForm, completionUrl)))
     else
       Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false)))
   }
@@ -124,7 +127,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   def submitNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
       ninoForm.bindFromRequest().fold(
-        formWithErrors => Future.successful(Ok(enter_your_details_nino(formWithErrors, completionUrl))),
+        formWithErrors => Future.successful(Ok(enterYourDetailsNino(formWithErrors, completionUrl))),
         ninoForm => {
           retrieveMainDetails match {
             case (Some(fn), Some(ln), Some(dob)) =>
@@ -141,7 +144,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   def showPostCodeForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (hasMainDetailsAndIsMultiPage)
-      Future.successful(Ok(enter_your_details_postcode(postcodeForm, completionUrl)))
+      Future.successful(Ok(enterYourDetailsPostcode(postcodeForm, completionUrl)))
     else
       Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false)))
   }
@@ -149,7 +152,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   def submitPostcode(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
       postcodeForm.bindFromRequest().fold (
-        formWithErrors => Future.successful(Ok(enter_your_details_postcode(formWithErrors, completionUrl))),
+        formWithErrors => Future.successful(Ok(enterYourDetailsPostcode(formWithErrors, completionUrl))),
         postCodeForm => {
           retrieveMainDetails match {
             case (Some(fn), Some(ln), Some(dob)) =>
@@ -170,7 +173,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
       result = pdv match {
         case FailedPersonalDetailsValidation(_) => {
           val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
-          Ok(personal_details_main(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl)).withSession(cleanedSession)
+          Ok(personalDetailsMain(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl)).withSession(cleanedSession)
         }
         case _ => personalDetailsSubmission.result(completionUrl, pdv)
       }

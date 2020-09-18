@@ -51,6 +51,7 @@ import support.UnitSpec
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main}
 import uk.gov.hmrc.views.ViewConfig
 
 class PersonalDetailsCollectionControllerSpec
@@ -957,8 +958,23 @@ class PersonalDetailsCollectionControllerSpec
       )
     }
 
+    private val enter_your_details_postcode: enter_your_details_postcode = app
+      .injector.instanceOf[enter_your_details_postcode]
+
+    private val enter_your_details_nino: enter_your_details_nino = app
+      .injector.instanceOf[enter_your_details_nino]
+
+    private val personal_details_main: personal_details_main = app.injector
+      .instanceOf[personal_details_main]
+
     val controller = new PersonalDetailsCollectionController(
-      pageMock, personalDetailsSubmitterMock, mockAppConfig, stubMessagesControllerComponents())
+      pageMock,
+      personalDetailsSubmitterMock,
+      mockAppConfig,
+      stubMessagesControllerComponents(),
+      enter_your_details_nino,
+      enter_your_details_postcode,
+      personal_details_main)
   }
 
   private trait BindFromRequestTooling {
