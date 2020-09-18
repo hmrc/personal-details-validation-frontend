@@ -8,10 +8,10 @@ private object AppDependencies {
   private val compile = Seq(
     "org.typelevel" %% "cats-core" % "1.0.0-RC1",
     "uk.gov.hmrc" %% "bootstrap-play-25" % "4.12.0",
-    "uk.gov.hmrc" %% "domain" % "5.6.0-play-25",
-    "uk.gov.hmrc" %% "govuk-template" % "5.40.0-play-25",
+    "uk.gov.hmrc" %% "domain" % "5.10.0-play-25",
+    "uk.gov.hmrc" %% "govuk-template" % "5.56.0-play-25",
     "uk.gov.hmrc" %% "play-language" % "3.4.0",
-    "uk.gov.hmrc" %% "play-ui" % "7.40.0-play-25",
+    "uk.gov.hmrc" %% "play-ui" % "8.12.0-play-25",
     "uk.gov.hmrc" %% "valuetype" % "1.1.0",
     ws
   )
@@ -21,7 +21,7 @@ private object AppDependencies {
     "org.scalacheck" %% "scalacheck" % "1.13.4" % Test,
     "org.scalamock" %% "scalamock" % "4.0.0" % Test,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % Test,
-    "uk.gov.hmrc" %% "service-integration-test" % "0.9.0-play-25" % Test,
+    "uk.gov.hmrc" %% "service-integration-test" % "0.12.0-play-25" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test
 
   )
