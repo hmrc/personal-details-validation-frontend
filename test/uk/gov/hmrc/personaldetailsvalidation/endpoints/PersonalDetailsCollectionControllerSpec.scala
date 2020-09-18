@@ -214,7 +214,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when firstname data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "lastName" -> "Ferguson",
         "dateOfBirth.day" -> "01",
@@ -238,7 +238,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when lastname data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "dateOfBirth.day" -> "01",
@@ -262,7 +262,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when day data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -286,7 +286,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when month data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -310,7 +310,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when year data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -334,7 +334,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when all dob data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson"
@@ -356,7 +356,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when day data is invalid" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -381,7 +381,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when month data is invalid" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -406,7 +406,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when year data is invalid" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -657,9 +657,8 @@ class PersonalDetailsCollectionControllerSpec
     "redirect to showPage if no details found" in new Setup {
       (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
       val validationId = ValidationId(UUID.randomUUID().toString)
-      val expectedRedirect = Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
 
-      val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](new FailedPersonalDetailsValidation(validationId))
+      val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](FailedPersonalDetailsValidation(validationId))
 
       val expectedPersonalDetails = PersonalDetailsWithNino(
         NonEmptyString("Jim"),
@@ -728,7 +727,6 @@ class PersonalDetailsCollectionControllerSpec
     "Bad Request if the initial details are not present in the request" in new Setup {
       (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
-      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false).url
       val result = controller.submitNino(completionUrl)(request.withFormUrlEncodedBody("nino" -> "AA000001A"))
 
       status(result) shouldBe BAD_REQUEST
@@ -835,7 +833,6 @@ class PersonalDetailsCollectionControllerSpec
     "Bad Request if the initial details are not present in the request" in new Setup {
       (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
-      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false).url
       val result = controller.submitPostcode(completionUrl)(request.withFormUrlEncodedBody("postcode" -> "BN11 1NN"))
 
       status(result) shouldBe BAD_REQUEST
@@ -844,7 +841,6 @@ class PersonalDetailsCollectionControllerSpec
     "redirect to showPage if no details found" in new Setup {
       (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
       val validationId = ValidationId(UUID.randomUUID().toString)
-      val expectedRedirect = Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
 
       val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](new FailedPersonalDetailsValidation(validationId))
 

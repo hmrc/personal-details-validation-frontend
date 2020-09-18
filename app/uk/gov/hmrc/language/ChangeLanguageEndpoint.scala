@@ -22,8 +22,6 @@ import play.api.mvc.ControllerComponents
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
 import uk.gov.hmrc.views.ViewConfig
 
-import scala.language.implicitConversions
-
 @Singleton
 class ChangeLanguageEndpoint @Inject()(viewConfig: ViewConfig,
                                        languageUtils: LanguageUtils,

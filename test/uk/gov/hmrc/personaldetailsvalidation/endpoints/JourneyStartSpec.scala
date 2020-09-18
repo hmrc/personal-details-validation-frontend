@@ -20,26 +20,25 @@ import cats.Id
 import cats.data.EitherT
 import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
-import org.scalatestplus.play.OneAppPerSuite
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc.Results.Redirect
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.redirectLocation
+import play.api.test.Helpers._
+import support.UnitSpec
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.ValidationIdValidator
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.{completionUrls, validationIds}
 import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
-import support.UnitSpec
 
 import scala.concurrent.ExecutionContext
-import scala.concurrent.ExecutionContext.Implicits.{global ⇒ executionContext}
-import play.api.test.Helpers._
+import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 
 class JourneyStartSpec
   extends UnitSpec
-    with OneAppPerSuite
+    with GuiceOneAppPerSuite
     with MockFactory {
 
   import PersonalDetailsSubmission._

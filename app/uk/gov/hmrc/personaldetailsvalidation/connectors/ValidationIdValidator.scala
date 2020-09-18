@@ -20,9 +20,8 @@ import javax.inject.{Inject, Singleton}
 import cats.data.EitherT
 import play.api.http.Status.{NOT_FOUND, OK}
 import uk.gov.hmrc.errorhandling.ProcessingError
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds

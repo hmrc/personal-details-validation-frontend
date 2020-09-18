@@ -28,9 +28,8 @@ import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class PersonalDetailsValidationStartControllerSpec
   extends UnitSpec

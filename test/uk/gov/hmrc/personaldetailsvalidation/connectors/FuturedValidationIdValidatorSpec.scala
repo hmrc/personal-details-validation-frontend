@@ -17,17 +17,15 @@
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 import generators.Generators.Implicits._
-import generators.Generators.nonEmptyStrings
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import play.api.Configuration
 import play.api.test.Helpers._
 import setups.connectors.HttpClientStubSetup
+import support.UnitSpec
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.validationIds
-import support.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 

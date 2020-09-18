@@ -34,7 +34,6 @@ import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.{higherKinds, implicitConversions}
 
 @Singleton
 private class FuturedPersonalDetailsSubmission @Inject()(personalDetailsPage: PersonalDetailsPage,

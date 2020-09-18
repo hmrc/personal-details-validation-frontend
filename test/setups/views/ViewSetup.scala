@@ -21,12 +21,10 @@ import org.jsoup.nodes.Document
 import org.scalamock.scalatest.MockFactory
 import play.api.Application
 import play.api.i18n.{Lang, Messages, MessagesApi}
-import play.api.mvc.{AnyContentAsEmpty, Request}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.views.ViewConfig
-
-import scala.language.implicitConversions
 
 abstract class ViewSetup(implicit app: Application) extends MockFactory {
 

@@ -67,24 +67,5 @@ class PdvMetricsSpec extends UnitSpec {
       override def toJson: String = ???
     }
 
-    private class MockCounter extends Counter {
-      private var count: Int = 0
-      override def inc(): Unit = count += 1
-      override def getCount: Long = count
-    }
-
-    private class MockMetricRegistry extends MetricRegistry {
-      private var counters = Map[String, MockCounter]()
-      override def counter(name: String): Counter = {
-        counters.get(name) match {
-          case Some(counter) =>
-            counter
-          case None =>
-            var newCounter = new MockCounter
-            counters + (name -> newCounter)
-            newCounter
-        }
-      }
-    }
   }
 }

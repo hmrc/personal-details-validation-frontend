@@ -23,7 +23,7 @@ import play.api.mvc.{Request, RequestHeader}
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import play.api.i18n.Messages.Implicits.applicationMessagesApi
 import play.twirl.api.Html
-import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
+import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 abstract class DwpI18nSupport @Inject()(appConfig: AppConfig)
   extends FrontendErrorHandler with I18nSupport {

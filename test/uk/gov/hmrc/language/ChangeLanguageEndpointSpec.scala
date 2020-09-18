@@ -23,7 +23,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
 import play.api.i18n.Messages.Implicits.applicationMessagesApi
 import play.api.i18n.{DefaultLangs, Lang}
-import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import setups.views.ViewConfigMockFactory
@@ -60,7 +60,6 @@ class ChangeLanguageEndpointSpec
 
     "return Redirect to a Referer with the default lang " +
       "if the Referer is present in the request but requested language is unknown" in new Setup {
-      val redirect = mock[Result]
 
       val result = await(controller.switchToLanguage("non-defined-lang")(request.withHeaders(REFERER -> "referer-url")))
 
