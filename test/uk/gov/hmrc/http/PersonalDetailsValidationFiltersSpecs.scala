@@ -19,8 +19,8 @@ package uk.gov.hmrc.http
 import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
 import play.api.mvc.EssentialFilter
-import uk.gov.hmrc.play.bootstrap.filters.FrontendFilters
 import support.UnitSpec
+import uk.gov.hmrc.play.bootstrap.frontend.filters.FrontendFilters
 
 class PersonalDetailsValidationFiltersSpecs extends UnitSpec with MockFactory {
 
@@ -40,9 +40,14 @@ class PersonalDetailsValidationFiltersSpecs extends UnitSpec with MockFactory {
 
     val originalFilters = Seq(filter1, filter2, filter3, filter4)
 
-    val configuration = Configuration.from(Map("security.headers.filter.enabled" -> false))
+    val configuration = Configuration.from(Map(
+      "security.headers.filter.enabled" -> false,
+      "bootstrap.filters.csrf.enabled" -> true,
+      "bootstrap.filters.whitelist.enabled" -> false,
+      "bootstrap.filters.sessionId.enabled" -> false
+    ))
 
-    val frontendFilters = new FrontendFilters(configuration, null, null, null, null, null, null, null, null, null, null, null){
+    val frontendFilters = new FrontendFilters(configuration, null, null, null, null, null, null, null, null, null, null, null, null, null){
       override val filters = originalFilters
     }
 

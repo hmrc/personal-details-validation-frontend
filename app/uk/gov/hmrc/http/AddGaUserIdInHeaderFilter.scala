@@ -34,6 +34,6 @@ class AddGaUserIdInHeaderFilter @Inject()(implicit val mat: Materializer) extend
     val newHeaders = gaCookieValue.orElse(gaUserIdInHeader).foldLeft(rh.headers) { case (headers, userId) =>
       headers.replace(googleAnalyticUserId -> userId)
     }
-    f(rh.copy(headers = newHeaders))
+    f(rh.withHeaders(newHeaders))
   }
 }

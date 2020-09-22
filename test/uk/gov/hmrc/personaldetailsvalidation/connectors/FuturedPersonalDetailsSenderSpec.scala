@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
-import com.kenshoo.play.metrics.Metrics
 import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
@@ -24,13 +23,12 @@ import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import setups.connectors.HttpClientStubSetup
+import support.UnitSpec
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
-import support.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 

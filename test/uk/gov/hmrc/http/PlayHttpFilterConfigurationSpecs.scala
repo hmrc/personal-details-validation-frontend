@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.http
 
-import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
 import support.UnitSpec
 
-class PlayHttpFilterConfigurationSpecs extends UnitSpec with OneAppPerSuite {
+class PlayHttpFilterConfigurationSpecs extends UnitSpec with GuiceOneAppPerSuite {
 
   "play application configuration" should {
     "point 'play.http.filters' to PersonalDetailsValidationFilters" in {
 
       val currentConfiguration = fakeApplication.injector.instanceOf[Configuration]
 
-      currentConfiguration.getString("play.http.filters") shouldBe Some("uk.gov.hmrc.http.PersonalDetailsValidationFilters")
+      currentConfiguration.getOptional[String]("play.http.filters") shouldBe Some("uk.gov.hmrc.http.PersonalDetailsValidationFilters")
 
     }
   }

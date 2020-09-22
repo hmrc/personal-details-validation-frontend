@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.language
 
-import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.MessagesApi
 import support.UnitSpec
 
-class MessagesEntriesSpec extends UnitSpec with OneAppPerSuite {
+class MessagesEntriesSpec extends UnitSpec with GuiceOneAppPerSuite {
 
   private val keysForPendingTranslations = Set(
     "global.error.InternalServerError500.message",

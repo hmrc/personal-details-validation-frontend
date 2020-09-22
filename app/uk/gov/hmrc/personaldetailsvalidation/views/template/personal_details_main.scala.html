@@ -22,10 +22,11 @@
 @import uk.gov.hmrc.personaldetailsvalidation.model.InitialPersonalDetails
 @import uk.gov.hmrc.views.html.components.date
 
-@(pageForm: Form[InitialPersonalDetails], completionUrl: CompletionUrl)(implicit request: Request[_],
-        messages: Messages, viewConfig: ViewConfig)
+@this(mainTemplate: main_template, dateField: date)
+@(pageForm: Form[InitialPersonalDetails], completionUrl: CompletionUrl
+)(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
-@main_template(title = messages("personal-details.title")) {
+@mainTemplate(title = messages("personal-details.title")) {
     <a id="identifiersBackLink" href="javascript:history.back()" class="link-back">@Messages("button.back.text")</a>
 
     @if(pageForm.hasGlobalErrors) {
@@ -80,7 +81,7 @@
         )
         </div>
         <div class="form-group">
-        @date(
+        @dateField(
             pageForm,
             fieldName = "dateOfBirth",
             labelKeyPrefix = "personal-details",

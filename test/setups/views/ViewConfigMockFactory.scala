@@ -17,17 +17,19 @@
 package setups.views
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatestplus.play.OneAppPerSuite
-import play.api.{Configuration, Environment}
-import play.api.i18n.{DefaultLangs, DefaultMessagesApi, MessagesApi}
-import uk.gov.hmrc.config.DwpMessagesApi
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.http.HttpConfiguration
+import play.api.i18n.DefaultLangsProvider
+import play.api.{ConfigLoader, Configuration, Environment}
+import uk.gov.hmrc.config.DwpMessagesApiProvider
 import uk.gov.hmrc.views.ViewConfig
 
 import scala.collection.JavaConverters._
 
-object ViewConfigMockFactory extends MockFactory with OneAppPerSuite {
+object ViewConfigMockFactory extends MockFactory with GuiceOneAppPerSuite {
 
   private def configuration: Configuration = {
+
     val configMock = mock[Configuration]
 
     (configMock.getString _).expects("assets.url", *).returning(Some("assets-url"))
@@ -36,21 +38,25 @@ object ViewConfigMockFactory extends MockFactory with OneAppPerSuite {
     (configMock.getString _).expects("optimizely.projectId", *).returning(None)
     (configMock.getString _).expects("google-analytics.token", *).returning(Some("ga-token"))
     (configMock.getString _).expects("google-analytics.host", *).returning(Some("ga-host"))
-    (configMock.getStringList _).expects("play.i18n.langs").returning(Some(List("en", "cy").asJava))
-    (configMock.getString _).expects("play.i18n.descriptions.en", *).returning(Some("english"))
-    (configMock.getString _).expects("play.i18n.descriptions.cy", *).returning(Some("cymraeg"))
+    (configMock.getStringList _).expects("play.i18n.langs").anyNumberOfTimes().returning(Some(List("en", "cy").asJava))
+    (configMock.getString _).expects("play.i18n.descriptions.en", *).anyNumberOfTimes().returning(Some("english"))
+    (configMock.getString _).expects("play.i18n.descriptions.en", None).anyNumberOfTimes().returning(Some("english"))
+    (configMock.getString _).expects("play.i18n.descriptions.cy", *).anyNumberOfTimes().returning(Some("cymraeg"))
+    (configMock.getString _).expects("play.i18n.descriptions.cy", None).anyNumberOfTimes().returning(Some("cymraeg"))
     (configMock.getString _).expects("dwp.originLabel", *).returning(Some("dwp-iv"))
+    (configMock.getOptional(_: String)(_:ConfigLoader[String])).expects("dwp.originLabel", *).returning(Some("dwp-iv"))
     (configMock.getString _).expects("dwp.getHelpUrl", *).returning(Some("someGetHelpUrl"))
 
     configMock
   }
 
-  private def messagesApi: DwpMessagesApi = {
+  private def messagesApi: DwpMessagesApiProvider = {
 
-    val dwpMessagesApi = new DwpMessagesApi(
+    val dwpMessagesApi = new DwpMessagesApiProvider(
       environment = Environment.simple(),
       configuration = app.configuration,
-      langs = new DefaultLangs(app.configuration)
+      langs = new DefaultLangsProvider(app.configuration).get,
+      HttpConfiguration()
     )
 
     dwpMessagesApi

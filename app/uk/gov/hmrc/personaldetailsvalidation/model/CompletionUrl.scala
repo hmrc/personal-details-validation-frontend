@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-import cats.implicits._
 import uk.gov.voa.valuetype.StringValue
 
 case class CompletionUrl private[CompletionUrl](value: String) extends StringValue

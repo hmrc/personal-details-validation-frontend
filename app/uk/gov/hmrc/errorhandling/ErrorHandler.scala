@@ -17,14 +17,12 @@
 package uk.gov.hmrc.errorhandling
 
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.MessagesApi
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.mvc.Http.Status._
 import play.twirl.api.Html
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.language.DwpI18nSupport
-import uk.gov.hmrc.play.bootstrap.http.FrontendErrorHandler
 import uk.gov.hmrc.views.ViewConfig
 import uk.gov.hmrc.views.html.template.error_template
 
@@ -32,14 +30,15 @@ import scala.concurrent.Future
 import scala.language.implicitConversions
 
 @Singleton
-class ErrorHandler @Inject()(appConfig: AppConfig)(implicit val dwpMessagesApi: DwpMessagesApi,
-                               viewConfig: ViewConfig)
+class ErrorHandler @Inject()(appConfig: AppConfig, errorTemplate: error_template)
+                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, viewConfig: ViewConfig)
   extends DwpI18nSupport(appConfig) {
+
   import ErrorHandler.bindingError
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
                                     (implicit request: Request[_]): Html =
-    error_template(pageTitle, heading, message)
+    errorTemplate(pageTitle, heading, message)
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
     statusCode match {

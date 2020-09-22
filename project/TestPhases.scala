@@ -9,7 +9,7 @@ private object TestPhases {
       test => Group(
         test.name,
         Seq(test),
-        SubProcess(ForkOptions(runJVMOptions = browserProperty.getOrElse("") :: s"-Dtest.name=${test.name}" :: Nil))
+        SubProcess(ForkOptions().withRunJVMOptions(Vector(browserProperty.getOrElse(""),s"-Dtest.name=${test.name}")))
       )
     }
   }

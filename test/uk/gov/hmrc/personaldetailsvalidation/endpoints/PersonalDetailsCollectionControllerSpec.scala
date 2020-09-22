@@ -19,51 +19,51 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import java.time.LocalDate
 import java.util.UUID
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import cats.data._
-import cats.instances.future._
-import scalamock.MockArgumentMatchers
-import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{personalDetailsObjects, personalDetailsObjectsWithPostcode}
+import cats.implicits.catsStdInstancesForFuture
 import generators.Generators.Implicits._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalacheck.Gen
-import org.scalamock.scalatest.MockFactory
+import org.scalamock.scalatest.AsyncMockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.Messages
+import play.api.i18n.{Lang, Messages}
 import play.api.mvc.Results._
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Request, Result}
+import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
+import scalamock.AsyncMockArgumentMatchers
 import setups.controllers.ResultVerifiers._
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
-import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, FailedPersonalDetailsValidation, NonEmptyString, PersonalDetails, PersonalDetailsValidation, PersonalDetailsWithNino, PersonalDetailsWithPostcode, SuccessfulPersonalDetailsValidation, ValidationId}
-import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext
 import support.UnitSpec
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
-import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{personalDetailsObjects, personalDetailsObjectsWithPostcode}
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
+import uk.gov.hmrc.personaldetailsvalidation.model._
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main}
+import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.views.ViewConfig
+
+import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 class PersonalDetailsCollectionControllerSpec
   extends UnitSpec
-    with MockFactory
-    with MockArgumentMatchers
+    with AsyncMockFactory
+    with AsyncMockArgumentMatchers
     with GuiceOneAppPerSuite
     with ScalaFutures {
 
   "showPage" should {
 
     "return OK with HTML body rendered using PersonalDetailsPage when the multi page flag is disabled" in new Setup {
-      (page.render(_: Boolean)(_: CompletionUrl, _: Request[_]))
+
+      (pageMock.render(_: Boolean)(_: CompletionUrl, _: Request[_]))
         .expects(false, completionUrl, request)
         .returning(Html("content"))
 
@@ -214,7 +214,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when firstname data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "lastName" -> "Ferguson",
         "dateOfBirth.day" -> "01",
@@ -238,7 +238,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when lastname data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "dateOfBirth.day" -> "01",
@@ -262,7 +262,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when day data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -286,7 +286,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when month data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -310,7 +310,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when year data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -334,7 +334,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when all dob data is missing" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson"
@@ -356,7 +356,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when day data is invalid" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -381,7 +381,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when month data is invalid" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -406,7 +406,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error when year data is invalid" in new Setup with BindFromRequestTooling {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showNinoForm(completionUrl).url
+
       val req = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -579,11 +579,11 @@ class PersonalDetailsCollectionControllerSpec
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitter.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
-      (personalDetailsSubmitter.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
+      (personalDetailsSubmitterMock.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
         .expects(*, *, *, *)
         .returns(expectedRedirect)
 
@@ -657,9 +657,8 @@ class PersonalDetailsCollectionControllerSpec
     "redirect to showPage if no details found" in new Setup {
       (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
       val validationId = ValidationId(UUID.randomUUID().toString)
-      val expectedRedirect = Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
 
-      val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](new FailedPersonalDetailsValidation(validationId))
+      val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](FailedPersonalDetailsValidation(validationId))
 
       val expectedPersonalDetails = PersonalDetailsWithNino(
         NonEmptyString("Jim"),
@@ -675,8 +674,8 @@ class PersonalDetailsCollectionControllerSpec
         "journeyId" -> "1234567890"
       )
 
-      (personalDetailsSubmitter.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
       val result = controller.submitNino(completionUrl)(req)
@@ -728,7 +727,6 @@ class PersonalDetailsCollectionControllerSpec
     "Bad Request if the initial details are not present in the request" in new Setup {
       (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
-      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false).url
       val result = controller.submitNino(completionUrl)(request.withFormUrlEncodedBody("nino" -> "AA000001A"))
 
       status(result) shouldBe BAD_REQUEST
@@ -757,11 +755,11 @@ class PersonalDetailsCollectionControllerSpec
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitter.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
-      (personalDetailsSubmitter.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
+      (personalDetailsSubmitterMock.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
         .expects(*, *, *, *)
         .returns(expectedRedirect)
 
@@ -835,7 +833,6 @@ class PersonalDetailsCollectionControllerSpec
     "Bad Request if the initial details are not present in the request" in new Setup {
       (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
-      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false).url
       val result = controller.submitPostcode(completionUrl)(request.withFormUrlEncodedBody("postcode" -> "BN11 1NN"))
 
       status(result) shouldBe BAD_REQUEST
@@ -844,7 +841,6 @@ class PersonalDetailsCollectionControllerSpec
     "redirect to showPage if no details found" in new Setup {
       (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
       val validationId = ValidationId(UUID.randomUUID().toString)
-      val expectedRedirect = Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
 
       val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](new FailedPersonalDetailsValidation(validationId))
 
@@ -862,8 +858,8 @@ class PersonalDetailsCollectionControllerSpec
         "journeyId" -> "1234567890"
       )
 
-      (personalDetailsSubmitter.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
       val result = controller.submitPostcode(completionUrl)(req)
@@ -919,8 +915,8 @@ class PersonalDetailsCollectionControllerSpec
 
       val redirectUrl = s"${completionUrl.value}?validationId=${UUID.randomUUID()}"
 
-      (personalDetailsSubmitter.submit(_: CompletionUrl, _: Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(completionUrl, false, request, instanceOf[HeaderCarrier], instanceOf[MdcLoggingExecutionContext])
+      (personalDetailsSubmitterMock.submit(_: CompletionUrl, _: Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(completionUrl, false, request, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returning(Future.successful(Redirect(redirectUrl)))
 
       val result = controller.submit(completionUrl, alternativeVersion = false)(request)
@@ -930,6 +926,7 @@ class PersonalDetailsCollectionControllerSpec
   }
 
   private trait Setup {
+
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
     val completionUrl = ValuesGenerators.completionUrls.generateOne
@@ -937,15 +934,38 @@ class PersonalDetailsCollectionControllerSpec
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
 
+    implicit val lang: Lang = Lang("en-GB")
     implicit val messages: Messages = Messages.Implicits.applicationMessages
 
-    val page: PersonalDetailsPage = mock[PersonalDetailsPage]
-    val personalDetailsSubmitter = mock[FuturedPersonalDetailsSubmission]
+    val pageMock: PersonalDetailsPage = mock[PersonalDetailsPage]
+    val personalDetailsSubmitterMock = mock[FuturedPersonalDetailsSubmission]
     val mockAppConfig = mock[AppConfig]
     implicit val mockViewConfig = app.injector.instanceOf[ViewConfig]
-    implicit val mockDwpMessagesApi = app.injector.instanceOf[DwpMessagesApi]
+    implicit val dwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
 
-    val controller = new PersonalDetailsCollectionController(page, personalDetailsSubmitter, mockAppConfig)
+    def stubMessagesControllerComponents() : MessagesControllerComponents = {
+      val stub = stubControllerComponents()
+      DefaultMessagesControllerComponents(
+        new DefaultMessagesActionBuilderImpl(stubBodyParser(AnyContentAsEmpty), dwpMessagesApiProvider.get)(stub.executionContext),
+        DefaultActionBuilder(stub.actionBuilder.parser)(stub.executionContext), stub.parsers, dwpMessagesApiProvider.get, stub.langs, stub.fileMimeTypes,
+        stub.executionContext
+      )
+    }
+
+    private val enter_your_details_postcode: enter_your_details_postcode = app.injector.instanceOf[enter_your_details_postcode]
+
+    private val enter_your_details_nino: enter_your_details_nino = app.injector.instanceOf[enter_your_details_nino]
+
+    private val personal_details_main: personal_details_main = app.injector.instanceOf[personal_details_main]
+
+    val controller = new PersonalDetailsCollectionController(
+      pageMock,
+      personalDetailsSubmitterMock,
+      mockAppConfig,
+      stubMessagesControllerComponents(),
+      enter_your_details_nino,
+      enter_your_details_postcode,
+      personal_details_main)
   }
 
   private trait BindFromRequestTooling {

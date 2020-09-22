@@ -18,32 +18,19 @@ package uk.gov.hmrc.language
 
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.Lang
-import play.api.mvc.{Action, AnyContent, Controller}
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApi}
-import uk.gov.hmrc.errorhandling.ErrorHandler
-import uk.gov.hmrc.play.language.LanguageUtils.FlashWithSwitchIndicator
-import uk.gov.hmrc.language.DwpI18nSupport
-
-import scala.language.implicitConversions
+import play.api.mvc.ControllerComponents
+import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
+import uk.gov.hmrc.views.ViewConfig
 
 @Singleton
-class ChangeLanguageEndpoint @Inject()(config: LanguagesConfig,
-                                       errorHandler: ErrorHandler,
-                                       appConfig: AppConfig)(implicit val dwpMessagesApi: DwpMessagesApi)
-  extends DwpI18nSupport(appConfig)
-    with Controller {
+class ChangeLanguageEndpoint @Inject()(viewConfig: ViewConfig,
+                                       languageUtils: LanguageUtils,
+                                       override protected val controllerComponents: ControllerComponents)
+  extends LanguageController(viewConfig.configuration, languageUtils, controllerComponents) {
 
-  def switchTo(language: String): Action[AnyContent] = Action { implicit request =>
-    request.headers.get(REFERER) match {
-      case Some(redirectUrl) =>
-        Redirect(redirectUrl)
-          .withLang(language)
-          .flashing(FlashWithSwitchIndicator)
-      case None =>
-        BadRequest(errorHandler.internalServerErrorTemplate)
-    }
-  }
+  override val languageMap: Map[String, Lang] = viewConfig.languageMap
 
-  private implicit def toLang(langCode: String): Lang =
-    config.languagesMap.getOrElse(langCode, Lang.defaultLang)
+  override protected def fallbackURL: String =
+    throw new RuntimeException("No Referrer found in request header - cannot redirect")
+
 }

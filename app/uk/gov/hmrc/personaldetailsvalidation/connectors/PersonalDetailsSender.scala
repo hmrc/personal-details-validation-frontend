@@ -18,20 +18,15 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 import cats.data.EitherT
 import javax.inject.{Inject, Singleton}
-
 import play.api.http.Status.CREATED
 import play.api.libs.json.{Format, Json, Writes}
 import uk.gov.hmrc.errorhandling.ProcessingError
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import uk.gov.voa.valuetype.play.formats.ValueTypeFormat._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
-
-sealed trait PersonalDetail
 
 private[personaldetailsvalidation] trait PersonalDetailsSender[Interpretation[_]] {
 
@@ -53,21 +48,18 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
   override def submitValidationRequest(personalDetails: PersonalDetails)
                                       (implicit headerCarrier: HeaderCarrier,
                                        executionContext: ExecutionContext): EitherT[Future, ProcessingError, PersonalDetailsValidation] = EitherT {
-    httpClient.POST(url, body = Json.toJson(personalDetails)).recover(toProcessingError)
+    httpClient.POST(url, body = Json.toJson(personalDetails)(personalDetailsWrites)).recover(toProcessingError)
   }
 
-  private implicit val personalDetailsSubmissionReads: HttpReads[Either[ProcessingError, PersonalDetailsValidation]] = new HttpReads[Either[ProcessingError, PersonalDetailsValidation]] {
-
-    override def read(method: String, url: String, response: HttpResponse): Either[ProcessingError, PersonalDetailsValidation] =
-      response.status match {
-        case CREATED => Right(response.json.as[PersonalDetailsValidation])
-        case other => Left(ProcessingError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
-      }
-  }
+  private implicit val personalDetailsSubmissionReads: HttpReads[Either[ProcessingError, PersonalDetailsValidation]] =
+    (method: String, url: String, response: HttpResponse) => response.status match {
+      case CREATED => Right(response.json.as[PersonalDetailsValidation])
+      case other => Left(ProcessingError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
+    }
 
   private implicit val nonEmptyStringFormat: Format[NonEmptyString] = format(NonEmptyString.apply)
 
-  private implicit val personalDetailsWrites = Writes[PersonalDetails] {
+  private implicit val personalDetailsWrites: Writes[PersonalDetails] = Writes[PersonalDetails] {
     case personalDetails: PersonalDetailsWithNino =>
       Json.obj(
         "firstName" -> personalDetails.firstName,
