@@ -28,7 +28,7 @@ class ChangeLanguageEndpoint @Inject()(viewConfig: ViewConfig,
                                        override protected val controllerComponents: ControllerComponents)
   extends LanguageController(viewConfig.configuration, languageUtils, controllerComponents) {
 
-  override def languageMap: Map[String, Lang] = viewConfig.languageMap
+  override val languageMap: Map[String, Lang] = viewConfig.languageMap
 
   override protected def fallbackURL: String =
     throw new RuntimeException("No Referrer found in request header - cannot redirect")
