@@ -47,6 +47,17 @@
 @scriptElement = {
     <script src="@controllers.routes.Assets.at("javascripts/scripts.js")" type="text/javascript"></script>
     <script src="@controllers.routes.Assets.at("javascripts/ga-events.js")" type="text/javascript"></script>
+    <script id="timeoutDialog">
+            window.GOVUK.timeoutDialog({
+                timeout: @viewConfig.timeout,
+                countdown: @viewConfig.timeoutCountdown,
+                keepAliveUrl: '',
+                signOutUrl: '',
+                title: "@messages("timeout-dialog.title")",
+                message: "@messages("timeout-dialog.p1")",
+                keepAliveButtonText: "@messages("timeout-dialog.button")"
+            });
+    </script>
 }
 
 @headerNavLinks = {}

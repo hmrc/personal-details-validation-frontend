@@ -39,5 +39,9 @@ validation.error-summary.link-text=contact HMRC
 validation.error-summary.after-link-text=to get help
 validation.error-summary.heading=There is a problem
 
+timeout-dialog.title=You will be timed out soon
+timeout-dialog.p1=You will be timed out if you do not respond in
+timeout-dialog.button=Continue
+
 # errors
 global.error.InternalServerError500.title=Sorry, we are experiencing technical difficulties
