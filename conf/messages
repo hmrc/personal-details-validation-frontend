@@ -1,7 +1,7 @@
 continue.button.text=Continue
 button.back.text=Back
 error.prefix=Error:
-error-summary.heading=There are errors on the page
+error-summary.heading=There is a problem
 personal-details.title=Enter your details - Confirm your identity
 personal-details.faded-heading=Confirm your identity
 personal-details.header=Enter your details
