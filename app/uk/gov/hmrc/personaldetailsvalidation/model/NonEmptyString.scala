@@ -16,8 +16,14 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-import uk.gov.voa.valuetype.StringValue
+import play.api.libs.json.Format
+import uk.gov.hmrc.play.json.Mappings
 
 case class NonEmptyString(value: String) extends StringValue {
   require(value.trim.length > 0, s"$typeName cannot be empty")
+}
+
+object NonEmptyString {
+  private val mapping = Mappings.map[String, NonEmptyString](NonEmptyString(_), _.value)
+  implicit val nonEmptyStringFormat: Format[NonEmptyString] = mapping.jsonFormat
 }

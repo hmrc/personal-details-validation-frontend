@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.voa.valuetype.tooling.generators
+package support.generators
 
 import org.scalacheck.{Arbitrary, Gen}
 
@@ -26,10 +26,10 @@ object GeneratorOf {
   }
 
   def nonEmptyStrings(maxLength: Int = 10) = strings(1, maxLength)
-
-  val positiveInt = Gen.chooseNum(1, Int.MaxValue)
-
-  val positiveLong = Gen.chooseNum(1L, Long.MaxValue)
-
-  val positiveBigDecimal = Arbitrary.arbBigDecimal.arbitrary.retryUntil(_ > 0)
+//
+//  val positiveInt = Gen.chooseNum(1, Int.MaxValue)
+//
+//  val positiveLong = Gen.chooseNum(1L, Long.MaxValue)
+//
+//  val positiveBigDecimal = Arbitrary.arbBigDecimal.arbitrary.retryUntil(_ > 0)
 }

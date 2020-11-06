@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.voa.valuetype.constraints
+package uk.gov.hmrc.personaldetailsvalidation.model
 
-import uk.gov.voa.valuetype.StringValue
+trait StringValue extends TypeName {
 
-trait NonEmpty {
+  def value: String
 
-  self: StringValue =>
-
-  require(value.length > 0, s"$typeName cannot be empty")
+  override def toString = value
 
 }
