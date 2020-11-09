@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.voa.valuetype
+package uk.gov.hmrc.personaldetailsvalidation.model
 
 trait TypeName {
 

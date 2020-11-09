@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.voa.valuetype.constraints
+package uk.gov.hmrc.personaldetailsvalidation.model
 
-import uk.gov.voa.valuetype.{IntValue, LongValue, ValueType}
+import support.UnitSpec
 
-trait PositiveInt extends IntValue {
+private case class NotNestedType(value: String) extends StringValue
 
-  require(value > 0, s"$typeName's value has to be positive")
+class TypeNameSpec extends UnitSpec {
 
-}
+  "TypeName" should {
 
-trait PositiveLong extends LongValue {
+    "provide type name" in {
+      NotNestedType("abc").typeName shouldBe "NotNestedType"
+    }
 
-  require(value > 0, s"$typeName's value has to be positive")
+    "provide type name without dollar sign for nested types" in {
+      case class NestedType(value: String) extends StringValue
 
-}
+      NestedType("abc").typeName shouldBe "NestedType"
+    }
 
-trait PositiveBigDecimal {
-
-  self: ValueType[BigDecimal] =>
-
-  require(value > 0, s"$typeName's value has to be positive")
-
+  }
 }

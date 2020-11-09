@@ -16,6 +16,6 @@
 
 package uk.gov.hmrc.http
 
-import uk.gov.voa.valuetype.StringValue
+import uk.gov.hmrc.personaldetailsvalidation.model.StringValue
 
 case class Host(value: String) extends StringValue

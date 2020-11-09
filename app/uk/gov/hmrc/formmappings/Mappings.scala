@@ -28,12 +28,12 @@ object Mappings {
     optional(text)
       .transform[Option[String]](emptyStringAsNone, emptyStringAsNone)
       .verifying(error, _.isDefined)
-      .transform[NonEmptyString](validatedNonBlankString => validatedNonBlankString.map(NonEmptyString).get, nonEmptyString => Some(nonEmptyString.value))
+      .transform[NonEmptyString](validatedNonBlankString => validatedNonBlankString.map(NonEmptyString.apply).get, nonEmptyString => Some(nonEmptyString.value))
 
   val optionalText: Mapping[Option[NonEmptyString]] =
     optional(text)
       .transform[Option[String]](emptyStringAsNone, emptyStringAsNone)
-      .transform[Option[NonEmptyString]](validatedNonBlankString => validatedNonBlankString.map(NonEmptyString), nonEmptyString => nonEmptyString.map(_.value))
+      .transform[Option[NonEmptyString]](validatedNonBlankString => validatedNonBlankString.map(NonEmptyString.apply), nonEmptyString => nonEmptyString.map(_.value))
 
   private def emptyStringAsNone(maybeValue: Option[String]): Option[String] = maybeValue.map(_.trim).flatMap {
     case "" => Option.empty[String]
