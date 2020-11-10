@@ -32,18 +32,21 @@
     border-left: 5px solid #d4351c;
 
     input[type=text], input[type=number] {
-        border: 4px solid #d4351c;
+        border: 2px solid #d4351c;
 
         &:focus {
-            border-color: #0b0c0c;
-            -webkit-box-shadow: none;
-            box-shadow: none;
+            border: 2px solid black;
+            outline: 3px solid #fd0;
+            outline-offset: 0;
+            -webkit-box-shadow: inset 0 0 0 2px;
+            box-shadow: inset 0 0 0 2px;
         }
     }
 }
 
 .input--medium:focus,
 .input--small:focus {
+    border: 2px solid black;
     outline: 3px solid #fd0;
     outline-offset: 0;
     -webkit-box-shadow: inset 0 0 0 2px;
@@ -70,11 +73,9 @@
     color: #505a5f; // For AAA color contrast
 }
 
-// =========================
-// focus states
-// changes made to bring in line with
-// https://designnotes.blog.gov.uk/2019/07/29/weve-made-the-gov-uk-design-system-more-accessible/
-// =========================
-
-@import 'partials/_focus';
-@import 'partials/_palette';
+.error-notification,
+.flash.error-summary a,
+.flash.error-summary .link-style,
+.flash.error-summary .button--link-style {
+    color: #d4351c;
+}
