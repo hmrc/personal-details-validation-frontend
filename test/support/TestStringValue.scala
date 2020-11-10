@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.voa.valuetype
+package support
+
+import uk.gov.hmrc.personaldetailsvalidation.model.StringValue
 
 case class TestStringValue(value: String) extends StringValue
 
-case class TestIntValue(value: Int) extends IntValue
-
-case class TestLongValue(value: Long) extends LongValue
-
-case class TestBooleanValue(value: Boolean) extends BooleanValue
-
-case class TestBigDecimalValue(value: BigDecimal) extends BigDecimalValue
-
-case class TestRoundedBigDecimalValue(nonRoundedValue: BigDecimal) extends RoundedBigDecimalValue {
-
-  protected[this] def isOfThisInstance(other: RoundedBigDecimalValue) =
-    other.isInstanceOf[TestRoundedBigDecimalValue]
-
-}
