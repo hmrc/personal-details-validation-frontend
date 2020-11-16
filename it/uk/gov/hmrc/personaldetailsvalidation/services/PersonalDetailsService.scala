@@ -6,8 +6,8 @@ import java.util.UUID
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status.CREATED
-import play.api.libs.json.{JsValue, Json}
+import play.api.http.Status.{CREATED, FAILED_DEPENDENCY}
+import play.api.libs.json.{JsString, JsValue, Json}
 import uk.gov.hmrc.domain.Nino
 
 object PersonalDetailsService {
@@ -20,6 +20,7 @@ object PersonalDetailsService {
 
   def validatesSuccessfully(personalDetails: PersonalDetailsData): Unit = validate(personalDetails, validationSuccess = true)
   def validatesUnsuccessfully(personalDetails: PersonalDetailsData): Unit = validate(personalDetails, validationSuccess = false)
+  def validatesDeceased(personalDetails: PersonalDetailsData): Unit = validateDeceased(personalDetails)
 
   private def validate(personalDetails: PersonalDetailsData, validationSuccess: Boolean): Unit = {
     val validationId = UUID.randomUUID().toString
@@ -31,6 +32,15 @@ object PersonalDetailsService {
           "validationStatus" -> (if(validationSuccess) "success" else "failure") ,
           "id" -> validationId
         )
+      )
+  }
+
+  private def validateDeceased(personalDetails: PersonalDetailsData): Unit = {
+
+    `POST /personal-details-validation`(personalDetails)
+      .toReturn(
+        status = FAILED_DEPENDENCY,
+        body = JsString("Request to create account for a deceased user")
       )
   }
 

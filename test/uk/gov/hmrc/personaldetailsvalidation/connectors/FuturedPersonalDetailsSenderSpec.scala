@@ -24,7 +24,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import setups.connectors.HttpClientStubSetup
 import support.UnitSpec
-import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.errorhandling._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators._
@@ -74,7 +74,7 @@ class FuturedPersonalDetailsSenderSpec
           .withPayload(payloadWithNino)
           .returning(unexpectedStatus, "some response body")
 
-        connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
+        connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Left(TechnicalError(
           s"Unexpected response from POST http://host/personal-details-validation with status: '$unexpectedStatus' and body: some response body"
         ))
       }
@@ -87,7 +87,7 @@ class FuturedPersonalDetailsSenderSpec
         .withPayload(payloadWithNino)
         .throwing(exception)
 
-      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
+      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Left(TechnicalError(
         s"Call to POST http://host/personal-details-validation threw: $exception"
       ))
     }
@@ -126,7 +126,7 @@ class FuturedPersonalDetailsSenderSpec
           .withPayload(payloadWithPostcode)
           .returning(unexpectedStatus, "some response body")
 
-        connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Left(ProcessingError(
+        connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Left(TechnicalError(
           s"Unexpected response from POST http://host/personal-details-validation with status: '$unexpectedStatus' and body: some response body"
         ))
       }
@@ -139,7 +139,7 @@ class FuturedPersonalDetailsSenderSpec
         .withPayload(payloadWithPostcode)
         .throwing(exception)
 
-      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Left(ProcessingError(
+      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Left(TechnicalError(
         s"Call to POST http://host/personal-details-validation threw: $exception"
       ))
     }

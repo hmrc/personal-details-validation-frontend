@@ -26,7 +26,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import support.UnitSpec
-import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.errorhandling._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.ValidationIdValidator
@@ -78,12 +78,12 @@ class JourneyStartSpec
       "but 'validationId' validation returns an error" in new Setup {
       implicit val requestWithValidationId = request.withSession(validationIdSessionKey -> validationId.value)
 
-      val validationError = ProcessingError("some message")
+      val validationError = TechnicalError("some message")
       (validationIdValidator.verify(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
         .returning(EitherT.leftT[Id, Boolean](validationError))
 
-      (logger.error(_: ProcessingError))
+      (logger.error(_: TechnicalError))
         .expects(validationError)
 
       private val result: Id[Result] = journeyStart.findRedirect(completionUrl)

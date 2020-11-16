@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
-import uk.gov.hmrc.personaldetailsvalidation.pages.{CompletionPage, ErrorPage}
+import uk.gov.hmrc.personaldetailsvalidation.pages.{CompletionDeceasedPage, CompletionPage, ErrorPage}
 import uk.gov.hmrc.personaldetailsvalidation.pages.PersonalDetailsPage._
 import uk.gov.hmrc.personaldetailsvalidation.services.PersonalDetailsService
 import uk.gov.hmrc.personaldetailsvalidation.services.PersonalDetailsService.PersonalDetailsData
@@ -373,6 +373,35 @@ class PersonalDetailsPageISpec
       And("I should see age error")
       errorPage.summaryErrors shouldBe List("You must be at least 15 years and 9 months old to use this service")
     }
+  }
+
+  scenario("validation failed with Deceased User when personal Details page submitted with valid personal details containing nino") {
+
+    val testData = PersonalDetailsData(
+      firstName = NonEmptyString("Jim").value,
+      lastName = NonEmptyString("Ferguson").value,
+      nino = Some(Nino("AA000003D")),
+      dateOfBirth = LocalDate.of(1948, 4, 23)
+    )
+
+    When("I navigate to /personal-details-validation/personal-details with valid completionUrl")
+    goTo(s"/personal-details?completionUrl=$completionUrl")
+
+    Then("I should see the Personal Details page")
+    val page = personalDetailsPage(completionUrl)
+    on(page)
+
+    When("I fill in the fields with invalid data")
+    page.fillInWithNino(testData.firstName, testData.lastName, testData.nino.get, testData.dateOfBirth)
+
+    And("I know the personal-details-validation service does not validate the data successfully")
+    PersonalDetailsService validatesDeceased testData
+
+    And("when I submit the data")
+    page.submitForm()
+
+    Then("I should get redirected to my completion url")
+    on(CompletionDeceasedPage(completionUrl))
   }
 
   private val completionUrl = URLEncoder.encode("/foobar", "utf-8")

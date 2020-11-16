@@ -18,9 +18,9 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 import cats.data.EitherT
 import javax.inject.{Inject, Singleton}
-import play.api.http.Status.CREATED
+import play.api.http.Status.{CREATED, FAILED_DEPENDENCY}
 import play.api.libs.json.{Format, Json, Writes}
-import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.errorhandling._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import scala.concurrent.{ExecutionContext, Future}
@@ -52,7 +52,8 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
   private implicit val personalDetailsSubmissionReads: HttpReads[Either[ProcessingError, PersonalDetailsValidation]] =
     (method: String, url: String, response: HttpResponse) => response.status match {
       case CREATED => Right(response.json.as[PersonalDetailsValidation])
-      case other => Left(ProcessingError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
+      case FAILED_DEPENDENCY if response.body.toLowerCase.contains("request to create account for a deceased user") => Left(FailedDependencyError("Deceased User"))
+      case other => Left(TechnicalError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
     }
 
   private implicit val personalDetailsWrites: Writes[PersonalDetails] = Writes[PersonalDetails] {
@@ -73,6 +74,7 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
   }
 
   private val toProcessingError: PartialFunction[Throwable, Either[ProcessingError, PersonalDetailsValidation]] = {
-    case exception => Left(ProcessingError(s"Call to POST $url threw: $exception"))
+    case fde: FailedDependencyError if fde.message.toLowerCase.contains("request to create account for a deceased user")=> Left(FailedDependencyError("Deceased user"))
+    case exception => Left(TechnicalError(s"Call to POST $url threw: $exception"))
   }
 }

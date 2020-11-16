@@ -16,14 +16,18 @@
 
 package uk.gov.hmrc.errorhandling
 
-import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter
+sealed trait ProcessingError {
+  def message: String
 
-case class ProcessingError(message: String)
+  override def toString: String = message
 
-object ProcessingError {
-  implicit val queryParamCOnverter: QueryParamConverter[ProcessingError] = new QueryParamConverter[ProcessingError] {
-    override def toQueryParam(queryParam: ProcessingError) = {
-      Map("technicalError" -> Seq(""))
-    }
-  }
+  def toQueryParam: Map[String, Seq[String]] = ???
+}
+
+case class TechnicalError(message: String) extends ProcessingError {
+  override def toQueryParam: Map[String, Seq[String]] = Map("technicalError" -> Seq(""))
+}
+
+case class FailedDependencyError(message: String) extends ProcessingError {
+  override def toQueryParam: Map[String, Seq[String]] = Map("deceased" -> Seq("true"))
 }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.logging
 
 import org.scalamock.scalatest.MixedMockFactory
 import play.api.LoggerLike
-import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.errorhandling._
 import support.UnitSpec
 
 class LoggerSpec
@@ -28,7 +28,7 @@ class LoggerSpec
   "error" should {
 
     "delegate to the given logger" in new Setup {
-      val error = ProcessingError("message")
+      val error = TechnicalError("message")
 
       underlyingLogger.expects('error)(argAssert {
         (message: () => String) =>

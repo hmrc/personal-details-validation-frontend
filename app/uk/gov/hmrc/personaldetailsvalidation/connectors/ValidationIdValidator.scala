@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 import javax.inject.{Inject, Singleton}
 import cats.data.EitherT
 import play.api.http.Status.{NOT_FOUND, OK}
-import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.errorhandling._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
 
@@ -53,11 +53,11 @@ private[personaldetailsvalidation] class FuturedValidationIdValidator @Inject()(
     override def read(method: String, url: String, response: HttpResponse): Either[ProcessingError, Boolean] = response.status match {
       case OK => Right(true)
       case NOT_FOUND => Right(false)
-      case other => Left(ProcessingError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
+      case other => Left(TechnicalError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
     }
   }
 
   private def toProcessingError(url: String): PartialFunction[Throwable, Either[ProcessingError, Boolean]] = {
-    case exception => Left(ProcessingError(s"Call to GET $url threw: $exception"))
+    case exception => Left(TechnicalError(s"Call to GET $url threw: $exception"))
   }
 }

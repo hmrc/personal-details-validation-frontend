@@ -31,7 +31,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import support.UnitSpec
-import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.errorhandling._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.PersonalDetailsSender
@@ -146,7 +146,7 @@ class PersonalDetailsSubmissionSpec
         .expects(usePostCode, request, completionUrl)
         .returning(Right(personalDetails))
 
-      val error = ProcessingError("some message")
+      val error = TechnicalError("some message")
       (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
         .expects(personalDetails, headerCarrier, executionContext)
         .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
@@ -175,7 +175,7 @@ class PersonalDetailsSubmissionSpec
         .expects(usePostCode, request, completionUrl)
         .returning(Right(personalDetails))
 
-      val error = ProcessingError("some message")
+      val error = TechnicalError("some message")
       (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
         .expects(personalDetails, headerCarrier, executionContext)
         .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
@@ -238,7 +238,7 @@ class PersonalDetailsSubmissionSpec
           .expects(usePostcodeForm, request, completionUrl)
           .returning(Right(personalDetails))
 
-        val error = ProcessingError("some message")
+        val error = TechnicalError("some message")
         (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
           .expects(personalDetails, headerCarrier, executionContext)
           .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
@@ -252,6 +252,36 @@ class PersonalDetailsSubmissionSpec
 
         result.session.get(validationIdSessionKey) shouldBe None
       }
+    }
+
+
+    "bind the request to PersonalDetailsWithNino, " +
+      "post it to the validation service, " +
+      "the service returns a FAILED_DEPENDENCY error" +
+      "and we do not update the GA counter for Nino" in new Setup {
+
+      val completionUrl = completionUrls.generateOne
+      val personalDetails = personalDetailsObjects.generateOne
+      val usePostCode = false
+
+      val ninoCounterBefore = pdvMetrics.ninoCounter
+      val postCodeCounterBefore = pdvMetrics.postCodeCounter
+
+      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(usePostCode, request, completionUrl)
+        .returning(Right(personalDetails))
+
+      val error = FailedDependencyError("User Deceased")
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, headerCarrier, executionContext)
+        .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
+
+      (logger.error(_: ProcessingError)).expects(error)
+
+      submitter.submit(completionUrl, usePostCode)
+
+      ninoCounterBefore shouldBe pdvMetrics.ninoCounter
+      postCodeCounterBefore shouldBe pdvMetrics.postCodeCounter
     }
   }
 

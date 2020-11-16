@@ -23,7 +23,7 @@ import play.api.Configuration
 import play.api.test.Helpers._
 import setups.connectors.HttpClientStubSetup
 import support.UnitSpec
-import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.errorhandling._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.validationIds
 
@@ -59,7 +59,7 @@ class FuturedValidationIdValidatorSpec
         expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
           .returning(unexpectedStatus, "some response body")
 
-        validationIdValidator.verify(validationId).value.futureValue shouldBe Left(ProcessingError(
+        validationIdValidator.verify(validationId).value.futureValue shouldBe Left(TechnicalError(
           s"Unexpected response from GET $baseUrl/personal-details-validation/$validationId with status: '$unexpectedStatus' and body: some response body"
         ))
       }
@@ -71,7 +71,7 @@ class FuturedValidationIdValidatorSpec
       expectGet(toUrl = s"$baseUrl/personal-details-validation/$validationId")
         .throwing(exception)
 
-      validationIdValidator.verify(validationId).value.futureValue shouldBe Left(ProcessingError(
+      validationIdValidator.verify(validationId).value.futureValue shouldBe Left(TechnicalError(
         s"Call to GET $baseUrl/personal-details-validation/$validationId threw: $exception"
       ))
     }
