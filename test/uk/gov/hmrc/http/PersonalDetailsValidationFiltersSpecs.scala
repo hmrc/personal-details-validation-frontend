@@ -43,7 +43,7 @@ class PersonalDetailsValidationFiltersSpecs extends UnitSpec with MockFactory {
     val configuration = Configuration.from(Map(
       "security.headers.filter.enabled" -> false,
       "bootstrap.filters.csrf.enabled" -> true,
-      "bootstrap.filters.whitelist.enabled" -> false,
+      "bootstrap.filters.allowlist.enabled" -> false,
       "bootstrap.filters.sessionId.enabled" -> false
     ))
 
