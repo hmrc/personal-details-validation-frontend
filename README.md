@@ -1,8 +1,14 @@
 # personal-details-validation-frontend
 
-[![Build Status](https://travis-ci.org/hmrc/personal-details-validation-frontend.svg)](https://travis-ci.org/hmrc/personal-details-validation-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/personal-details-validation-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/personal-details-validation-frontend/_latestVersion)
-
 personal-details-validation-frontend service is used to capture name, surname, date of birth and either nino or postcode of the user and make it available to all the services.
+
+
+### Test
+```
+sbt test it:test
+```
+The integration tests require chromedriver or firefoxdriver. https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver#quick-installation
+
 
 # API
 
@@ -28,13 +34,3 @@ Also, if there is technical error in personal-details-validation component, then
 |/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&validationId=0018941f-fed3-47db-a05c-8b55e941324b   |
 |/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&technicalError                                      |
     
-    
-### How to build
-```
-sbt test it:test
-```
-The integration test passes on Firefox 46.0.1 version. This is the version installed on Jenkins agent. Chromedriver is not used because Jenkins (ci-open) was having problem with chromedriver. Squid proxy was intercepting and webops had no clue why it is doing so.
-    
-### License
-
-This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
