@@ -33,4 +33,7 @@ Also, if there is technical error in personal-details-validation component, then
 |/my-service/pdv-complete       | /my-service/pdv-complete?validationId=0018941f-fed3-47db-a05c-8b55e941324b       |
 |/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&validationId=0018941f-fed3-47db-a05c-8b55e941324b   |
 |/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&technicalError                                      |
-    
+
+## Test Repositories
+
+The personal details validation frontend service is tested by the [personal details validation acceptance tests](https://github.com/hmrc/personal-details-validation-acceptance-tests). If any changes are made to this service please run those tests before raising a PR. Information on how to run the tests are located in the respective repository readme.
