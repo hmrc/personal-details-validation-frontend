@@ -192,4 +192,21 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   def submit(completionUrl: CompletionUrl, alternativeVersion: Boolean): Action[AnyContent] = Action.async { implicit request =>
     personalDetailsSubmission.submit(completionUrl, alternativeVersion)
   }
+
+  /**
+    * redirect user to the completionUrl with a timeout status
+    */
+  def redirectAfterTimeout(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Redirect(completionUrl.value, Map("userTimeout" -> Seq(""))))
+  }
+
+  /**
+    * Endpoint which just has the side-effect of extending the Play session to avoid (the 15 min) timeout
+    *
+    * */
+  def keepAlive: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok("OK"))
+  }
+
+
 }
