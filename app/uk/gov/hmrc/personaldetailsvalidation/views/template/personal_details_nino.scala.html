@@ -26,7 +26,7 @@
 @(pageForm: Form[PersonalDetailsWithNino], completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
-@mainTemplate(title = errorPrefix(pageForm) + messages("personal-details.title")) {
+@mainTemplate(title = errorPrefix(pageForm) + messages("personal-details.title"), completionUrl = completionUrl) {
 
     @if(pageForm.hasGlobalErrors) {
         <div class="flash error-summary error-summary--show" id="error-summary-display" role="alert" aria-labelledby="error-summary-display" tabindex="-1">

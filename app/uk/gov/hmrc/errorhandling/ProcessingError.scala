@@ -21,9 +21,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter
 case class ProcessingError(message: String)
 
 object ProcessingError {
-  implicit val queryParamCOnverter: QueryParamConverter[ProcessingError] = new QueryParamConverter[ProcessingError] {
-    override def toQueryParam(queryParam: ProcessingError) = {
-      Map("technicalError" -> Seq(""))
-    }
+  implicit val queryParamConverter: QueryParamConverter[ProcessingError] = (_: ProcessingError) => {
+    Map("technicalError" -> Seq(""))
   }
 }

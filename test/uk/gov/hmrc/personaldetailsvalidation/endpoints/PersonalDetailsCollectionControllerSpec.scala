@@ -925,6 +925,28 @@ class PersonalDetailsCollectionControllerSpec
     }
   }
 
+  "keep-alive" should {
+
+    "return 200 OK" in new Setup {
+       private val result = controller.keepAlive()(request)
+       status(result) shouldBe 200
+    }
+
+  }
+
+  "redirect-after-timeout" should {
+
+    "redirect user to continueUrl with userTimeout parameter" in new Setup {
+
+      private val redirectUrl = s"${completionUrl.value}?userTimeout="
+
+      private val result = controller.redirectAfterTimeout(completionUrl)(request)
+      status(result) shouldBe 303
+      redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
+    }
+
+  }
+
   private trait Setup {
 
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
