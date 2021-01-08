@@ -1,5 +1,5 @@
 @*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
 @(pageForm: Form[NinoDetails], completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
-@mainTemplate(title = messages("personal-details.title")) {
+@mainTemplate(title = messages("personal-details.title"), completionUrl = completionUrl) {
     <a id="identifiersBackLink" href="javascript:history.back()" class="link-back">@Messages("button.back.text")</a>
 
     @if(pageForm.hasErrors) {

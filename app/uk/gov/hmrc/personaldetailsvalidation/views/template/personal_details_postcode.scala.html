@@ -1,5 +1,5 @@
 @*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
 @(pageForm: Form[PersonalDetailsWithPostcode], completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
-@mainTemplate(title = errorPrefix(pageForm) + messages("personal-details.title")) {
+@mainTemplate(title = errorPrefix(pageForm) + messages("personal-details.title"), completionUrl = completionUrl) {
 
     @if(pageForm.hasGlobalErrors) {
         <div class="flash error-summary error-summary--show" id="error-summary-display" role="alert" aria-labelledby="error-summary-display" tabindex="-1">

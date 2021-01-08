@@ -1,8 +1,14 @@
 # personal-details-validation-frontend
 
-[![Build Status](https://travis-ci.org/hmrc/personal-details-validation-frontend.svg)](https://travis-ci.org/hmrc/personal-details-validation-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/personal-details-validation-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/personal-details-validation-frontend/_latestVersion)
-
 personal-details-validation-frontend service is used to capture name, surname, date of birth and either nino or postcode of the user and make it available to all the services.
+
+
+### Test
+```
+sbt test it:test
+```
+The integration tests require chromedriver or firefoxdriver. https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver#quick-installation
+
 
 # API
 
@@ -14,6 +20,9 @@ personal-details-validation-frontend service is used to capture name, surname, d
 Displays a page to capture user's details. After capturing user's details, these details are checked against citizen details database. 
 If they match, this information is stored by [personal-details-validation](https://github.com/hmrc/personal-details-validation) backend service and the user is redirected to the completionUrl with `validationId` query parameter. It is a UUID and it can be used to retrieve the validation outcome and personal-details (if validation was successful) later using [personal-details-validation](https://github.com/hmrc/personal-details-validation#get-personal-details-validationvalidationid) backend service.
 If the details do not match, then the user is shown the blank form with an error at the top of the form.
+
+If the user does not interact with the browser for 15 minutes, and they ignore the modal timeout dialog, then they will be redirected back to the completionUrl with the `userTimeout` query parameter.
+
 Also, if there is technical error in personal-details-validation component, then user is redirected to the completionUrl with `technicalError` query parameter.
 
 ### Parameters
@@ -27,14 +36,8 @@ Also, if there is technical error in personal-details-validation component, then
 |/my-service/pdv-complete       | /my-service/pdv-complete?validationId=0018941f-fed3-47db-a05c-8b55e941324b       |
 |/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&validationId=0018941f-fed3-47db-a05c-8b55e941324b   |
 |/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&technicalError                                      |
-    
-    
-### How to build
-```
-sbt test it:test
-```
-The integration test passes on Firefox 46.0.1 version. This is the version installed on Jenkins agent. Chromedriver is not used because Jenkins (ci-open) was having problem with chromedriver. Squid proxy was intercepting and webops had no clue why it is doing so.
-    
-### License
+|/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&userTimeout                                         |
 
-This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
+## Test Repositories
+
+The personal details validation frontend service is tested by the [personal details validation acceptance tests](https://github.com/hmrc/personal-details-validation-acceptance-tests). If any changes are made to this service please run those tests before raising a PR. Information on how to run the tests are located in the respective repository readme.

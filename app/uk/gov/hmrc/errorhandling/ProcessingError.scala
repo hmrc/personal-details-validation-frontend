@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter
 case class ProcessingError(message: String)
 
 object ProcessingError {
-  implicit val queryParamCOnverter: QueryParamConverter[ProcessingError] = new QueryParamConverter[ProcessingError] {
-    override def toQueryParam(queryParam: ProcessingError) = {
-      Map("technicalError" -> Seq(""))
-    }
+  implicit val queryParamConverter: QueryParamConverter[ProcessingError] = (_: ProcessingError) => {
+    Map("technicalError" -> Seq(""))
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package uk.gov.voa.valuetype.constraints
+package support
 
-import uk.gov.voa.valuetype.StringValue
+import uk.gov.hmrc.personaldetailsvalidation.model.StringValue
 
-trait NonEmpty {
+case class TestStringValue(value: String) extends StringValue
 
-  self: StringValue =>
-
-  require(value.length > 0, s"$typeName cannot be empty")
-
-}

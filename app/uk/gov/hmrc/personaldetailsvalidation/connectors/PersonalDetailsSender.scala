@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import play.api.libs.json.{Format, Json, Writes}
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.voa.valuetype.play.formats.ValueTypeFormat._
-
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
@@ -56,8 +54,6 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
       case CREATED => Right(response.json.as[PersonalDetailsValidation])
       case other => Left(ProcessingError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
     }
-
-  private implicit val nonEmptyStringFormat: Format[NonEmptyString] = format(NonEmptyString.apply)
 
   private implicit val personalDetailsWrites: Writes[PersonalDetails] = Writes[PersonalDetails] {
     case personalDetails: PersonalDetailsWithNino =>

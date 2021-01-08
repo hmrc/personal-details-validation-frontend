@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-package uk.gov.voa.valuetype
+package uk.gov.hmrc.personaldetailsvalidation.model
 
-trait TypeName {
+import support.UnitSpec
 
-  lazy val typeName = getClass.getSimpleName.foldLeft("" -> false) { case ((name, wasDollarFound), char) =>
-    if (wasDollarFound) name -> true
-    else char match {
-      case c if c == '$' => name -> true
-      case c => s"$name$char" -> false
+private case class NotNestedType(value: String) extends StringValue
+
+class TypeNameSpec extends UnitSpec {
+
+  "TypeName" should {
+
+    "provide type name" in {
+      NotNestedType("abc").typeName shouldBe "NotNestedType"
     }
-  }._1
 
+    "provide type name without dollar sign for nested types" in {
+      case class NestedType(value: String) extends StringValue
+
+      NestedType("abc").typeName shouldBe "NestedType"
+    }
+
+  }
 }

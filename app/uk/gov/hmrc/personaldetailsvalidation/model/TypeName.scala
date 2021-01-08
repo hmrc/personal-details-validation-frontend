@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.voa.valuetype.constraints
+package uk.gov.hmrc.personaldetailsvalidation.model
 
-import uk.gov.voa.valuetype.{IntValue, LongValue, ValueType}
+trait TypeName {
 
-trait PositiveInt extends IntValue {
-
-  require(value > 0, s"$typeName's value has to be positive")
-
-}
-
-trait PositiveLong extends LongValue {
-
-  require(value > 0, s"$typeName's value has to be positive")
-
-}
-
-trait PositiveBigDecimal {
-
-  self: ValueType[BigDecimal] =>
-
-  require(value > 0, s"$typeName's value has to be positive")
+  lazy val typeName = getClass.getSimpleName.foldLeft("" -> false) { case ((name, wasDollarFound), char) =>
+    if (wasDollarFound) name -> true
+    else char match {
+      case c if c == '$' => name -> true
+      case c => s"$name$char" -> false
+    }
+  }._1
 
 }

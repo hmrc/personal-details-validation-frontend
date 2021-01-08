@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.voa.valuetype.tooling
+package uk.gov.hmrc.personaldetailsvalidation.model
 
-import org.scalatest.{Matchers, WordSpec}
+trait StringValue extends TypeName {
 
-trait UnitSpec extends WordSpec with Matchers
+  def value: String
+
+  override def toString = value
+
+}

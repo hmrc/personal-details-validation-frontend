@@ -1,5 +1,5 @@
 @*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.template.govuk_wrapper
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 
 @this(govukWrapper: govuk_wrapper)
 @(title: String,
@@ -23,7 +24,8 @@
   contentHeader: Option[Html] = None,
   bodyClasses: Option[String] = None,
   mainClass: Option[String] = None,
-  scriptElem: Option[Html] = None)(
+  scriptElem: Option[Html] = None,
+  completionUrl: CompletionUrl)(
   mainContent: Html
 )(implicit request : Request[_], messages: Messages, viewConfig: ViewConfig)
 

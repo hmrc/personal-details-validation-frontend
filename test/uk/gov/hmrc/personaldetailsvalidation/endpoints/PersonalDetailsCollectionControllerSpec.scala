@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -923,6 +923,28 @@ class PersonalDetailsCollectionControllerSpec
 
       redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
     }
+  }
+
+  "keep-alive" should {
+
+    "return 200 OK" in new Setup {
+       private val result = controller.keepAlive()(request)
+       status(result) shouldBe 200
+    }
+
+  }
+
+  "redirect-after-timeout" should {
+
+    "redirect user to continueUrl with userTimeout parameter" in new Setup {
+
+      private val redirectUrl = s"${completionUrl.value}?userTimeout="
+
+      private val result = controller.redirectAfterTimeout(completionUrl)(request)
+      status(result) shouldBe 303
+      redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
+    }
+
   }
 
   private trait Setup {
