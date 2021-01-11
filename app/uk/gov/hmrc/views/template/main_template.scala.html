@@ -17,6 +17,7 @@
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.template.govuk_wrapper
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.PersonalDetailsCollectionController
 
 @this(govukWrapper: govuk_wrapper)
 @(title: String,
@@ -39,6 +40,22 @@
     }
 }
 
+@scriptElem = {
+    <script src="@controllers.routes.Assets.at("javascripts/scripts.js")"></script>
+    <script src="@controllers.routes.Assets.at("javascripts/ga-events.js")"></script>
+    <script id="timeoutDialog">
+            window.GOVUK.timeoutDialog({
+                timeout: @viewConfig.timeout,
+                countdown: @viewConfig.timeoutCountdown,
+                keepAliveUrl: '@PersonalDetailsCollectionController.keepAlive()',
+                signOutUrl: '@{PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl)}',
+                title: "@messages("timeout-dialog.title")",
+                message: "@messages("timeout-dialog.p1")",
+                keepAliveButtonText: "@messages("timeout-dialog.button")"
+            });
+    </script>
+}
+
 @govukWrapper(title = title + " - GOV.UK",
                mainClass = mainClass,
                bodyClasses = bodyClasses,
@@ -46,5 +63,5 @@
                contentHeader = contentHeader,
                mainContent = layouts.article(mainContent),
                serviceInfoContent = serviceInfoContent,
-               scriptElem = scriptElem
+               scriptElem = Some(scriptElem)
 )

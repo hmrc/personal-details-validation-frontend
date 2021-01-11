@@ -38,3 +38,7 @@ validation.error-summary.before-link-text=Nid oeddem yn gallu dod o hyd i unrhyw
 validation.error-summary.link-text=cysylltwch â CThEM
 validation.error-summary.after-link-text=i gael help
 validation.error-summary.heading=Mae problem wedi codi
+
+timeout-dialog.title=Bydd eich cais yn dod i ben cyn hir
+timeout-dialog.p1=Byddwn yn ailosod eich cais os na fyddwch yn ymateb cyn pen
+timeout-dialog.button=Yn eich blaen

@@ -593,6 +593,7 @@ class PersonalDetailsPageSpec
   }
 
   private trait Setup extends ViewSetup {
+
     implicit val completionUrl: CompletionUrl = ValuesGenerators.completionUrls.generateOne
     lazy val testConfig: Map[String, Any] = Map.empty
 

@@ -44,10 +44,6 @@
     <meta name="format-detection" content="telephone=no" />
 }
 
-@scriptElement = {
-    <script src="@controllers.routes.Assets.at("javascripts/scripts.js")"></script>
-    <script src="@controllers.routes.Assets.at("javascripts/ga-events.js")"></script>
-}
 
 @headerNavLinks = {}
 
@@ -66,7 +62,7 @@
       analyticsToken = Some(viewConfig.analyticsToken),
       analyticsHost = viewConfig.analyticsHost,
       ssoUrl = None,
-      scriptElem = Some(scriptElement),
+      scriptElem = scriptElem,
       gaCalls = None)
 }
 

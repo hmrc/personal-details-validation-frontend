@@ -47,6 +47,9 @@ object ViewConfigMockFactory extends MockFactory with GuiceOneAppPerSuite {
     (configMock.getOptional(_: String)(_:ConfigLoader[String])).expects("dwp.originLabel", *).returning(Some("dwp-iv"))
     (configMock.getString _).expects("dwp.getHelpUrl", *).returning(Some("someGetHelpUrl"))
 
+    (configMock.get(_: String)(_:ConfigLoader[Int])).expects(v1 = "timeoutDialog.timeout-seconds", *).returning(5)
+    (configMock.get(_: String)(_:ConfigLoader[Int])).expects(v1 = "timeoutDialog.timeout-countdown-seconds", *).returning(5)
+
     configMock
   }
 
