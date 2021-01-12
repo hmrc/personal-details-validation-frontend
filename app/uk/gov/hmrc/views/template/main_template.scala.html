@@ -51,7 +51,13 @@
                 signOutUrl: '@{PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl)}',
                 title: "@messages("timeout-dialog.title")",
                 message: "@messages("timeout-dialog.p1")",
-                keepAliveButtonText: "@messages("timeout-dialog.button")"
+                keepAliveButtonText: "@messages("timeout-dialog.button")",
+                properties: {
+                    minutes: "@Messages("timeout-dialog.minutes")",
+                    minute: "@Messages("timeout-dialog.minute")",
+                    seconds: "@Messages("timeout-dialog.seconds")",
+                    second: "@Messages("timeout-dialog.second")"
+                }
             });
     </script>
 }
