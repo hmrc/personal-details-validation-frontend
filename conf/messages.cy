@@ -41,7 +41,6 @@ validation.error-summary.heading=Mae problem wedi codi
 
 timeout-dialog.title=Bydd eich cais yn dod i ben cyn hir
 timeout-dialog.p1=Bydd eich sesiwn yn dod i ben os na fyddwch yn ymateb ymhen
-timeout-dialog.button=Yn eich blaen
 timeout-dialog.minutes=funud
 timeout-dialog.minute=funud
 timeout-dialog.seconds=eiliad
