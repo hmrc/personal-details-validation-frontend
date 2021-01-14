@@ -43,23 +43,23 @@
 @scriptElem = {
     <script src="@controllers.routes.Assets.at("javascripts/scripts.js")"></script>
     <script src="@controllers.routes.Assets.at("javascripts/ga-events.js")"></script>
-    <script id="timeoutDialog">
-            window.GOVUK.timeoutDialog({
-                timeout: @viewConfig.timeout,
-                countdown: @viewConfig.timeoutCountdown,
-                keepAliveUrl: '@PersonalDetailsCollectionController.keepAlive()',
-                signOutUrl: '@{PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl)}',
-                title: "@messages("timeout-dialog.title")",
-                message: "@messages("timeout-dialog.p1")",
-                keepAliveButtonText: "@messages("timeout-dialog.button")",
-                properties: {
-                    minutes: "@Messages("timeout-dialog.minutes")",
-                    minute: "@Messages("timeout-dialog.minute")",
-                    seconds: "@Messages("timeout-dialog.seconds")",
-                    second: "@Messages("timeout-dialog.second")"
-                }
-            });
-    </script>
+@*    <script id="timeoutDialog">*@
+@*            window.GOVUK.timeoutDialog({*@
+@*                timeout: @viewConfig.timeout,*@
+@*                countdown: @viewConfig.timeoutCountdown,*@
+@*                keepAliveUrl: '@PersonalDetailsCollectionController.keepAlive()',*@
+@*                signOutUrl: '@{PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl)}',*@
+@*                title: "@messages("timeout-dialog.title")",*@
+@*                message: "@messages("timeout-dialog.p1")",*@
+@*                keepAliveButtonText: "@messages("timeout-dialog.button")",*@
+@*                properties: {*@
+@*                    minutes: "@Messages("timeout-dialog.minutes")",*@
+@*                    minute: "@Messages("timeout-dialog.minute")",*@
+@*                    seconds: "@Messages("timeout-dialog.seconds")",*@
+@*                    second: "@Messages("timeout-dialog.second")"*@
+@*                }*@
+@*            });*@
+@*    </script>*@
 }
 
 @govukWrapper(title = title + " - GOV.UK",
