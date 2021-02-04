@@ -17,20 +17,20 @@
 @import uk.gov.hmrc.personaldetailsvalidation.model.{PersonalDetails, CompletionUrl}
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.views.ViewConfig
-@import uk.gov.hmrc.views.html.components.date
 @import uk.gov.hmrc.views.html.template.{main_template_govuk_frontend, error_prefix}
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
-@import uk.gov.hmrc.views.html.partials.{ErrorSummary, InputText, Heading1, Paragraph}
-
+@import uk.gov.hmrc.views.html.partials.{InputText, Heading1, DateInput }
 @import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetailsWithPostcode
+
 @this(
         mainTemplate: main_template_govuk_frontend,
         errorPrefix: error_prefix,
-        dateField: date,
+        dateField: DateInput,
+        govukErrorSummary : GovukErrorSummary,
         inputText: InputText,
         formWithCSRF: PlayFrontendFormWithCSRF,
         submitButton: GovukButton,
-        errorSummary: ErrorSummary
+        h1 : Heading1
 )
 @(pageForm: Form[PersonalDetailsWithPostcode], completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
@@ -50,17 +50,26 @@
         </div>
     } else {
         @if(pageForm.hasErrors) {
-
+            @govukErrorSummary(
+                ErrorSummary(
+                    errorList = pageForm.errors.map { error =>
+                        ErrorLink(
+                            href = Some("#" + error.key),
+                            content = Text(Messages(error.message)))
+                    },
+                    title = Text(Messages("validation.error-summary.heading"))
+                )
+            )
         }
     }
 
     <span class="govuk-caption-xl">
-    @messages("personal-details.faded-heading")
+        @messages("personal-details.faded-heading")
     </span>
-    <h1 class="govuk-heading-xl">
-        @messages("personal-details.header")
-    </h1>
 
+    @h1(
+        content = Text(messages("personal-details.header"))
+    )
 
     <p class="govuk-body">@messages("personal-details.paragraph")</p>
 
@@ -69,53 +78,36 @@
         @inputText(
             pageForm("firstName"),
             label = messages("personal-details.firstname"),
+            labelClasses = "govuk-!-font-weight-bold",
             classes = "govuk-!-width-two-thirds",
             spellcheck = Some(false),
             autocomplete = Some("name")
         )
 
-@*        <div class="form-group">*@
-@*        @input(*@
-@*            field = pageForm("firstName"),*@
-@*            '_label -> messages("personal-details.firstname"),*@
-@*            '_inputClass -> "input--medium input--cleared",*@
-@*            '_labelTextClass -> "form-label-bold",*@
-@*            '_labelClass -> "soft--ends"*@
-@*        )*@
-@*        </div>*@
-@*        <div class="form-group">*@
-@*        @input(*@
-@*            field = pageForm("lastName"),*@
-@*            '_label -> messages("personal-details.lastname"),*@
-@*            '_inputClass -> "input--medium input--cleared",*@
-@*            '_labelTextClass -> "form-label-bold",*@
-@*            '_labelClass -> "soft--ends"*@
-@*        )*@
-@*        </div>*@
-@*        <div class="form-group">*@
-@*            @input(*@
-@*                field = pageForm("postcode"),*@
-@*                '_label -> messages("personal-details.postcode"),*@
-@*                '_inputClass -> "input--small input--cleared",*@
-@*                '_labelTextClass -> "form-label-bold",*@
-@*                '_inputHint -> Html(Messages("personal-details.postcode.hint")),*@
-@*                '_labelClass -> "soft--ends"*@
-@*            )*@
-@*        </div>*@
-
-        <fieldset class="form-group">
-        @dateField(
-            pageForm,
-            fieldName = "dateOfBirth",
-            labelKeyPrefix = "personal-details",
-            hintKeySuffix = Some("hint")
+        @inputText(
+            pageForm("lastName"),
+            label = messages("personal-details.lastname"),
+            labelClasses = "govuk-!-font-weight-bold",
+            classes = "govuk-!-width-two-thirds",
+            spellcheck = Some(false),
+            autocomplete = Some("given-name")
         )
-        </fieldset>
 
+        @inputText(
+            pageForm("postcode"),
+            label = messages("personal-details.postcode"),
+            labelClasses = "govuk-!-font-weight-bold",
+            classes = "govuk-!-width-two-thirds",
+            hint = Some(messages("personal-details.postcode.hint")),
+            spellcheck = Some(false),
+            autocomplete = Some("postcode")
+        )
 
+        @dateField(pageForm, "dateOfBirth")
 
-        <div class="form-group form-field--submit flush--bottom">
-            <button class="button" type="submit">@Messages("continue.button.text")</button>
-        </div>
+        @submitButton(Button(
+        content = Text(messages("continue.button.text"))
+        ))
+
     }
 }
