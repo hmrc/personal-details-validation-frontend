@@ -33,8 +33,8 @@ class ViewConfig @Inject()(val configuration: Configuration,
   lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
   lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")
-  lazy val timeout: Int = configuration.get[Int]("timeoutDialog.timeout-seconds")
-  lazy val timeoutCountdown: Int = configuration.get[Int]("timeoutDialog.timeout-countdown-seconds")
+  val timeout: Int = configuration.get[Int]("timeoutDialog.timeout-seconds")
+  val timeoutCountdown: Int = configuration.get[Int]("timeoutDialog.timeout-countdown-seconds")
 
   def languageMap: Map[String, Lang] =
     configuration.load[Seq[String]]("play.i18n.langs", default = Nil)
@@ -55,6 +55,15 @@ class ViewConfig @Inject()(val configuration: Configuration,
 
   def routeToSwitchLanguage: String => Call =
     (lang: String) => routes.ChangeLanguageEndpoint.switchToLanguage(lang)
+
+  def getAvailableLanguages: Map[String, Lang] = configuration.getOptional[Seq[String]]("play.i18n.langs").map { langs =>
+    langs.map {
+      case "en" => "english" -> Lang("en")
+      case "cy" => "cymraeg" -> Lang("cy")
+      case any  => any -> Lang(any)
+    }.toMap
+  }.getOrElse(Map.empty)
+
 
 
 }

@@ -15,14 +15,23 @@
  *@
 
 @import uk.gov.hmrc.personaldetailsvalidation.model.{PersonalDetails, CompletionUrl}
-@import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.components.date
-@import uk.gov.hmrc.views.html.template.{main_template, error_prefix}
+@import uk.gov.hmrc.views.html.template.{main_template_govuk_frontend, error_prefix}
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+@import uk.gov.hmrc.views.html.partials.{ErrorSummary, InputText, Heading1, Paragraph}
 
 @import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetailsWithPostcode
-@this(mainTemplate: main_template, errorPrefix: error_prefix, dateField: date)
+@this(
+        mainTemplate: main_template_govuk_frontend,
+        errorPrefix: error_prefix,
+        dateField: date,
+        inputText: InputText,
+        formWithCSRF: PlayFrontendFormWithCSRF,
+        submitButton: GovukButton,
+        errorSummary: ErrorSummary
+)
 @(pageForm: Form[PersonalDetailsWithPostcode], completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
@@ -41,54 +50,59 @@
         </div>
     } else {
         @if(pageForm.hasErrors) {
-            @errorSummary(
-                heading = Messages("error-summary.heading"),
-                form = pageForm
-            )
+
         }
     }
 
-
-    <h1 class="heading-xlarge">
-        <span class="heading-secondary">
-            @messages("personal-details.faded-heading")
-        </span>
+    <span class="govuk-caption-xl">
+    @messages("personal-details.faded-heading")
+    </span>
+    <h1 class="govuk-heading-xl">
         @messages("personal-details.header")
     </h1>
 
 
-    <p>@messages("personal-details.paragraph")</p>
+    <p class="govuk-body">@messages("personal-details.paragraph")</p>
 
-    @form(routes.PersonalDetailsCollectionController.submit(completionUrl, alternativeVersion = true), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
+    @formWithCSRF(routes.PersonalDetailsCollectionController.submit(completionUrl, alternativeVersion = true), 'id -> "contact-hmrc-form") {
 
-        <div class="form-group">
-        @input(
-            field = pageForm("firstName"),
-            '_label -> messages("personal-details.firstname"),
-            '_inputClass -> "input--medium input--cleared",
-            '_labelTextClass -> "form-label-bold",
-            '_labelClass -> "soft--ends"
+        @inputText(
+            pageForm("firstName"),
+            label = messages("personal-details.firstname"),
+            classes = "govuk-!-width-two-thirds",
+            spellcheck = Some(false),
+            autocomplete = Some("name")
         )
-        </div>
-        <div class="form-group">
-        @input(
-            field = pageForm("lastName"),
-            '_label -> messages("personal-details.lastname"),
-            '_inputClass -> "input--medium input--cleared",
-            '_labelTextClass -> "form-label-bold",
-            '_labelClass -> "soft--ends"
-        )
-        </div>
-        <div class="form-group">
-            @input(
-                field = pageForm("postcode"),
-                '_label -> messages("personal-details.postcode"),
-                '_inputClass -> "input--small input--cleared",
-                '_labelTextClass -> "form-label-bold",
-                '_inputHint -> Html(Messages("personal-details.postcode.hint")),
-                '_labelClass -> "soft--ends"
-            )
-        </div>
+
+@*        <div class="form-group">*@
+@*        @input(*@
+@*            field = pageForm("firstName"),*@
+@*            '_label -> messages("personal-details.firstname"),*@
+@*            '_inputClass -> "input--medium input--cleared",*@
+@*            '_labelTextClass -> "form-label-bold",*@
+@*            '_labelClass -> "soft--ends"*@
+@*        )*@
+@*        </div>*@
+@*        <div class="form-group">*@
+@*        @input(*@
+@*            field = pageForm("lastName"),*@
+@*            '_label -> messages("personal-details.lastname"),*@
+@*            '_inputClass -> "input--medium input--cleared",*@
+@*            '_labelTextClass -> "form-label-bold",*@
+@*            '_labelClass -> "soft--ends"*@
+@*        )*@
+@*        </div>*@
+@*        <div class="form-group">*@
+@*            @input(*@
+@*                field = pageForm("postcode"),*@
+@*                '_label -> messages("personal-details.postcode"),*@
+@*                '_inputClass -> "input--small input--cleared",*@
+@*                '_labelTextClass -> "form-label-bold",*@
+@*                '_inputHint -> Html(Messages("personal-details.postcode.hint")),*@
+@*                '_labelClass -> "soft--ends"*@
+@*            )*@
+@*        </div>*@
+
         <fieldset class="form-group">
         @dateField(
             pageForm,
@@ -97,6 +111,8 @@
             hintKeySuffix = Some("hint")
         )
         </fieldset>
+
+
 
         <div class="form-group form-field--submit flush--bottom">
             <button class="button" type="submit">@Messages("continue.button.text")</button>

@@ -1,0 +1,62 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+@import uk.gov.hmrc.language.ChangeLanguageEndpoint
+@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.PersonalDetailsCollectionController
+@import play.twirl.api.HtmlFormat
+@import views.html.partials.LanguageSelection
+
+@this(
+        govukLayout: GovukLayout,
+        head: partials.Head,
+        backLink: govukBackLink,
+        reportTechnicalIssue: HmrcReportTechnicalIssueHelper,
+        hmrcStandardFooter: HmrcStandardFooter,
+        languageSelection: LanguageSelection
+)
+@(title: String,
+        headBlock: Option[Html] = None,
+        scriptsBlock: Option[Html] = None,
+        completionUrl: CompletionUrl
+)(contentBlock: Html)(implicit request: Request[_], messagesProvider: MessagesProvider, appConfig: ViewConfig)
+
+@beforeContentBlockSection = {
+    @backLink()
+    @languageSelection()
+}
+
+@contentSection = {
+    @contentBlock
+    @reportTechnicalIssue()
+}
+
+@scripts = {
+    @scriptsBlock.getOrElse(HtmlFormat.empty)
+    <script src='@routes.Assets.at("lib/govuk-frontend/govuk/all.js")'></script>
+    <script src='@routes.Assets.at("lib/hmrc-frontend/hmrc/all.js")'></script>
+    <script src='@routes.Assets.at("javascripts/scripts.js")'></script>
+}
+
+@govukLayout(
+    pageTitle = Some(title),
+    headBlock = Some(head(headBlock)),
+    scriptsBlock = Some(scripts),
+    beforeContentBlock = Some(beforeContentBlockSection),
+    footerBlock = Some(hmrcStandardFooter())
+)(contentSection)
+

@@ -17,3 +17,6 @@ $(function() {
     var showHideContent = new GOVUK.ShowHideContent()
     showHideContent.init()
 });
+
+window.GOVUKFrontend.initAll();
+window.HMRCFrontend.initAll();

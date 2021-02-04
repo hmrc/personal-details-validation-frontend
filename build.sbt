@@ -13,6 +13,13 @@ lazy val playSettings: Seq[Setting[_]] = Seq(
   )
 )
 
+TwirlKeys.templateImports ++= Seq(
+  "uk.gov.hmrc.govukfrontend.views.html.components._",
+  "uk.gov.hmrc.govukfrontend.views.html.helpers._",
+  "uk.gov.hmrc.hmrcfrontend.views.html.components._",
+  "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
+)
+
 lazy val scoverageSettings = {
   import scoverage._
 
