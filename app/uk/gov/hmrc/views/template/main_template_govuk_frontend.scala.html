@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.views.html.partials.Head
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.language.ChangeLanguageEndpoint
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.PersonalDetailsCollectionController
@@ -22,12 +23,13 @@
 
 @this(
         govukLayout: GovukLayout,
-        head: partials.Head,
+        head: Head,
         backLink: govukBackLink,
         reportTechnicalIssue: HmrcReportTechnicalIssueHelper,
         hmrcStandardFooter: HmrcStandardFooter,
         languageSelection: HmrcLanguageSelect
 )
+
 @(title: String,
         headBlock: Option[Html] = None,
         scriptsBlock: Option[Html] = None,
@@ -35,8 +37,8 @@
 )(contentBlock: Html)(implicit request: Request[_], messagesProvider: MessagesProvider, appConfig: ViewConfig)
 
 @beforeContentBlockSection = {
-    @backLink()
-    @languageSelection()
+    @backLink(BackLink("#"))
+    @languageSelection(LanguageSelect(En))
 }
 
 @contentSection = {
@@ -53,7 +55,7 @@
 
 @govukLayout(
     pageTitle = Some(title),
-    headBlock = Some(head(headBlock)),
+    headBlock = Some(head(headBlock, CompletionUrl("#"))),
     scriptsBlock = Some(scripts),
     beforeContentBlock = Some(beforeContentBlockSection),
     footerBlock = Some(hmrcStandardFooter())
