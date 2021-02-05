@@ -14,12 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.personaldetailsvalidation.model.{PersonalDetails, CompletionUrl}
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.template.{main_template_govuk_frontend, error_prefix}
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
-@import uk.gov.hmrc.views.html.partials.{InputText, Heading1, DateInput }
+@import uk.gov.hmrc.views.html.partials.{InputText, Heading1, DateInput}
 @import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetailsWithPostcode
 
 @this(
@@ -63,13 +63,8 @@
         }
     }
 
-    <span class="govuk-caption-xl">
-        @messages("personal-details.faded-heading")
-    </span>
-
-    @h1(
-        content = Text(messages("personal-details.header"))
-    )
+    <span class="govuk-caption-xl">@messages("personal-details.faded-heading")</span>
+    @h1(content = Text(messages("personal-details.header")))
 
     <p class="govuk-body">@messages("personal-details.paragraph")</p>
 
@@ -81,7 +76,7 @@
             labelClasses = "govuk-!-font-weight-bold",
             classes = "govuk-!-width-two-thirds",
             spellcheck = Some(false),
-            autocomplete = Some("name")
+            autocomplete = Some("given-name")
         )
 
         @inputText(
@@ -90,7 +85,7 @@
             labelClasses = "govuk-!-font-weight-bold",
             classes = "govuk-!-width-two-thirds",
             spellcheck = Some(false),
-            autocomplete = Some("given-name")
+            autocomplete = Some("family-name")
         )
 
         @inputText(
@@ -100,14 +95,11 @@
             classes = "govuk-!-width-two-thirds",
             hint = Some(messages("personal-details.postcode.hint")),
             spellcheck = Some(false),
-            autocomplete = Some("postcode")
+            autocomplete = Some("postal-code")
         )
 
-        @dateField(pageForm, "dateOfBirth")
+        @dateField(pageForm, "personal-details", "dateOfBirth")
 
-        @submitButton(Button(
-        content = Text(messages("continue.button.text"))
-        ))
-
+        @submitButton(Button(content = Text(messages("continue.button.text"))))
     }
 }

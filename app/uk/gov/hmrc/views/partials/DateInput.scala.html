@@ -16,18 +16,24 @@
 
 @this(underlying: GovukDateInput)
 
-@(form: Form[_], fieldPrefix: String)(implicit messages: Messages)
+@(form: Form[_], fieldPrefix: String, fieldName: String)(implicit messages: Messages)
 
-@underlying(DateInput(
-    fieldPrefix,
-    items = Seq(
-        InputItem(name = s"$fieldPrefix.day", classes = "govuk-input--width-2", label = Some(Messages("field.day.label")), value = form(s"$fieldPrefix.day").value),
-        InputItem(name = s"$fieldPrefix.month", classes = "govuk-input--width-2", label = Some(Messages("field.month.label")), value = form(s"$fieldPrefix.month").value),
-        InputItem(name = s"$fieldPrefix.year", classes = "govuk-input--width-4", label = Some(Messages("field.year.label")), value = form(s"$fieldPrefix.year").value)
-    ),
-    fieldset = Some(Fieldset(
-        legend = Some(Legend(messages(s"$fieldPrefix.legend"), classes = "govuk-fieldset__legend--m")),
-    )),
-    hint = Some(Hint(content = messages(s"$fieldPrefix.hint"))),
-    errorMessage = form(fieldPrefix).error.map(err => ErrorMessage(content = messages(err.message, err.args)))
-))
+@dateErrors = @{
+    form(fieldName).errors
+}
+
+<div class="govuk-form-group @if(dateErrors.nonEmpty) {govuk-form-group--error}">
+    @underlying(DateInput(
+        fieldPrefix,
+        items = Seq(
+            InputItem(name = s"$fieldPrefix.$fieldName.day", classes = "govuk-input--width-2", label = Some(Messages(s"$fieldPrefix.$fieldName.day")), value = form(s"$fieldPrefix.day").value),
+            InputItem(name = s"$fieldPrefix.$fieldName.month", classes = "govuk-input--width-2", label = Some(Messages(s"$fieldPrefix.$fieldName.month")), value = form(s"$fieldPrefix.month").value),
+            InputItem(name = s"$fieldPrefix.$fieldName.year", classes = "govuk-input--width-4", label = Some(Messages(s"$fieldPrefix.$fieldName.year")), value = form(s"$fieldPrefix.year").value)
+        ),
+        fieldset = Some(Fieldset(
+            legend = Some(Legend(content = Text(messages(s"$fieldPrefix.$fieldName")), classes = "govuk-fieldset__legend--m")),
+        )),
+        hint = Some(Hint(content = Text(messages(s"$fieldPrefix.$fieldName.hint")))),
+        errorMessage = form(fieldName).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args))))
+    ))
+</div>
