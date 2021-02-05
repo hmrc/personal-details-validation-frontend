@@ -38,7 +38,13 @@
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: ViewConfig)
 
 @beforeContentBlockSection = {
-    @languageSelection(LanguageSelect(En))
+    @languageSelection(LanguageSelect(
+         messages.lang.code match {
+            case "en" => En
+            case "cy" => Cy
+        },
+        appConfig.languageLinks: _*
+    ))
 }
 
 @contentSection = {
