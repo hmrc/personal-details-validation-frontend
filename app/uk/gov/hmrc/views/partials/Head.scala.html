@@ -22,8 +22,6 @@
 
 @(headBlock: Option[Html] = None, completionUrl: CompletionUrl)(implicit viewConfig: ViewConfig, messages: Messages)
 @headBlock
-<!--[if lte IE 8]><script src='@controllers.routes.Assets.at("javascripts/html5shiv.min.js")'></script><![endif]-->
-<!--[if lte IE 8]><link href='@controllers.routes.Assets.at("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
 <link href="@controllers.routes.Assets.at("stylesheets/styles.css")" media="screen" rel="stylesheet" type="text/css">
 
 @hmrcTimeoutDialog(
