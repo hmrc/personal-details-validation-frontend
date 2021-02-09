@@ -10,8 +10,8 @@ trait FormErrors  {
   type Field = String
   type Error = String
 
-  def summaryErrors: List[Error] = findAll(cssSelector(".error-summary--show ul li")).map(_.text).toList
-  def summaryErrorsHeading: String = findAll(cssSelector("#error-summary-heading")).map(_.text).toList.mkString
+  def summaryErrors: List[Error] = findAll(cssSelector(".error-summary--show ul li, .govuk-error-summary__list li")).map(_.text).toList
+  def summaryErrorsHeading: String = findAll(cssSelector("#error-summary-heading, .govuk-error-summary__title")).map(_.text).toList.mkString
 
   def fieldErrors: Map[Field, Error] = findAll(cssSelector("div.form-group>label.form-field--error")).foldLeft(Map.empty[String, String]) { (result, label) =>
     val findError = Try(label.underlying.findElement(By.cssSelector("span.error-notification")))
