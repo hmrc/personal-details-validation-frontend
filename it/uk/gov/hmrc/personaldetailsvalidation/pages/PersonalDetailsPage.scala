@@ -24,14 +24,14 @@ abstract class PersonalDetailsPage(title: String, val completionUrl: String) ext
   }
 
   def submitForm(): Unit =
-    find(cssSelector("button[type=submit]")) match {
+    find(cssSelector("button")) match {
       case Some(element) => click on element
       case _ => fail("Continue button not found")
     }
 
   def exitLinkToCompletionUrlExists(completionUrl: String): Boolean =
-    find(cssSelector(s".error-summary a[href^='$completionUrl?validationId']")).isDefined &&
-    find(cssSelector(s".error-summary a[href*='&validationId']")).isEmpty // this ensures multiple validationIds are not appended
+    find(cssSelector(s".error-summary a[href^='$completionUrl?validationId'], .govuk-error-summary__list a[href^='$completionUrl?validationId']")).isDefined &&
+    find(cssSelector(s".error-summary a[href*='&validationId'], .govuk-error-summary__list a[href*='&validationId']")).isEmpty // this ensures multiple validationIds are not appended
 }
 
 class PersonalDetailsNinoPage (title: String, override val completionUrl: String) extends PersonalDetailsPage(title, completionUrl) {

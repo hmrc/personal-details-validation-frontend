@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.views.html.template.main_template
+@import uk.gov.hmrc.views.html.template.main_template_govuk_frontend
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
@@ -22,7 +22,7 @@
 @import uk.gov.hmrc.personaldetailsvalidation.model.InitialPersonalDetails
 @import uk.gov.hmrc.views.html.components.date
 
-@this(mainTemplate: main_template, dateField: date)
+@this(mainTemplate: main_template_govuk_frontend, dateField: date)
 @(pageForm: Form[InitialPersonalDetails], completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 

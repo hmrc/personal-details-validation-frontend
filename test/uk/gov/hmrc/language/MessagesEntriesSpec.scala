@@ -57,7 +57,14 @@ class MessagesEntriesSpec extends UnitSpec with GuiceOneAppPerSuite {
     "attorney.banner.link",
     "common.previousLoginTime",
     "common.signOut",
-    "label.beta"
+    "label.beta",
+    "footer.welshHelp.text",
+    "footer.contact.url",
+    "footer.welshHelp.url",
+    "footer.govukHelp.url",
+    "footer.privacy.url",
+    "footer.termsConditions.url",
+    "footer.cookies.url"
   )
   private val excludedKeysSet: Set[String] =
     keysForPendingTranslations ++: keysNotNeeded

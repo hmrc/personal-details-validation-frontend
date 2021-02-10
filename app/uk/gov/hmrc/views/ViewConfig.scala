@@ -23,6 +23,7 @@ import play.api.mvc.Call
 import uk.gov.hmrc.config.DwpMessagesApiProvider
 import uk.gov.hmrc.config.implicits._
 import uk.gov.hmrc.config.ops._
+import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, Language}
 import uk.gov.hmrc.language.routes
 
 @Singleton
@@ -53,8 +54,16 @@ class ViewConfig @Inject()(val configuration: Configuration,
     }
   }
 
+  // old templates
   def routeToSwitchLanguage: String => Call =
     (lang: String) => routes.ChangeLanguageEndpoint.switchToLanguage(lang)
 
+  // new templates
+  def languageLinks: Seq[(Language, String)] = {
+    Seq(
+      (En, routes.ChangeLanguageEndpoint.switchToLanguage("english").url),
+      (Cy, routes.ChangeLanguageEndpoint.switchToLanguage("cymraeg").url)
+    )
+  }
 
 }

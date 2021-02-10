@@ -1,3 +1,8 @@
+$govuk-assets-path: "/personal-details-validation/assets/lib/govuk-frontend/govuk/assets/";
+$hmrc-assets-path: "/personal-details-validation/assets/lib/hmrc-frontend/hmrc/";
+
+@import "lib/govuk-frontend/govuk/all";
+@import "lib/hmrc-frontend/hmrc/all";
 
 .flash.error-summary {
     border: 5px solid #d4351c;
@@ -81,3 +86,4 @@
 }
 
 @import 'partials/_modal';
+
