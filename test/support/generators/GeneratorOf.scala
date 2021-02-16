@@ -16,7 +16,7 @@
 
 package support.generators
 
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Gen
 
 object GeneratorOf {
 
