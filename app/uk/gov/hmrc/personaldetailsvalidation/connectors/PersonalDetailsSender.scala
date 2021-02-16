@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 import cats.data.EitherT
 import javax.inject.{Inject, Singleton}
 import play.api.http.Status.CREATED
-import play.api.libs.json.{Format, Json, Writes}
+import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model._

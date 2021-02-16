@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.monitoring
 
-import com.codahale.metrics.{Counter, MetricRegistry}
+import com.codahale.metrics.MetricRegistry
 import support.UnitSpec
 import com.kenshoo.play.metrics.{DisabledMetrics, Metrics}
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
