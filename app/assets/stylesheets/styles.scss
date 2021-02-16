@@ -8,6 +8,14 @@ $hmrc-assets-path: "/personal-details-validation/assets/lib/hmrc-frontend/hmrc/"
     border: 5px solid #d4351c;
 }
 
+.flash.error-summary a {
+    font-weight: bold;
+
+    &:focus {
+        color: #0b0c0c;
+    }
+}
+
 .flash.error-summary li {
     color: #d4351c;
     margin-bottom: 5px;
