@@ -15,21 +15,59 @@
  *@
 
 @import uk.gov.hmrc.views.ViewConfig
-@import uk.gov.hmrc.views.html.template.govuk_wrapper
+@import uk.gov.hmrc.views.html.partials.Head
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.header.Header
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+@import uk.gov.hmrc.views.html.partials.{Heading1, Paragraph}
 
-@this(govukWrapper: govuk_wrapper)
-@(pageTitle: String, heading: String, message: String
-)(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
-
-@contentHeader = {
-  <h1>@heading</h1>
-}
-
-@mainContent = {
-  <p>@message</p>
-}
-
-@govukWrapper(title = pageTitle,
-               contentHeader = Some(contentHeader),
-               mainContent = mainContent
+@this(
+ govukLayout: GovukLayout,
+ head: Head,
+ hmrcHeader: hmrcHeader,
+ reportTechnicalIssue: HmrcReportTechnicalIssueHelper,
+ hmrcStandardFooter: HmrcStandardFooter,
+ languageSelection: HmrcLanguageSelect,
+ h1 : Heading1,
+ p : Paragraph
 )
+
+@(pageTitle: String, heading: String, message: String
+)(implicit request: Request[_], messages: Messages, appConfig: ViewConfig, headBlock: Option[Html] = None)
+
+@beforeContentBlockSection = {
+ @languageSelection(LanguageSelect(
+  messages.lang.code match {
+   case "en" => En
+   case "cy" => Cy
+  },
+  appConfig.languageLinks: _*
+ ))
+}
+
+@contentSection = {
+ @h1(content = Text(heading))
+ @p(content = Text(message))
+}
+
+@headerBlock = {
+ @hmrcHeader(Header(
+  language = if(messages.lang.code == "cy") Cy else En,
+  displayHmrcBanner = false
+ ))
+}
+
+@scripts = {
+ <script src='@routes.Assets.at("lib/govuk-frontend/govuk/all.js")'></script>
+ <script src='@routes.Assets.at("lib/hmrc-frontend/hmrc/all.js")'></script>
+ <script src='@routes.Assets.at("javascripts/scripts-govuk-frontend.js")'></script>
+}
+
+@govukLayout(
+ pageTitle = Some(pageTitle),
+ headBlock = Some(head(headBlock, CompletionUrl("#"))),
+ headerBlock = Some(headerBlock),
+ scriptsBlock = Some(scripts),
+ beforeContentBlock = Some(beforeContentBlockSection),
+ footerBlock = Some(hmrcStandardFooter())
+)(contentSection)
+

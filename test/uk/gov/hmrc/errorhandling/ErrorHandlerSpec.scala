@@ -41,8 +41,8 @@ class ErrorHandlerSpec
       val html: Document = errorHandler.standardErrorTemplate("title", "heading", "error-message")(request)
 
       html.title() shouldBe "title"
-      html.select("header h1").text() shouldBe "heading"
-      html.select("header ~ p").get(1).text() shouldBe "error-message"
+      html.select("h1").text() shouldBe "heading"
+      html.select("p").get(0).text() shouldBe "error-message"
     }
   }
 
@@ -90,8 +90,8 @@ class ErrorHandlerSpec
         val html: Document = Html(bodyOf(result))
 
         html.title() shouldBe Messages("global.error.InternalServerError500.title")
-        html.select("header h1").text() shouldBe Messages("global.error.InternalServerError500.heading")
-        html.select("header ~ p").get(1).text() shouldBe Messages("global.error.InternalServerError500.message")
+        html.select("h1").text() shouldBe Messages("global.error.InternalServerError500.heading")
+        html.select("p").get(0).text() shouldBe Messages("global.error.InternalServerError500.message")
       }
     }
   }
