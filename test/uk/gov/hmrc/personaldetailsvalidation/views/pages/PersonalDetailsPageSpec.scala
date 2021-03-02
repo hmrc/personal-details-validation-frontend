@@ -276,7 +276,6 @@ class PersonalDetailsPageSpec
       val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
-      html.toString should include(s"${viewConfig.dwpGetHelpUrl}/Missing")
 
       val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
       errors shouldBe List("We could not find any records that match the details you entered. Please try again, or confirm your identity another way")
