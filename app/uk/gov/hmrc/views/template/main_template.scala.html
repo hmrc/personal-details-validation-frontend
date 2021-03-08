@@ -18,8 +18,10 @@
 @import uk.gov.hmrc.views.html.template.govuk_wrapper
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.PersonalDetailsCollectionController
+@import uk.gov.hmrc.play.views.html.layouts.TrackingConsentSnippet
 
-@this(govukWrapper: govuk_wrapper)
+@this(govukWrapper: govuk_wrapper,
+        trackingConsentSnippet: TrackingConsentSnippet)
 @(title: String,
   sidebarLinks: Option[Html] = None,
   contentHeader: Option[Html] = None,
@@ -42,7 +44,7 @@
 
 @scriptElem = {
     <script src="@controllers.routes.Assets.at("javascripts/scripts.js")"></script>
-    <script src="@controllers.routes.Assets.at("javascripts/ga-events.js")"></script>
+    <script src="@controllers.routes.Assets.at("javascripts/gtm_dl.js")"></script>
     <script id="timeoutDialog">
             window.GOVUK.timeoutDialog({
                 timeout: @viewConfig.timeout,
@@ -60,6 +62,8 @@
                 }
             });
     </script>
+    <div class="gtm-tag" data-gtag=""></div>
+    @trackingConsentSnippet()
 }
 
 @govukWrapper(title = title + " - GOV.UK",
