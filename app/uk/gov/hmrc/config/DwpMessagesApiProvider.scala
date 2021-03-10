@@ -43,7 +43,7 @@ class DwpMessagesApiProvider @Inject()(environment: Environment,
       }
       case r => getMessages(r)
     }
-  }
+  } ++ super.loadMessages("messages") ++ super.loadMessages("messages.default")
 
   private def getMessages(resources: List[URL]) ={
     resources.filterNot(url => Resources.isDirectory(environment.classLoader, url)).reverse
