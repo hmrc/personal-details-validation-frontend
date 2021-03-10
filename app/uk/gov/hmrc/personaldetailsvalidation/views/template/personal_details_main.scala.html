@@ -26,6 +26,15 @@
 @(pageForm: Form[InitialPersonalDetails], completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
+@validationText = {
+    @if(request.session.get("loginOrigin").contains("dwp-iv")) {
+        @Messages("validation.error-summary.dwp-text")
+    } else {
+        <a href="@completionUrl">@Messages("validation.error-summary.link-text")</a>
+        @Messages("validation.error-summary.after-link-text")
+    }
+}
+
 @mainTemplate(title = messages("personal-details.title"), completionUrl = completionUrl) {
     <a id="identifiersBackLink" href="javascript:history.back()" class="link-back">@Messages("button.back.text")</a>
 
@@ -35,8 +44,7 @@
             <ul class="js-error-summary-messages">
                 <li role="tooltip">
                     @Messages("validation.error-summary.before-link-text")
-                    <a href="@completionUrl">@Messages("validation.error-summary.link-text")</a>
-                    @Messages("validation.error-summary.after-link-text")
+                    @validationText
                 </li>
             </ul>
         </div>

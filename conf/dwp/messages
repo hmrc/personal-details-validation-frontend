@@ -35,7 +35,7 @@ personal-details.dateOfBirth.month.invalid=Enter a number between 1 and 12
 personal-details.dateOfBirth.year.required=Enter the year from your date of birth
 personal-details.dateOfBirth.year.invalid=Enter the year you were born in the correct format
 validation.error-summary.before-link-text=We could not find any records that match the details you entered. Please try again, or
-validation.error-summary.link-text=confirm your identity another way
+validation.error-summary.dwp-text=confirm your identity another way
 validation.error-summary.after-link-text=
 validation.error-summary.heading=There is a problem
 
