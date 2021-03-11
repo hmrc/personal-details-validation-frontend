@@ -34,6 +34,7 @@ personal-details.dateOfBirth.month.required=Nodwch fis eich dyddiad geni
 personal-details.dateOfBirth.month.invalid=Nodwch rif rhwng 1 a 12
 personal-details.dateOfBirth.year.required=Nodwch flwyddyn eich dyddiad geni
 personal-details.dateOfBirth.year.invalid=Nodwch y flwyddyn y cawsoch eich geni yn y fformat cywir
+validation.error-summary.dwp-text=cadarnhewch pwy ydych gan ddefnyddio dull arall
 validation.error-summary.before-link-text=Nid oeddem yn gallu dod o hyd i unrhyw gofnodion sy’n cyd-fynd â’r manylion a nodwyd gennych. Rhowch gynnig arall arni, neu
 validation.error-summary.link-text=cysylltwch â CThEM
 validation.error-summary.after-link-text=i gael help

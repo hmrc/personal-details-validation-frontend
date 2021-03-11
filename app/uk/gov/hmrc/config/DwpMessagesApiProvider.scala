@@ -24,34 +24,39 @@ import play.api.i18n.{DefaultMessagesApiProvider, Langs, Messages}
 import play.api.{Configuration, Environment, Logger}
 import play.utils.Resources
 
+import scala.collection.breakOut
 
-class DwpMessagesApiProvider @Inject()(environment: Environment,
-                                       configuration: Configuration,
-                                       langs: Langs,
-                                       httpConfiguration: HttpConfiguration)
+
+class DwpMessagesApiProvider @Inject()(environment: Environment, configuration: Configuration,
+                                       langs: Langs, httpConfiguration: HttpConfiguration)
   extends DefaultMessagesApiProvider(environment, configuration, langs, httpConfiguration) {
 
-  override protected def loadMessages(file: String): Map[String, String] = {
+  override protected def loadAllMessages: Map[String, Map[String, String]] = {
+    (langs.availables.map { lang =>
+      val code = lang.code
+      code -> loadMessages(s"messages.$code")
+    }(breakOut): Map[String, Map[String, String]])
+      .+("default" -> (loadMessages("messages") ++ dwpLoadMessages("messages"))) + ("default.play" -> loadMessages("messages.default"))
+  }
+
+  def dwpLoadMessages(file: String): Map[String, String] = {
     import scala.collection.JavaConverters._
 
     val dwpMessagesPrefix = configuration.getOptional[String]("dwp.messages")
 
     environment.classLoader.getResources(joinPaths(dwpMessagesPrefix, file)).asScala.toList match {
-      case r if r.isEmpty => {
+      case r if r.isEmpty =>
         Logger.warn(s"DWP messages directory in 'dwp.messages' : $dwpMessagesPrefix is not valid")
         getMessages(environment.classLoader.getResources(file).asScala.toList)
-      }
       case r => getMessages(r)
     }
   }
 
-  private def getMessages(resources: List[URL]) ={
+  private def getMessages(resources: List[URL]): Map[String, String] = {
     resources.filterNot(url => Resources.isDirectory(environment.classLoader, url)).reverse
       .map { messageFile =>
         Messages.parse(Messages.UrlMessageSource(messageFile), messageFile.toString).fold(e => throw e, identity)
-      }.foldLeft(Map.empty[String, String]) {
-      _ ++ _
-    }
+      }.foldLeft(Map.empty[String, String]) { _ ++ _ }
   }
 
   private def isDirectory(directory: String):String = directory.takeRight(1) match {

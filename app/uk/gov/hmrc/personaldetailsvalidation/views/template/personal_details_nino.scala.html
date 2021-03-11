@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.personaldetailsvalidation.model.{PersonalDetails, CompletionUrl}
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.views.ViewConfig
@@ -22,9 +22,19 @@
 @import uk.gov.hmrc.views.html.template.{main_template, error_prefix}
 
 @import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetailsWithNino
+
 @this(mainTemplate: main_template, errorPrefix: error_prefix, dateField: date)
 @(pageForm: Form[PersonalDetailsWithNino], completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
+
+@validationText = {
+    @if(request.session.get("loginOrigin").contains("dwp-iv")) {
+        @Messages("validation.error-summary.dwp-text")
+    } else {
+        <a href="@completionUrl">@Messages("validation.error-summary.link-text")</a>
+        @Messages("validation.error-summary.after-link-text")
+    }
+}
 
 @mainTemplate(title = errorPrefix(pageForm) + messages("personal-details.title"), completionUrl = completionUrl) {
 
@@ -34,8 +44,7 @@
             <ul class="js-error-summary-messages">
                 <li role="tooltip">
                     @Messages("validation.error-summary.before-link-text")
-                    <a href="@completionUrl">@Messages("validation.error-summary.link-text")</a>
-                    @Messages("validation.error-summary.after-link-text")
+                    @validationText
                 </li>
             </ul>
         </div>
