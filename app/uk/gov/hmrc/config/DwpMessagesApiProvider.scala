@@ -70,8 +70,6 @@ class DwpMessagesApiProvider @Inject()(environment: Environment, configuration: 
 
   override protected def joinPaths(first: Option[String], second: String): String = first match {
     case Some(parent) => new java.io.File(isDirectory(parent), second).getPath
-    case None =>
-      Logger.warn(s"DWP messages file location property 'dwp.messages' not set in app config")
-      second
+    case None => second
   }
 }
