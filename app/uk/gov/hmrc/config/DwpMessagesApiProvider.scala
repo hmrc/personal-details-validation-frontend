@@ -44,6 +44,10 @@ class DwpMessagesApiProvider @Inject()(environment: Environment, configuration: 
 
     val dwpMessagesPrefix = configuration.getOptional[String]("dwp.messages")
 
+    if (dwpMessagesPrefix.isEmpty) {
+      Logger.warn(s"DWP messages file location property 'dwp.messages' not set in app config")
+    }
+
     environment.classLoader.getResources(joinPaths(dwpMessagesPrefix, file)).asScala.toList match {
       case r if r.isEmpty =>
         Logger.warn(s"DWP messages directory in 'dwp.messages' : $dwpMessagesPrefix is not valid")
@@ -66,8 +70,6 @@ class DwpMessagesApiProvider @Inject()(environment: Environment, configuration: 
 
   override protected def joinPaths(first: Option[String], second: String): String = first match {
     case Some(parent) => new java.io.File(isDirectory(parent), second).getPath
-    case None =>
-      Logger.warn(s"DWP messages file location property 'dwp.messages' not set in app config")
-      second
+    case None => second
   }
 }
