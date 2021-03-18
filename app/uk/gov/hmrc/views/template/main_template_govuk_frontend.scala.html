@@ -70,7 +70,7 @@
 
 @govukLayout(
     pageTitle = Some(title + " - GOV.UK"),
-    headBlock = Some(head(headBlock, CompletionUrl("#"))),
+    headBlock = Some(head(headBlock, CompletionUrl(completionUrl.toString))),
     headerBlock = Some(headerBlock),
     scriptsBlock = Some(scripts),
     beforeContentBlock = Some(beforeContentBlockSection),
