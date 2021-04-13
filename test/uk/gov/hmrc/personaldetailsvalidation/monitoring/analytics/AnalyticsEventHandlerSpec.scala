@@ -41,7 +41,7 @@ class AnalyticsEventHandlerSpec
     "send pdv_modal_timeout continue event when user clicks on stay signed in " in new Setup {
       dispatcher.dispatchEvent(TimeoutContinue)(request, hc, global)
       eventually {
-        analyticsRequests.head shouldBe AnalyticsRequest(gaClientId, Seq(
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
           Event("sos_iv", "pdv_modal_timeout", "continue")))
       }
     }
@@ -49,7 +49,7 @@ class AnalyticsEventHandlerSpec
     "send pdv_modal_timeout ends event when user is not responded " in new Setup {
       dispatcher.dispatchEvent(TimedOut)(request, hc, global)
       eventually {
-        analyticsRequests.head shouldBe AnalyticsRequest(gaClientId, Seq(
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
           Event("sos_iv", "pdv_modal_timeout", "end")))
       }
     }

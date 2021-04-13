@@ -39,25 +39,21 @@ class AnalyticsEventHandler @Inject()(connector: AnalyticsConnector) extends Eve
 
   private def clientId(implicit request: Request[_]) = request.cookies.get("_ga").map(_.value)
 
-  private def sendEvent(reqCreator: (String) => AnalyticsRequest)
+  private def sendEvent(reqCreator: (Option[String]) => AnalyticsRequest)
                                              (implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
-    clientId.fold {
-      Logger.warn(s"Couldn't get _ga cookie from request ${request.toString()}")
-    } { clientId =>
       val analyticsRequest = reqCreator(clientId)
       connector.sendEvent(analyticsRequest)
-    }
   }
 }
 
 private class AnalyticsRequestFactory() {
 
-  def timeoutContinue(clientId: String): AnalyticsRequest = {
+  def timeoutContinue(clientId: Option[String]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "pdv_modal_timeout", "continue")
     AnalyticsRequest(clientId, Seq(gaEvent))
   }
 
-  def timeoutSignOut(clientId: String): AnalyticsRequest = {
+  def timeoutSignOut(clientId: Option[String]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "pdv_modal_timeout", "end")
     AnalyticsRequest(clientId, Seq(gaEvent))
   }

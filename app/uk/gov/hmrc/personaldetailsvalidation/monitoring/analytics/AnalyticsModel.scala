@@ -18,4 +18,4 @@ package uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics
 
 case class Event(category: String, action: String, label: String)
 
-case class AnalyticsRequest(gaClientId: String, events: Seq[Event])
+case class AnalyticsRequest(gaClientId: Option[String], events: Seq[Event])
