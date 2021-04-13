@@ -18,7 +18,7 @@ package setups.connectors
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import com.typesafe.config.Config
+import com.typesafe.config.{Config, ConfigFactory}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.Matchers._
 import play.api.Configuration
@@ -123,7 +123,8 @@ trait HttpClientStubSetup extends MockFactory {
 
     override protected def actorSystem: ActorSystem = ActorSystem()
 
-    override protected def configuration: Option[Config] = None
+//    override protected def configuration: Config = None
+    override protected def configuration: Config = ConfigFactory.load()
   }
 
   val httpClient: HttpClientStub = new HttpClientStub()

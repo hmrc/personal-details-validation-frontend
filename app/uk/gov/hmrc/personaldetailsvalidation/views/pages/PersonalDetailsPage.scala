@@ -17,8 +17,9 @@
 package uk.gov.hmrc.personaldetailsvalidation.views.pages
 
 import javax.inject.{Inject, Singleton}
-import play.api.data.{Form, Mapping}
 import play.api.data.Forms.mapping
+import play.api.data.{Form, Mapping}
+import play.api.i18n.MessagesApi
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
@@ -31,12 +32,16 @@ import uk.gov.hmrc.views.ViewConfig
 import scala.util.Try
 
 @Singleton
-private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig: AppConfig,
-                                                                      personalDetailsPostcode: personal_details_postcode,
-                                                                      personalDetailsNino: personal_details_nino)
-                                                                      (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider,
-                                                                                              viewConfig: ViewConfig)
+private[personaldetailsvalidation]
+class PersonalDetailsPage @Inject()(
+        appConfig: AppConfig,
+        personalDetailsPostcode: personal_details_postcode,
+        personalDetailsNino: personal_details_nino
+   )(implicit val dwpMessagesApiProvider: DwpMessagesApiProvider,
+                                    viewConfig: ViewConfig)
   extends DwpI18nSupport(appConfig) {
+
+  override implicit lazy val messagesApi: MessagesApi = dwpMessagesApiProvider.get
 
   import uk.gov.hmrc.formmappings.Mappings._
 
@@ -81,7 +86,8 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig
       personalDetailsNino(formWithNino.withGlobalError("personal-details.validation.failed"), completionUrl)
 
   def bindFromRequest(postCodePageRequested: Boolean)(implicit request: Request[_],
-                      completionUrl: CompletionUrl): Either[Html, PersonalDetails] =
+                      completionUrl: CompletionUrl): Either[Html, PersonalDetails] = {
+    import play.api.data.FormBinding.Implicits._
     if(postCodePageRequested) {
       formWithPostcode.bindFromRequest().fold(
         formWithErrors => Left(personalDetailsPostcode(formWithErrors, completionUrl)),
@@ -93,4 +99,5 @@ private[personaldetailsvalidation] class PersonalDetailsPage @Inject()(appConfig
         personalDetails => Right(personalDetails)
       )
     }
+  }
 }
