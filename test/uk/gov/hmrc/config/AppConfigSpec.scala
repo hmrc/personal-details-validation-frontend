@@ -18,6 +18,7 @@ package uk.gov.hmrc.config
 
 import play.api.Configuration
 import support.UnitSpec
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class AppConfigSpec  extends UnitSpec {
 
@@ -40,6 +41,6 @@ class AppConfigSpec  extends UnitSpec {
   trait Setup {
     val testConfig: Map[String, Any] = Map.empty
 
-    lazy val appConfig = new AppConfig(Configuration.from(testConfig))
+    lazy val appConfig = new AppConfig(Configuration.from(testConfig), new ServicesConfig(Configuration.empty))
   }
 }

@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.config
+package uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+case class Event(category: String, action: String, label: String)
 
-@Singleton
-class AppConfig @Inject()(val configuration: Configuration, servicesConfig: ServicesConfig)  {
-  def isMultiPageEnabled : Boolean = configuration.getOptional[Boolean]("feature.multi-page.enabled").getOrElse(false)
-  lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
-
-  lazy val platformAnalyticsUrl = servicesConfig.baseUrl("platform-analytics")
-
-}
+case class AnalyticsRequest(gaClientId: String, events: Seq[Event])

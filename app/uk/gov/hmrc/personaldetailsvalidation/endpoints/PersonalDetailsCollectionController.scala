@@ -29,6 +29,7 @@ import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.model._
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main}
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -40,6 +41,7 @@ import scala.util.Try
 class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     personalDetailsSubmission: FuturedPersonalDetailsSubmission,
                                                     appConfig: AppConfig,
+                                                    val eventDispatcher: EventDispatcher,
                                                     val controllerComponents: MessagesControllerComponents,
                                                     enterYourDetailsNino: enter_your_details_nino,
                                                     enterYourDetailsPostcode: enter_your_details_postcode,
@@ -197,6 +199,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     * redirect user to the completionUrl with a timeout status
     */
   def redirectAfterTimeout(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+    eventDispatcher.dispatchEvent(TimedOut)
     Future.successful(Redirect(completionUrl.value, Map("userTimeout" -> Seq(""))))
   }
 
@@ -205,6 +208,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     *
     * */
   def keepAlive: Action[AnyContent] = Action.async { implicit request =>
+    eventDispatcher.dispatchEvent(TimeoutContinue)
     Future.successful(Ok("OK"))
   }
 

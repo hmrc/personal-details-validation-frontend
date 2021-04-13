@@ -26,6 +26,7 @@ import cats.implicits.catsStdInstancesForFuture
 import generators.Generators.Implicits._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Mockito
 import org.scalacheck.Gen
 import org.scalamock.scalatest.AsyncMockFactory
 import org.scalatest.concurrent.ScalaFutures
@@ -45,6 +46,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{personalDetailsObjects, personalDetailsObjectsWithPostcode}
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model._
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main}
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.views.ViewConfig
@@ -928,8 +930,9 @@ class PersonalDetailsCollectionControllerSpec
   "keep-alive" should {
 
     "return 200 OK" in new Setup {
-       private val result = controller.keepAlive()(request)
-       status(result) shouldBe 200
+      private val result = controller.keepAlive()(request)
+      status(result) shouldBe 200
+      Mockito.verify(mockEventDispatcher).dispatchEvent(TimeoutContinue)
     }
 
   }
@@ -943,6 +946,7 @@ class PersonalDetailsCollectionControllerSpec
       private val result = controller.redirectAfterTimeout(completionUrl)(request)
       status(result) shouldBe 303
       redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
+      Mockito.verify(mockEventDispatcher).dispatchEvent(TimedOut)
     }
 
   }
@@ -962,6 +966,7 @@ class PersonalDetailsCollectionControllerSpec
     val pageMock: PersonalDetailsPage = mock[PersonalDetailsPage]
     val personalDetailsSubmitterMock = mock[FuturedPersonalDetailsSubmission]
     val mockAppConfig = mock[AppConfig]
+    val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
     implicit val mockViewConfig = app.injector.instanceOf[ViewConfig]
     implicit val dwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
 
@@ -984,10 +989,13 @@ class PersonalDetailsCollectionControllerSpec
       pageMock,
       personalDetailsSubmitterMock,
       mockAppConfig,
+      mockEventDispatcher,
       stubMessagesControllerComponents(),
       enter_your_details_nino,
       enter_your_details_postcode,
       personal_details_main)
+
+    implicit val hc: HeaderCarrier = HeaderCarrier()
   }
 
   private trait BindFromRequestTooling {
