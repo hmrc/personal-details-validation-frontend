@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.config
+package uk.gov.hmrc.personaldetailsvalidation.monitoring
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+sealed trait MonitoringEvent
 
-@Singleton
-class AppConfig @Inject()(val configuration: Configuration, servicesConfig: ServicesConfig)  {
-  def isMultiPageEnabled : Boolean = configuration.getOptional[Boolean]("feature.multi-page.enabled").getOrElse(false)
-  lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
+//Timeout events
+case object TimeoutContinue extends MonitoringEvent
+case object TimedOut extends MonitoringEvent
 
-  lazy val platformAnalyticsUrl = servicesConfig.baseUrl("platform-analytics")
-
-}
