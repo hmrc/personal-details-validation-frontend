@@ -22,7 +22,6 @@
 @import uk.gov.hmrc.play.views.html.layouts.MainContentHeader
 @import uk.gov.hmrc.play.views.html.layouts.Footer
 @import uk.gov.hmrc.play.views.html.layouts.Head
-@import uk.gov.hmrc.govukfrontend.views.html.layouts.govukTemplate
 @import uk.gov.hmrc.play.views.html.layouts.HeaderNav
 @import uk.gov.hmrc.play.views.html.layouts.FooterLinks
 @import uk.gov.hmrc.play.views.html.helpers.ReportAProblemLink
@@ -30,7 +29,7 @@
 @this(  main: MainContent,
         mainContentHeader: MainContentHeader,
         govFooterLinks :FooterLinks,
-        govukTemplate: govukTemplate,
+        govTemplate  : views.html.layouts.GovUkTemplate,
         uiHead: Head,
         headerNav: HeaderNav,
         uiFooter: Footer,
@@ -126,6 +125,6 @@
       sidebar = sidebar)
 }
 
-@govukTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(govFooterLinks()))(content)
+@govTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(govFooterLinks()))(content)
 
 

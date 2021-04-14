@@ -38,7 +38,7 @@ class ViewConfig @Inject()(val configuration: Configuration,
   lazy val timeoutCountdown: Int = configuration.get[Int]("timeoutDialog.timeout-countdown-seconds")
 
   def languageMap: Map[String, Lang] =
-    configuration.load[Seq[String]]("play.i18n.langs", default = Nil)
+    configuration.load[Seq[String]]("play.i18n.langs", default = Seq("en", "cy"))
       .map(verifyMessagesExists)
       .map(toLangNameAndLangTuples)
       .toMap

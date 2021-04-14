@@ -16,6 +16,7 @@
 
 package setups.views
 
+import com.typesafe.config.Config
 import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.HttpConfiguration
@@ -32,20 +33,20 @@ object ViewConfigMockFactory extends MockFactory with GuiceOneAppPerSuite {
 
     val configMock = mock[Configuration]
 
-    (configMock.getString _).expects("assets.url", *).returning(Some("assets-url"))
-    (configMock.getString _).expects("assets.version", *).returning(Some("assets-version"))
-    (configMock.getString _).expects("optimizely.url", *).returning(None)
-    (configMock.getString _).expects("optimizely.projectId", *).returning(None)
-    (configMock.getString _).expects("google-analytics.token", *).returning(Some("ga-token"))
-    (configMock.getString _).expects("google-analytics.host", *).returning(Some("ga-host"))
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("assets.url", *).returning("assets-url")
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("assets.version", *).returning("assets-version")
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("optimizely.url", *).returning(null)
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("optimizely.projectId", *).returning(null)
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("google-analytics.token", *).returning("ga-token")
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("google-analytics.host", *).returning("ga-host")
     (configMock.getStringList _).expects("play.i18n.langs").anyNumberOfTimes().returning(Some(List("en", "cy").asJava))
-    (configMock.getString _).expects("play.i18n.descriptions.en", *).anyNumberOfTimes().returning(Some("english"))
-    (configMock.getString _).expects("play.i18n.descriptions.en", None).anyNumberOfTimes().returning(Some("english"))
-    (configMock.getString _).expects("play.i18n.descriptions.cy", *).anyNumberOfTimes().returning(Some("cymraeg"))
-    (configMock.getString _).expects("play.i18n.descriptions.cy", None).anyNumberOfTimes().returning(Some("cymraeg"))
-    (configMock.getString _).expects("dwp.originLabel", *).returning(Some("dwp-iv"))
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("play.i18n.descriptions.en", *).anyNumberOfTimes().returning("english")
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("play.i18n.descriptions.en", *).anyNumberOfTimes().returning("english")
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("play.i18n.descriptions.cy", *).anyNumberOfTimes().returning("cymraeg")
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("play.i18n.descriptions.cy", *).anyNumberOfTimes().returning("cymraeg")
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("dwp.originLabel", *).returning("dwp-iv")
     (configMock.getOptional(_: String)(_:ConfigLoader[String])).expects("dwp.originLabel", *).returning(Some("dwp-iv"))
-    (configMock.getString _).expects("dwp.getHelpUrl", *).returning(Some("someGetHelpUrl"))
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("dwp.getHelpUrl", *).returning("someGetHelpUrl")
 
     (configMock.get(_: String)(_:ConfigLoader[Int])).expects(v1 = "timeoutDialog.timeout-seconds", *).returning(5)
     (configMock.get(_: String)(_:ConfigLoader[Int])).expects(v1 = "timeoutDialog.timeout-countdown-seconds", *).returning(5)
