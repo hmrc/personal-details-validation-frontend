@@ -8,11 +8,10 @@ import play.api.inject.guice.GuiceApplicationBuilder
 trait PersonalDetailsFrontendService extends GuiceOneServerPerSuite {
   self: TestSuite =>
 
-  protected def additionalConfiguration = Map.empty[String, Any]
+  protected def additionalConfiguration = Map("port" -> 6009)
 
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder().configure(additionalConfiguration).build()
 
-  override lazy val port: Int = 6009
 
 }

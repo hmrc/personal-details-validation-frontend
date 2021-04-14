@@ -29,10 +29,10 @@
 
 @validationText = {
     @if(request.session.get("loginOrigin").contains("dwp-iv")) {
-        @Messages("validation.error-summary.dwp-text")
+        @messages("validation.error-summary.dwp-text")
     } else {
-        <a href="@completionUrl">@Messages("validation.error-summary.link-text")</a>
-        @Messages("validation.error-summary.after-link-text")
+        <a href="@completionUrl">@messages("validation.error-summary.link-text")</a>
+        @messages("validation.error-summary.after-link-text")
     }
 }
 
@@ -40,10 +40,10 @@
 
     @if(pageForm.hasGlobalErrors) {
         <div class="flash error-summary error-summary--show" id="error-summary-display" role="alert" aria-labelledby="error-summary-display" tabindex="-1">
-            <h2 id="error-summary-heading" class="h3-heading">@Messages("validation.error-summary.heading")</h2>
+            <h2 id="error-summary-heading" class="h3-heading">@messages("validation.error-summary.heading")</h2>
             <ul class="js-error-summary-messages">
                 <li role="tooltip">
-                    @Messages("validation.error-summary.before-link-text")
+                    @messages("validation.error-summary.before-link-text")
                     @validationText
                 </li>
             </ul>
@@ -99,13 +99,13 @@
                 </span>
                 @pageForm("nino").errors.map { error =>
                     <span class="error-notification" role="tooltip" data-journey="search-page:error:nino">
-                        @Messages(s"${error.message}")
+                        @messages(s"${error.message}")
                     </span>
                 }
                 <input aria-describedby="hint-nino" type="text" class="input--medium input--cleared" name="nino" id="nino" value='@pageForm.data.getOrElse("nino","")'>
             </label>
             <span class="form-field--submit display-block">
-                <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"> @Messages("personal-details.nino.unavailable")</a>
+                <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"> @messages("personal-details.nino.unavailable")</a>
             </span>
         </div>
         <div class="form-group">
@@ -118,7 +118,7 @@
         </div>
 
         <div class="form-group form-field--submit flush--bottom">
-            <button class="button" type="submit">@Messages("continue.button.text")</button>
+            <button class="button" type="submit">@messages("continue.button.text")</button>
         </div>
     }
 }

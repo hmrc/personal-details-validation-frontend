@@ -49,8 +49,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     scalaVersion := "2.12.12",
     libraryDependencies ++= AppDependencies(),
-    retrieveManaged := true,
-    routesGenerator := InjectedRoutesGenerator
+    retrieveManaged := true
   )
   .settings(
     scalacOptions ++= Seq(

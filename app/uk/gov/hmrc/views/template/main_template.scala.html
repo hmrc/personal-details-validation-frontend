@@ -19,9 +19,13 @@
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.PersonalDetailsCollectionController
 @import uk.gov.hmrc.play.views.html.layouts.TrackingConsentSnippet
+@import uk.gov.hmrc.play.views.html.layouts
+@import uk.gov.hmrc.play.views.html.layouts.Sidebar
 
-@this(govukWrapper: govuk_wrapper,
+@this(  govukWrapper: govuk_wrapper,
+        sidebar: Sidebar,
         trackingConsentSnippet: TrackingConsentSnippet)
+
 @(title: String,
   sidebarLinks: Option[Html] = None,
   contentHeader: Option[Html] = None,
@@ -32,13 +36,11 @@
   mainContent: Html
 )(implicit request : Request[_], messages: Messages, viewConfig: ViewConfig)
 
-@import uk.gov.hmrc.play.views.html.layouts
-
 @serviceInfoContent = {}
 
 @sidebar = {
     @if(sidebarLinks.isDefined) {
-        @layouts.sidebar(sidebarLinks.get, Some("sidebar"))
+        sidebar(sidebarLinks.get, Some("sidebar"))
     }
 }
 
@@ -46,21 +48,21 @@
     <script src="@controllers.routes.Assets.at("javascripts/scripts.js")"></script>
     <script src="@controllers.routes.Assets.at("javascripts/gtm_dl.js")"></script>
     <script id="timeoutDialog">
-            window.GOVUK.timeoutDialog({
-                timeout: @viewConfig.timeout,
-                countdown: @viewConfig.timeoutCountdown,
-                keepAliveUrl: '@PersonalDetailsCollectionController.keepAlive()',
-                signOutUrl: '@{PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl)}',
-                title: "@messages("timeout-dialog.title")",
-                message: "@messages("timeout-dialog.p1")",
-                keepAliveButtonText: "@messages("timeout-dialog.button")",
-                properties: {
-                    minutes: "@Messages("timeout-dialog.minutes")",
-                    minute: "@Messages("timeout-dialog.minute")",
-                    seconds: "@Messages("timeout-dialog.seconds")",
-                    second: "@Messages("timeout-dialog.second")"
-                }
-            });
+        window.GOVUK.timeoutDialog({
+            timeout: @viewConfig.timeout,
+            countdown: @viewConfig.timeoutCountdown,
+            keepAliveUrl: '@PersonalDetailsCollectionController.keepAlive()',
+            signOutUrl: '@{PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl)}',
+            title: "@messages("timeout-dialog.title")",
+            message: "@messages("timeout-dialog.p1")",
+            keepAliveButtonText: "@messages("timeout-dialog.button")",
+            properties: {
+                minutes: "@messages("timeout-dialog.minutes")",
+                minute: "@messages("timeout-dialog.minute")",
+                seconds: "@messages("timeout-dialog.seconds")",
+                second: "@messages("timeout-dialog.second")"
+            }
+        });
     </script>
     <div class="gtm-tag" data-gtag=""></div>
     @trackingConsentSnippet()
@@ -71,7 +73,7 @@
                bodyClasses = bodyClasses,
                sidebar = sidebar,
                contentHeader = contentHeader,
-               mainContent = layouts.article(mainContent),
+               mainContent = mainContent,
                serviceInfoContent = serviceInfoContent,
                scriptElem = Some(scriptElem)
 )
