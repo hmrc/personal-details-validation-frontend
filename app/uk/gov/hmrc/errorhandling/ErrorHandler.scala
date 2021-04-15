@@ -32,8 +32,8 @@ import scala.language.implicitConversions
 
 @Singleton
 class ErrorHandler @Inject()(appConfig: AppConfig, errorTemplate: error_template)
-                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, viewConfig: ViewConfig)
-  extends DwpI18nSupport(appConfig) {
+                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, viewConfig: ViewConfig, messagesApi: MessagesApi)
+  extends DwpI18nSupport(appConfig, messagesApi) {
 
   import ErrorHandler.bindingError
 

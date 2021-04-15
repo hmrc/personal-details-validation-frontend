@@ -17,13 +17,13 @@
 package uk.gov.hmrc.language
 
 import com.google.inject.Inject
-import play.api.i18n.{I18nSupport, Messages}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Request, RequestHeader}
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
-abstract class DwpI18nSupport @Inject()(appConfig: AppConfig)
+abstract class DwpI18nSupport @Inject()(appConfig: AppConfig, messagesApi: MessagesApi)
   extends FrontendErrorHandler with I18nSupport {
 
   def dwpMessagesApiProvider: DwpMessagesApiProvider
@@ -31,7 +31,7 @@ abstract class DwpI18nSupport @Inject()(appConfig: AppConfig)
   override implicit def request2Messages(implicit request: RequestHeader): Messages = {
     request.session.get("loginOrigin") match {
       case Some(appConfig.originDwp) => dwpMessagesApiProvider.get.preferred(request)
-      case _ => dwpMessagesApiProvider.get.preferred(request)
+      case _ => messagesApi.preferred(request)
     }
   }
 

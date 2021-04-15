@@ -38,8 +38,9 @@ class PersonalDetailsPage @Inject()(
         personalDetailsPostcode: personal_details_postcode,
         personalDetailsNino: personal_details_nino
    )(implicit val dwpMessagesApiProvider: DwpMessagesApiProvider,
-                                    viewConfig: ViewConfig)
-  extends DwpI18nSupport(appConfig) {
+                                    viewConfig: ViewConfig,
+     messageApi: MessagesApi)
+  extends DwpI18nSupport(appConfig, messageApi) {
 
   override implicit lazy val messagesApi: MessagesApi = dwpMessagesApiProvider.get
 
