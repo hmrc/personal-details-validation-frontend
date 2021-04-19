@@ -12,9 +12,7 @@ import uk.gov.hmrc.personaldetailsvalidation.services.PersonalDetailsService.Per
 import uk.gov.hmrc.personaldetailsvalidation.support.BaseIntegrationSpec
 import uk.gov.hmrc.personaldetailsvalidation.support.wiremock.WiremockedService
 
-class PersonalDetailsPageISpec
-  extends BaseIntegrationSpec
-    with WiremockedService {
+class PersonalDetailsPageISpec extends BaseIntegrationSpec with WiremockedService {
 
   override protected lazy val additionalConfiguration: Map[String, Any] = wiremockAdditionalConfiguration
 
