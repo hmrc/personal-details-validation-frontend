@@ -51,8 +51,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     ec: ExecutionContext,
                                                     messagesApi: MessagesApi)
   extends DwpI18nSupport(appConfig, messagesApi) with FrontendBaseController {
-
-//  override implicit lazy val messagesApi: MessagesApi = controllerComponents.messagesApi
+  
 
   import uk.gov.hmrc.formmappings.Mappings._
 
