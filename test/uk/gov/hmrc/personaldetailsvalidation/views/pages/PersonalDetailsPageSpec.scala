@@ -30,6 +30,7 @@ import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{personal_details_nino, personal_details_postcode}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.collection.JavaConverters._
 
@@ -615,7 +616,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
     implicit val completionUrl: CompletionUrl = ValuesGenerators.completionUrls.generateOne
     lazy val testConfig: Map[String, Any] = Map.empty
 
-    lazy val appConfig = new AppConfig(Configuration.from(testConfig))
+    lazy val appConfig = new AppConfig(Configuration.from(testConfig), mock[ServicesConfig])
 
     implicit val mockDwpMessagesApi = app.injector.instanceOf[DwpMessagesApiProvider]
 
