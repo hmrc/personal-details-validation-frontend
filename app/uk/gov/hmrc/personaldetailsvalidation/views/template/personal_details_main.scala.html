@@ -15,15 +15,26 @@
  *@
 
 @import uk.gov.hmrc.views.html.template.main_template_govuk_frontend
-@import uk.gov.hmrc.play.views.html.helpers._
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.model.InitialPersonalDetails
-@import uk.gov.hmrc.views.html.components.date
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.views.html.partials.DateInput
 
-@this(mainTemplate: main_template_govuk_frontend, dateField: date)
-@(pageForm: Form[InitialPersonalDetails], completionUrl: CompletionUrl
+
+@this(
+    mainTemplate: main_template_govuk_frontend,
+    dateField: DateInput,
+    govukErrorSummary : GovukErrorSummary,
+    govukInput: GovukInput,
+    formWithCSRF: FormWithCSRF,
+    govukButton: GovukButton
+)
+
+@(
+    pageForm: Form[InitialPersonalDetails],
+    completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 @validationText = {
@@ -35,8 +46,13 @@
     }
 }
 
-@mainTemplate(title = messages("personal-details.title"), completionUrl = completionUrl) {
-    <a id="identifiersBackLink" href="javascript:history.back()" class="link-back">@messages("button.back.text")</a>
+@mainTemplate(
+    title = messages("personal-details.title"),
+    completionUrl = completionUrl,
+    form = Some(pageForm)
+) {
+
+    <a id="identifiersBackLink" href="javascript:history.back()" class="govuk-back-link">@messages("button.back.text")</a>
 
     @if(pageForm.hasGlobalErrors) {
         <div class="flash error-summary error-summary--show" id="error-summary-display" role="alert" aria-labelledby="error-summary-display" tabindex="-1">
@@ -48,57 +64,53 @@
                 </li>
             </ul>
         </div>
-    } else {
-        @if(pageForm.hasErrors) {
-            @errorSummary(
-                heading = Messages("error-summary.heading"),
-                form = pageForm
-            )
-        }
     }
 
-    <h1 class="heading-xlarge">
-        <span class="heading-secondary">
-        @messages("personal-details.faded-heading")
-        </span>
-        @messages("personal-details.header")
-    </h1>
+    <span class="govuk-caption-xl">@messages("personal-details.faded-heading")</span>
+    <h1 class="govuk-heading-l">@messages("personal-details.header")</h1>
 
-    <p>@messages("personal-details.paragraph")</p>
+    <p class="govuk-body">@messages("personal-details.paragraph")</p>
 
-    @form(routes.PersonalDetailsCollectionController.submitMainDetails(completionUrl), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
+    @formWithCSRF(routes.PersonalDetailsCollectionController.submitMainDetails(completionUrl), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
 
-        <div class="form-group">
-        @input(
-            field = pageForm("firstName"),
-            '_label -> messages("personal-details.firstname"),
-            '_inputClass -> "input--medium input--cleared",
-            '_labelTextClass -> "form-label-bold",
-            '_labelClass -> "soft--ends",
-            '_autoComplete -> "given-name"
+        @govukInput(
+            Input(
+                id = "firstName",
+                name = "firstName",
+                attributes = Map("autocomplete" -> "given-name"),
+                value = pageForm("firstName").value,
+                classes = "govuk-input--width-20",
+                label = Label(
+                    classes = "govuk-!-font-weight-bold",
+                    content = Text(messages("personal-details.firstname"))
+                ),
+                errorMessage =  pageForm.errors.asTextErrorMessageForField("firstName")
+            )
         )
-        </div>
-        <div class="form-group">
-        @input(
-            field = pageForm("lastName"),
-            '_label -> messages("personal-details.lastname"),
-            '_inputClass -> "input--medium input--cleared",
-            '_labelTextClass -> "form-label-bold",
-            '_labelClass -> "soft--ends",
-            '_autoComplete -> "family-name"
-        )
-        </div>
-        <div class="form-group">
-        @dateField(
-            pageForm,
-            fieldName = "dateOfBirth",
-            labelKeyPrefix = "personal-details",
-            hintKeySuffix = Some("hint")
-        )
-        </div>
 
-        <div class="form-group form-field--submit flush--bottom">
-            <button class="button" type="submit">@messages("continue.button.text")</button>
-        </div>
+        @govukInput(
+            Input(
+                id = "lastName",
+                name = "lastName",
+                attributes = Map("autocomplete" -> "family-name"),
+                value = pageForm("lastName").value,
+                classes = "govuk-input--width-20",
+                label = Label(
+                    classes = "govuk-!-font-weight-bold",
+                    content = Text(messages("personal-details.lastname"))
+                ),
+                errorMessage =  pageForm.errors.asTextErrorMessageForField("lastName")
+            )
+        )
+
+        @dateField(pageForm, "personal-details", "dateOfBirth")
+
+        @govukButton(
+            Button(
+                attributes = Map("id" -> "continue", "novalidate" -> "novalidate"),
+                content = Text(messages("continue.button.text")),
+                inputType = Some("submit")
+            )
+        )
     }
 }
