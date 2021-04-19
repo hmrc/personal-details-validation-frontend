@@ -25,7 +25,10 @@ trait WiremockedServiceConfig {
 
   self: WiremockedServiceBuilder with PersonalDetailsFrontendService =>
 
-  lazy val wiremockAdditionalConfiguration: Map[String, Any] =
+  lazy val wiremockAdditionalConfiguration: Map[String, Any] = {
+    println("serviceName " + wiremockedServiceName)
+    println("wiremockedServiceHost " + wiremockedServiceHost)
+    println("wiremockedServicePort " + wiremockedServicePort)
     (wiremockedServiceName, wiremockedServiceHost, wiremockedServicePort).mapN {
       (serviceName, host, port) =>
         Map(
@@ -33,6 +36,7 @@ trait WiremockedServiceConfig {
           s"microservice.services.$serviceName.port" -> port
         )
     }.getOrElse(Map.empty)
+  }
 
   override protected lazy val additionalConfiguration = wiremockAdditionalConfiguration
 }
