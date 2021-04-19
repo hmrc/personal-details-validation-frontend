@@ -4,17 +4,20 @@ import java.net.URL
 
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
-import org.openqa.selenium.firefox.{FirefoxDriver, FirefoxProfile}
+import org.openqa.selenium.firefox.{FirefoxDriver, FirefoxOptions, FirefoxProfile}
 import org.openqa.selenium.remote.{DesiredCapabilities, RemoteWebDriver}
 
 object SingletonDriver {
   import scala.util.Properties
 
   lazy val firefoxDriver = {
-    val profile: FirefoxProfile = new FirefoxProfile
-    profile.setPreference("javascript.enabled", true)
-    profile.setAcceptUntrustedCertificates(true)
-    new FirefoxDriver(profile)
+    val firefoxCapabilities: DesiredCapabilities = DesiredCapabilities.firefox()
+    firefoxCapabilities.setJavascriptEnabled(true)
+    firefoxCapabilities.setAcceptInsecureCerts(true)
+    val firefoxOptions = new FirefoxOptions(firefoxCapabilities)
+    System.setProperty(FirefoxDriver.SystemProperty.DRIVER_USE_MARIONETTE, "true")
+    System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, "/dev/null")
+    new FirefoxDriver(firefoxOptions)
   }
 
   lazy val chromeWebDriver = {
@@ -26,7 +29,7 @@ object SingletonDriver {
 
   val driver: WebDriver = Properties.propOrElse("browser", "firefox") match {
     case "firefox"        => firefoxDriver
-    case "chrome" => chromeWebDriver
+    case "chrome"         => chromeWebDriver
     case "remote-chrome"  => createRemoteChrome
     case "remote-firefox" => createRemoteFirefox
   }
