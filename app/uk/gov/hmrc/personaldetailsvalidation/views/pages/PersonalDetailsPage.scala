@@ -75,8 +75,10 @@ class PersonalDetailsPage @Inject()(
     postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
   def render(postCodePageRequested: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html = {
-    if (postCodePageRequested) personalDetailsPostcode(formWithPostcode, completionUrl)
-    else personalDetailsNino(formWithNino, completionUrl)
+    if (postCodePageRequested)
+      personalDetailsPostcode(formWithPostcode, completionUrl)
+    else
+      personalDetailsNino(formWithNino, completionUrl)
   }
 
   def renderValidationFailure(postCodePageRequested: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
