@@ -34,53 +34,56 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.collection.JavaConverters._
 
-class PersonalDetailsPageSpec
-  extends UnitSpec
-    with GuiceOneAppPerSuite {
+class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
   "render" should {
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
       "and a continue button" in new Setup {
       val html: Document = personalDetailsPage.render(postCodePageRequested = false)
-
       html.title() shouldBe s"${messages("personal-details.title")} - GOV.UK"
 
-      html.select("h1.heading-xlarge").text() shouldBe messages("personal-details.faded-heading") + " " + messages("personal-details.header")
-      html.select("h1.heading-xlarge ~ p").text() shouldBe messages("personal-details.paragraph")
+      html.select("span.govuk-caption-xl").text() shouldBe messages("personal-details.faded-heading")
+      html.select("h1.govuk-heading-l").text() shouldBe messages("personal-details.header")
+      html.select("h1 ~ p.govuk-body").text() shouldBe messages("personal-details.paragraph")
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
 
       html.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
 
-      val fieldsets = html.select("form .form-group")
+      val fieldsets = html.select("form .govuk-form-group")
+
       val firstNameFieldset = fieldsets.first()
-      firstNameFieldset.select("label[for=firstname]").text() shouldBe messages("personal-details.firstname")
-      firstNameFieldset.select("label[for=firstname] input[type=text][name=firstName]").isEmpty shouldBe false
+      firstNameFieldset.select("label[for=firstName]").text() shouldBe messages("personal-details.firstname")
+      firstNameFieldset.select("input[type=text][name=firstName]").isEmpty shouldBe false
 
       val lastNameFieldset = fieldsets.next()
-      lastNameFieldset.select("label[for=lastname]").text() shouldBe messages("personal-details.lastname")
-      lastNameFieldset.select("label[for=lastname] input[type=text][name=lastName]").isEmpty shouldBe false
+      lastNameFieldset.select("label[for=lastName]").text() shouldBe messages("personal-details.lastname")
+      lastNameFieldset.select("input[type=text][name=lastName]").isEmpty shouldBe false
 
       val ninoFieldset = fieldsets.next()
-      ninoFieldset.select("label[for=nino] .form-label-bold").text() shouldBe messages("personal-details.nino")
-      val ninoHints = ninoFieldset.select("label[for=nino] .form-hint")
+      ninoFieldset.select("label[for=nino]").text() shouldBe messages("personal-details.nino")
+      
+      val ninoHints = ninoFieldset.select("#nino-hint.govuk-hint")
       ninoHints.first().text() contains messages("personal-details.nino.hint")
-      ninoFieldset.select("label[for=nino] input[type=text][name=nino]").isEmpty shouldBe false
+      ninoFieldset.select("input[type=text][name=nino]").isEmpty shouldBe false
 
-      val dateFieldset = fieldsets.next().select("fieldset")
-      dateFieldset.select(".form-label-bold").text() shouldBe messages("personal-details.dateOfBirth")
-      dateFieldset.select(".form-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
-      val dateElementDivs = dateFieldset.select(".form-date .form-group")
+      val dateFieldset = html.select(".govuk-form-group.date-of-birth-wrapper fieldset")
+      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select(".govuk-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
+      val dateElementDivs = dateFieldset.select("div.govuk-date-input .govuk-date-input__item")
+
       val dayElement = dateElementDivs.first()
-      dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
-      dayElement.select("label[for=dateOfBirth.day] input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
+      dayElement.select("label[for=dateOfBirth-dateOfBirth.day]").text() shouldBe messages("personal-details.dateOfBirth.day")
+      dayElement.select("input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
+
       val monthElement = dateElementDivs.next()
-      monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
-      monthElement.select("label[for=dateOfBirth.month] input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
+      monthElement.select("label[for=dateOfBirth-dateOfBirth.month]").text() shouldBe messages("personal-details.dateOfBirth.month")
+      monthElement.select("input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
+
       val yearElement = dateElementDivs.next()
-      yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
-      yearElement.select("label[for=dateOfBirth.year] input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
+      yearElement.select("label[for=dateOfBirth-dateOfBirth.year]").text() shouldBe messages("personal-details.dateOfBirth.year")
+      yearElement.select("input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
 
       html.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
@@ -91,43 +94,49 @@ class PersonalDetailsPageSpec
 
       html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
 
-      html.select("h1.govuk-heading-xl").text() shouldBe messages("personal-details.header")
-      html.select("h1.govuk-heading-xl ~ p").text() shouldBe messages("personal-details.paragraph")
+      html.select("span.govuk-caption-xl").text() shouldBe messages("personal-details.faded-heading")
+      html.select("h1.govuk-heading-l").text() shouldBe messages("personal-details.header")
+      html.select("h1 ~ p.govuk-body").text() shouldBe messages("personal-details.paragraph")
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl, true).url
 
       html.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
 
       val formGroup = html.select("form .govuk-form-group")
+
       val firstNameFormGroup = formGroup.first()
       firstNameFormGroup.select("label[for=firstName]").text() shouldBe messages("personal-details.firstname")
-      firstNameFormGroup.select("label[for=firstName] ~ input[type=text][name=firstName]").isEmpty shouldBe false
+      firstNameFormGroup.select("input[type=text][name=firstName]").isEmpty shouldBe false
 
       val lastNameFormGroup = formGroup.next()
       lastNameFormGroup.select("label[for=lastName]").text() shouldBe messages("personal-details.lastname")
-      lastNameFormGroup.select("label[for=lastName] ~ input[type=text][name=lastName]").isEmpty shouldBe false
+      lastNameFormGroup.select("input[type=text][name=lastName]").isEmpty shouldBe false
 
       val postcodeFormGroup = formGroup.next()
       postcodeFormGroup.select("label[for=postcode]").text() shouldBe messages("personal-details.postcode")
-      val postcodeHints = postcodeFormGroup.select("label[for=postcode] ~ .govuk-hint")
+
+      val postcodeHints = postcodeFormGroup.select("#postcode-hint.govuk-hint")
       postcodeHints.first().text() shouldBe messages("personal-details.postcode.hint")
-      postcodeFormGroup.select("label[for=postcode] ~ input[type=text][name=postcode]").isEmpty shouldBe false
+      postcodeFormGroup.select("input[type=text][name=postcode]").isEmpty shouldBe false
 
-      val dateFieldset = html.select(".govuk-fieldset")
-      val dateFormGroup = dateFieldset.first()
+      val dateFormGroup = html.select(".govuk-form-group.date-of-birth-wrapper fieldset")
 
-      dateFormGroup.select(".govuk-fieldset__legend").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFormGroup.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
       dateFormGroup.select(".govuk-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
-      val dateElementDivs = dateFormGroup.select(".govuk-date-input .govuk-date-input__item")
+
+      val dateElementDivs = dateFormGroup.select(".govuk-date-input__item")
+
       val dayElement = dateElementDivs.first()
       dayElement.select("label[for=dateOfBirth-dateOfBirth.day]").text() shouldBe messages("personal-details.dateOfBirth.day")
-      dayElement.select("label[for=dateOfBirth-dateOfBirth.day] ~ input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
+      dayElement.select("input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
+
       val monthElement = dateElementDivs.next()
       monthElement.select("label[for=dateOfBirth-dateOfBirth.month]").text() shouldBe messages("personal-details.dateOfBirth.month")
-      monthElement.select("label[for=dateOfBirth-dateOfBirth.month] ~ input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
+      monthElement.select("input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
+
       val yearElement = dateElementDivs.next()
       yearElement.select("label[for=dateOfBirth-dateOfBirth.year]").text() shouldBe messages("personal-details.dateOfBirth.year")
-      yearElement.select("label[for=dateOfBirth-dateOfBirth.year] ~ input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
+      yearElement.select("input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
 
       html.select("form button").text() shouldBe messages("continue.button.text")
     }
@@ -138,18 +147,18 @@ class PersonalDetailsPageSpec
 
       html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
 
-      val fieldsets = html.select("form .form-group")
+      val fieldsets = html.select("form .govuk-form-group")
       val firstNameFieldset = fieldsets.get(0)
-      firstNameFieldset.select("label span").text() shouldBe messages("personal-details.firstname")
+      firstNameFieldset.select("label").text() shouldBe messages("personal-details.firstname")
 
       val lastNameFieldset = fieldsets.get(1)
-      lastNameFieldset.select("label span").text() shouldBe messages("personal-details.lastname")
+      lastNameFieldset.select("label").text() shouldBe messages("personal-details.lastname")
 
       val ninoFieldset = fieldsets.get(2)
-      ninoFieldset.select("label span").first().text() shouldBe messages("personal-details.nino")
-      ninoFieldset.select("span.form-field--submit a").size() shouldBe 1
+      ninoFieldset.select("label").first().text() shouldBe messages("personal-details.nino")
+      html.select("#nino-unknown").size() shouldBe 1
 
-      val dateFieldset = fieldsets.get(3)
+      val dateFieldset = html.select(".govuk-form-group.date-of-birth-wrapper fieldset")
       dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
     }
 
@@ -182,42 +191,47 @@ class PersonalDetailsPageSpec
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
-      html.select("h1.heading-xlarge").text() shouldBe messages("personal-details.faded-heading") + " " + messages("personal-details.header")
-      html.select("h1.heading-xlarge ~ p").text() shouldBe messages("personal-details.paragraph")
+      html.select("span.govuk-caption-xl").text() shouldBe messages("personal-details.faded-heading")
+      html.select("h1.govuk-heading-l").text() shouldBe messages("personal-details.header")
+      html.select("h1 ~ p.govuk-body").text() shouldBe messages("personal-details.paragraph")
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
 
       val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
       errors shouldBe List("We could not find any records that match the details you entered. Please try again, or contact HMRC to get help")
 
-      val fieldsets = html.select("form .form-group")
+      val fieldsets = html.select("form .govuk-form-group")
       val firstNameFieldset = fieldsets.first()
-      firstNameFieldset.select("label[for=firstname]").text() shouldBe messages("personal-details.firstname")
-      firstNameFieldset.select("label[for=firstname] input[type=text][name=firstName]").isEmpty shouldBe false
+      firstNameFieldset.select("label[for=firstName]").text() shouldBe messages("personal-details.firstname")
+      firstNameFieldset.select("input[type=text][name=firstName]").isEmpty shouldBe false
 
       val lastNameFieldset = fieldsets.next()
-      lastNameFieldset.select("label[for=lastname]").text() shouldBe messages("personal-details.lastname")
-      lastNameFieldset.select("label[for=lastname] input[type=text][name=lastName]").isEmpty shouldBe false
+      lastNameFieldset.select("label[for=lastName]").text() shouldBe messages("personal-details.lastname")
+      lastNameFieldset.select("input[type=text][name=lastName]").isEmpty shouldBe false
 
       val ninoFieldset = fieldsets.next()
-      ninoFieldset.select("label[for=nino] .form-label-bold").text() shouldBe messages("personal-details.nino")
-      val ninoHints = ninoFieldset.select("label[for=nino] .form-hint")
+      ninoFieldset.select("label[for=nino]").text() shouldBe messages("personal-details.nino")
+      val ninoHints = ninoFieldset.select("#nino-hint.govuk-hint")
       ninoHints.first().text() contains messages("personal-details.nino.hint")
-      ninoFieldset.select("label[for=nino] input[type=text][name=nino]").isEmpty shouldBe false
+      ninoFieldset.select("input[type=text][name=nino]").isEmpty shouldBe false
 
-      val dateFieldset = fieldsets.next().select("fieldset")
-      dateFieldset.select(".form-label-bold").text() shouldBe messages("personal-details.dateOfBirth")
-      dateFieldset.select(".form-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
-      val dateElementDivs = dateFieldset.select(".form-date .form-group")
+      val dateFieldset = html.select(".govuk-form-group.date-of-birth-wrapper fieldset")
+
+      dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
+      dateFieldset.select("#dateOfBirth-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
+
+      val dateElementDivs = dateFieldset.select(".govuk-date-input__item")
       val dayElement = dateElementDivs.first()
-      dayElement.select("label[for=dateOfBirth.day] span").text() shouldBe messages("personal-details.dateOfBirth.day")
-      dayElement.select("label[for=dateOfBirth.day] input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
+      dayElement.select("label[for=dateOfBirth-dateOfBirth.day]").text() shouldBe messages("personal-details.dateOfBirth.day")
+      dayElement.select("input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
+
       val monthElement = dateElementDivs.next()
-      monthElement.select("label[for=dateOfBirth.month] span").text() shouldBe messages("personal-details.dateOfBirth.month")
-      monthElement.select("label[for=dateOfBirth.month] input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
+      monthElement.select("label[for=dateOfBirth-dateOfBirth.month]").text() shouldBe messages("personal-details.dateOfBirth.month")
+      monthElement.select("input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
+
       val yearElement = dateElementDivs.next()
-      yearElement.select("label[for=dateOfBirth.year] span").text() shouldBe messages("personal-details.dateOfBirth.year")
-      yearElement.select("label[for=dateOfBirth.year] input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
+      yearElement.select("label[for=dateOfBirth-dateOfBirth.year]").text() shouldBe messages("personal-details.dateOfBirth.year")
+      yearElement.select("input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
 
       html.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
@@ -228,44 +242,47 @@ class PersonalDetailsPageSpec
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
-      html.select("h1.govuk-heading-xl").text() shouldBe messages("personal-details.header")
-      html.select("h1.govuk-heading-xl ~ p").text() shouldBe messages("personal-details.paragraph")
+      html.select("h1").text() shouldBe messages("personal-details.header")
+      html.select("h1 ~ p.govuk-body").text() shouldBe messages("personal-details.paragraph")
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl, true).url
 
       val errors = html.select(".govuk-error-summary__list li").asScala.map(_.text()).toList
-      errors shouldBe List("We could not find any records that match the details you entered. Please try again, or contact HMRC to get help")
+      errors shouldBe List(
+        "personal-details.validation.failed",
+        "We could not find any records that match the details you entered. Please try again, or contact HMRC to get help"
+      )
 
       val formGroup = html.select("form .govuk-form-group")
       val firstNameFormGroup = formGroup.first()
       firstNameFormGroup.select("label[for=firstName]").text() shouldBe messages("personal-details.firstname")
-      firstNameFormGroup.select("label[for=firstName] ~ input[type=text][name=firstName]").isEmpty shouldBe false
+      firstNameFormGroup.select("input[type=text][name=firstName]").isEmpty shouldBe false
 
       val lastNameFormGroup = formGroup.next()
       lastNameFormGroup.select("label[for=lastName]").text() shouldBe messages("personal-details.lastname")
-      lastNameFormGroup.select("label[for=lastName] ~ input[type=text][name=lastName]").isEmpty shouldBe false
+      lastNameFormGroup.select("input[type=text][name=lastName]").isEmpty shouldBe false
 
       val postcodeFormGroup = formGroup.next()
       postcodeFormGroup.select("label[for=postcode]").text() shouldBe messages("personal-details.postcode")
-      val postcodeHints = postcodeFormGroup.select("label[for=postcode] ~ .govuk-hint")
+      val postcodeHints = postcodeFormGroup.select("#postcode-hint.govuk-hint")
       postcodeHints.first().text() shouldBe messages("personal-details.postcode.hint")
-      postcodeFormGroup.select("label[for=postcode] ~ input[type=text][name=postcode]").isEmpty shouldBe false
+      postcodeFormGroup.select("input[type=text][name=postcode]").isEmpty shouldBe false
 
       val dateFieldset = html.select(".govuk-fieldset")
       val dateFormGroup = dateFieldset.first()
 
       dateFormGroup.select(".govuk-fieldset__legend").text() shouldBe messages("personal-details.dateOfBirth")
-      dateFormGroup.select(".govuk-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
+      dateFormGroup.select("#dateOfBirth-hint.govuk-hint").text() shouldBe messages("personal-details.dateOfBirth.hint")
       val dateElementDivs = dateFormGroup.select(".govuk-date-input .govuk-date-input__item")
       val dayElement = dateElementDivs.first()
       dayElement.select("label[for=dateOfBirth-dateOfBirth.day]").text() shouldBe messages("personal-details.dateOfBirth.day")
-      dayElement.select("label[for=dateOfBirth-dateOfBirth.day] ~ input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
+      dayElement.select("input[type=text][name=dateOfBirth.day]").isEmpty shouldBe false
       val monthElement = dateElementDivs.next()
       monthElement.select("label[for=dateOfBirth-dateOfBirth.month]").text() shouldBe messages("personal-details.dateOfBirth.month")
-      monthElement.select("label[for=dateOfBirth-dateOfBirth.month] ~ input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
+      monthElement.select("input[type=text][name=dateOfBirth.month]").isEmpty shouldBe false
       val yearElement = dateElementDivs.next()
       yearElement.select("label[for=dateOfBirth-dateOfBirth.year]").text() shouldBe messages("personal-details.dateOfBirth.year")
-      yearElement.select("label[for=dateOfBirth-dateOfBirth.year] ~ input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
+      yearElement.select("input[type=text][name=dateOfBirth.year]").isEmpty shouldBe false
 
       html.select("form button").text() shouldBe messages("continue.button.text")
     }
@@ -316,18 +333,18 @@ class PersonalDetailsPageSpec
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
-      val fieldsets = html.select("form .form-group")
+      val fieldsets = html.select("form .govuk-form-group")
       val firstNameFieldset = fieldsets.get(0)
-      firstNameFieldset.select("label span").text() shouldBe messages("personal-details.firstname")
+      firstNameFieldset.select("label").text() shouldBe messages("personal-details.firstname")
 
       val lastNameFieldset = fieldsets.get(1)
-      lastNameFieldset.select("label span").text() shouldBe messages("personal-details.lastname")
+      lastNameFieldset.select("label").text() shouldBe messages("personal-details.lastname")
 
       val ninoFieldset = fieldsets.get(2)
-      ninoFieldset.select("label span").first().text() shouldBe messages("personal-details.nino")
-      ninoFieldset.select("span.form-field--submit").size() shouldBe 1
+      ninoFieldset.select("label").first().text() shouldBe messages("personal-details.nino")
+      html.select("#nino-unknown").size() shouldBe 1
 
-      val dateFieldset = fieldsets.get(3)
+      val dateFieldset = html.select(".govuk-form-group.date-of-birth-wrapper fieldset")
       dateFieldset.select("legend").text() shouldBe messages("personal-details.dateOfBirth")
     }
 
@@ -444,7 +461,7 @@ class PersonalDetailsPageSpec
       page.errorsSummary.heading shouldBe messages("error-summary.heading")
       page.errorsSummary.content shouldBe messages("personal-details.firstname.required")
 
-      page.errorFor("firstName") shouldBe messages("personal-details.firstname.required")
+      page.errorFor("firstName") shouldBe "Error: " + messages("personal-details.firstname.required")
     }
 
     "return 'personal-details.lastname.required' error message " +
@@ -459,7 +476,7 @@ class PersonalDetailsPageSpec
       page.errorsSummary.heading shouldBe messages("error-summary.heading")
       page.errorsSummary.content shouldBe messages("personal-details.lastname.required")
 
-      page.errorFor("lastName") shouldBe messages("personal-details.lastname.required")
+      page.errorFor("lastName") shouldBe  "Error: " + messages("personal-details.lastname.required")
     }
 
     "return 'personal-details.nino.required' error message " +
@@ -502,7 +519,7 @@ class PersonalDetailsPageSpec
       page.errorsSummary.heading shouldBe messages("error-summary.heading")
       page.errorsSummary.content shouldBe messages("personal-details.nino.invalid")
 
-      page.errorFor("nino") shouldBe messages("personal-details.nino.invalid")
+      page.errorSpan("nino") shouldBe "<span class=\"govuk-visually-hidden\">Error:</span> " + messages("personal-details.nino.invalid")
     }
 
     "return 'personal-details.dateOfBirth.required' error message " +
@@ -519,7 +536,7 @@ class PersonalDetailsPageSpec
       page.errorsSummary.heading shouldBe messages("error-summary.heading")
       page.errorsSummary.content shouldBe messages("personal-details.dateOfBirth.required")
 
-      page.dateError shouldBe messages("personal-details.dateOfBirth.required")
+      page.dateError shouldBe "Error: " +messages("personal-details.dateOfBirth.required")
     }
 
     "return 'personal-details.dateOfBirth.invalid' error message " +
@@ -536,7 +553,7 @@ class PersonalDetailsPageSpec
       page.errorsSummary.heading shouldBe messages("error-summary.heading")
       page.errorsSummary.content shouldBe messages("personal-details.dateOfBirth.invalid")
 
-      page.dateError shouldBe messages("personal-details.dateOfBirth.invalid")
+      page.dateError shouldBe "Error: " + messages("personal-details.dateOfBirth.invalid")
     }
 
     Set("day", "month", "year") foreach { datePartName =>
@@ -553,7 +570,7 @@ class PersonalDetailsPageSpec
         page.errorsSummary.heading shouldBe messages("error-summary.heading")
         page.errorsSummary.content shouldBe messages(s"personal-details.dateOfBirth.$datePartName.required")
 
-        page.dateError shouldBe messages(s"personal-details.dateOfBirth.$datePartName.required")
+        page.dateError shouldBe "Error: " + messages(s"personal-details.dateOfBirth.$datePartName.required")
       }
 
       s"return 'personal-details.dateOfBirth.$datePartName.invalid' error message " +
@@ -568,7 +585,7 @@ class PersonalDetailsPageSpec
         page.errorsSummary.heading shouldBe messages("error-summary.heading")
         page.errorsSummary.content shouldBe messages(s"personal-details.dateOfBirth.$datePartName.invalid")
 
-        page.dateError shouldBe messages(s"personal-details.dateOfBirth.$datePartName.invalid")
+        page.dateError shouldBe "Error: " + messages(s"personal-details.dateOfBirth.$datePartName.invalid")
       }
     }
 
@@ -579,9 +596,7 @@ class PersonalDetailsPageSpec
 
       val page: Document = response
 
-      val ninoField = page.select(".form-group").get(2)
-      ninoField.select("span.form-label-bold").first().text() shouldBe messages("personal-details.nino")
-      ninoField.select("span.form-field--submit a").size() shouldBe 1
+      page.select("label[for=nino]").text() shouldBe messages("personal-details.nino")
     }
 
     "return 'PostCode' error page when requesting postcode" in new Setup with BindFromRequestTooling {
@@ -710,9 +725,11 @@ class PersonalDetailsPageSpec
       }
 
       def errorFor(fieldName: String): String = {
-        val control = page.select(s"label[for=$fieldName].form-field--error")
+        val cssSelector = s"#${fieldName}-error.govuk-error-message"
+        val control = page.select(cssSelector)
         control.isEmpty shouldBe false
-        control.select(".error-notification").text()
+        val text = control.text()
+        text
       }
 
       def errorSpan(fieldName: String): String = {
@@ -724,10 +741,7 @@ class PersonalDetailsPageSpec
       }
 
       lazy val dateError: String =
-        page.select("div[class=form-date]")
-          .parents()
-          .first()
-          .select(".error-notification")
+        page.select("span#dateOfBirth-error")
           .text()
     }
   }

@@ -31,13 +31,14 @@ package object implicits {
   import ops._
 
   implicit def stringValueFinder(key: String)(configuration: Configuration): ValidatedNel[String, String] =
-    configuration.getString(key).toValidated(key)
+    Option(configuration.get[String](key)).toValidated(key)
 
-  implicit def stringValuesFinder(key: String)(configuration: Configuration): ValidatedNel[String, Seq[String]] =
+  implicit def stringValuesFinder(key: String)(configuration: Configuration): ValidatedNel[String, Seq[String]] = {
     configuration.getStringList(key).map(_.asScala.toList).toValidated(key)
+  }
 
   implicit def intValueFinder(key: String)(configuration: Configuration): ValidatedNel[String, Int] =
-    configuration.getInt(key).toValidated(key)
+    Option(configuration.get[Int](key)).toValidated(key)
 
 
   implicit def hostFinder(key: String)(configuration: Configuration): ValidatedNel[String, Host] = {

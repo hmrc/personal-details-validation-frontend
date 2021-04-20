@@ -14,53 +14,70 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.views.html.template.main_template
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.views.html.template.main_template_govuk_frontend
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.model.NinoDetails
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(mainTemplate: main_template)
-@(pageForm: Form[NinoDetails], completionUrl: CompletionUrl
+@this(
+    mainTemplate: main_template_govuk_frontend,
+    govukErrorSummary : GovukErrorSummary,
+    govukInput: GovukInput,
+    formWithCSRF: FormWithCSRF,
+    govukButton: GovukButton
+)
+@(
+    pageForm: Form[NinoDetails],
+    completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
-@mainTemplate(title = messages("personal-details.title"), completionUrl = completionUrl) {
-    <a id="identifiersBackLink" href="javascript:history.back()" class="link-back">@Messages("button.back.text")</a>
+@mainTemplate(
+    title = messages("personal-details.title"),
+    completionUrl = completionUrl,
+    form = Some(pageForm)
+) {
+    <a id="identifiersBackLink" href="javascript:history.back()"
+        class="govuk-body govuk-back-link">@messages("button.back.text")</a>
 
-    @if(pageForm.hasErrors) {
-        @errorSummary(
-            heading = Messages("error-summary.heading"),
-            form = pageForm
-        )
-    }
+    <span class="govuk-caption-xl">@messages("personal-details.faded-heading")</span>
+    <h1 class="govuk-heading-l">@messages("personal-details.nino.required")</h1>
 
-    <h1 class="heading-xlarge">
-        <span class="heading-secondary">
-            @messages("personal-details.faded-heading")
-        </span>
-        @messages("personal-details.nino.required")
-    </h1>
 
-    @form(routes.PersonalDetailsCollectionController.submitNino(completionUrl), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
+    @formWithCSRF(
+        routes.PersonalDetailsCollectionController.submitNino(completionUrl),
+        'class -> "form js-form",
+        'autocomplete -> "off",
+        'novalidate -> "novalidate") {
 
-        <div class="form-group">
-            @input(
-                field = pageForm("nino"),
-                '_label -> messages("personal-details.nino"),
-                '_inputClass -> "input--medium input--cleared",
-                '_labelTextClass -> "form-label-bold",
-                '_inputHint -> Html(Messages("personal-details.nino.hint")),
-                '_labelClass -> "soft--ends"
+        @govukInput(
+            Input(
+                id = "nino",
+                name = "nino",
+                value = pageForm("nino").value,
+                classes = "govuk-input--width-20",
+                hint = Some(Hint(
+                    content = Text(messages("personal-details.nino.hint"))
+                )),
+                label = Label(
+                    classes = "govuk-!-font-weight-bold",
+                    content = Text(messages("personal-details.nino"))
+                ),
+                errorMessage =  pageForm.errors.asTextErrorMessageForField("nino")
             )
+        )
 
-            <span class="form-field--submit display-block">
-                <a href="@routes.PersonalDetailsCollectionController.showPostCodeForm(completionUrl)">@Messages("personal-details.nino.unavailable")</a>
-            </span>
-        </div>
+        <p class="govuk-body">
+            <a href="@routes.PersonalDetailsCollectionController.showPostCodeForm(completionUrl)">@messages("personal-details.nino.unavailable")</a>
+        </p>
 
-        <div class="form-group form-field--submit flush--bottom">
-            <button class="button" type="submit">@Messages("continue.button.text")</button>
-        </div>
+        @govukButton(
+            Button(
+                attributes = Map("id" -> "continue", "novalidate" -> "novalidate"),
+                content = Text(messages("continue.button.text")),
+                inputType = Some("submit")
+            )
+        )
     }
 }

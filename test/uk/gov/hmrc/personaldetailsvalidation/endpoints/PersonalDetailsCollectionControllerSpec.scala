@@ -18,7 +18,6 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import java.time.LocalDate
 import java.util.UUID
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import cats.data._
@@ -31,7 +30,7 @@ import org.scalacheck.Gen
 import org.scalamock.scalatest.AsyncMockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{Lang, Messages}
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.Results._
 import play.api.mvc._
 import play.api.test.FakeRequest
@@ -984,6 +983,8 @@ class PersonalDetailsCollectionControllerSpec
     private val enter_your_details_nino: enter_your_details_nino = app.injector.instanceOf[enter_your_details_nino]
 
     private val personal_details_main: personal_details_main = app.injector.instanceOf[personal_details_main]
+
+    implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
     val controller = new PersonalDetailsCollectionController(
       pageMock,

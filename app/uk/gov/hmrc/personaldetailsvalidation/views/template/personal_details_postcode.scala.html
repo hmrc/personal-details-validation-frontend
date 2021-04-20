@@ -35,46 +35,35 @@
 
 @validationText = {
     @if(request.session.get("loginOrigin").contains("dwp-iv")) {
-        @Messages("validation.error-summary.dwp-text")
+        @messages("validation.error-summary.dwp-text")
     } else {
-        <a href="@completionUrl">@Messages("validation.error-summary.link-text")</a>
-        @Messages("validation.error-summary.after-link-text")
+        <a href="@completionUrl">@messages("validation.error-summary.link-text")</a>
+        @messages("validation.error-summary.after-link-text")
     }
 }
 
-@mainTemplate(title = errorPrefix(pageForm) + messages("personal-details.title"), completionUrl = completionUrl) {
+@mainTemplate( title = errorPrefix(pageForm) + messages("personal-details.title"),
+    completionUrl = completionUrl,
+    form = Some(pageForm)) {
 
     @if(pageForm.hasGlobalErrors) {
         <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
             <h2 class="govuk-error-summary__title" id="error-summary-title">
-                    @Messages("validation.error-summary.heading")
+                    @messages("validation.error-summary.heading")
             </h2>
             <div class="govuk-error-summary__body">
                 <ul class="govuk-list govuk-error-summary__list">
                     <li>
-                        @Messages("validation.error-summary.before-link-text")
+                        @messages("validation.error-summary.before-link-text")
                         @validationText
                     </li>
                 </ul>
             </div>
         </div>
-    } else {
-        @if(pageForm.hasErrors) {
-            @govukErrorSummary(
-                ErrorSummary(
-                    errorList = pageForm.errors.map { error =>
-                        ErrorLink(
-                            href = Some("#" + error.key),
-                            content = Text(Messages(error.message)))
-                    },
-                    title = Text(Messages("validation.error-summary.heading"))
-                )
-            )
-        }
     }
 
     <span class="govuk-caption-xl">@messages("personal-details.faded-heading")</span>
-    @h1(content = Text(messages("personal-details.header")))
+    <h1 class="govuk-heading-l">@messages("personal-details.header")</h1>
 
     <p class="govuk-body">@messages("personal-details.paragraph")</p>
 

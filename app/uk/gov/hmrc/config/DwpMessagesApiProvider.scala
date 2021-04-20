@@ -21,7 +21,7 @@ import java.net.URL
 import com.google.inject.Inject
 import play.api.http.HttpConfiguration
 import play.api.i18n.{DefaultMessagesApiProvider, Langs, Messages}
-import play.api.{Configuration, Environment, Logger}
+import play.api.{Configuration, Environment, Logging}
 import play.utils.Resources
 
 import scala.collection.breakOut
@@ -29,7 +29,7 @@ import scala.collection.breakOut
 
 class DwpMessagesApiProvider @Inject()(environment: Environment, configuration: Configuration,
                                        langs: Langs, httpConfiguration: HttpConfiguration)
-  extends DefaultMessagesApiProvider(environment, configuration, langs, httpConfiguration) {
+  extends DefaultMessagesApiProvider(environment, configuration, langs, httpConfiguration) with Logging{
 
   override protected def loadAllMessages: Map[String, Map[String, String]] = {
     (langs.availables.map { lang =>
@@ -45,12 +45,12 @@ class DwpMessagesApiProvider @Inject()(environment: Environment, configuration: 
     val dwpMessagesPrefix = configuration.getOptional[String]("dwp.messages")
 
     if (dwpMessagesPrefix.isEmpty) {
-      Logger.warn(s"DWP messages file location property 'dwp.messages' not set in app config")
+      logger.warn(s"DWP messages file location property 'dwp.messages' not set in app config")
     }
 
     environment.classLoader.getResources(joinPaths(dwpMessagesPrefix, file)).asScala.toList match {
       case r if r.isEmpty =>
-        Logger.warn(s"DWP messages directory in 'dwp.messages' : $dwpMessagesPrefix is not valid")
+        logger.warn(s"DWP messages directory in 'dwp.messages' : $dwpMessagesPrefix is not valid")
         getMessages(environment.classLoader.getResources(file).asScala.toList)
       case r => getMessages(r)
     }

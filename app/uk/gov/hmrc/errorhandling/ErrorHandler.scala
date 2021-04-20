@@ -17,6 +17,7 @@
 package uk.gov.hmrc.errorhandling
 
 import javax.inject.{Inject, Singleton}
+import play.api.i18n.MessagesApi
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{Request, RequestHeader, Result, Results}
 import play.mvc.Http.Status._
@@ -31,8 +32,8 @@ import scala.language.implicitConversions
 
 @Singleton
 class ErrorHandler @Inject()(appConfig: AppConfig, errorTemplate: error_template)
-                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, viewConfig: ViewConfig)
-  extends DwpI18nSupport(appConfig) {
+                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, viewConfig: ViewConfig, messagesApi: MessagesApi)
+  extends DwpI18nSupport(appConfig, messagesApi) {
 
   import ErrorHandler.bindingError
 
@@ -48,6 +49,8 @@ class ErrorHandler @Inject()(appConfig: AppConfig, errorTemplate: error_template
   }
 
   private implicit def rhToRequest(rh: RequestHeader): Request[_] = Request(rh, "")
+
+  override def messagesApi: MessagesApi = dwpMessagesApiProvider.get
 }
 
 object ErrorHandler {

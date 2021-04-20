@@ -21,6 +21,8 @@
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.PersonalDetailsCollectionController
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.header.Header
+@import uk.gov.hmrc.views.html.includes.summaryErrors
+
 
 @this(
         govukLayout: GovukLayout,
@@ -28,13 +30,14 @@
         hmrcHeader: hmrcHeader,
         reportTechnicalIssue: HmrcReportTechnicalIssueHelper,
         hmrcStandardFooter: HmrcStandardFooter,
-        languageSelection: HmrcLanguageSelect
+        languageSelection: HmrcLanguageSelect,
+        govukErrorSummary: GovukErrorSummary
 )
-
 @(title: String,
         headBlock: Option[Html] = None,
         scriptsBlock: Option[Html] = None,
-        completionUrl: CompletionUrl
+        completionUrl: CompletionUrl,
+        form:Option[Form[_]] = None
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: ViewConfig)
 
 @beforeContentBlockSection = {
@@ -49,6 +52,8 @@
 
 @contentSection = {
     <div class="gtm-tag" data-gtag=""></div>
+
+    @summaryErrors(theForm = form, govukErrorSummary= govukErrorSummary)
     @contentBlock
     @reportTechnicalIssue()
 }

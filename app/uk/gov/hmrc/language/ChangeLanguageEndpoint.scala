@@ -19,14 +19,14 @@ package uk.gov.hmrc.language
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.Lang
 import play.api.mvc.ControllerComponents
-import uk.gov.hmrc.play.language.{LanguageController => PlayLanguageController, LanguageUtils}
+import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
 import uk.gov.hmrc.views.ViewConfig
 
 @Singleton
-class ChangeLanguageEndpoint @Inject()(viewConfig: ViewConfig,
-                                       languageUtils: LanguageUtils,
-                                       override protected val controllerComponents: ControllerComponents)
-  extends PlayLanguageController(viewConfig.configuration, languageUtils, controllerComponents) {
+class ChangeLanguageEndpoint  @Inject()(viewConfig: ViewConfig,
+                                        languageUtils: LanguageUtils,
+                                        cc: ControllerComponents)
+  extends LanguageController(languageUtils, cc) {
 
   override val languageMap: Map[String, Lang] = viewConfig.languageMap
 

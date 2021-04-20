@@ -22,7 +22,7 @@
     form(fieldName).errors
 }
 
-<div class="govuk-form-group @if(dateErrors.nonEmpty) {govuk-form-group--error}">
+<div class="govuk-form-group date-of-birth-wrapper @if(dateErrors.nonEmpty) {govuk-form-group--error}">
     @underlying(DateInput(
         fieldName,
         items = Seq(

@@ -29,6 +29,8 @@ class ConnectorConfigSpec
 
     "return be comprised of configured host and port" in new Setup {
       whenConfigEntriesExists(
+        "microservice.services.protocol" -> "http",
+        "microservice.services.personal-details-validation.protocol" -> "http",
         "microservice.services.personal-details-validation.host" -> "some-host",
         "microservice.services.personal-details-validation.port" -> "123") { config =>
         config.personalDetailsValidationBaseUrl shouldBe "http://some-host:123"
@@ -36,6 +38,7 @@ class ConnectorConfigSpec
     }
     "return be comprised of configured protocol, host and port" in new Setup {
       whenConfigEntriesExists(
+        "microservice.services.protocol" -> "http",
         "microservice.services.personal-details-validation.protocol" -> "some-protocol",
         "microservice.services.personal-details-validation.host" -> "some-host",
         "microservice.services.personal-details-validation.port" -> "123") { config =>
@@ -45,13 +48,17 @@ class ConnectorConfigSpec
     "return be comprised of configured protocol, host and port when 'microservice.services.protocol' is given" in new Setup {
       whenConfigEntriesExists(
         "microservice.services.protocol" -> "some-protocol",
+        "microservice.services.personal-details-validation.protocol" -> "some-protocol",
         "microservice.services.personal-details-validation.host" -> "some-host",
         "microservice.services.personal-details-validation.port" -> "123") { config =>
         config.personalDetailsValidationBaseUrl shouldBe "some-protocol://some-host:123"
       }
     }
     "throw a runtime exception when there's no value for 'personal-details-validation.host'" in new Setup {
-      whenConfigEntriesExists("microservice.services.personal-details-validation.port" -> "123") { config =>
+
+      whenConfigEntriesExists(
+        "microservice.services.personal-details-validation.port" -> "123",
+        "microservice.services.protocol" -> "http") { config =>
         a[RuntimeException] should be thrownBy config.personalDetailsValidationBaseUrl
       }
     }

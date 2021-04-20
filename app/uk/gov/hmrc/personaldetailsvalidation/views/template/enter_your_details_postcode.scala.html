@@ -14,44 +14,62 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.views.html.template.main_template
-@import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.views.html.template.main_template_govuk_frontend
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.model.PostcodeDetails
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
-@this(mainTemplate: main_template)
-@(pageForm: Form[PostcodeDetails], completionUrl: CompletionUrl
+@this(
+    mainTemplate: main_template_govuk_frontend,
+    govukErrorSummary : GovukErrorSummary,
+    govukInput: GovukInput,
+    formWithCSRF: FormWithCSRF,
+    govukButton: GovukButton
+)
+@(
+    pageForm: Form[PostcodeDetails],
+    completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
-@mainTemplate(title = messages("personal-details.title"), completionUrl = completionUrl) {
-    <a id="identifiersBackLink" href="javascript:history.back()" class="link-back">@Messages("button.back.text")</a>
+@mainTemplate(
+    title = messages("personal-details.title"),
+    completionUrl = completionUrl,
+    form = Some(pageForm)
+) {
+    <a id="identifiersBackLink" href="${@routes.PersonalDetailsCollectionController.showNinoForm(completionUrl)}"
+    class="govuk-body govuk-back-link">@messages("button.back.text")</a>
 
-    @if(pageForm.hasErrors) {
-        @errorSummary(
-            heading = Messages("error-summary.heading"),
-            form = pageForm
-        )
-    }
+    <span class="govuk-caption-xl">@messages("personal-details.faded-heading")</span>
+    <h1 class="govuk-heading-l">@messages("personal-details.header.postcode")</h1>
 
-    <h1 class="heading-xlarge">
-        <span class="heading-secondary">
-            @messages("personal-details.faded-heading")
-        </span>
-        @messages("personal-details.header.postcode")
-    </h1>
+    @formWithCSRF(
+        routes.PersonalDetailsCollectionController.submitPostcode(completionUrl),
+        'class -> "form js-form",
+        'autocomplete -> "off",
+        'novalidate -> "novalidate") {
 
-    @form(routes.PersonalDetailsCollectionController.submitPostcode(completionUrl), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
-        <div class="form-group">
-            @input(
-            field = pageForm("postcode"),
-            '_inputClass -> "input--small input--cleared"
+        @govukInput(
+            Input(
+                id = "postcode",
+                name = "postcode",
+                attributes = Map("autocomplete" -> "postcode"),
+                value = pageForm("postcode").value,
+                classes = "govuk-input--width-20",
+                label = Label(
+                    content = Text(messages("personal-details.postcode"))
+                ),
+                errorMessage =  pageForm.errors.asTextErrorMessageForField("postcode")
             )
-        </div>
+        )
 
-        <div class="form-group form-field--submit flush--bottom">
-            <button class="button" type="submit">@Messages("continue.button.text")</button>
-        </div>
+        @govukButton(
+            Button(
+                attributes = Map("id" -> "continue", "novalidate" -> "novalidate"),
+                content = Text(messages("continue.button.text")),
+                inputType = Some("submit")
+            )
+        )
    }
 }

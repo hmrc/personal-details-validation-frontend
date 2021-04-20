@@ -69,12 +69,6 @@ class ViewConfigSpec
       }
     }
 
-    "return an empty map when there's no value for 'play.i18n.langs'" in new Setup {
-      whenConfigEntriesExists() { config =>
-        config.languageMap shouldBe Map.empty
-      }
-    }
-
     "throw a runtime exception when there's no messages file defined for a code from 'play.i18n.langs'" in new Setup2 {
       expectMessagesFilesExistsFor("default")
 
@@ -104,6 +98,7 @@ class ViewConfigSpec
       "play.i18n.langs" -> List("en", "cy"),
       "play.i18n.path" -> null,
       "play.i18n.langCookieName" -> "PLAY_LANG",
+      "play.i18n.langCookieSameSite" -> "strict",
       "play.i18n.langCookieSecure" -> true,
       "play.i18n.langCookieHttpOnly" -> false
     ))
@@ -124,6 +119,7 @@ class ViewConfigSpec
       "play.i18n.langs" -> List("default"),
       "play.i18n.path" -> null,
       "play.i18n.langCookieName" -> "PLAY_LANG",
+      "play.i18n.langCookieSameSite" -> "strict",
       "play.i18n.langCookieSecure" -> true,
       "play.i18n.langCookieHttpOnly" -> false
     ))

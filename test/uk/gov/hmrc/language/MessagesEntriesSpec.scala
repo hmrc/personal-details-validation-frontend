@@ -95,7 +95,8 @@ class MessagesEntriesSpec extends UnitSpec with GuiceOneAppPerSuite {
   }
 
   private def entriesWithTheSameValues(in: Map[String, String]): PartialFunction[(String, String), (String, String)] = {
-    case entry@(defaultKey, defaultValue) if defaultValue == cyMessages(defaultKey) =>
+    case entry@(defaultKey, defaultValue) if ( defaultKey != "header.govuk.url" && defaultValue == cyMessages(defaultKey) ) => {
       entry
+    }
   }
 }
