@@ -54,6 +54,12 @@ class AnalyticsEventHandlerSpec
       }
     }
 
+    "check sessionId and clientId before sending pdv_modal_timeout event " in new Setup {
+        dispatcher.dispatchEvent(TimedOut)(FakeRequest(), hc, global)
+        eventually {
+          analyticsRequests shouldBe List.empty[AnalyticsRequest]
+        }
+      }
   }
 
   private trait Setup {
