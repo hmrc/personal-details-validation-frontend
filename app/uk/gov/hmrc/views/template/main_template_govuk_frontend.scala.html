@@ -37,8 +37,7 @@
         headBlock: Option[Html] = None,
         scriptsBlock: Option[Html] = None,
         completionUrl: CompletionUrl,
-        form:Option[Form[_]] = None,
-        showGlobalErrors: Boolean = true
+        form:Option[Form[_]] = None
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: ViewConfig)
 
 @beforeContentBlockSection = {
