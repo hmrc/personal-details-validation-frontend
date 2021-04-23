@@ -32,35 +32,15 @@
         formWithCSRF: FormWithCSRF,
         govukButton: GovukButton)
 
-@(pageForm: Form[PersonalDetailsWithNino], completionUrl: CompletionUrl
+@( pageForm: Form[PersonalDetailsWithNino],
+   completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
-@validationText = {
-    @if(request.session.get("loginOrigin").contains("dwp-iv")) {
-        @messages("validation.error-summary.dwp-text")
-    } else {
-        <a href="@completionUrl">@messages("validation.error-summary.link-text")</a>
-        @messages("validation.error-summary.after-link-text")
-    }
-}
 
 @mainTemplate(form = Some(pageForm), title = errorPrefix(pageForm) + messages("personal-details.title"), completionUrl = completionUrl) {
 
-    @if(pageForm.hasGlobalErrors) {
-        <div class="flash error-summary error-summary--show" id="error-summary-display" role="alert" aria-labelledby="error-summary-display" tabindex="-1">
-            <h2 id="error-summary-heading" class="h3-heading">@messages("validation.error-summary.heading")</h2>
-            <ul class="js-error-summary-messages">
-                <li role="tooltip">
-                    @messages("validation.error-summary.before-link-text")
-                    @validationText
-                </li>
-            </ul>
-        </div>
-     }
-
     <span class="govuk-caption-xl">@messages("personal-details.faded-heading")</span>
     <h1 class="govuk-heading-l">@messages("personal-details.header")</h1>
-
 
     <p class="govuk-body">@messages("personal-details.paragraph")</p>
 

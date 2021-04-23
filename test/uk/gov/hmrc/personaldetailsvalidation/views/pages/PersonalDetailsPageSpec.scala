@@ -49,7 +49,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
 
-      html.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
+      html.select(".govuk-error-summary__list li").isEmpty shouldBe true
 
       val fieldsets = html.select("form .govuk-form-group")
 
@@ -100,7 +100,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl, true).url
 
-      html.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
+      html.select(".govuk-error-summary__list li").isEmpty shouldBe true
 
       val formGroup = html.select("form .govuk-form-group")
 
@@ -197,7 +197,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
 
-      val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
+      val errors = html.select(".govuk-error-summary__list li").asScala.map(_.text()).toList
       errors shouldBe List("We could not find any records that match the details you entered. Please try again, or contact HMRC to get help")
 
       val fieldsets = html.select("form .govuk-form-group")
@@ -247,11 +247,8 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl, true).url
 
-      val errors = html.select(".govuk-error-summary__list li").asScala.map(_.text()).toList
-      errors shouldBe List(
-        "personal-details.validation.failed",
-        "We could not find any records that match the details you entered. Please try again, or contact HMRC to get help"
-      )
+      val errors = html.select(".govuk-error-summary__list").asScala.map(_.text()).toList
+      errors shouldBe List("We could not find any records that match the details you entered. Please try again, or contact HMRC to get help")
 
       val formGroup = html.select("form .govuk-form-group")
       val firstNameFormGroup = formGroup.first()
@@ -295,7 +292,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
-      val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
+      val errors = html.select(".govuk-error-summary__list li").asScala.map(_.text()).toList
       errors shouldBe List("We could not find any records that match the details you entered. Please try again, or confirm your identity another way")
     }
 
@@ -309,7 +306,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       html.toString should not include(viewConfig.dwpGetHelpUrl)
 
-      val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
+      val errors = html.select(".govuk-error-summary__list li").asScala.map(_.text()).toList
       errors shouldBe List("We could not find any records that match the details you entered. Please try again, or contact HMRC to get help")
     }
 
@@ -323,7 +320,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       html.title() shouldBe s"${welshMessages("error.prefix")} ${welshMessages("personal-details.title")} - GOV.UK"
 
-      val errors = html.select("#error-summary-display .js-error-summary-messages li").asScala.map(_.text()).toList
+      val errors = html.select(".govuk-error-summary__list li").asScala.map(_.text()).toList
       errors shouldBe List("Nid oeddem yn gallu dod o hyd i unrhyw gofnodion sy’n cyd-fynd â’r manylion a nodwyd gennych. Rhowch gynnig arall arni, neu cadarnhewch pwy ydych gan ddefnyddio dull arall")
     }
 

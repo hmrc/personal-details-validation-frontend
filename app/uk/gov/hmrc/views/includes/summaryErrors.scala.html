@@ -14,23 +14,50 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.Aliases.{ErrorSummary, Text}
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukErrorSummary
-@import uk.gov.hmrc.govukfrontend.views.Aliases.ErrorSummary
-@import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 
-@(theForm: Option[Form[_]], govukErrorSummary: GovukErrorSummary)(implicit requestHeader: RequestHeader, messages: Messages)
+@(
+    theForm: Option[Form[_]],
+    govukErrorSummary: GovukErrorSummary,
+    completionUrl: CompletionUrl
+)(implicit requestHeader: RequestHeader, messages: Messages)
 
-@if(theForm.isDefined && theForm.get.errors.nonEmpty ){
-    @govukErrorSummary(
-        ErrorSummary(
-            errorList = theForm.get.errors.map(error=> {
-                FormError(
-                    error.key,
-                    error.messages.map(str=> str.replaceAll("[\\[|\\]]", "")),
-                    error.args
-                )
-            }).asTextErrorLinks,
-            title = Text(messages("validation.error-summary.heading")))
-    )
+@validationText = {
+    @if(requestHeader.session.get("loginOrigin").contains("dwp-iv")) {
+        @messages("validation.error-summary.dwp-text")
+    } else {
+        <a href="@completionUrl">@messages("validation.error-summary.link-text")</a>
+        @messages("validation.error-summary.after-link-text")
+    }
 }
+@if(theForm.isDefined){
+    @if(theForm.get.hasGlobalErrors) {
+        @govukErrorSummary(
+            ErrorSummary(
+                errorList = List(
+                    ErrorLink(
+                        content = HtmlContent(messages("validation.error-summary.before-link-text") + validationText)
+                    )
+                ),
+                title = Text(messages("validation.error-summary.heading"))
+            )
+        )
+    }
+    @if(theForm.get.errors.nonEmpty && !theForm.get.hasGlobalErrors){
+        @govukErrorSummary(
+            ErrorSummary(
+                errorList = theForm.get.errors.map(error=> {
+                    FormError(
+                        error.key,
+                        error.messages.map(str=> str.replaceAll("[\\[|\\]]", "")),
+                        error.args
+                    )
+                }).asTextErrorLinks,
+                title = Text(messages("validation.error-summary.heading")))
+        )
+    }
+}
+

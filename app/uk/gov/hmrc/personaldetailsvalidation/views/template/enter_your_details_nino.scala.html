@@ -36,7 +36,8 @@
 @mainTemplate(
     title = messages("personal-details.title"),
     completionUrl = completionUrl,
-    form = Some(pageForm)
+    form = Some(pageForm),
+    showGlobalErrors = false
 ) {
     <a id="identifiersBackLink" href="javascript:history.back()"
         class="govuk-body govuk-back-link">@messages("button.back.text")</a>
