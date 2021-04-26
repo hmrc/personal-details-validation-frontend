@@ -53,7 +53,7 @@
 @contentSection = {
     <div class="gtm-tag" data-gtag=""></div>
 
-    @summaryErrors(theForm = form, govukErrorSummary= govukErrorSummary)
+    @summaryErrors(theForm = form, govukErrorSummary= govukErrorSummary, completionUrl)
     @contentBlock
     @reportTechnicalIssue()
 }
