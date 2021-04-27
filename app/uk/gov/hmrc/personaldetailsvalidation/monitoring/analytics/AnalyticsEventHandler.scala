@@ -17,15 +17,15 @@
 package uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics
 
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.Request
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventHandler, MonitoringEvent, TimedOut, TimeoutContinue}
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class AnalyticsEventHandler @Inject()(connector: AnalyticsConnector) extends EventHandler {
+class AnalyticsEventHandler @Inject()(connector: AnalyticsConnector) extends EventHandler with Logging {
 
   private lazy val factory = new AnalyticsRequestFactory()
 
@@ -41,8 +41,13 @@ class AnalyticsEventHandler @Inject()(connector: AnalyticsConnector) extends Eve
 
   private def sendEvent(reqCreator: (Option[String]) => AnalyticsRequest)
                                              (implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+    val  xSessionId: Option[String] = request.headers.get(HeaderNames.xSessionId)
+    if(clientId.isDefined || xSessionId.isDefined) {
       val analyticsRequest = reqCreator(clientId)
       connector.sendEvent(analyticsRequest)
+    } else  {
+      logger.info("VER-381 - No sessionId found in request")
+    }
   }
 }
 
