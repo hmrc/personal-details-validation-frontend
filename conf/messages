@@ -37,6 +37,7 @@ personal-details.dateOfBirth.year.invalid=Enter the year you were born in the co
 validation.error-summary.before-link-text=We could not find any records that match the details you entered. Please try again, or
 validation.error-summary.link-text=contact HMRC
 validation.error-summary.after-link-text=to get help
+validation.error-summary.text=We could not find any records that match the details you entered. Please try again.
 validation.error-summary.heading=There is a problem
 
 timeout-dialog.title=You will be timed out soon
