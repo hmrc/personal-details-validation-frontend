@@ -38,6 +38,7 @@ validation.error-summary.dwp-text=cadarnhewch pwy ydych gan ddefnyddio dull aral
 validation.error-summary.before-link-text=Nid oeddem yn gallu dod o hyd i unrhyw gofnodion sy’n cyd-fynd â’r manylion a nodwyd gennych. Rhowch gynnig arall arni, neu
 validation.error-summary.link-text=cysylltwch â CThEM
 validation.error-summary.after-link-text=i gael help
+validation.error-summary.text=Nid oeddem yn gallu dod o hyd i unrhyw gofnodion sy’n cyd-fynd â’r manylion a nodwyd gennych. Rhowch gynnig arall arni.
 validation.error-summary.heading=Mae problem wedi codi
 
 timeout-dialog.title=Bydd eich cais yn dod i ben cyn hir

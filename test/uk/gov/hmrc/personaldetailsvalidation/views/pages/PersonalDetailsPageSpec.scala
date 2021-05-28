@@ -198,7 +198,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl).url
 
       val errors = html.select(".govuk-error-summary__list li").asScala.map(_.text()).toList
-      errors shouldBe List("We could not find any records that match the details you entered. Please try again, or contact HMRC to get help")
+      errors shouldBe List("We could not find any records that match the details you entered. Please try again.")
 
       val fieldsets = html.select("form .govuk-form-group")
       val firstNameFieldset = fieldsets.first()
@@ -248,7 +248,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
       html.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submit(completionUrl, true).url
 
       val errors = html.select(".govuk-error-summary__list").asScala.map(_.text()).toList
-      errors shouldBe List("We could not find any records that match the details you entered. Please try again, or contact HMRC to get help")
+      errors shouldBe List("We could not find any records that match the details you entered. Please try again.")
 
       val formGroup = html.select("form .govuk-form-group")
       val firstNameFormGroup = formGroup.first()
@@ -307,7 +307,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
       html.toString should not include(viewConfig.dwpGetHelpUrl)
 
       val errors = html.select(".govuk-error-summary__list li").asScala.map(_.text()).toList
-      errors shouldBe List("We could not find any records that match the details you entered. Please try again, or contact HMRC to get help")
+      errors shouldBe List("We could not find any records that match the details you entered. Please try again.")
     }
 
     "return a personal details page containing DWP validation error in welsh if journeyOrigin is 'dwp-iv' and language is welsh" in new Setup with BindFromRequestTooling {

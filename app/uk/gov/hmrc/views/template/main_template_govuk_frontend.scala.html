@@ -55,7 +55,9 @@
 
     @summaryErrors(theForm = form, govukErrorSummary= govukErrorSummary, completionUrl)
     @contentBlock
-    @reportTechnicalIssue()
+    <div class="govuk-!-margin-top-6">
+        @reportTechnicalIssue()
+    </div>
 }
 
 @headerBlock = {
