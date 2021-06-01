@@ -27,7 +27,7 @@
 
 @validationText = {
     @if(requestHeader.session.get("loginOrigin").contains("dwp-iv")) {
-        @messages("validation.error-summary.before-link-text") @messages("validation.error-summary.dwp-text")
+        @messages("validation.error-summary.before-link-text") <a href="@completionUrl">@messages("validation.error-summary.dwp-text")</a>
     } else {
         @messages("validation.error-summary.text")
     }
