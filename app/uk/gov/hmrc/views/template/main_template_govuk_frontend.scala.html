@@ -38,7 +38,7 @@
         scriptsBlock: Option[Html] = None,
         completionUrl: CompletionUrl,
         form:Option[Form[_]] = None
-)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: ViewConfig)
+)(contentBlock: Html)(implicit request: Request[_], requestHeader: RequestHeader, messages: Messages, appConfig: ViewConfig)
 
 @beforeContentBlockSection = {
     @languageSelection(LanguageSelect(
@@ -55,9 +55,11 @@
 
     @summaryErrors(theForm = form, govukErrorSummary= govukErrorSummary, completionUrl)
     @contentBlock
-    <div class="govuk-!-margin-top-6">
-        @reportTechnicalIssue()
-    </div>
+    @if(!requestHeader.session.get("loginOrigin").contains("dwp-iv")) {
+        <div class="govuk-!-margin-top-6">
+            @reportTechnicalIssue()
+        </div>
+    }
 }
 
 @headerBlock = {
