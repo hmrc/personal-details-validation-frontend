@@ -24,6 +24,7 @@
 
 
 @this(
+    field: Field,
     mainTemplate: main_template_govuk_frontend,
     dateField: DateInput,
     govukErrorSummary : GovukErrorSummary,
@@ -64,7 +65,7 @@
                     content = Text(messages("personal-details.firstname"))
                 ),
                 errorMessage =  pageForm.errors.asTextErrorMessageForField("firstName")
-            )
+            ).withFormField(pageForm("firstName"))
         )
 
         @govukInput(
@@ -79,7 +80,7 @@
                     content = Text(messages("personal-details.lastname"))
                 ),
                 errorMessage =  pageForm.errors.asTextErrorMessageForField("lastName")
-            )
+            ).withFormField(pageForm("lastName"))
         )
 
         @dateField(pageForm, "personal-details", "dateOfBirth")

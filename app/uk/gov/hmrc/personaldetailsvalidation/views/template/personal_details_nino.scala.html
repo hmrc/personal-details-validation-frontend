@@ -24,6 +24,7 @@
 @import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetailsWithNino
 
 @this(
+        field: Field,
         mainTemplate: main_template_govuk_frontend,
         errorPrefix: error_prefix,
         dateField: DateInput,
@@ -58,7 +59,7 @@
                     content = Text(messages("personal-details.firstname"))
                 ),
                 errorMessage =  pageForm.errors.asTextErrorMessageForField("firstName")
-            )
+            ).withFormField(pageForm("firstName"))
         )
 
         @govukInput(
@@ -73,7 +74,7 @@
                     content = Text(messages("personal-details.lastname"))
                 ),
                 errorMessage =  pageForm.errors.asTextErrorMessageForField("lastName")
-            )
+            ).withFormField(pageForm("lastName"))
         )
 
 
@@ -91,7 +92,7 @@
                         content = Text(messages("personal-details.nino"))
                     ),
                     errorMessage =  pageForm.errors.asTextErrorMessageForField("nino")
-                )
+                ).withFormField(pageForm("nino"))
             )
             <p class="govuk-body">
                 <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"
