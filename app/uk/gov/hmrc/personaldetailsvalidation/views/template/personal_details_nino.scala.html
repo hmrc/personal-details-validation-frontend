@@ -48,56 +48,44 @@
 
         @govukInput(
             Input(
-                id = "firstName",
-                name = "firstName",
                 attributes = Map("autocomplete" -> "given-name"),
-                value = pageForm("firstName").value,
                 classes = "govuk-input--width-20",
                 label = Label(
                     classes = "govuk-!-font-weight-bold",
                     content = Text(messages("personal-details.firstname"))
                 ),
-                errorMessage =  pageForm.errors.asTextErrorMessageForField("firstName")
-            )
+            ).withFormField(pageForm("firstName"))
         )
 
         @govukInput(
             Input(
-                id = "lastName",
-                name = "lastName",
                 attributes = Map("autocomplete" -> "family-name"),
-                value = pageForm("lastName").value,
                 classes = "govuk-input--width-20",
                 label = Label(
                     classes = "govuk-!-font-weight-bold",
                     content = Text(messages("personal-details.lastname"))
                 ),
-                errorMessage =  pageForm.errors.asTextErrorMessageForField("lastName")
-            )
+            ).withFormField(pageForm("lastName"))
         )
 
+        @govukInput(
+            Input(
+                classes = "govuk-input--width-10",
+                hint = Some(Hint(
+                    content = HtmlContent(messages("personal-details.nino.hint"))
+                )),
+                label = Label(
+                    classes = "govuk-!-font-weight-bold",
+                    content = Text(messages("personal-details.nino"))
+                ),
+            ).withFormField(pageForm("nino"))
+        )
 
-            @govukInput(
-                Input(
-                    id = "nino",
-                    name = "nino",
-                    value = pageForm("nino").value,
-                    classes = "govuk-input--width-10",
-                    hint = Some(Hint(
-                        content = HtmlContent(messages("personal-details.nino.hint"))
-                    )),
-                    label = Label(
-                        classes = "govuk-!-font-weight-bold",
-                        content = Text(messages("personal-details.nino"))
-                    ),
-                    errorMessage =  pageForm.errors.asTextErrorMessageForField("nino")
-                )
-            )
-            <p class="govuk-body">
-                <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"
-                    id="nino-unknown"
-                    class="govuk-link">@messages("personal-details.nino.unavailable")</a>
-            </p>
+        <p class="govuk-body">
+            <a href="@routes.PersonalDetailsCollectionController.showPage(completionUrl, alternativeVersion = true)"
+                id="nino-unknown"
+                class="govuk-link">@messages("personal-details.nino.unavailable")</a>
+        </p>
 
         @dateField(pageForm, "personal-details", "dateOfBirth")
 
