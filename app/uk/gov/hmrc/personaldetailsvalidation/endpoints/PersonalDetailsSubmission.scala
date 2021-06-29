@@ -54,9 +54,10 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
                            (implicit request: Request[_],
                             headerCarrier: HeaderCarrier,
                             executionContext: ExecutionContext) : EitherT[Interpretation, Result, PersonalDetailsValidation] = {
+    val origin = request.session.get("origin").getOrElse("Unknown-Origin")
     for {
-      personalDetailsValidation <- personalDetailsValidationConnector.submitValidationRequest(personalDetails) leftMap errorToRedirect(to = completionUrl)
-      counterUpdated = pdvMetrics.matchPersonalDetails(personalDetails)
+      personalDetailsValidation <- personalDetailsValidationConnector.submitValidationRequest(personalDetails, origin) leftMap errorToRedirect(to = completionUrl)
+      _ = pdvMetrics.matchPersonalDetails(personalDetails)
     } yield personalDetailsValidation
   }
 

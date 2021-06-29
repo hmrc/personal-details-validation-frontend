@@ -31,7 +31,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.ValidationIdValidator
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.{completionUrls, validationIds}
-import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, ValidationId}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
@@ -46,39 +46,40 @@ class JourneyStartSpec
   "findRedirect" should {
 
     "return redirect to the GET /personal-details if there's no 'validationId' in the session" in new Setup {
-      journeyStart.findRedirect(completionUrl) shouldBe Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
+      journeyStart.findRedirect(completionUrl, origin) shouldBe
+        Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, origin))
     }
 
     "return redirect to the given completionUrl with 'validationId' appended as a query parameter " +
       "if there's a 'validationId' in the session " +
       "and it's valid" in new Setup {
-      implicit val requestWithValidationId = request.withSession(validationIdSessionKey -> validationId.value)
+      implicit val requestWithValidationId: FakeRequest[AnyContentAsEmpty.type] = request.withSession(validationIdSessionKey -> validationId.value)
 
       (validationIdValidator.verify(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
         .returning(EitherT.rightT[Id, ProcessingError](true))
 
-      journeyStart.findRedirect(completionUrl) shouldBe Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
+      journeyStart.findRedirect(completionUrl, origin) shouldBe Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
     }
 
     "return redirect to the GET /personal-details " +
       "if there's 'validationId' in the session " +
       "but it's not valid" in new Setup {
-      implicit val requestWithValidationId = request.withSession(validationIdSessionKey -> validationId.value)
+      implicit val requestWithValidationId: FakeRequest[AnyContentAsEmpty.type] = request.withSession(validationIdSessionKey -> validationId.value)
 
       (validationIdValidator.verify(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
         .returning(EitherT.rightT[Id, ProcessingError](false))
 
-      journeyStart.findRedirect(completionUrl) shouldBe Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
+      journeyStart.findRedirect(completionUrl, origin) shouldBe Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, origin))
     }
 
     "log an validation error and return redirect to the given completionUrl with 'technicalError' " +
       "if there's 'validationId' in the session " +
       "but 'validationId' validation returns an error" in new Setup {
-      implicit val requestWithValidationId = request.withSession(validationIdSessionKey -> validationId.value)
+      implicit val requestWithValidationId: FakeRequest[AnyContentAsEmpty.type] = request.withSession(validationIdSessionKey -> validationId.value)
 
-      val validationError = ProcessingError("some message")
+      val validationError: ProcessingError = ProcessingError("some message")
       (validationIdValidator.verify(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
         .returning(EitherT.leftT[Id, Boolean](validationError))
@@ -86,7 +87,7 @@ class JourneyStartSpec
       (logger.error(_: ProcessingError))
         .expects(validationError)
 
-      private val result: Id[Result] = journeyStart.findRedirect(completionUrl)
+      private val result: Id[Result] = journeyStart.findRedirect(completionUrl, origin)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(s"${completionUrl.value}&technicalError=")
     }
@@ -96,11 +97,13 @@ class JourneyStartSpec
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-    val completionUrl = completionUrls.generateOne
-    val validationId = validationIds.generateOne
+    val origin: Option[String] = Some("test")
 
-    val validationIdValidator = mock[ValidationIdValidator[Id]]
-    val logger = mock[Logger]
+    val completionUrl: CompletionUrl = completionUrls.generateOne
+    val validationId: ValidationId = validationIds.generateOne
+
+    val validationIdValidator: ValidationIdValidator[Id] = mock[ValidationIdValidator[Id]]
+    val logger: Logger = mock[Logger]
 
     val journeyStart = new JourneyStart[Id](validationIdValidator, logger)
   }

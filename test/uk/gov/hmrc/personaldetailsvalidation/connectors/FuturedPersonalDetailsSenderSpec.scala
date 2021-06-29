@@ -32,10 +32,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model._
 
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 
-class FuturedPersonalDetailsSenderSpec
-  extends UnitSpec
-    with MockFactory
-    with ScalaFutures {
+class FuturedPersonalDetailsSenderSpec extends UnitSpec with MockFactory with ScalaFutures {
 
   "submitValidationRequest" should {
 
@@ -49,7 +46,8 @@ class FuturedPersonalDetailsSenderSpec
           "id" -> validationId.value
         ))
 
-      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Right(SuccessfulPersonalDetailsValidation(validationId))
+      connector.submitValidationRequest(personalDetailsWithNino, origin).value.futureValue shouldBe
+        Right(SuccessfulPersonalDetailsValidation(validationId))
     }
 
     "returned FailedPersonalDetailsValidation from POST to /personal-details-validation with nino" in new Setup {
@@ -63,7 +61,8 @@ class FuturedPersonalDetailsSenderSpec
           "id" -> validationId.value
         ))
 
-      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Right(FailedPersonalDetailsValidation(validationId))
+      connector.submitValidationRequest(personalDetailsWithNino, origin).value.futureValue shouldBe
+        Right(FailedPersonalDetailsValidation(validationId))
     }
 
     Set(OK, NO_CONTENT, NOT_FOUND, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
@@ -74,7 +73,7 @@ class FuturedPersonalDetailsSenderSpec
           .withPayload(payloadWithNino)
           .returning(unexpectedStatus, "some response body")
 
-        connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
+        connector.submitValidationRequest(personalDetailsWithNino, origin).value.futureValue shouldBe Left(ProcessingError(
           s"Unexpected response from POST http://host/personal-details-validation with status: '$unexpectedStatus' and body: some response body"
         ))
       }
@@ -87,7 +86,7 @@ class FuturedPersonalDetailsSenderSpec
         .withPayload(payloadWithNino)
         .throwing(exception)
 
-      connector.submitValidationRequest(personalDetailsWithNino).value.futureValue shouldBe Left(ProcessingError(
+      connector.submitValidationRequest(personalDetailsWithNino, origin).value.futureValue shouldBe Left(ProcessingError(
         s"Call to POST http://host/personal-details-validation threw: $exception"
       ))
     }
@@ -102,7 +101,8 @@ class FuturedPersonalDetailsSenderSpec
           "id" -> validationId.value
         ))
 
-      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Right(SuccessfulPersonalDetailsValidation(validationId))
+      connector.submitValidationRequest(personalDetailsWithPostcode, origin).value.futureValue shouldBe
+        Right(SuccessfulPersonalDetailsValidation(validationId))
     }
 
     "returned FailedPersonalDetailsValidation from POST to /personal-details-validation with postcode" in new Setup {
@@ -115,7 +115,8 @@ class FuturedPersonalDetailsSenderSpec
           "id" -> validationId.value
         ))
 
-      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Right(FailedPersonalDetailsValidation(validationId))
+      connector.submitValidationRequest(personalDetailsWithPostcode, origin).value.futureValue shouldBe
+        Right(FailedPersonalDetailsValidation(validationId))
     }
 
     Set(OK, NO_CONTENT, NOT_FOUND, INTERNAL_SERVER_ERROR) foreach { unexpectedStatus =>
@@ -126,7 +127,7 @@ class FuturedPersonalDetailsSenderSpec
           .withPayload(payloadWithPostcode)
           .returning(unexpectedStatus, "some response body")
 
-        connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Left(ProcessingError(
+        connector.submitValidationRequest(personalDetailsWithPostcode, origin).value.futureValue shouldBe Left(ProcessingError(
           s"Unexpected response from POST http://host/personal-details-validation with status: '$unexpectedStatus' and body: some response body"
         ))
       }
@@ -139,7 +140,7 @@ class FuturedPersonalDetailsSenderSpec
         .withPayload(payloadWithPostcode)
         .throwing(exception)
 
-      connector.submitValidationRequest(personalDetailsWithPostcode).value.futureValue shouldBe Left(ProcessingError(
+      connector.submitValidationRequest(personalDetailsWithPostcode, origin).value.futureValue shouldBe Left(ProcessingError(
         s"Call to POST http://host/personal-details-validation threw: $exception"
       ))
     }
@@ -148,6 +149,7 @@ class FuturedPersonalDetailsSenderSpec
   private trait Setup extends HttpClientStubSetup {
     implicit val headerCarrier = HeaderCarrier()
 
+    val origin = "test"
     val personalDetailsWithNino = personalDetailsObjects.generateOne
 
     val payloadWithNino = Json.obj(
