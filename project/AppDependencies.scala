@@ -8,7 +8,7 @@ private object AppDependencies {
   private val compile = Seq(
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.2",
     "org.typelevel" %% "cats-core" % "2.0.0",
-    "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "4.1.0",
+    "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "5.5.0",
     "uk.gov.hmrc" %% "domain" % "5.11.0-play-27",
     "uk.gov.hmrc" %% "govuk-template" % "5.65.0-play-27",
     "uk.gov.hmrc" %% "play-language" % "4.11.0-play-27",

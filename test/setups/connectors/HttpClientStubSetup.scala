@@ -114,11 +114,11 @@ trait HttpClientStubSetup extends MockFactory {
       (_) => throw new IllegalStateException("HttpClientStub not configured")
 
     override def doPost[A](url: String, body: A, headers: Seq[(String, String)])
-                          (implicit wts: Writes[A], hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
+                          (implicit wts: Writes[A], ec: ExecutionContext): Future[HttpResponse] =
       postStubbing(url, body.asInstanceOf[JsObject])
 
     override def doGet(url: String, headers: Seq[(String, String)])
-                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
+                      (implicit ec: ExecutionContext): Future[HttpResponse] =
       getStubbing(url)
 
     override protected def actorSystem: ActorSystem = ActorSystem()
