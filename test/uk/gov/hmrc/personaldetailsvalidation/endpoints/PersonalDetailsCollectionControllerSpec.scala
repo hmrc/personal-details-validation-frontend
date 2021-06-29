@@ -70,7 +70,7 @@ class PersonalDetailsCollectionControllerSpec
 
       (mockAppConfig.isMultiPageEnabled _).expects().returns(false)
 
-      val result = controller.showPage(completionUrl, alternativeVersion = false)(request)
+      val result = controller.showPage(completionUrl, alternativeVersion = false, None)(request)
 
       verify(result).has(statusCode = OK, content = "content")
     }
@@ -78,7 +78,7 @@ class PersonalDetailsCollectionControllerSpec
     "return OK with simplified first page when the multi page flag is enabled" in new Setup {
       (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
-      val result = controller.showPage(completionUrl, alternativeVersion = false)(request)
+      val result = controller.showPage(completionUrl, alternativeVersion = false, None)(request)
 
       status(result) shouldBe OK
       contentType(result) shouldBe Some(HTML)
@@ -132,7 +132,7 @@ class PersonalDetailsCollectionControllerSpec
         "dob" -> "1939-09-01"
       )
 
-      val result = controller.showPage(completionUrl, alternativeVersion = false)(req)
+      val result = controller.showPage(completionUrl, alternativeVersion = false, None)(req)
 
       status(result) shouldBe OK
       contentType(result) shouldBe Some(HTML)
@@ -475,7 +475,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "Redirect to main if not displaying multi pages" in new Setup {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false).url
+      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None).url
 
       (mockAppConfig.isMultiPageEnabled _).expects().returns(false)
 
@@ -492,7 +492,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "redirect to the initial page if the initial details are not present in the request" in new Setup {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false).url
+      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None).url
       val result = controller.showNinoForm(completionUrl)(request)
 
       status(result) shouldBe SEE_OTHER
@@ -535,7 +535,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "Redirect to main if not displaying multi pages" in new Setup {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false).url
+      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None).url
 
       (mockAppConfig.isMultiPageEnabled _).expects().returns(false)
 
@@ -551,7 +551,7 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "redirect to the initial page if the initial details are not present in the request" in new Setup {
-      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false).url
+      val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None).url
       val result = controller.showPostCodeForm(completionUrl)(request)
 
       status(result) shouldBe SEE_OTHER

@@ -14,9 +14,9 @@ The integration tests require chromedriver or firefoxdriver. https://github.com/
 
 | Path                                    | Description                              |
 |:--------------------------------------- |:---------------------------------------- |
-| GET /personal-details-validation/start?completionUrl=:completionUrl | Start capturing user's personal details  |
+| GET /personal-details-validation/start?completionUrl=:completionUrl&origin=test | Start capturing user's personal details  |
     
-## GET /personal-details-validation/start?completionUrl=:completionUrl
+## GET /personal-details-validation/start?completionUrl=:completionUrl&origin=test
 Displays a page to capture user's details. After capturing user's details, these details are checked against citizen details database. 
 If they match, this information is stored by [personal-details-validation](https://github.com/hmrc/personal-details-validation) backend service and the user is redirected to the completionUrl with `validationId` query parameter. It is a UUID and it can be used to retrieve the validation outcome and personal-details (if validation was successful) later using [personal-details-validation](https://github.com/hmrc/personal-details-validation#get-personal-details-validationvalidationid) backend service.
 If the details do not match, then the user is shown the blank form with an error at the top of the form.
@@ -29,6 +29,7 @@ Also, if there is technical error in personal-details-validation component, then
 | Name          | Description                                   |
 |:------------- |:--------------------------------------------- |
 | completionUrl | Mandatory. Should be a url-encoded relative URL or starts with `http://localhost`.    |
+| origin        | Option. Reporting origin as a custom dimension in PDV GA events.    |
     
 ### Example redirects
 | CompletionUrl                 | Redirect url                                                                  |

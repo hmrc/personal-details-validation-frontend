@@ -29,7 +29,7 @@ class PersonalDetailsValidationStartController @Inject()(journeyStart: FuturedJo
                                                         (implicit ec: ExecutionContext)
   extends FrontendController(mcc) {
 
-  def start(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    journeyStart.findRedirect(completionUrl)
+  def start(completionUrl: CompletionUrl, origin: Option[String]): Action[AnyContent] = Action.async { implicit request =>
+    journeyStart.findRedirect(completionUrl, origin)
   }
 }

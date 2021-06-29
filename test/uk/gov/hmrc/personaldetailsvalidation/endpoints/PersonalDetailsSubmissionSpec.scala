@@ -22,8 +22,8 @@ import cats.data.EitherT
 import com.kenshoo.play.metrics.Metrics
 import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.http.HeaderNames
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContentAsEmpty, Request}
@@ -35,7 +35,7 @@ import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.PersonalDetailsSender
-import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{personalDetailsObjects, successfulPersonalDetailsValidationObjects, _}
+import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.completionUrls
 import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 import uk.gov.hmrc.personaldetailsvalidation.model._
@@ -45,11 +45,7 @@ import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 import scala.concurrent.{ExecutionContext, Future}
 
-class PersonalDetailsSubmissionSpec
-  extends UnitSpec
-    with MockFactory
-    with GuiceOneAppPerSuite
-    with GeneratorDrivenPropertyChecks {
+class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite with ScalaCheckDrivenPropertyChecks {
 
   import PersonalDetailsSubmission._
 
@@ -87,8 +83,8 @@ class PersonalDetailsSubmissionSpec
         .expects(false, request, completionUrl)
         .returning(Right(personalDetails))
 
-      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(personalDetails, headerCarrier, executionContext)
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _:String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, origin, headerCarrier, executionContext)
         .returning(EitherT.rightT[Id, ProcessingError](personalDetailsValidation))
 
       val result = submitter.submit(completionUrl)
@@ -117,8 +113,8 @@ class PersonalDetailsSubmissionSpec
         .expects(true, request, completionUrl)
         .returning(Right(personalDetails))
 
-      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(personalDetails, headerCarrier, executionContext)
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, origin, headerCarrier, executionContext)
         .returning(EitherT.rightT[Id, ProcessingError](personalDetailsValidation))
 
       val result = submitter.submit(completionUrl, true)
@@ -147,8 +143,8 @@ class PersonalDetailsSubmissionSpec
         .returning(Right(personalDetails))
 
       val error = ProcessingError("some message")
-      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(personalDetails, headerCarrier, executionContext)
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, origin, headerCarrier, executionContext)
         .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
 
       (logger.error(_: ProcessingError)).expects(error)
@@ -176,8 +172,8 @@ class PersonalDetailsSubmissionSpec
         .returning(Right(personalDetails))
 
       val error = ProcessingError("some message")
-      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(personalDetails, headerCarrier, executionContext)
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, origin, headerCarrier, executionContext)
         .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
 
       (logger.error(_: ProcessingError)).expects(error)
@@ -206,8 +202,8 @@ class PersonalDetailsSubmissionSpec
           .expects(usePostcodeForm, request, completionUrl)
           .returning(Right(personalDetails))
 
-        (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(personalDetails, headerCarrier, executionContext)
+        (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(personalDetails, origin, headerCarrier, executionContext)
           .returning(EitherT.rightT[Id, ProcessingError](failedPersonalDetailsValidation))
 
         val html = Html("OK")
@@ -239,8 +235,8 @@ class PersonalDetailsSubmissionSpec
           .returning(Right(personalDetails))
 
         val error = ProcessingError("some message")
-        (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(personalDetails, headerCarrier, executionContext)
+        (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(personalDetails, origin, headerCarrier, executionContext)
           .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
 
         (logger.error(_: ProcessingError)).expects(error)
@@ -257,8 +253,10 @@ class PersonalDetailsSubmissionSpec
 
   private trait Setup {
     implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
-    implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
+    implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders(("origin", origin))
     implicit val materializer: Materializer = mock[Materializer]
+
+    val origin: String = "Unknown-Origin"
 
     val page = mock[PersonalDetailsPage]
     val personalDetailsValidationConnector = mock[PersonalDetailsSender[Id]]

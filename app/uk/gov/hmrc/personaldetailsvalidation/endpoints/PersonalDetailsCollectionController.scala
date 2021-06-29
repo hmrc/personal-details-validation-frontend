@@ -89,19 +89,21 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   private def postcodeFormatValidation(postcode: NonEmptyString) =
     postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
-  def showPage(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean): Action[AnyContent] = Action { implicit request =>
-    if (appConfig.isMultiPageEnabled) {
-      val form: Form[InitialPersonalDetails] = retrieveMainDetails match {
-        case (Some(firstName), Some(lastName), Some(dob)) =>
-          val pd = InitialPersonalDetails(NonEmptyString(firstName), NonEmptyString(lastName), LocalDate.parse(dob))
-          initialForm.fill(pd)
-        case _ => initialForm
+  def showPage(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String]): Action[AnyContent] =
+    Action { implicit request =>
+      val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
+      if (appConfig.isMultiPageEnabled) {
+        val form: Form[InitialPersonalDetails] = retrieveMainDetails match {
+          case (Some(firstName), Some(lastName), Some(dob)) =>
+            val pd = InitialPersonalDetails(NonEmptyString(firstName), NonEmptyString(lastName), LocalDate.parse(dob))
+            initialForm.fill(pd)
+          case _ => initialForm
+        }
+        Ok(personalDetailsMain(form, completionUrl)).withSession(sessionWithOrigin)
+      } else {
+        Ok(page.render(alternativeVersion)).withSession(sessionWithOrigin)
       }
-      Ok(personalDetailsMain(form, completionUrl))
-    } else {
-      Ok(page.render(alternativeVersion))
     }
-  }
 
   def submitMainDetails(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
     initialForm.bindFromRequest().fold (
@@ -123,7 +125,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     if (hasMainDetailsAndIsMultiPage)
       Future.successful(Ok(enterYourDetailsNino(ninoForm, completionUrl)))
     else
-      Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false)))
+      Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None)))
   }
 
   def submitNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
@@ -148,7 +150,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     if (hasMainDetailsAndIsMultiPage)
       Future.successful(Ok(enterYourDetailsPostcode(postcodeForm, completionUrl)))
     else
-      Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false)))
+      Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None)))
   }
 
   def submitPostcode(completionUrl: CompletionUrl) = Action.async { implicit request =>

@@ -43,20 +43,20 @@ class PersonalDetailsValidationStartControllerSpec
 
       val redirect: Result = Redirect("some-url")
 
-      (journeyStart.findRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier))
-        .expects(url, request, instanceOf[HeaderCarrier])
+      (journeyStart.findRedirect(_: CompletionUrl, _:Option[String])(_: Request[_], _: HeaderCarrier))
+        .expects(url, origin, request, instanceOf[HeaderCarrier])
         .returning(Future.successful(redirect))
 
-      controller.start(url)(request).futureValue shouldBe redirect
+      controller.start(url,origin)(request).futureValue shouldBe redirect
     }
 
     "throw an exception when fetchRedirect returns one" in new Setup {
 
-      (journeyStart.findRedirect(_: CompletionUrl)(_: Request[_], _: HeaderCarrier))
-        .expects(url, request, instanceOf[HeaderCarrier])
+      (journeyStart.findRedirect(_: CompletionUrl, _:Option[String])(_: Request[_], _: HeaderCarrier))
+        .expects(url, origin, request, instanceOf[HeaderCarrier])
         .returning(Future.failed(new RuntimeException("Unrecoverable error")))
 
-      a[RuntimeException] should be thrownBy controller.start(url)(request).futureValue
+      a[RuntimeException] should be thrownBy controller.start(url, origin)(request).futureValue
     }
   }
 
@@ -64,9 +64,11 @@ class PersonalDetailsValidationStartControllerSpec
 
     protected implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
 
-    val journeyStart = mock[FuturedJourneyStart]
+    val journeyStart: FuturedJourneyStart = mock[FuturedJourneyStart]
 
-    val url = ValuesGenerators.completionUrls.generateOne
+    val url: CompletionUrl = ValuesGenerators.completionUrls.generateOne
+
+    val origin: Option[String] = Some("test")
 
     def stubMessagesControllerComponents() : MessagesControllerComponents = {
       val stub = stubControllerComponents()

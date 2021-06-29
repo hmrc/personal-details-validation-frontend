@@ -2,9 +2,9 @@
 
 GET        /language/:language        uk.gov.hmrc.language.ChangeLanguageEndpoint.switchToLanguage(language: String)
 
-GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: CompletionUrl)
+GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: CompletionUrl, origin: Option[String])
 
-GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false)
+GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false, origin: Option[String])
 POST       /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submit(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false)
 
 GET        /keep-alive                 uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.keepAlive()

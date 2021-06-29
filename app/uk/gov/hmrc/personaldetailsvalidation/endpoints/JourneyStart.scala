@@ -43,14 +43,14 @@ private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: Val
   import PersonalDetailsSubmission._
   import validationIdValidator._
 
-  def findRedirect(completionUrl: CompletionUrl)
+  def findRedirect(completionUrl: CompletionUrl, origin: Option[String])
                   (implicit request: Request[_], headerCarrier: HeaderCarrier): Interpretation[Result] =
     findValidationIdInSession match {
       case None =>
-        Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
+        Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, origin))
       case Some(sessionValidationId) =>
         verify(sessionValidationId)
-          .map(findRedirectUsing(_, sessionValidationId, completionUrl))
+          .map(findRedirectUsing(_, sessionValidationId, completionUrl, origin))
           .valueOr { error =>
             logger.error(error)
             Redirect(completionUrl.value, error.toQueryParam)
@@ -61,10 +61,11 @@ private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: Val
     request.session.get(validationIdSessionKey).map(ValidationId(_))
 
   private def findRedirectUsing(validationResult: Boolean, validationId: ValidationId,
-                                completionUrl: CompletionUrl): Result = validationResult match {
-    case false => Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl))
-    case true => Redirect(completionUrl.value, validationId.toQueryParam)
-  }
+                                completionUrl: CompletionUrl, origin: Option[String]): Result =
+    validationResult match {
+      case false => Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, origin))
+      case true => Redirect(completionUrl.value, validationId.toQueryParam)
+    }
 
   private implicit def pure[R](value: R): Interpretation[R] =
     implicitly[Monad[Interpretation]].pure(value)

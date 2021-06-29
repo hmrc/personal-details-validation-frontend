@@ -28,9 +28,9 @@ import scala.language.higherKinds
 
 private[personaldetailsvalidation] trait PersonalDetailsSender[Interpretation[_]] {
 
-  def submitValidationRequest(personalDetails: PersonalDetails)
-                             (implicit headerCarrier: HeaderCarrier,
-                              executionContext: ExecutionContext): EitherT[Interpretation, ProcessingError, PersonalDetailsValidation]
+  def submitValidationRequest(personalDetails: PersonalDetails, origin: String)
+                             (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext)
+  : EitherT[Interpretation, ProcessingError, PersonalDetailsValidation]
 }
 
 @Singleton
@@ -43,11 +43,13 @@ private[personaldetailsvalidation] class FuturedPersonalDetailsSender @Inject()(
 
   private val url = s"$personalDetailsValidationBaseUrl/personal-details-validation"
 
-  override def submitValidationRequest(personalDetails: PersonalDetails)
-                                      (implicit headerCarrier: HeaderCarrier,
-                                       executionContext: ExecutionContext): EitherT[Future, ProcessingError, PersonalDetailsValidation] = EitherT {
-    httpClient.POST(url, body = Json.toJson(personalDetails)(personalDetailsWrites)).recover(toProcessingError)
-  }
+  override def submitValidationRequest(personalDetails: PersonalDetails, origin: String)
+                                      (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext)
+  : EitherT[Future, ProcessingError, PersonalDetailsValidation] =
+    EitherT {
+      httpClient.POST(url, body = Json.toJson(personalDetails)(personalDetailsWrites), headers = List(("origin", origin)))
+        .recover(toProcessingError)
+    }
 
   private implicit val personalDetailsSubmissionReads: HttpReads[Either[ProcessingError, PersonalDetailsValidation]] =
     (method: String, url: String, response: HttpResponse) => response.status match {
