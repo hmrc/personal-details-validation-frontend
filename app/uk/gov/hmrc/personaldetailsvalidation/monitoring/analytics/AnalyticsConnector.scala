@@ -18,7 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics
 
 import akka.Done
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import play.api.libs.json.Json
 import uk.gov.hmrc.config.AppConfig
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AnalyticsConnector @Inject() (appConfig: AppConfig, http: HttpClient) {
+class AnalyticsConnector @Inject() (appConfig: AppConfig, http: HttpClient) extends Logging {
   def serviceUrl: String = appConfig.platformAnalyticsUrl
 
   private implicit val eventWrites = Json.writes[Event]
@@ -37,7 +37,7 @@ class AnalyticsConnector @Inject() (appConfig: AppConfig, http: HttpClient) {
     val url = s"$serviceUrl/platform-analytics/event"
     http.POST(url, request).map(_ => Done).recover {
       case _ : Throwable =>
-        Logger.error(s"Couldn't send analytics event $request")
+        logger.error(s"Couldn't send analytics event $request")
         Done
     }
   }

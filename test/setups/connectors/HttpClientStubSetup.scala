@@ -21,7 +21,7 @@ import akka.stream.ActorMaterializer
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.Matchers._
-import play.api.Configuration
+import play.api.{ConfigLoader, Configuration}
 import play.api.libs.json.{JsObject, JsValue, Writes}
 import play.api.libs.ws.WSClient
 import uk.gov.hmrc.http.hooks.HttpHook
@@ -34,9 +34,10 @@ import scala.concurrent.{ExecutionContext, Future}
 trait HttpClientStubSetup extends MockFactory {
 
   private val configuration = mock[Configuration]
-  (configuration.getString(_: String, _: Option[Set[String]]))
-    .expects("appName", None)
-    .returning(Some("personal-details-validation"))
+  (configuration.getAndValidate[String](_ : String, _ : Set[String])
+  (_ : ConfigLoader[String]))
+  .expects("appName", Set.empty[String], null)
+  .returning("personal-details-validation")
 
   protected def expectPost(toUrl: String) = new {
     def withPayload(payload: JsObject) = new {
@@ -114,11 +115,11 @@ trait HttpClientStubSetup extends MockFactory {
       (_) => throw new IllegalStateException("HttpClientStub not configured")
 
     override def doPost[A](url: String, body: A, headers: Seq[(String, String)])
-                          (implicit wts: Writes[A], hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
+                          (implicit wts: Writes[A], ec: ExecutionContext): Future[HttpResponse] =
       postStubbing(url, body.asInstanceOf[JsObject])
 
     override def doGet(url: String, headers: Seq[(String, String)])
-                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] =
+                      (implicit ec: ExecutionContext): Future[HttpResponse] =
       getStubbing(url)
 
     override protected def actorSystem: ActorSystem = ActorSystem()

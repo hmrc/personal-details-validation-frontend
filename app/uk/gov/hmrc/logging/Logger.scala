@@ -24,7 +24,7 @@ import uk.gov.hmrc.errorhandling.ProcessingError
 @Singleton
 class Logger(logger: LoggerLike) {
 
-  def this() = this(PlayLogger)
+  def this() = this(PlayLogger("application"))
 
   def error(error: ProcessingError): Unit = logger.error(error.message)
 }

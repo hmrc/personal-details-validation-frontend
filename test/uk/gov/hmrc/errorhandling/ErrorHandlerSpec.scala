@@ -78,7 +78,7 @@ class ErrorHandlerSpec
 
   private trait Setup extends ViewSetup {
 
-    implicit val materializer: Materializer = mock[Materializer]
+    implicit val materializer: Materializer = app.materializer
 
     val mockAppConfig = mock[AppConfig]
     implicit val dwpMessagesApi: DwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]

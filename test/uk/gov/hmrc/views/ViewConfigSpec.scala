@@ -100,7 +100,8 @@ class ViewConfigSpec
       "play.i18n.langCookieName" -> "PLAY_LANG",
       "play.i18n.langCookieSameSite" -> "strict",
       "play.i18n.langCookieSecure" -> true,
-      "play.i18n.langCookieHttpOnly" -> false
+      "play.i18n.langCookieHttpOnly" -> false,
+      "play.i18n.langCookieMaxAge" -> null
     ))
 
     val dwpMessagesApiProvider = new DwpMessagesApiProvider(Environment.simple(), configuration,
@@ -121,7 +122,8 @@ class ViewConfigSpec
       "play.i18n.langCookieName" -> "PLAY_LANG",
       "play.i18n.langCookieSameSite" -> "strict",
       "play.i18n.langCookieSecure" -> true,
-      "play.i18n.langCookieHttpOnly" -> false
+      "play.i18n.langCookieHttpOnly" -> false,
+      "play.i18n.langCookieMaxAge" -> null
     ))
 
     val messagesApi = new DwpMessagesApiProvider(Environment.simple(), configuration,

@@ -16,7 +16,6 @@
 
 package setups.views
 
-import com.typesafe.config.Config
 import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.HttpConfiguration
@@ -24,8 +23,6 @@ import play.api.i18n.DefaultLangsProvider
 import play.api.{ConfigLoader, Configuration, Environment}
 import uk.gov.hmrc.config.DwpMessagesApiProvider
 import uk.gov.hmrc.views.ViewConfig
-
-import scala.collection.JavaConverters._
 
 object ViewConfigMockFactory extends MockFactory with GuiceOneAppPerSuite {
 
@@ -39,7 +36,7 @@ object ViewConfigMockFactory extends MockFactory with GuiceOneAppPerSuite {
     (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("optimizely.projectId", *).returning(null)
     (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("google-analytics.token", *).returning("ga-token")
     (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("google-analytics.host", *).returning("ga-host")
-    (configMock.getStringList _).expects("play.i18n.langs").anyNumberOfTimes().returning(Some(List("en", "cy").asJava))
+    (configMock.getOptional[Seq[String]](_ : String)(_ : ConfigLoader[Seq[String]])).expects("play.i18n.langs", *).anyNumberOfTimes().returning(Some(Seq("en", "cy")))
     (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("play.i18n.descriptions.en", *).anyNumberOfTimes().returning("english")
     (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("play.i18n.descriptions.en", *).anyNumberOfTimes().returning("english")
     (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("play.i18n.descriptions.cy", *).anyNumberOfTimes().returning("cymraeg")

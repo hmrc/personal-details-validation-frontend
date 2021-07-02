@@ -34,7 +34,7 @@ package object implicits {
     Option(configuration.get[String](key)).toValidated(key)
 
   implicit def stringValuesFinder(key: String)(configuration: Configuration): ValidatedNel[String, Seq[String]] = {
-    configuration.getStringList(key).map(_.asScala.toList).toValidated(key)
+    configuration.getOptional[Seq[String]](key).map(_.toList).toValidated(key)
   }
 
   implicit def intValueFinder(key: String)(configuration: Configuration): ValidatedNel[String, Int] =
