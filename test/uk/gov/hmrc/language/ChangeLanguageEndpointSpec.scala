@@ -21,8 +21,7 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
-import play.api.i18n.Messages.Implicits.applicationMessagesApi
-import play.api.i18n.{DefaultLangs, Lang}
+import play.api.i18n.{DefaultLangs, Lang, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -81,9 +80,10 @@ class ChangeLanguageEndpointSpec
 
   private trait Setup extends MockFactory {
 
-    implicit val materializer: Materializer = mock[Materializer]
+    implicit val materializer: Materializer = app.materializer
 
     implicit val dwpMessagesApi: DwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
+    implicit val messagesApi: MessagesApi = dwpMessagesApi.get
 
     val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     val viewConfig: ViewConfig = ViewConfigMockFactory()

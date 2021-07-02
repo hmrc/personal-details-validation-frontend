@@ -17,7 +17,7 @@
 package uk.gov.hmrc.personaldetailsvalidation.monitoring
 
 import javax.inject.{Inject, Singleton}
-import play.api.Logger
+import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics.AnalyticsEventHandler
@@ -29,13 +29,13 @@ trait EventHandler {
 }
 
 @Singleton
-class EventDispatcher @Inject()(analyticsEventHandler: AnalyticsEventHandler) {
+class EventDispatcher @Inject()(analyticsEventHandler: AnalyticsEventHandler) extends Logging {
 
   def dispatchEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     try {
       analyticsEventHandler.handleEvent(event)
     } catch {
-      case ex: Exception => Logger.warn(s"Exception when invoking event handler:", ex)
+      case ex: Exception => logger.warn(s"Exception when invoking event handler:", ex)
     }
 
   }

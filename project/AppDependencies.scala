@@ -8,12 +8,12 @@ private object AppDependencies {
   private val compile = Seq(
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.2",
     "org.typelevel" %% "cats-core" % "2.0.0",
-    "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "5.5.0",
-    "uk.gov.hmrc" %% "domain" % "5.11.0-play-27",
-    "uk.gov.hmrc" %% "govuk-template" % "5.65.0-play-27",
-    "uk.gov.hmrc" %% "play-language" % "4.11.0-play-27",
-    "uk.gov.hmrc" %% "play-ui" % "9.1.0-play-27",
-    "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.71.0-play-27",
+    "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % "5.6.0",
+    "uk.gov.hmrc" %% "domain" % "6.0.0-play-28",
+    "uk.gov.hmrc" %% "govuk-template" % "5.69.0-play-28",
+    "uk.gov.hmrc" %% "play-language" % "5.1.0-play-28",
+    "uk.gov.hmrc" %% "play-ui" % "9.6.0-play-28",
+    "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.79.0-play-28",
     ws
   )
 
@@ -22,7 +22,7 @@ private object AppDependencies {
     "org.scalacheck" %% "scalacheck" % "1.15.3" % Test,
     "org.scalamock" %% "scalamock" % "5.1.0" % Test,
     "org.mockito" % "mockito-core" % "3.8.0" % Test,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
     "uk.gov.hmrc" %% "service-integration-test" % "1.1.0-play-27" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test
 
@@ -30,7 +30,7 @@ private object AppDependencies {
 
   private val it = Seq(
     "com.github.tomakehurst" % "wiremock-jre8" % "2.27.2" % IntegrationTest,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % IntegrationTest,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % IntegrationTest,
     "uk.gov.hmrc" %% "service-integration-test" % "1.1.0-play-27" % IntegrationTest,
     "org.pegdown" % "pegdown" % "1.6.0" % IntegrationTest
   )

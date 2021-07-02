@@ -30,7 +30,7 @@ import org.scalacheck.Gen
 import org.scalamock.scalatest.AsyncMockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.mvc.Results._
 import play.api.mvc._
 import play.api.test.FakeRequest
@@ -959,15 +959,15 @@ class PersonalDetailsCollectionControllerSpec
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
 
+    implicit val dwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
     implicit val lang: Lang = Lang("en-GB")
-    implicit val messages: Messages = Messages.Implicits.applicationMessages
+    implicit val messages: Messages = MessagesImpl(lang, dwpMessagesApiProvider.get)
 
     val pageMock: PersonalDetailsPage = mock[PersonalDetailsPage]
     val personalDetailsSubmitterMock = mock[FuturedPersonalDetailsSubmission]
     val mockAppConfig = mock[AppConfig]
     val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
     implicit val mockViewConfig = app.injector.instanceOf[ViewConfig]
-    implicit val dwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
 
     def stubMessagesControllerComponents() : MessagesControllerComponents = {
       val stub = stubControllerComponents()

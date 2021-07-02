@@ -254,7 +254,7 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
   private trait Setup {
     implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders(("origin", origin))
-    implicit val materializer: Materializer = mock[Materializer]
+    implicit val materializer: Materializer = app.materializer
 
     val origin: String = "Unknown-Origin"
 

@@ -20,7 +20,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalamock.scalatest.MockFactory
 import play.api.Application
-import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.twirl.api.Html
@@ -33,9 +33,9 @@ abstract class ViewSetup(implicit app: Application) extends MockFactory {
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val lang: Lang = Lang("en")
-  implicit val messages: Messages = Messages.Implicits.applicationMessages(lang, app)
+  implicit val messages: Messages = MessagesImpl(lang, messagesApi)
   val welshLang: Lang = Lang("cy")
-  val welshMessages: Messages = Messages.Implicits.applicationMessages(welshLang, app)
+  val welshMessages: Messages = MessagesImpl(welshLang, messagesApi)
 
   implicit def asDocument(html: Html): Document = Jsoup.parse(html.toString())
 }
