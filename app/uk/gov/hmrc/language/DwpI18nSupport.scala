@@ -30,7 +30,7 @@ abstract class DwpI18nSupport @Inject()(appConfig: AppConfig, messagesApi: Messa
 
   override implicit def request2Messages(implicit request: RequestHeader): Messages = {
     request.session.get("loginOrigin") match {
-      case Some(appConfig.originDwp) => dwpMessagesApiProvider.get.preferred(request)
+      case origin if origin.exists(_.startsWith(appConfig.originDwp)) => dwpMessagesApiProvider.get.preferred(request)
       case _ => messagesApi.preferred(request)
     }
   }
