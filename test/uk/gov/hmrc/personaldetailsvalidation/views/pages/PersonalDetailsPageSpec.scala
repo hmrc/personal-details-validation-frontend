@@ -646,7 +646,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
           "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
           "nino" -> personalDetails.nino.toString()
         ) ++ replace).toSeq: _*
-      ).withSession(request.session + "loginOrigin" -> "dwp-iv")
+      ).withSession(request.session + "loginOrigin" -> "dwp-iv-some-variant")
 
     def validRequestHMRC(replace: (String, String)*): Request[AnyContentAsFormUrlEncoded] =
       request.withFormUrlEncodedBody((
@@ -670,7 +670,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
           "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
           "nino" -> personalDetails.nino.toString()
         ) ++ replace).toSeq: _*
-      ).withSession("loginOrigin" -> "dwp-iv")
+      ).withSession("loginOrigin" -> "dwp-iv-some-variant")
 
     def validRequestDwpCy(replace: (String, String)*): Request[AnyContentAsFormUrlEncoded] =
       request.withFormUrlEncodedBody((
@@ -682,7 +682,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
           "dateOfBirth.year" -> personalDetails.dateOfBirth.getYear.toString,
           "nino" -> personalDetails.nino.toString()
         ) ++ replace).toSeq: _*
-      ).withSession("loginOrigin" -> "dwp-iv").withCookies(Cookie("PLAY_LANG", "cy"))
+      ).withSession("loginOrigin" -> "dwp-iv-some-variant").withCookies(Cookie("PLAY_LANG", "cy"))
 
 
     val personalDetailsWithPostcode = personalDetailsObjectsWithPostcode.generateOne

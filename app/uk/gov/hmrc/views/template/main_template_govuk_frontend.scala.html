@@ -55,7 +55,7 @@
 
     @summaryErrors(theForm = form, govukErrorSummary= govukErrorSummary, completionUrl)
     @contentBlock
-    @if(!requestHeader.session.get("loginOrigin").contains("dwp-iv")) {
+    @if(!requestHeader.session.get("loginOrigin").exists(_.startsWith("dwp-iv"))) {
         <div class="govuk-!-margin-top-6">
             @reportTechnicalIssue()
         </div>
