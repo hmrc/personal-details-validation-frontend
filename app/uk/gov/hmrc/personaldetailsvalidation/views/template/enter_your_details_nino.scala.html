@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.views.html.template.main_template_govuk_frontend
+@import uk.gov.hmrc.views.html.template.layout
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
@@ -22,7 +22,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 
 @this(
-    mainTemplate: main_template_govuk_frontend,
+    mainTemplate: layout,
     govukErrorSummary : GovukErrorSummary,
     govukInput: GovukInput,
     formWithCSRF: FormWithCSRF,

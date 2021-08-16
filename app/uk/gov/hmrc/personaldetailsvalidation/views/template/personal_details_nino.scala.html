@@ -17,14 +17,14 @@
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.views.ViewConfig
-@import uk.gov.hmrc.views.html.template.{main_template_govuk_frontend, error_prefix}
+@import uk.gov.hmrc.views.html.template.{layout, error_prefix}
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.views.html.partials.DateInput
 
 @import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetailsWithNino
 
 @this(
-        mainTemplate: main_template_govuk_frontend,
+        mainTemplate: layout,
         errorPrefix: error_prefix,
         dateField: DateInput,
         govukErrorSummary : GovukErrorSummary,
