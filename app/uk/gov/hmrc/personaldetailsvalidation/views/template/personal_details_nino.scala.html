@@ -23,17 +23,15 @@
 
 @import uk.gov.hmrc.personaldetailsvalidation.model.PersonalDetailsWithNino
 
-@this(
-        mainTemplate: layout,
-        errorPrefix: error_prefix,
-        dateField: DateInput,
-        govukErrorSummary : GovukErrorSummary,
-        govukInput: GovukInput,
-        formWithCSRF: FormWithCSRF,
-        govukButton: GovukButton)
+@this(mainTemplate: layout,
+      errorPrefix: error_prefix,
+      dateField: DateInput,
+      govukErrorSummary : GovukErrorSummary,
+      govukInput: GovukInput,
+      formWithCSRF: FormWithCSRF,
+      govukButton: GovukButton)
 
-@( pageForm: Form[PersonalDetailsWithNino],
-   completionUrl: CompletionUrl
+@(pageForm: Form[PersonalDetailsWithNino], completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 

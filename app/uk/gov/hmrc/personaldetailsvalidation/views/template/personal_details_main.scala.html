@@ -23,18 +23,15 @@
 @import uk.gov.hmrc.views.html.partials.DateInput
 
 
-@this(
-    mainTemplate: layout,
-    dateField: DateInput,
-    govukErrorSummary : GovukErrorSummary,
-    govukInput: GovukInput,
-    formWithCSRF: FormWithCSRF,
-    govukButton: GovukButton
+@this(mainTemplate: layout,
+      dateField: DateInput,
+      govukErrorSummary : GovukErrorSummary,
+      govukInput: GovukInput,
+      formWithCSRF: FormWithCSRF,
+      govukButton: GovukButton
 )
 
-@(
-    pageForm: Form[InitialPersonalDetails],
-    completionUrl: CompletionUrl
+@(pageForm: Form[InitialPersonalDetails], completionUrl: CompletionUrl
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
@@ -50,7 +47,7 @@
 
     <p class="govuk-body">@messages("personal-details.paragraph")</p>
 
-    @formWithCSRF(routes.PersonalDetailsCollectionController.submitMainDetails(completionUrl), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
+    @formWithCSRF(routes.PersonalDetailsCollectionController.submitMainDetails(completionUrl), 'autocomplete -> "off", 'novalidate -> "novalidate") {
 
         @govukInput(
             Input(

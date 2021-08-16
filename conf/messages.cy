@@ -27,13 +27,23 @@ personal-details.dateOfBirth.month=Mis
 personal-details.dateOfBirth.year=Blwyddyn
 personal-details.dateOfBirth.required=Nodwch eich dyddiad geni
 personal-details.dateOfBirth.tooYoung=Mae’n rhaid i chi fod yn 15 mlwydd a 9 mis oed o leiaf i ddefnyddio’r gwasanaeth hwn
+personal-details.dateOfBirth.mustInPast=Mae’n rhaid i’r dyddiad geni fod yn y gorffennol
 personal-details.dateOfBirth.invalid=Nodwch eich dyddiad geni yn y fformat cywir
-personal-details.dateOfBirth.day.required=Nodwch ddiwrnod o’r mis o’ch dyddiad geni
-personal-details.dateOfBirth.day.invalid=Nodwch rif rhwng 1 a 31
-personal-details.dateOfBirth.month.required=Nodwch fis eich dyddiad geni
-personal-details.dateOfBirth.month.invalid=Nodwch rif rhwng 1 a 12
-personal-details.dateOfBirth.year.required=Nodwch flwyddyn eich dyddiad geni
+personal-details.dateOfBirth.day.required=Mae’n rhaid i’r dyddiad geni gynnwys diwrnod
+personal-details.dateOfBirth.day.invalid=Mae’n rhaid i’r dyddiad geni fod yn ddyddiad go iawn
+personal-details.dateOfBirth.month.required=Mae’n rhaid i’r dyddiad geni gynnwys mis
+personal-details.dateOfBirth.month.invalid=Mae’n rhaid i’r dyddiad geni fod yn ddyddiad go iawn
+personal-details.dateOfBirth.year.required=Mae’n rhaid i’r dyddiad geni gynnwys blwyddyn
 personal-details.dateOfBirth.year.invalid=Nodwch y flwyddyn y cawsoch eich geni yn y fformat cywir
+
+personal-details.dateOfBirth.miss.day=Mae’n rhaid i’r dyddiad geni gynnwys diwrnod
+personal-details.dateOfBirth.miss.day.month=Mae’n rhaid i’r dyddiad geni gynnwys diwrnod a mis
+personal-details.dateOfBirth.miss.day.year=Mae’n rhaid i’r dyddiad geni gynnwys diwrnod a blwyddyn
+personal-details.dateOfBirth.miss.month=Mae’n rhaid i’r dyddiad geni gynnwys mis
+personal-details.dateOfBirth.miss.month.year=Mae’n rhaid i’r dyddiad geni gynnwys mis a blwyddyn
+personal-details.dateOfBirth.miss.year=Mae’n rhaid i’r dyddiad geni gynnwys blwyddyn
+
+
 validation.error-summary.dwp-text=cadarnhewch pwy ydych gan ddefnyddio dull arall
 validation.error-summary.before-link-text=Nid oeddem yn gallu dod o hyd i unrhyw gofnodion sy’n cyd-fynd â’r manylion a nodwyd gennych. Rhowch gynnig arall arni, neu
 validation.error-summary.link-text=cysylltwch â CThEM

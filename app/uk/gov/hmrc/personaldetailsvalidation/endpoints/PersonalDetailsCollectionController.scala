@@ -51,7 +51,6 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     ec: ExecutionContext,
                                                     messagesApi: MessagesApi)
   extends DwpI18nSupport(appConfig, messagesApi) with FrontendBaseController {
-  
 
   import uk.gov.hmrc.formmappings.Mappings._
 
@@ -213,6 +212,5 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     eventDispatcher.dispatchEvent(TimeoutContinue)
     Future.successful(Ok("OK"))
   }
-
 
 }

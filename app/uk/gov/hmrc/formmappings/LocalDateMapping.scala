@@ -158,7 +158,8 @@ private object LocalDateMapping {
       private def checkAge(birthDate: LocalDate): ValidatedNel[String, LocalDate] = {
         val MINIMUM_AGE_REQUIRED_IN_MONTHS: Int = 189 //15yrs and 9 months
         val currentDate = LocalDate.now()
-        if (ChronoUnit.MONTHS.between(birthDate, currentDate) < MINIMUM_AGE_REQUIRED_IN_MONTHS) Validated.invalidNel(dateFieldError(suffixed = "tooYoung"))
+        if (currentDate.isBefore(birthDate)) Validated.invalidNel(dateFieldError(suffixed = "mustInPast"))
+        else if (ChronoUnit.MONTHS.between(birthDate, currentDate) < MINIMUM_AGE_REQUIRED_IN_MONTHS) Validated.invalidNel(dateFieldError(suffixed = "tooYoung"))
         else Validated.valid(birthDate)
       }
 
