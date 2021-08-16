@@ -17,10 +17,11 @@
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-@import uk.gov.hmrc.play.views.html.layouts.TrackingConsentSnippet
 
-@this(hmrcTimeoutDialog: HmrcTimeoutDialog,
-        trackingConsentSnippet: TrackingConsentSnippet)
+@this(
+    hmrcTimeoutDialog: HmrcTimeoutDialog,
+    trackingConsentSnippet: HmrcTrackingConsentSnippet
+)
 
 @(headBlock: Option[Html] = None, completionUrl: CompletionUrl)(implicit viewConfig: ViewConfig, messages: Messages)
 @trackingConsentSnippet()
