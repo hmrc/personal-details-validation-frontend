@@ -14,13 +14,12 @@
  * limitations under the License.
  *@
 
-@this(underlying: GovukDateInput)
+@import uk.gov.hmrc.views.partials.DateErrorMessage
 
+@this(underlying: GovukDateInput)
 @(form: Form[_], fieldPrefix: String, fieldName: String)(implicit messages: Messages)
 
-@dateErrors = @{
-    form(fieldName).errors
-}
+@dateErrors = @{form(fieldName).errors}
 
 <div class="govuk-form-group date-of-birth-wrapper @if(dateErrors.nonEmpty) {govuk-form-group--error}">
     @underlying(DateInput(
@@ -34,6 +33,6 @@
             legend = Some(Legend(content = Text(messages(s"$fieldPrefix.$fieldName")), classes = "govuk-fieldset__legend--s")),
         )),
         hint = Some(Hint(content = Text(messages(s"$fieldPrefix.$fieldName.hint")))),
-        errorMessage = form(fieldName).error.map(err => ErrorMessage(content = Text(messages(err.message, err.args))))
+        errorMessage = form(fieldName).error.map(err => ErrorMessage(content = Text(messages(s"${DateErrorMessage.getErrorMessage(form, fieldName)}", err.args))))
     ))
 </div>

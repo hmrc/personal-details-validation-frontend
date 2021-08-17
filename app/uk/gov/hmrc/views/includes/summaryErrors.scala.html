@@ -19,10 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 
-@(
-    theForm: Option[Form[_]],
-    govukErrorSummary: GovukErrorSummary,
-    completionUrl: CompletionUrl
+@(theForm: Option[Form[_]], govukErrorSummary: GovukErrorSummary, completionUrl: CompletionUrl
 )(implicit requestHeader: RequestHeader, messages: Messages)
 
 @validationText = {

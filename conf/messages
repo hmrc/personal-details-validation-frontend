@@ -27,13 +27,23 @@ personal-details.dateOfBirth.month=Month
 personal-details.dateOfBirth.year=Year
 personal-details.dateOfBirth.required=Enter your date of birth
 personal-details.dateOfBirth.tooYoung=You must be at least 15 years and 9 months old to use this service
+personal-details.dateOfBirth.mustInPast=Date of birth must be in the past
 personal-details.dateOfBirth.invalid=Enter your date of birth in the correct format
-personal-details.dateOfBirth.day.required=Enter the day of the month from your date of birth
-personal-details.dateOfBirth.day.invalid=Enter a number between 1 and 31
-personal-details.dateOfBirth.month.required=Enter the month from your date of birth
-personal-details.dateOfBirth.month.invalid=Enter a number between 1 and 12
-personal-details.dateOfBirth.year.required=Enter the year from your date of birth
+personal-details.dateOfBirth.day.required=Date of birth must include a day
+personal-details.dateOfBirth.day.invalid=Date of birth must be a real date
+personal-details.dateOfBirth.month.required=Date of birth must include a month
+personal-details.dateOfBirth.month.invalid=Date of birth must be a real date
+personal-details.dateOfBirth.year.required=Date of birth must include a year
 personal-details.dateOfBirth.year.invalid=Enter the year you were born in the correct format
+
+personal-details.dateOfBirth.miss.day=Date of birth must include a day
+personal-details.dateOfBirth.miss.day.month=Date of birth must include a day and month
+personal-details.dateOfBirth.miss.day.year=Date of birth must include a day and year
+personal-details.dateOfBirth.miss.month=Date of birth must include a month
+personal-details.dateOfBirth.miss.month.year=Date of birth must include a month and year
+personal-details.dateOfBirth.miss.year=Date of birth must include a year
+
+
 validation.error-summary.before-link-text=We could not find any records that match the details you entered. Please try again, or
 validation.error-summary.link-text=contact HMRC
 validation.error-summary.after-link-text=to get help
