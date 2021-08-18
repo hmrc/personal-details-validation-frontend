@@ -187,13 +187,8 @@ private object LocalDateMapping {
       }
 
       private def combineErrors(formErrors: Seq[FormError], validationErrors: Seq[ValidationError]) = {
-        println(s"\n\n11111 ${formErrors.seq}\n\n")
-        println(s"\n\n22222 ${validationErrors.seq}\n\n")
         formErrors ++: validationErrors.map {
-          error => {
-            println(s"\n\n3333333 ${error}\n\n")
-            FormError(key, error.message, error.args)
-          }
+          error => FormError(key, error.message, error.args)
         }
       }
 
