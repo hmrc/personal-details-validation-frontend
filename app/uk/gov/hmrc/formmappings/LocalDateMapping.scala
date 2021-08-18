@@ -19,10 +19,10 @@ package uk.gov.hmrc.formmappings
 import java.time.temporal.ChronoField._
 import java.time.temporal.{ChronoField, ChronoUnit}
 import java.time.{DateTimeException, LocalDate}
-
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import play.api.data.validation.{Constraint, ValidationError}
 import play.api.data.{FormError, Mapping, ObjectMapping}
+import uk.gov.hmrc.personaldetailsvalidation.model.DateErrorMessage
 
 import scala.language.implicitConversions
 import scala.util.{Failure, Success, Try}
@@ -169,8 +169,9 @@ private object LocalDateMapping {
       }
     }
 
-    private def toFormErrors(errorKeys: NonEmptyList[String]): List[FormError] =
-      errorKeys.toList.map(FormError(key, _))
+    private def toFormErrors(errorKeys: NonEmptyList[String]): List[FormError] = {
+      DateErrorMessage.getErrorSummaryMessage("dateOfBirth", errorKeys.toList).map(FormError(key, _))
+    }
 
     private implicit class ValidatedDateOps(validatedDate: Validated[Seq[FormError], LocalDate]) {
 
@@ -185,10 +186,11 @@ private object LocalDateMapping {
           }.toValidated(date)
       }
 
-      private def combineErrors(formErrors: Seq[FormError], validationErrors: Seq[ValidationError]) =
+      private def combineErrors(formErrors: Seq[FormError], validationErrors: Seq[ValidationError]) = {
         formErrors ++: validationErrors.map {
           error => FormError(key, error.message, error.args)
         }
+      }
 
       private implicit class FormErrorsOps(formErrors: Seq[FormError]) {
         def toValidated(date: LocalDate) = formErrors match {

@@ -86,29 +86,6 @@ class MappingsSpec
       }
     }
 
-    "return the 'required' errors if some date parts are missing" in new DateMappingSetup with DateMapping {
-
-      val removeAPart: (Seq[(String, String)], Int) => Seq[(String, String)] = {
-        case (partsLeft, _) =>
-          val partToRemove = Gen.oneOf(partsLeft).generateOne
-          partsLeft filterNot (_ == partToRemove)
-      }
-
-      forAll(Gen.oneOf(1, 2), validDateParts) { (numberOfPartsToRemove, allParts) =>
-
-        val partsLeft = (1 to numberOfPartsToRemove).foldLeft(allParts)(removeAPart)
-
-        val bindResult = dateMapping.bind(partsLeft.toMap)
-
-        bindResult shouldBe Left(
-          (allParts diff partsLeft)
-            .map(toPartName)
-            .map(toErrorKeySuffixed("required"))
-            .map(toFormError)
-        )
-      }
-    }
-
     "return the 'required' error if all date parts are missing" in new DateMappingSetup with DateMapping {
 
       val bindResult = dateMapping.bind(Map.empty)
@@ -205,9 +182,7 @@ class MappingsSpec
       ))
 
       bindResult shouldBe Left(
-        partNames
-          .map(toErrorKeySuffixed("invalid"))
-          .map(toFormError)
+        List(FormError(dateFieldName, "personal-details.dateOfBirth.required"))
       )
     }
 

@@ -12,8 +12,7 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "domain" % "6.0.0-play-28",
     "uk.gov.hmrc" %% "govuk-template" % "5.69.0-play-28",
     "uk.gov.hmrc" %% "play-language" % "5.1.0-play-28",
-    "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.79.0-play-28",
-    ws
+    "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.79.0-play-28"
   )
 
   private val test = Seq(
@@ -24,7 +23,6 @@ private object AppDependencies {
     "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
     "uk.gov.hmrc" %% "service-integration-test" % "1.1.0-play-27" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test
-
   )
 
   private val it = Seq(

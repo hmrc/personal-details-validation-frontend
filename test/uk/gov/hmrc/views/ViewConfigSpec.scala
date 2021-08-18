@@ -25,10 +25,7 @@ import setups.configs.ConfigSetup
 import support.UnitSpec
 import uk.gov.hmrc.config.DwpMessagesApiProvider
 
-class ViewConfigSpec
-  extends UnitSpec
-    with TableDrivenPropertyChecks
-    with MockFactory {
+class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFactory {
 
   private val scenarios = Tables.Table(
     ("propertyName",   "propertyAccessor",                            "configKey"),
