@@ -45,14 +45,15 @@
     @if(theForm.get.errors.nonEmpty && !theForm.get.hasGlobalErrors){
         @govukErrorSummary(
             ErrorSummary(
-                errorList = theForm.get.errors.map(error=> {
+                errorList = theForm.get.errors.map(error => {
                     FormError(
                         error.key,
-                        error.messages.map(str=> str.replaceAll("[\\[|\\]]", "")),
+                        error.messages,
                         error.args
                     )
                 }).asTextErrorLinks,
-                title = Text(messages("validation.error-summary.heading")))
+                title = Text(messages("validation.error-summary.heading"))
+            )
         )
     }
 }
