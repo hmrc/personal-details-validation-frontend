@@ -28,6 +28,7 @@ import play.api.mvc._
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.language.DwpI18nSupport
+import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main}
@@ -45,7 +46,8 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     val controllerComponents: MessagesControllerComponents,
                                                     enterYourDetailsNino: enter_your_details_nino,
                                                     enterYourDetailsPostcode: enter_your_details_postcode,
-                                                    personalDetailsMain: personal_details_main)
+                                                    personalDetailsMain: personal_details_main,
+                                                    ivConnector: IdentityVerificationConnector)
                                                    (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider,
                                                     viewConfig: ViewConfig,
                                                     ec: ExecutionContext,
@@ -201,6 +203,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     */
   def redirectAfterTimeout(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
     eventDispatcher.dispatchEvent(TimedOut)
+    ivConnector.updateJourney(completionUrl.value)
     Future.successful(Redirect(completionUrl.value, Map("userTimeout" -> Seq(""))))
   }
 

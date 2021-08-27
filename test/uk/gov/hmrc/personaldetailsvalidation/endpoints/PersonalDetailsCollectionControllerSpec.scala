@@ -42,6 +42,7 @@ import support.UnitSpec
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{personalDetailsObjects, personalDetailsObjectsWithPostcode}
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model._
@@ -946,6 +947,7 @@ class PersonalDetailsCollectionControllerSpec
       status(result) shouldBe 303
       redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
       Mockito.verify(mockEventDispatcher).dispatchEvent(TimedOut)
+      Mockito.verify(mockIVConnector).updateJourney(redirectUrl)
     }
 
   }
@@ -967,6 +969,7 @@ class PersonalDetailsCollectionControllerSpec
     val personalDetailsSubmitterMock = mock[FuturedPersonalDetailsSubmission]
     val mockAppConfig = mock[AppConfig]
     val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
+    val mockIVConnector = mock[IdentityVerificationConnector]
     implicit val mockViewConfig = app.injector.instanceOf[ViewConfig]
 
     def stubMessagesControllerComponents() : MessagesControllerComponents = {
@@ -994,7 +997,8 @@ class PersonalDetailsCollectionControllerSpec
       stubMessagesControllerComponents(),
       enter_your_details_nino,
       enter_your_details_postcode,
-      personal_details_main)
+      personal_details_main,
+      mockIVConnector)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
   }
