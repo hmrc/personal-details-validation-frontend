@@ -25,10 +25,9 @@ import play.api.libs.json.Writes
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import setups.LogCapturing
-import setups.connectors.HttpClientStubSetup
 import support.UnitSpec
 import uk.gov.hmrc.config.AppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, ServiceUnavailableException}
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyUpdate
 
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
@@ -52,6 +51,17 @@ class IdentityVerificationConnectorSpec
       }
     }
 
+    "failed to update journey status in IV" in new Setup {
+      (mockHttpClient.PATCH[JourneyUpdate, HttpResponse](_: String, _: JourneyUpdate, _: Seq[(String, String)])(_: Writes[JourneyUpdate], _: HttpReads[HttpResponse], _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *, *, *, *, *).returning(Future.failed(new ServiceUnavailableException("IV is down")))
+      withCaptureOfLoggingFrom(ivConnector.testLogger) { logEvents =>
+        ivConnector.updateJourney(redirectingUrl)
+        eventually {
+          logEvents.filter(_.getLevel == Level.WARN).loneElement.getMessage should include("VER-333- cannot update IV journey IV is down")
+        }
+      }
+    }
+
     "failed extract journeyId from redirecting url" in new Setup {
 
       withCaptureOfLoggingFrom(ivConnector.testLogger) { logEvents =>
@@ -63,7 +73,7 @@ class IdentityVerificationConnectorSpec
     }
   }
 
-  private trait Setup extends HttpClientStubSetup  {
+  private trait Setup {
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
@@ -71,7 +81,7 @@ class IdentityVerificationConnectorSpec
     val mockHttpClient = mock[HttpClient]
     val redirectingUrl = "/mdtp/personal-details-validation-complete/261948fb-b807-4e5a-a5ca-3cdcc5009be4"
 
-    val ivConnector = new IdentityVerificationConnector(appConfig, httpClient){
+    val ivConnector = new IdentityVerificationConnector(appConfig, mockHttpClient){
       val testLogger = logger
     }
   }

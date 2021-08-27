@@ -34,6 +34,9 @@ class IdentityVerificationConnector @Inject()(appConfig: AppConfig,
     val status = JourneyUpdate(Some("Timeout"))
     if (journeyId.isDefined) {
       httpClient.PATCH(s"${appConfig.ivUrl}/identity-verification/journey/${journeyId.get}", status)
+        .recover {
+        case ex: Exception => logger.warn(s"VER-333- cannot update IV journey ${ex.getMessage}")
+      }
     }
     else
       logger.warn(s"VER-333- cannot extract IV journeyId from redirecting url : = $redirectingUrl")
