@@ -19,10 +19,10 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import uk.gov.hmrc.config.AppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyUpdate
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class IdentityVerificationConnector @Inject()(appConfig: AppConfig,

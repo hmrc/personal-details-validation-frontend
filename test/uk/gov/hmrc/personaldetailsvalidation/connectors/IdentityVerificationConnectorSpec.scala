@@ -52,7 +52,7 @@ class IdentityVerificationConnectorSpec
       }
     }
 
-    "failed to journey status in IV" in new Setup {
+    "failed extract journeyId from redirecting url" in new Setup {
 
       withCaptureOfLoggingFrom(ivConnector.testLogger) { logEvents =>
         ivConnector.updateJourney("redirectingUrl")
