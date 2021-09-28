@@ -28,15 +28,16 @@
     formWithCSRF: FormWithCSRF,
     govukButton: GovukButton
 )
-@(
-    pageForm: Form[NinoDetails],
-    completionUrl: CompletionUrl
+@(pageForm: Form[NinoDetails],
+  completionUrl: CompletionUrl,
+  loggedInUser: Boolean
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
     title = messages("personal-details.title"),
     completionUrl = completionUrl,
-    form = Some(pageForm)
+    form = Some(pageForm),
+    loggedInUser = loggedInUser
 ) {
     <a id="identifiersBackLink" href="javascript:history.back()"
         class="govuk-body govuk-back-link">@messages("button.back.text")</a>

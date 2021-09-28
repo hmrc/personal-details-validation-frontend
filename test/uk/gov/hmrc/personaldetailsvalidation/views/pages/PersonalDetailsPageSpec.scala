@@ -36,11 +36,13 @@ import scala.collection.JavaConverters._
 
 class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
+  val isLoggedInUser = true
+
   "render" should {
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
       "and a continue button" in new Setup {
-      val html: Document = personalDetailsPage.render(postCodePageRequested = false)
+      val html: Document = personalDetailsPage.render(postCodePageRequested = false, isLoggedInUser)
       html.title() shouldBe s"${messages("personal-details.title")} - GOV.UK"
 
       html.select("span.govuk-caption-xl").text() shouldBe messages("personal-details.faded-heading")
@@ -90,7 +92,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
     "return a personal details page containing first name, last name, postcode, date of birth inputs " +
       "and a continue button" in new Setup {
-      val html: Document = personalDetailsPage.render(postCodePageRequested = true)
+      val html: Document = personalDetailsPage.render(postCodePageRequested = true, isLoggedInUser)
 
       html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
 
@@ -143,7 +145,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
       "and include a link to postcode when asking for nino" in new Setup {
-      val html: Document = personalDetailsPage.render(postCodePageRequested = false)
+      val html: Document = personalDetailsPage.render(postCodePageRequested = false, isLoggedInUser)
 
       html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
 
@@ -164,7 +166,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
     "return a personal details page containing first name, last name, post code, date of birth inputs " +
       "and a continue button when asking for postcode" in new Setup {
-      val html: Document = personalDetailsPage.render(postCodePageRequested = true)
+      val html: Document = personalDetailsPage.render(postCodePageRequested = true, isLoggedInUser)
 
       html.title() shouldBe messages("personal-details.title") + " - GOV.UK"
 
@@ -187,7 +189,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
       "and a continue button and validation error" in new Setup {
-      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false, isLoggedInUser)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
@@ -238,7 +240,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
     "return a personal details page containing first name, last name, postcode, date of birth inputs " +
       "and a continue button and validation error" in new Setup {
-      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = true)
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = true, isLoggedInUser)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
@@ -288,7 +290,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       implicit val requestWithFormData = validRequestDwp(replace = "nino" -> "AA123456A")
 
-      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false, isLoggedInUser)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
@@ -300,7 +302,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       implicit val requestWithFormData = validRequestHMRC(replace = "nino" -> "AA123456A")
 
-      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false, isLoggedInUser)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
@@ -316,7 +318,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       implicit val requestWithFormData = validRequestDwpCy(replace = "nino" -> "AA123456A")
 
-      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false, isLoggedInUser)
 
       html.title() shouldBe s"${welshMessages("error.prefix")} ${welshMessages("personal-details.title")} - GOV.UK"
 
@@ -326,7 +328,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
     "return a personal details page containing first name, last name, nino, date of birth inputs " +
       "and include a link to postcode when asking for nino" in new Setup {
-      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false)
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = false, isLoggedInUser)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
@@ -347,7 +349,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
     "return a personal details page containing first name, last name, post code, date of birth inputs " +
       "and a continue button when asking for postcode" in new Setup {
-      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = true)
+      val html: Document = personalDetailsPage.renderValidationFailure(postCodePageRequested = true, isLoggedInUser)
 
       html.title() shouldBe s"Error: ${messages("personal-details.title")} - GOV.UK"
 
@@ -379,7 +381,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
         "nino" -> personalDetails.nino.toString()
       )
 
-      val response = personalDetailsPage.bindFromRequest(postCodePageRequested = false)
+      val response = personalDetailsPage.bindFromRequest(postCodePageRequested = false, isLoggedInUser)
 
       response shouldBe Right(personalDetails)
     }
@@ -395,7 +397,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
         "nino" -> personalDetails.nino.toString().toLowerCase
       )
 
-      val response = personalDetailsPage.bindFromRequest(postCodePageRequested = false)
+      val response = personalDetailsPage.bindFromRequest(postCodePageRequested = false, isLoggedInUser)
 
       response shouldBe Right(personalDetails)
     }
@@ -411,7 +413,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
         "nino" -> personalDetails.nino.toString().surroundWithWhitespaces
       )
 
-      val response = personalDetailsPage.bindFromRequest(false)
+      val response = personalDetailsPage.bindFromRequest(false, isLoggedInUser)
 
       response shouldBe Right(personalDetails)
     }
@@ -426,7 +428,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
         "postcode" -> personalDetailsWithPostcode.postCode.toString()
       )
 
-      val response = personalDetailsPage.bindFromRequest(true)
+      val response = personalDetailsPage.bindFromRequest(true, isLoggedInUser)
 
       response shouldBe Right(personalDetailsWithPostcode)
     }
@@ -441,7 +443,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
         "postcode" -> personalDetailsWithPostcode.postCode.toString().surroundWithWhitespaces
       )
 
-      val response = personalDetailsPage.bindFromRequest(true)
+      val response = personalDetailsPage.bindFromRequest(true, isLoggedInUser)
 
       response shouldBe Right(personalDetailsWithPostcode)
     }
@@ -451,7 +453,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       implicit val requestWithFormData = validRequest(replace = "firstName" -> " ")
 
-      val Left(response) = personalDetailsPage.bindFromRequest(false)
+      val Left(response) = personalDetailsPage.bindFromRequest(false, isLoggedInUser)
 
       val page: Document = response
 
@@ -466,7 +468,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       implicit val requestWithFormData = validRequest(replace = "lastName" -> " ")
 
-      val Left(response) = personalDetailsPage.bindFromRequest(false)
+      val Left(response) = personalDetailsPage.bindFromRequest(false, isLoggedInUser)
 
       val page: Document = response
 
@@ -480,7 +482,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
       "when nino is blank" in new Setup with BindFromRequestTooling {
       implicit val requestWithFormData = validRequest(replace = "nino" -> " ")
 
-      val Left(response) = personalDetailsPage.bindFromRequest(false)
+      val Left(response) = personalDetailsPage.bindFromRequest(false, isLoggedInUser)
 
       val page: Document = response
 
@@ -494,7 +496,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
         s"when postcode $invalidPostcode contains invalid characters" in new Setup with BindFromRequestTooling {
         implicit val requestWithFormData = validRequestWithPostcode(replace = "postcode" -> invalidPostcode)
 
-        val Left(response) = personalDetailsPage.bindFromRequest(true)
+        val Left(response) = personalDetailsPage.bindFromRequest(true, isLoggedInUser)
 
         val page: Document = response
 
@@ -509,7 +511,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
       implicit val requestWithFormData = validRequest(replace = "nino" -> "AA11")
 
-      val Left(response) = personalDetailsPage.bindFromRequest(false)
+      val Left(response) = personalDetailsPage.bindFromRequest(false, isLoggedInUser)
 
       val page: Document = response
 
@@ -526,7 +528,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
         replace = "dateOfBirth.day" -> " ", "dateOfBirth.month" -> "", "dateOfBirth.year" -> ""
       )
 
-      val Left(response) = personalDetailsPage.bindFromRequest(false)
+      val Left(response) = personalDetailsPage.bindFromRequest(false, isLoggedInUser)
 
       val page: Document = response
 
@@ -543,7 +545,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
         replace = "dateOfBirth.day" -> "29", "dateOfBirth.month" -> "2", "dateOfBirth.year" -> "2017"
       )
 
-      val Left(response) = personalDetailsPage.bindFromRequest(false)
+      val Left(response) = personalDetailsPage.bindFromRequest(false, isLoggedInUser)
 
       val page: Document = response
 
@@ -560,7 +562,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
         implicit val requestWithFormData = validRequest(replace = s"dateOfBirth.$datePartName" -> " ")
 
-        val Left(response) = personalDetailsPage.bindFromRequest(false)
+        val Left(response) = personalDetailsPage.bindFromRequest(false, isLoggedInUser)
 
         val page: Document = response
 
@@ -575,7 +577,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
 
         implicit val requestWithFormData = validRequest(replace = s"dateOfBirth.$datePartName" -> "dd")
 
-        val Left(response) = personalDetailsPage.bindFromRequest(false)
+        val Left(response) = personalDetailsPage.bindFromRequest(false, isLoggedInUser)
 
         val page: Document = response
 
@@ -589,7 +591,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
     "return 'Nino' error page, with link, when not requesting postcode" in new Setup with BindFromRequestTooling {
       implicit val requestWithFormData = validRequest(replace = "firstName" -> " ")
 
-      val Left(response) = personalDetailsPage.bindFromRequest(postCodePageRequested = false)
+      val Left(response) = personalDetailsPage.bindFromRequest(postCodePageRequested = false, isLoggedInUser)
 
       val page: Document = response
 
@@ -599,7 +601,7 @@ class PersonalDetailsPageSpec extends UnitSpec with GuiceOneAppPerSuite {
     "return 'PostCode' error page when requesting postcode" in new Setup with BindFromRequestTooling {
       implicit val requestWithFormData = validRequest(replace = "firstName" -> " ")
 
-      val Left(response) = personalDetailsPage.bindFromRequest(postCodePageRequested = true)
+      val Left(response) = personalDetailsPage.bindFromRequest(postCodePageRequested = true, isLoggedInUser)
 
       val page: Document = response
 

@@ -14,14 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.views.ViewConfig
-@import uk.gov.hmrc.views.html.partials.Head
-@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-@import uk.gov.hmrc.language.ChangeLanguageEndpoint
-@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.PersonalDetailsCollectionController
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.header.Header
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+@import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.includes.summaryErrors
+@import uk.gov.hmrc.views.html.partials.Head
 
 
 @this(govukLayout: GovukLayout,
@@ -36,7 +34,8 @@
   headBlock: Option[Html] = None,
   scriptsBlock: Option[Html] = None,
   completionUrl: CompletionUrl,
-  form:Option[Form[_]] = None
+  form: Option[Form[_]] = None,
+  loggedInUser: Boolean = true
 )(contentBlock: Html)(implicit request: Request[_], requestHeader: RequestHeader, messages: Messages, appConfig: ViewConfig)
 
 @beforeContentBlockSection = {
@@ -62,10 +61,11 @@
 }
 
 @headerBlock = {
-@hmrcHeader(Header(
-    language = if(messages.lang.code == "cy") Cy else En,
-    displayHmrcBanner = false
-))
+    @hmrcHeader(Header(
+        language = if(messages.lang.code == "cy") Cy else En,
+        displayHmrcBanner = false,
+        signOutHref = if (loggedInUser) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None
+    ))
 }
 
 @scripts = {

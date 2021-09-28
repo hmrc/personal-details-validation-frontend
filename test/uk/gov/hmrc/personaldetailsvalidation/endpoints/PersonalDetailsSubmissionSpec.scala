@@ -49,17 +49,19 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
 
   import PersonalDetailsSubmission._
 
+  val isLoggedInUser = true
+
   "bindValidateAndRedirect" should {
 
     "return BAD_REQUEST when form binds with errors" in new Setup {
 
       val completionUrl = completionUrls.generateOne
 
-      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
-        .expects(false, request, completionUrl)
+      (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(false, true, request, completionUrl)
         .returning(Left(Html("page with errors")))
 
-      val result = submitter.submit(completionUrl)
+      val result = submitter.submit(completionUrl, isLoggedInUser = isLoggedInUser)
 
       status(result) shouldBe BAD_REQUEST
       contentAsString(Future.successful(result)) shouldBe "page with errors"
@@ -79,15 +81,15 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
       val ninoCounterBefore = pdvMetrics.ninoCounter
       val postCodeCounterBefore = pdvMetrics.postCodeCounter
 
-      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
-        .expects(false, request, completionUrl)
+      (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(false, true, request, completionUrl)
         .returning(Right(personalDetails))
 
       (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _:String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(personalDetails, origin, headerCarrier, executionContext)
         .returning(EitherT.rightT[Id, ProcessingError](personalDetailsValidation))
 
-      val result = submitter.submit(completionUrl)
+      val result = submitter.submit(completionUrl, isLoggedInUser = isLoggedInUser)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(s"${completionUrl.value}&validationId=${personalDetailsValidation.validationId}")
       result.session.get(validationIdSessionKey) shouldBe Some(personalDetailsValidation.validationId.value)
@@ -109,15 +111,15 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
       val ninoCounterBefore = pdvMetrics.ninoCounter
       val postCodeCounterBefore = pdvMetrics.postCodeCounter
 
-      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
-        .expects(true, request, completionUrl)
+      (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(true, true, request, completionUrl)
         .returning(Right(personalDetails))
 
       (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(personalDetails, origin, headerCarrier, executionContext)
         .returning(EitherT.rightT[Id, ProcessingError](personalDetailsValidation))
 
-      val result = submitter.submit(completionUrl, true)
+      val result = submitter.submit(completionUrl, true, isLoggedInUser = isLoggedInUser)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(s"${completionUrl.value}&validationId=${personalDetailsValidation.validationId}")
       result.session.get(validationIdSessionKey) shouldBe Some(personalDetailsValidation.validationId.value)
@@ -138,8 +140,8 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
       val ninoCounterBefore = pdvMetrics.ninoCounter
       val postCodeCounterBefore = pdvMetrics.postCodeCounter
 
-      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
-        .expects(usePostCode, request, completionUrl)
+      (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(usePostCode, true, request, completionUrl)
         .returning(Right(personalDetails))
 
       val error = ProcessingError("some message")
@@ -149,7 +151,7 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
 
       (logger.error(_: ProcessingError)).expects(error)
 
-      submitter.submit(completionUrl, usePostCode)
+      submitter.submit(completionUrl, usePostCode, isLoggedInUser = isLoggedInUser)
 
       ninoCounterBefore shouldBe pdvMetrics.ninoCounter
       postCodeCounterBefore shouldBe pdvMetrics.postCodeCounter
@@ -167,8 +169,8 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
       val ninoCounterBefore = pdvMetrics.ninoCounter
       val postCodeCounterBefore = pdvMetrics.postCodeCounter
 
-      (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
-        .expects(usePostCode, request, completionUrl)
+      (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(usePostCode, true, request, completionUrl)
         .returning(Right(personalDetails))
 
       val error = ProcessingError("some message")
@@ -178,7 +180,7 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
 
       (logger.error(_: ProcessingError)).expects(error)
 
-      submitter.submit(completionUrl, usePostCode)
+      submitter.submit(completionUrl, usePostCode, isLoggedInUser = isLoggedInUser)
 
       ninoCounterBefore shouldBe pdvMetrics.ninoCounter
       postCodeCounterBefore shouldBe pdvMetrics.postCodeCounter
@@ -198,8 +200,8 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
         val failedPersonalDetailsValidation = failedPersonalDetailsValidationObjects.generateOne
         val completionUrlWithValidationId = CompletionUrl(Redirect(completionUrl.value, failedPersonalDetailsValidation.validationId.toQueryParam).header.headers.getOrElse(HeaderNames.LOCATION, completionUrl.value))
 
-        (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
-          .expects(usePostcodeForm, request, completionUrl)
+        (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+          .expects(usePostcodeForm, true, request, completionUrl)
           .returning(Right(personalDetails))
 
         (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
@@ -208,11 +210,11 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
 
         val html = Html("OK")
 
-        (page.renderValidationFailure(_: Boolean)(_: CompletionUrl, _: Request[_]))
-          .expects(usePostcodeForm, completionUrlWithValidationId, request)
+        (page.renderValidationFailure(_: Boolean, _: Boolean)(_: CompletionUrl, _: Request[_]))
+          .expects(usePostcodeForm, true, completionUrlWithValidationId, request)
           .returning(html)
 
-        val result = submitter.submit(completionUrl, usePostcodeForm)
+        val result = submitter.submit(completionUrl, usePostcodeForm, isLoggedInUser = isLoggedInUser)
 
         status(result) shouldBe OK
         bodyOf(result) shouldBe html.toString()
@@ -230,8 +232,8 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
 
         val completionUrl = completionUrls.generateOne
         val personalDetails = personalDetailsObjects.generateOne
-        (page.bindFromRequest(_: Boolean)(_: Request[_], _: CompletionUrl))
-          .expects(usePostcodeForm, request, completionUrl)
+        (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+          .expects(usePostcodeForm, true, request, completionUrl)
           .returning(Right(personalDetails))
 
         val error = ProcessingError("some message")
@@ -241,7 +243,7 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
 
         (logger.error(_: ProcessingError)).expects(error)
 
-        val result = submitter.submit(completionUrl, usePostcodeForm)
+        val result = submitter.submit(completionUrl, usePostcodeForm, isLoggedInUser = isLoggedInUser)
 
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(s"${completionUrl.value}&technicalError=")

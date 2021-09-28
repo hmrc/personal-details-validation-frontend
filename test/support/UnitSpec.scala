@@ -15,19 +15,18 @@
  */
 
 package support
-import java.nio.charset.Charset
-
 import akka.stream.Materializer
-import akka.util.{ByteString, Timeout}
+import akka.util.ByteString
 import org.scalatest.{Matchers, WordSpec}
+import play.api.http.HeaderNames._
+import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{ResponseHeader, Result}
 
+import java.nio.charset.Charset
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.concurrent.duration.{Duration, _}
-import play.api.http.HeaderNames._
-import play.api.http.Status._
 
 abstract class UnitSpec extends WordSpec with Matchers {
 
@@ -35,7 +34,7 @@ abstract class UnitSpec extends WordSpec with Matchers {
 
   def await[A](future: Future[A])(implicit timeout: Duration): A = Await.result(future, timeout)
 
-  def redirectLocation(of: Result)(implicit timeout: Timeout): Option[String] = of.header match {
+  def redirectLocation(of: Result): Option[String] = of.header match {
     case ResponseHeader(FOUND, headers, _) => headers.get(LOCATION)
     case ResponseHeader(SEE_OTHER, headers, _) => headers.get(LOCATION)
     case ResponseHeader(TEMPORARY_REDIRECT, headers, _) => headers.get(LOCATION)

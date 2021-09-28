@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import java.time.LocalDate
-import java.util.UUID
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import cats.data._
@@ -39,6 +37,7 @@ import play.twirl.api.Html
 import scalamock.AsyncMockArgumentMatchers
 import setups.controllers.ResultVerifiers._
 import support.UnitSpec
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
@@ -51,6 +50,8 @@ import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_det
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.views.ViewConfig
 
+import java.time.LocalDate
+import java.util.UUID
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -65,8 +66,8 @@ class PersonalDetailsCollectionControllerSpec
 
     "return OK with HTML body rendered using PersonalDetailsPage when the multi page flag is disabled" in new Setup {
 
-      (pageMock.render(_: Boolean)(_: CompletionUrl, _: Request[_]))
-        .expects(false, completionUrl, request)
+      (pageMock.render(_: Boolean, _ : Boolean)(_: CompletionUrl, _: Request[_]))
+        .expects(false, true, completionUrl, request)
         .returning(Html("content"))
 
       (mockAppConfig.isMultiPageEnabled _).expects().returns(false)
@@ -581,12 +582,12 @@ class PersonalDetailsCollectionControllerSpec
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(expectedPersonalDetails, completionUrl, false, true, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
-      (personalDetailsSubmitterMock.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
-        .expects(*, *, *, *)
+      (personalDetailsSubmitterMock.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean, _ : Boolean)(_: Request[_]))
+        .expects(*, *, *, *, *)
         .returns(expectedRedirect)
 
       val result = Await.result(controller.submitNino(completionUrl)(req), 5 seconds)
@@ -676,8 +677,8 @@ class PersonalDetailsCollectionControllerSpec
         "journeyId" -> "1234567890"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(expectedPersonalDetails, completionUrl, false, *,  req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
       val result = controller.submitNino(completionUrl)(req)
@@ -757,12 +758,12 @@ class PersonalDetailsCollectionControllerSpec
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(expectedPersonalDetails, completionUrl, false, true, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
-      (personalDetailsSubmitterMock.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean)(_: Request[_]))
-        .expects(*, *, *, *)
+      (personalDetailsSubmitterMock.result(_ : CompletionUrl, _ : PersonalDetailsValidation, _ : Boolean, _ : Boolean)(_: Request[_]))
+        .expects(*, *, *, *, *)
         .returns(expectedRedirect)
 
       val result = Await.result(controller.submitPostcode(completionUrl)(req), 5 seconds)
@@ -860,8 +861,8 @@ class PersonalDetailsCollectionControllerSpec
         "journeyId" -> "1234567890"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, false, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl, _ : Boolean, _ : Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(expectedPersonalDetails, completionUrl, false, true, req, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returns(pdv)
 
       val result = controller.submitPostcode(completionUrl)(req)
@@ -917,8 +918,8 @@ class PersonalDetailsCollectionControllerSpec
 
       val redirectUrl = s"${completionUrl.value}?validationId=${UUID.randomUUID()}"
 
-      (personalDetailsSubmitterMock.submit(_: CompletionUrl, _: Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(completionUrl, false, request, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
+      (personalDetailsSubmitterMock.submit(_: CompletionUrl, _: Boolean, _: Boolean)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(completionUrl, false, *, request, instanceOf[HeaderCarrier], instanceOf[ExecutionContext])
         .returning(Future.successful(Redirect(redirectUrl)))
 
       val result = controller.submit(completionUrl, alternativeVersion = false)(request)
@@ -988,6 +989,8 @@ class PersonalDetailsCollectionControllerSpec
     private val personal_details_main: personal_details_main = app.injector.instanceOf[personal_details_main]
 
     implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+    implicit val authConnector: AuthConnector = app.injector.instanceOf[AuthConnector]
 
     val controller = new PersonalDetailsCollectionController(
       pageMock,
