@@ -21,4 +21,5 @@ sealed trait MonitoringEvent
 //Timeout events
 case object TimeoutContinue extends MonitoringEvent
 case object TimedOut extends MonitoringEvent
+case object SignedOut extends MonitoringEvent
 

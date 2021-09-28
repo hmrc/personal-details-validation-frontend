@@ -18,17 +18,20 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.config.AppConfig
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, SignedOut}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SignOutController @Inject()(cc: MessagesControllerComponents)
+class SignOutController @Inject()(cc: MessagesControllerComponents, eventDispatcher: EventDispatcher)
                                  (implicit appConfig: AppConfig, executionContext: ExecutionContext)
   extends FrontendController(cc) {
 
   def signOut(): Action[AnyContent] = Action.async { implicit request =>
+
+    eventDispatcher.dispatchEvent(SignedOut)
 
     val ggRedirectParms = Map(
       "continue" -> Seq(s"${appConfig.logoutCallback}"),

@@ -16,27 +16,35 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import org.scalamock.scalatest.MockFactory
+import org.mockito.Mockito
+import org.scalamock.scalatest.AsyncMockFactory
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.mvc.{MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
-import scalamock.MockArgumentMatchers
+import scalamock.AsyncMockArgumentMatchers
 import support.UnitSpec
 import uk.gov.hmrc.config.AppConfig
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, SignedOut}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SignOutControllerSpec extends UnitSpec with MockFactory with MockArgumentMatchers with GuiceOneAppPerSuite {
+class SignOutControllerSpec extends UnitSpec with AsyncMockFactory with AsyncMockArgumentMatchers with GuiceOneAppPerSuite {
 
   val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
 
-  val controller = new SignOutController(mcc)(appConfig, ExecutionContext.global)
+  val controller = new SignOutController(mcc, mockEventDispatcher)(appConfig, ExecutionContext.global)
+
+  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "SignOut Controller" should {
     "Redirect to logout" in {
+      val result: Future[Result]  = controller.signOut().apply(request)
 
-      val result: Future[Result]  = controller.signOut().apply(FakeRequest())
+      Mockito.verify(mockEventDispatcher).dispatchEvent(SignedOut)
 
       val expectedRedirectLocation =
         Some("http://localhost:9553/bas-gateway/sign-out-without-state?continue=http%3A%2F%2Flocalhost%3A9968%2Fpersonal-details-validation%2Fsigned-out&origin=pve")
@@ -46,7 +54,7 @@ class SignOutControllerSpec extends UnitSpec with MockFactory with MockArgumentM
     }
 
     "Redirect to the logout page" in {
-      val result = controller.signedOut().apply(FakeRequest())
+      val result = controller.signedOut().apply(request)
 
       val expectedRedirectLocation = Some("https://www.access.service.gov.uk/logout")
 
