@@ -56,7 +56,7 @@ class SignOutControllerSpec extends UnitSpec with AsyncMockFactory with AsyncMoc
     "Redirect to the logout page" in {
       val result = controller.signedOut().apply(request)
 
-      val expectedRedirectLocation = Some("https://www.access.service.gov.uk/logout")
+      val expectedRedirectLocation = Some("https://www.ete.access.service.gov.uk/logout")
 
       status(await(result)) shouldBe 303
       redirectLocation(await(result)) shouldBe expectedRedirectLocation
