@@ -28,7 +28,7 @@ import uk.gov.hmrc.views.ViewConfig
 
 abstract class ViewSetup(implicit app: Application) extends MockFactory {
 
-  implicit val viewConfig: ViewConfig = ViewConfigMockFactory()
+  implicit val viewConfig: ViewConfig = app.injector.instanceOf[ViewConfig]
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()

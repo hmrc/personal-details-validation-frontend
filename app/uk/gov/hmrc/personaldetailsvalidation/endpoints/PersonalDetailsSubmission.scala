@@ -50,7 +50,7 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
 
   import PersonalDetailsSubmission._
 
-  def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, usePostcodeForm: Boolean = false)
+  def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, usePostcodeForm: Boolean = false, isLoggedInUser: Boolean)
                            (implicit request: Request[_],
                             headerCarrier: HeaderCarrier,
                             executionContext: ExecutionContext) : EitherT[Interpretation, Result, PersonalDetailsValidation] = {
@@ -61,14 +61,14 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
     } yield personalDetailsValidation
   }
 
-  def submit(completionUrl: CompletionUrl, usePostcodeForm: Boolean = false)
+  def submit(completionUrl: CompletionUrl, usePostcodeForm: Boolean = false, isLoggedInUser: Boolean)
             (implicit request: Request[_],
              headerCarrier: HeaderCarrier,
              executionContext: ExecutionContext): Interpretation[Result] = {
     for {
-      personalDetails <- pure(personalDetailsPage.bindFromRequest(usePostcodeForm)(request, completionUrl)) leftMap pageWithErrorToBadRequest
-      personalDetailsValidation <- submitPersonalDetails(personalDetails, completionUrl, usePostcodeForm)
-    } yield result(completionUrl, personalDetailsValidation, usePostcodeForm)
+      personalDetails <- pure(personalDetailsPage.bindFromRequest(usePostcodeForm, isLoggedInUser)(request, completionUrl)) leftMap pageWithErrorToBadRequest
+      personalDetailsValidation <- submitPersonalDetails(personalDetails, completionUrl, usePostcodeForm, isLoggedInUser)
+    } yield result(completionUrl, personalDetailsValidation, usePostcodeForm, isLoggedInUser)
   }.merge
 
   private val pageWithErrorToBadRequest: Html => Result = BadRequest(_)
@@ -84,7 +84,7 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
   private def stripValidationId(redirectUrl: String): String =
     redirectUrl.replaceAll(s"""[?&]validationId=$UUIDRegex""", "")
 
-  def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation, usePostcodeForm: Boolean = false)
+  def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation, usePostcodeForm: Boolean = false, isLoggedInUser: Boolean)
                     (implicit request: Request[_]): Result = {
     val strippedCompletionUrl = stripValidationId(completionUrl.value)
     personalDetailsValidation match {
@@ -92,7 +92,8 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
         Redirect(strippedCompletionUrl, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
       case FailedPersonalDetailsValidation(validationId) =>
         val redirectUrl = Redirect(strippedCompletionUrl,validationId.toQueryParam).header.headers.getOrElse(HeaderNames.LOCATION, strippedCompletionUrl)
-        Ok(personalDetailsPage.renderValidationFailure(usePostcodeForm)(CompletionUrl(redirectUrl), request)).addingToSession(validationIdSessionKey -> validationId.value)
+        Ok(personalDetailsPage.renderValidationFailure(usePostcodeForm, isLoggedInUser)(CompletionUrl(redirectUrl), request))
+          .addingToSession(validationIdSessionKey -> validationId.value)
     }
   }
   private def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =

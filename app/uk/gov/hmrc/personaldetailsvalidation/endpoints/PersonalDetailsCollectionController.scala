@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import java.time.LocalDate
-
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.Inject
 import play.api.data.Forms.mapping
 import play.api.data.{Form, Mapping}
 import play.api.i18n.MessagesApi
 import play.api.mvc._
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.language.DwpI18nSupport
@@ -36,6 +34,8 @@ import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -48,11 +48,12 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     enterYourDetailsPostcode: enter_your_details_postcode,
                                                     personalDetailsMain: personal_details_main,
                                                     ivConnector: IdentityVerificationConnector)
-                                                   (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider,
+                                                   (implicit val authConnector: AuthConnector,
+                                                    val dwpMessagesApiProvider: DwpMessagesApiProvider,
                                                     viewConfig: ViewConfig,
                                                     ec: ExecutionContext,
                                                     messagesApi: MessagesApi)
-  extends DwpI18nSupport(appConfig, messagesApi) with FrontendBaseController {
+  extends DwpI18nSupport(appConfig, messagesApi) with FrontendBaseController with AuthorisedFunctions {
 
   import uk.gov.hmrc.formmappings.Mappings._
 
@@ -91,96 +92,117 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
   def showPage(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String]): Action[AnyContent] =
-    Action { implicit request =>
-      val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
-      if (appConfig.isMultiPageEnabled) {
-        val form: Form[InitialPersonalDetails] = retrieveMainDetails match {
-          case (Some(firstName), Some(lastName), Some(dob)) =>
-            val pd = InitialPersonalDetails(NonEmptyString(firstName), NonEmptyString(lastName), LocalDate.parse(dob))
-            initialForm.fill(pd)
-          case _ => initialForm
+    Action.async { implicit request =>
+      authorised(){
+        appConfig.isLoggedInUser = Future.successful(true)
+        appConfig.isLoggedInUser
+      }.recover {
+        case ex: Exception => appConfig.isLoggedInUser = Future.successful(false)
+      }.flatMap { _ =>
+        appConfig.isLoggedInUser.map { isLoggedIn =>
+          val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
+          if (appConfig.isMultiPageEnabled) {
+            val form: Form[InitialPersonalDetails] = retrieveMainDetails match {
+              case (Some(firstName), Some(lastName), Some(dob)) =>
+                val pd = InitialPersonalDetails(NonEmptyString(firstName), NonEmptyString(lastName), LocalDate.parse(dob))
+                initialForm.fill(pd)
+              case _ => initialForm
+            }
+            Ok(personalDetailsMain(form, completionUrl, isLoggedIn)).withSession(sessionWithOrigin)
+          } else {
+            Ok(page.render(alternativeVersion, isLoggedIn)).withSession(sessionWithOrigin)
+          }
         }
-        Ok(personalDetailsMain(form, completionUrl)).withSession(sessionWithOrigin)
-      } else {
-        Ok(page.render(alternativeVersion)).withSession(sessionWithOrigin)
       }
     }
 
   def submitMainDetails(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    initialForm.bindFromRequest().fold (
-      formWithErrors => Future.successful(Ok(personalDetailsMain(formWithErrors, completionUrl))),
-      mainDetails => {
-        val updatedSessionData = request.session.data ++ Map(
-          FIRST_NAME_KEY -> mainDetails.firstName.value,
-          LAST_NAME_KEY -> mainDetails.lastName.value,
-          DOB_KEY -> mainDetails.dateOfBirth.toString
-        )
-        Future.successful(Redirect(routes.PersonalDetailsCollectionController.showNinoForm(completionUrl))
-          .withSession(Session(updatedSessionData))
-        )
-      }
-    )
+    appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+      initialForm.bindFromRequest().fold (
+        formWithErrors => Future.successful(Ok(personalDetailsMain(formWithErrors, completionUrl, isLoggedIn))),
+        mainDetails => {
+          val updatedSessionData = request.session.data ++ Map(
+            FIRST_NAME_KEY -> mainDetails.firstName.value,
+            LAST_NAME_KEY -> mainDetails.lastName.value,
+            DOB_KEY -> mainDetails.dateOfBirth.toString
+          )
+          Future.successful(Redirect(routes.PersonalDetailsCollectionController.showNinoForm(completionUrl))
+            .withSession(Session(updatedSessionData))
+          )
+        }
+      )
+    }
+
   }
 
   def showNinoForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    if (hasMainDetailsAndIsMultiPage)
-      Future.successful(Ok(enterYourDetailsNino(ninoForm, completionUrl)))
-    else
+    if (hasMainDetailsAndIsMultiPage) {
+      appConfig.isLoggedInUser.flatMap {
+        isLoggedIn => Future.successful(Ok(enterYourDetailsNino(ninoForm, completionUrl, isLoggedIn)))
+      }
+    } else
       Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None)))
   }
 
   def submitNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
-      ninoForm.bindFromRequest().fold(
-        formWithErrors => Future.successful(Ok(enterYourDetailsNino(formWithErrors, completionUrl))),
-        ninoForm => {
-          retrieveMainDetails match {
-            case (Some(fn), Some(ln), Some(dob)) =>
-              val personalDetails = PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln), ninoForm.nino, LocalDate.parse(dob))
-              submitPersonalDetails(personalDetails, completionUrl)
-            case _ => EitherT.rightT[Future, Result](BadRequest)
-          }
-        }.merge
-      )
+      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+        ninoForm.bindFromRequest().fold(
+          formWithErrors => Future.successful(Ok(enterYourDetailsNino(formWithErrors, completionUrl, isLoggedIn))),
+          ninoForm => {
+            retrieveMainDetails match {
+              case (Some(fn), Some(ln), Some(dob)) =>
+                val personalDetails = PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln), ninoForm.nino, LocalDate.parse(dob))
+                submitPersonalDetails(personalDetails, completionUrl, isLoggedIn)
+              case _ => EitherT.rightT[Future, Result](BadRequest)
+            }
+          }.merge
+        )
+      }
+
     } else {
       Future.successful(BadRequest)
     }
   }
 
   def showPostCodeForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    if (hasMainDetailsAndIsMultiPage)
-      Future.successful(Ok(enterYourDetailsPostcode(postcodeForm, completionUrl)))
-    else
+    if (hasMainDetailsAndIsMultiPage) {
+      appConfig.isLoggedInUser.flatMap {
+        isLoggedIn => Future.successful(Ok(enterYourDetailsPostcode(postcodeForm, completionUrl, isLoggedIn)))
+      }
+    } else
       Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None)))
   }
 
   def submitPostcode(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
-      postcodeForm.bindFromRequest().fold (
-        formWithErrors => Future.successful(Ok(enterYourDetailsPostcode(formWithErrors, completionUrl))),
-        postCodeForm => {
-          retrieveMainDetails match {
-            case (Some(fn), Some(ln), Some(dob)) =>
-              val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln),postCodeForm.postcode, LocalDate.parse(dob))
-              submitPersonalDetails(personalDetails, completionUrl)
-            case _ => EitherT.rightT[Future, Result](BadRequest)
-          }
-        }.merge
-      )
+      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+        postcodeForm.bindFromRequest().fold (
+          formWithErrors => Future.successful(Ok(enterYourDetailsPostcode(formWithErrors, completionUrl, isLoggedIn))),
+          postCodeForm => {
+            retrieveMainDetails match {
+              case (Some(fn), Some(ln), Some(dob)) =>
+                val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln),postCodeForm.postcode, LocalDate.parse(dob))
+                submitPersonalDetails(personalDetails, completionUrl, isLoggedIn)
+              case _ => EitherT.rightT[Future, Result](BadRequest)
+            }
+          }.merge
+        )
+      }
     } else {
       Future.successful(BadRequest)
     }
   }
 
-  private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl)(implicit request: Request[_]) : EitherT[Future, Result, Result] = {
+  private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, isLoggedInUser: Boolean)(implicit request: Request[_]) : EitherT[Future, Result, Result] = {
     for {
-      pdv <- personalDetailsSubmission.submitPersonalDetails(personalDetails, completionUrl)
+      pdv <- personalDetailsSubmission.submitPersonalDetails(personalDetails, completionUrl, isLoggedInUser = isLoggedInUser)
       result = pdv match {
         case FailedPersonalDetailsValidation(_) => {
           val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
-          Ok(personalDetailsMain(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl)).withSession(cleanedSession)
+          Ok(personalDetailsMain(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, isLoggedInUser)).withSession(cleanedSession)
         }
-        case _ => personalDetailsSubmission.result(completionUrl, pdv)
+        case _ => personalDetailsSubmission.result(completionUrl, pdv, isLoggedInUser = isLoggedInUser)
       }
     } yield result
   }
@@ -195,7 +217,10 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     }
 
   def submit(completionUrl: CompletionUrl, alternativeVersion: Boolean): Action[AnyContent] = Action.async { implicit request =>
-    personalDetailsSubmission.submit(completionUrl, alternativeVersion)
+    appConfig.isLoggedInUser.flatMap {isLoggedInUser =>
+      personalDetailsSubmission.submit(completionUrl, alternativeVersion, isLoggedInUser)
+    }
+
   }
 
   /**

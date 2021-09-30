@@ -74,30 +74,30 @@ class PersonalDetailsPage @Inject()(
   private def postcodeFormatValidation(postcode: NonEmptyString) =
     postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
 
-  def render(postCodePageRequested: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html = {
+  def render(postCodePageRequested: Boolean, isLoggedInUser: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html = {
     if (postCodePageRequested)
-      personalDetailsPostcode(formWithPostcode, completionUrl)
+      personalDetailsPostcode(formWithPostcode, completionUrl, isLoggedInUser)
     else
-      personalDetailsNino(formWithNino, completionUrl)
+      personalDetailsNino(formWithNino, completionUrl, isLoggedInUser)
   }
 
-  def renderValidationFailure(postCodePageRequested: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
+  def renderValidationFailure(postCodePageRequested: Boolean, isLoggedInUser: Boolean)(implicit completionUrl: CompletionUrl, request: Request[_]): Html =
     if (postCodePageRequested)
-      personalDetailsPostcode(formWithPostcode.withGlobalError("personal-details.validation.failed"), completionUrl)
+      personalDetailsPostcode(formWithPostcode.withGlobalError("personal-details.validation.failed"), completionUrl, isLoggedInUser)
     else
-      personalDetailsNino(formWithNino.withGlobalError("personal-details.validation.failed"), completionUrl)
+      personalDetailsNino(formWithNino.withGlobalError("personal-details.validation.failed"), completionUrl, isLoggedInUser)
 
-  def bindFromRequest(postCodePageRequested: Boolean)(implicit request: Request[_],
+  def bindFromRequest(postCodePageRequested: Boolean, isLoggedInUser: Boolean)(implicit request: Request[_],
                       completionUrl: CompletionUrl): Either[Html, PersonalDetails] = {
     import play.api.data.FormBinding.Implicits._
     if(postCodePageRequested) {
       formWithPostcode.bindFromRequest().fold(
-        formWithErrors => Left(personalDetailsPostcode(formWithErrors, completionUrl)),
+        formWithErrors => Left(personalDetailsPostcode(formWithErrors, completionUrl, isLoggedInUser)),
         personalDetails => Right(personalDetails)
       )
     } else {
       formWithNino.bindFromRequest().fold(
-        formWithErrors => Left(personalDetailsNino(formWithErrors, completionUrl)),
+        formWithErrors => Left(personalDetailsNino(formWithErrors, completionUrl, isLoggedInUser)),
         personalDetails => Right(personalDetails)
       )
     }

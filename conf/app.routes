@@ -2,6 +2,9 @@
 
 GET        /language/:language        uk.gov.hmrc.language.ChangeLanguageEndpoint.switchToLanguage(language: String)
 
+GET        /sign-out                  uk.gov.hmrc.personaldetailsvalidation.endpoints.SignOutController.signOut()
+GET        /signed-out                uk.gov.hmrc.personaldetailsvalidation.endpoints.SignOutController.signedOut()
+
 GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: CompletionUrl, origin: Option[String])
 
 GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false, origin: Option[String])

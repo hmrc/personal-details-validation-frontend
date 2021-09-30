@@ -20,12 +20,22 @@ import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import scala.concurrent.Future
+
 @Singleton
 class AppConfig @Inject()(val configuration: Configuration, servicesConfig: ServicesConfig)  {
+
+  var isLoggedInUser: Future[Boolean] = Future.successful(true)
+
   lazy val ivUrl = servicesConfig.baseUrl("identity-verification")
   def isMultiPageEnabled : Boolean = configuration.getOptional[Boolean]("feature.multi-page.enabled").getOrElse(false)
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
 
   lazy val platformAnalyticsUrl = servicesConfig.baseUrl("platform-analytics")
 
+  lazy val logoutPage: String = servicesConfig.getConfString("logoutPage", "https://www.access.service.gov.uk/logout")
+  lazy val basGatewayUrl: String = servicesConfig.getConfString("auth.bas-gateway.url", throw new RuntimeException("Bas gateway url required"))
+  lazy val logoutPath: String = servicesConfig.getConfString("auth.logOutUrl", "")
+  lazy val ggLogoutUrl = s"$basGatewayUrl$logoutPath"
+  lazy val logoutCallback: String = servicesConfig.getConfString("auth.logoutCallbackUrl", "/personal-details-validation/signed-out")
 }

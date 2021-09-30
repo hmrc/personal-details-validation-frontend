@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventHandler, MonitoringEvent, TimedOut, TimeoutContinue}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventHandler, MonitoringEvent, SignedOut, TimedOut, TimeoutContinue}
 
 import scala.concurrent.ExecutionContext
 
@@ -33,6 +33,7 @@ class AnalyticsEventHandler @Inject()(connector: AnalyticsConnector) extends Eve
     event match {
       case TimeoutContinue => sendEvent(factory.timeoutContinue)
       case TimedOut => sendEvent(factory.timeoutSignOut)
+      case SignedOut => sendEvent(factory.signedOut)
       case _ => ()
     }
   }
@@ -60,6 +61,11 @@ private class AnalyticsRequestFactory() {
 
   def timeoutSignOut(clientId: Option[String]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "pdv_modal_timeout", "end")
+    AnalyticsRequest(clientId, Seq(gaEvent))
+  }
+
+  def signedOut(clientId: Option[String]): AnalyticsRequest = {
+    val gaEvent = Event("sos_iv", "personal_detail_validation_result", "sign_out_pdv")
     AnalyticsRequest(clientId, Seq(gaEvent))
   }
 
