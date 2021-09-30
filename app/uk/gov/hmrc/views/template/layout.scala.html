@@ -64,7 +64,7 @@
     @hmrcHeader(Header(
         language = if(messages.lang.code == "cy") Cy else En,
         displayHmrcBanner = false,
-        signOutHref = if (loggedInUser) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None
+        signOutHref = if (loggedInUser && appConfig.signOutEnabled) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None
     ))
 }
 

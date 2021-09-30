@@ -37,6 +37,8 @@ class ViewConfig @Inject()(val configuration: Configuration,
   lazy val timeout: Int = configuration.get[Int]("timeoutDialog.timeout-seconds")
   lazy val timeoutCountdown: Int = configuration.get[Int]("timeoutDialog.timeout-countdown-seconds")
 
+  lazy val signOutEnabled: Boolean = configuration.get[Boolean]("isSignOutEnabled")
+
   def languageMap: Map[String, Lang] =
     configuration.load[Seq[String]]("play.i18n.langs", default = Seq("en", "cy"))
       .map(verifyMessagesExists)
