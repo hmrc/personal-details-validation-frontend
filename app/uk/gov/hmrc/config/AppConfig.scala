@@ -38,4 +38,6 @@ class AppConfig @Inject()(val configuration: Configuration, servicesConfig: Serv
   lazy val logoutPath: String = servicesConfig.getConfString("auth.logOutUrl", "")
   lazy val ggLogoutUrl = s"$basGatewayUrl$logoutPath"
   lazy val logoutCallback: String = servicesConfig.getConfString("auth.logoutCallbackUrl", "/personal-details-validation/signed-out")
+
+  lazy val originDimension: Int = configuration.get[Int]("google-analytics.origin-dimension")
 }

@@ -17,19 +17,20 @@
 package uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics
 
 import akka.Done
-import javax.inject.{Inject, Singleton}
 import play.api.Logging
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OWrites}
 import uk.gov.hmrc.config.AppConfig
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AnalyticsConnector @Inject() (appConfig: AppConfig, http: HttpClient) extends Logging {
   def serviceUrl: String = appConfig.platformAnalyticsUrl
 
+  private implicit val dimensionWrites: OWrites[DimensionValue] = Json.writes[DimensionValue]
   private implicit val eventWrites = Json.writes[Event]
   private implicit val analyticsWrites = Json.writes[AnalyticsRequest]
 

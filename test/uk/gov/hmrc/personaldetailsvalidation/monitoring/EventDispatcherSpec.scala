@@ -20,6 +20,7 @@ import org.scalamock.scalatest.MockFactory
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import support.UnitSpec
+import uk.gov.hmrc.config.AppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics.{AnalyticsConnector, AnalyticsEventHandler}
 
@@ -34,13 +35,14 @@ class EventDispatcherSpec extends UnitSpec with MockFactory {
     implicit val hc = HeaderCarrier()
     
     var invoked: Boolean = false
+    val mockAppConfg = mock[AppConfig]
     val mockAnalyticsConnector = mock[AnalyticsConnector]
-    val brokenEventDispatcher = new AnalyticsEventHandler(mockAnalyticsConnector) {
+    val brokenEventDispatcher = new AnalyticsEventHandler(mockAppConfg, mockAnalyticsConnector) {
       override def handleEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext) =
         throw new RuntimeException("Expected Error")
     }
 
-    val workingEventDispatcher = new AnalyticsEventHandler(mockAnalyticsConnector) {
+    val workingEventDispatcher = new AnalyticsEventHandler(mockAppConfg, mockAnalyticsConnector) {
       override def handleEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext) =
         invoked = true
     }
