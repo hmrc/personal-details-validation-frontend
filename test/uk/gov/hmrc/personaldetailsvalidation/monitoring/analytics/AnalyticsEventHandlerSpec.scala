@@ -20,7 +20,7 @@ import akka.Done
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.Eventually
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.mvc.Cookie
+import play.api.mvc.{AnyContentAsEmpty, Cookie}
 import play.api.test.FakeRequest
 import support.UnitSpec
 import uk.gov.hmrc.config.AppConfig
@@ -30,19 +30,17 @@ import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedO
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class AnalyticsEventHandlerSpec
-  extends UnitSpec
-    with Eventually
-    with GuiceOneAppPerSuite
-    with MockFactory {
+class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAppPerSuite with MockFactory {
 
   "dispatcher" should {
+
+    val dimensions: Seq[DimensionValue] = Seq(DimensionValue(6, "unknown"))
 
     "send pdv_modal_timeout continue event when user clicks on stay signed in " in new Setup {
       dispatcher.dispatchEvent(TimeoutContinue)(request, hc, global)
       eventually {
         analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
-          Event("sos_iv", "pdv_modal_timeout", "continue")))
+          Event("sos_iv", "pdv_modal_timeout", "continue", dimensions)))
       }
     }
 
@@ -50,35 +48,35 @@ class AnalyticsEventHandlerSpec
       dispatcher.dispatchEvent(TimedOut)(request, hc, global)
       eventually {
         analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
-          Event("sos_iv", "pdv_modal_timeout", "end")))
+          Event("sos_iv", "pdv_modal_timeout", "end", dimensions)))
       }
     }
 
     "check sessionId and clientId before sending pdv_modal_timeout event " in new Setup {
-        dispatcher.dispatchEvent(TimedOut)(FakeRequest(), hc, global)
-        eventually {
-          analyticsRequests shouldBe List.empty[AnalyticsRequest]
-        }
+      dispatcher.dispatchEvent(TimedOut)(FakeRequest(), hc, global)
+      eventually {
+        analyticsRequests shouldBe List.empty[AnalyticsRequest]
       }
+    }
   }
 
   private trait Setup {
-    val gaClientId = "GA1.1.283183975.1456746121"
-    val hc = HeaderCarrier()
-    var analyticsRequests = Seq.empty[AnalyticsRequest]
-    val request = FakeRequest().withCookies(Cookie("_ga", gaClientId))
+    val gaClientId: String = "GA1.1.283183975.1456746121"
+    val hc: HeaderCarrier = HeaderCarrier()
+    var analyticsRequests: Seq[AnalyticsRequest] = Seq.empty
+    val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withCookies(Cookie("_ga", gaClientId))
 
-    val mockAppConfg = mock[AppConfig]
-    val mockHttpClient = mock[HttpClient]
+    val appConfg: AppConfig = app.injector.instanceOf[AppConfig]
+    val mockHttpClient: HttpClient = mock[HttpClient]
 
-    object TestConnector extends AnalyticsConnector(mockAppConfg, mockHttpClient) {
+    object TestConnector extends AnalyticsConnector(appConfg, mockHttpClient) {
       override def sendEvent(request: AnalyticsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Done] = {
         analyticsRequests = analyticsRequests :+ request
         Future.successful(Done)
       }
     }
 
-    object TestHandler extends AnalyticsEventHandler(TestConnector)
+    object TestHandler extends AnalyticsEventHandler(appConfg, TestConnector)
 
     val dispatcher = new EventDispatcher(TestHandler)
 
