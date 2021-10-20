@@ -43,7 +43,7 @@
 
     <p class="govuk-body">@messages("personal-details.paragraph")</p>
 
-    @formWithCSRF(routes.PersonalDetailsCollectionController.submit(completionUrl), 'class -> "form js-form", 'autocomplete -> "off", 'novalidate -> "novalidate") {
+    @formWithCSRF(routes.PersonalDetailsCollectionController.submit(completionUrl), 'autocomplete -> "off", 'novalidate -> "novalidate") {
 
         @govukInput(
             Input(
@@ -90,7 +90,7 @@
 
         @govukButton(
             Button(
-                attributes = Map("id" -> "continue", "novalidate" -> "novalidate"),
+                attributes = Map("id" -> "continue"),
                 content = Text(messages("continue.button.text")),
                 inputType = Some("submit")
             )
