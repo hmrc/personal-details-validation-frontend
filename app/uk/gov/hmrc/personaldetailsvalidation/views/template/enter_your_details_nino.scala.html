@@ -48,7 +48,6 @@
 
     @formWithCSRF(
         routes.PersonalDetailsCollectionController.submitNino(completionUrl),
-        'class -> "form js-form",
         'autocomplete -> "off",
         'novalidate -> "novalidate") {
 
@@ -75,7 +74,7 @@
 
         @govukButton(
             Button(
-                attributes = Map("id" -> "continue", "novalidate" -> "novalidate"),
+                attributes = Map("id" -> "continue"),
                 content = Text(messages("continue.button.text")),
                 inputType = Some("submit")
             )
