@@ -24,7 +24,6 @@ import cats.implicits._
 import play.api.Configuration
 import uk.gov.hmrc.http.Host
 
-import scala.collection.JavaConverters._
 
 package object implicits {
 

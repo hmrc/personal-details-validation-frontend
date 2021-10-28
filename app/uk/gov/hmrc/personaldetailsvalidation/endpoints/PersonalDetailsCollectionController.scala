@@ -184,8 +184,22 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def submitYourPostCode(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    appConfig.isLoggedInUser.flatMap {
-      isLoggedIn => Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn)))
+    if (appConfig.isMultiPageEnabled) {
+      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+        postcodeForm.bindFromRequest().fold (
+          formWithErrors => Future.successful(Ok(what_is_your_postcode(formWithErrors, completionUrl, isLoggedIn))),
+          postCodeForm => {
+            retrieveMainDetails match {
+              case (Some(fn), Some(ln), Some(dob)) =>
+                val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln),postCodeForm.postcode, LocalDate.parse(dob))
+                submitPersonalDetails(personalDetails, completionUrl, isLoggedIn)
+              case _ => EitherT.rightT[Future, Result](BadRequest)
+            }
+          }.merge
+        )
+      }
+    } else {
+      Future.successful(BadRequest)
     }
   }
 

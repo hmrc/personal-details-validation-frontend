@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.model.PostcodeDetails
 @import uk.gov.hmrc.views.html.partials._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 
 @this(
         mainTemplate: layout,
@@ -27,7 +28,7 @@
         button: button,
         h1: h1,
         preH1: preH1,
-        formWithCSRF: FormWithCSRF,
+        formWithCSRF: PlayFrontendFormWithCSRF,
 )
 @(pageForm: Form[PostcodeDetails],
         completionUrl: CompletionUrl,
