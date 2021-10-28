@@ -33,7 +33,7 @@
 @(title: String,
   headBlock: Option[Html] = None,
   scriptsBlock: Option[Html] = None,
-  completionUrl: CompletionUrl,
+  completionUrl: Option[CompletionUrl] = None,
   form: Option[Form[_]] = None,
   loggedInUser: Boolean = true
 )(contentBlock: Html)(implicit request: Request[_], requestHeader: RequestHeader, messages: Messages, appConfig: ViewConfig)
@@ -51,7 +51,10 @@
 @contentSection = {
     <div class="gtm-tag" data-gtag=""></div>
 
-    @summaryErrors(theForm = form, govukErrorSummary = govukErrorSummary, completionUrl)
+    @if(form && completionUrl) {
+        @summaryErrors(theForm = form, govukErrorSummary = govukErrorSummary, completionUrl.get)
+    }
+
     @contentBlock
     @if(!requestHeader.session.get("loginOrigin").exists(_.startsWith("dwp-iv"))) {
         <div class="govuk-!-margin-top-6">
@@ -78,7 +81,7 @@
 
 @govukLayout(
     pageTitle = Some(title + " - GOV.UK"),
-    headBlock = Some(head(headBlock, CompletionUrl(completionUrl.toString))),
+    headBlock = Some(head(headBlock, CompletionUrl(completionUrl.getOrElse("").toString))),
     headerBlock = Some(headerBlock),
     scriptsBlock = Some(scripts),
     beforeContentBlock = Some(beforeContentBlockSection),

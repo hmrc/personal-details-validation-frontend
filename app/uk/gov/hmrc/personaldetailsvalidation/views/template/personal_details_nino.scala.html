@@ -35,7 +35,8 @@
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 
-@mainTemplate(form = Some(pageForm), title = errorPrefix(pageForm) + messages("personal-details.title"), completionUrl = completionUrl,
+@mainTemplate(form = Some(pageForm), title = errorPrefix(pageForm) + messages("personal-details.title"),
+    completionUrl = Some(completionUrl),
     loggedInUser = loggedInUser) {
 
     <span class="govuk-caption-xl">@messages("personal-details.faded-heading")</span>

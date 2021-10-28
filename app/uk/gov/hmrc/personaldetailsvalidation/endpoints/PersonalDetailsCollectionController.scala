@@ -33,9 +33,11 @@ import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_det
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
-
 import java.time.LocalDate
+
 import javax.inject.Inject
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.we_cannot_check_your_identity
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -47,6 +49,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     enterYourDetailsNino: enter_your_details_nino,
                                                     enterYourDetailsPostcode: enter_your_details_postcode,
                                                     personalDetailsMain: personal_details_main,
+                                                    weCannotCheckYourIdentityPage : we_cannot_check_your_identity,
                                                     ivConnector: IdentityVerificationConnector)
                                                    (implicit val authConnector: AuthConnector,
                                                     val dwpMessagesApiProvider: DwpMessagesApiProvider,
@@ -241,4 +244,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     Future.successful(Ok("OK"))
   }
 
+  def weCannotCheckYourIdentity(): Action[AnyContent] = Action.async { implicit request =>
+      Future.successful(Ok(weCannotCheckYourIdentityPage()))
+  }
 }
