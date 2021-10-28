@@ -29,7 +29,7 @@ import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue}
-import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main, what_is_your_postcode}
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
@@ -46,6 +46,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     val controllerComponents: MessagesControllerComponents,
                                                     enterYourDetailsNino: enter_your_details_nino,
                                                     enterYourDetailsPostcode: enter_your_details_postcode,
+                                                    what_is_your_postcode: what_is_your_postcode,
                                                     personalDetailsMain: personal_details_main,
                                                     ivConnector: IdentityVerificationConnector)
                                                    (implicit val authConnector: AuthConnector,
@@ -165,6 +166,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     }
   }
 
+  @Deprecated // will be removed after whatIsYourPostCode goes live
   def showPostCodeForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (hasMainDetailsAndIsMultiPage) {
       appConfig.isLoggedInUser.flatMap {
@@ -172,6 +174,33 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
       }
     } else
       Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None)))
+  }
+
+  /** This endpoint will replace showPostCodeForm after it goes live  */
+  def whatIsYourPostCode(completionUrl: CompletionUrl) = Action.async { implicit request =>
+    appConfig.isLoggedInUser.flatMap {
+      isLoggedIn => Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn)))
+    }
+  }
+
+  def submitYourPostCode(completionUrl: CompletionUrl) = Action.async { implicit request =>
+    if (appConfig.isMultiPageEnabled) {
+      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+        postcodeForm.bindFromRequest().fold (
+          formWithErrors => Future.successful(Ok(what_is_your_postcode(formWithErrors, completionUrl, isLoggedIn))),
+          postCodeForm => {
+            retrieveMainDetails match {
+              case (Some(fn), Some(ln), Some(dob)) =>
+                val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln),postCodeForm.postcode, LocalDate.parse(dob))
+                submitPersonalDetails(personalDetails, completionUrl, isLoggedIn)
+              case _ => EitherT.rightT[Future, Result](BadRequest)
+            }
+          }.merge
+        )
+      }
+    } else {
+      Future.successful(BadRequest)
+    }
   }
 
   def submitPostcode(completionUrl: CompletionUrl) = Action.async { implicit request =>

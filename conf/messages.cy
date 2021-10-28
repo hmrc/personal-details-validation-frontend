@@ -20,6 +20,11 @@ personal-details.nino.unavailable=Nid wyf yn gwybod fy Rhif Yswiriant Gwladol
 personal-details.postcode=Cod post
 personal-details.postcode.hint=Er enghraifft: AB12 3YZ
 personal-details.postcode.invalid=Nodwch god post go iawn
+
+what-is-your-postcode.postcode.label=Beth yw eich cod post?
+what-is-your-postcode.postcode.hint=Er enghraifft SW1A 2AA
+what-is-your-postcode.postcode.invalid=Nodwch god post go iawn
+
 personal-details.dateOfBirth=Dyddiad geni
 personal-details.dateOfBirth.hint=Er enghraifft, 31 3 1980
 personal-details.dateOfBirth.day=Diwrnod

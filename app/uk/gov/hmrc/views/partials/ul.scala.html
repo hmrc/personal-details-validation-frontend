@@ -1,0 +1,12 @@
+
+
+@this()
+
+@(items:Seq[String])(implicit msgs: Messages)
+
+<ul class="govuk-list govuk-list--bullet">
+ @for(str <- items) {
+ <li class="govuk-list--item">@msgs(str)</li>
+}
+</ul>
+

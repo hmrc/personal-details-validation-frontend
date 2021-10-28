@@ -1,0 +1,14 @@
+
+
+@this()
+
+@(key: String, classes: Option[String] = None, id: Option[String] = None)(implicit msgs: Messages)
+
+@cls = @{"govuk-caption-l".concat(classes.getOrElse(""))}
+
+<span class="@cls">@Html(msgs(key))</span>
+
+
+
+
+

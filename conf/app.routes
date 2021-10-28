@@ -18,6 +18,9 @@ POST       /main-personal-details     uk.gov.hmrc.personaldetailsvalidation.endp
 GET        /personal-details-nino     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showNinoForm(completionUrl: CompletionUrl)
 POST       /personal-details-nino     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitNino(completionUrl: CompletionUrl)
 
+GET        /what-is-your-postcode    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl: CompletionUrl)
+POST       /what-is-your-postcode    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitYourPostCode(completionUrl: CompletionUrl)
+
 GET        /personal-details-postcode uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPostCodeForm(completionUrl: CompletionUrl)
 POST       /personal-details-postcode uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitPostcode(completionUrl: CompletionUrl)
 
