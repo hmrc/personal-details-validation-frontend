@@ -29,7 +29,7 @@ import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue}
-import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main, what_is_your_postcode}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main, what_is_your_postcode, what_is_your_nino}
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
@@ -47,6 +47,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     enterYourDetailsNino: enter_your_details_nino,
                                                     enterYourDetailsPostcode: enter_your_details_postcode,
                                                     what_is_your_postcode: what_is_your_postcode,
+                                                    what_is_your_nino: what_is_your_nino,
                                                     personalDetailsMain: personal_details_main,
                                                     ivConnector: IdentityVerificationConnector)
                                                    (implicit val authConnector: AuthConnector,
@@ -221,6 +222,14 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     } else {
       Future.successful(BadRequest)
     }
+  }
+
+  def whatIsYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
+    Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl)))
+  }
+
+  def submitYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
+    Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl)))
   }
 
   private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, isLoggedInUser: Boolean)(implicit request: Request[_]) : EitherT[Future, Result, Result] = {

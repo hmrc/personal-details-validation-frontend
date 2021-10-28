@@ -1,0 +1,50 @@
+
+
+@import uk.gov.hmrc.views.html.template.layout
+@import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+@import uk.gov.hmrc.personaldetailsvalidation.model.NinoDetails
+@import uk.gov.hmrc.views.html.partials._
+@import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
+
+@this(
+        mainTemplate: layout,
+        textbox: InputText,
+        button: button,
+        preH1: preH1,
+        a: link,
+        formWithCSRF: PlayFrontendFormWithCSRF,
+)
+@(pageForm: Form[NinoDetails], completionUrl: CompletionUrl)(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
+
+@mainTemplate(
+    title = msgs("personal-details.title"),
+    completionUrl = completionUrl,
+    form = Some(pageForm)
+) {
+
+    @preH1("personal-details-validation.faded-heading")
+
+    @formWithCSRF(
+        routes.PersonalDetailsCollectionController.submitYourNino(completionUrl),
+        'autocomplete -> "off",
+        'novalidate -> "novalidate") {
+
+        @textbox(
+            field =pageForm("nino"),
+            label = "what-is-your-national-insurance-number.nino.label",
+            labelIsHeading = true,
+            classes = "govuk-input--width-10",
+            autocomplete = Some("nino"),
+            hint = Some(msgs("what-is-your-national-insurance-number.nino.hint")),
+            attributes = Map("size" -> "9" , "maxLength" -> "9", "spellcheck" -> "false"),
+        )
+
+        <p class="govuk-body">
+            @a(href = routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl).url, key = "what-is-your-national-insurance-number.nino.unavailable", id = Some("nino-unknown"))
+        </p>
+
+        @button()
+    }
+}
