@@ -20,6 +20,10 @@ personal-details.nino.unavailable=I do not know my National Insurance number
 personal-details.postcode=Postcode
 personal-details.postcode.hint=For example: AB12 3YZ
 personal-details.postcode.invalid=Enter a real postcode
+
+what-is-your-postcode.postcode.label=What is your postcode?
+what-is-your-postcode.postcode.hint=For example SW1A 2AA
+
 personal-details.dateOfBirth=Date of birth
 personal-details.dateOfBirth.hint=For example, 31 3 1980
 personal-details.dateOfBirth.day=Day

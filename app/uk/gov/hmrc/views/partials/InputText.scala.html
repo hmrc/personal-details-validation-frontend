@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+@import uk.gov.hmrc.views.Constants
 
 @this(govukInput: GovukInput)
 
@@ -25,20 +26,31 @@
     labelClasses: String = "",
     hint: Option[String] = None,
     classes: String = "",
+    labelIsHeading: Boolean = false,
     spellcheck: Option[Boolean] = None,
-    autocomplete: Option[String] = None
-)(implicit messages: Messages)
-@govukInput(Input(
-    id = field.id,
-    name = field.name,
-    inputType = inputType,
-    label = Label(classes = labelClasses, content = Text(label)),
-    hint = hint.map(h => Hint(content = Text(h))),
-    value = field.value,
-    errorMessage = field.error.map(formError =>
-        ErrorMessage(content = Text(messages(formError.message, formError.args: _*)))
-    ),
-    classes = classes,
-    spellcheck = spellcheck,
-    autocomplete = autocomplete
-).withFormField(field))
+    autocomplete: Option[String] = None,
+    attributes: Map[String, String] = Map.empty,
+
+)(implicit msgs: Messages)
+
+@govukInput(
+    Input(
+        id = field.id,
+        name = field.name,
+        inputType = inputType,
+        label = if(label != null) Label(
+            classes = if(labelIsHeading) Constants.LABEL_H1_CLASS else labelClasses,
+            content = Text(msgs(label)),
+            isPageHeading = labelIsHeading
+        ) else Label(),
+        hint = hint.map(h => Hint(content = Text(h))),
+        value = field.value,
+        errorMessage = field.error.map(formError =>
+            ErrorMessage(content = Text(msgs(formError.message, formError.args: _*)))
+        ),
+        classes = classes,
+        spellcheck = spellcheck,
+        autocomplete = autocomplete,
+        attributes = attributes,
+    ).withFormField(field)
+)
