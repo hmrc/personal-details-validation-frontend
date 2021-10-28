@@ -49,9 +49,11 @@ import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedO
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main, what_is_your_postcode}
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.views.ViewConfig
-
 import java.time.LocalDate
 import java.util.UUID
+
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.we_cannot_check_your_identity
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -938,6 +940,22 @@ class PersonalDetailsCollectionControllerSpec
 
   }
 
+  "we-cannot-check-your-identity" should {
+
+    "return 200 OK" in new Setup {
+      private val result = controller.weCannotCheckYourIdentity()(request)
+      status(result) shouldBe 200
+
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document = Jsoup.parse(contentAsString(result))
+
+      document.select("h1").text() shouldBe messages("we-cannot-check-your-identity.header")
+    }
+
+  }
+
   "redirect-after-timeout" should {
 
     "redirect user to continueUrl with userTimeout parameter" in new Setup {
@@ -988,6 +1006,8 @@ class PersonalDetailsCollectionControllerSpec
 
     private val enter_your_details_nino: enter_your_details_nino = app.injector.instanceOf[enter_your_details_nino]
 
+    private val we_cannot_check_your_identity: we_cannot_check_your_identity = app.injector.instanceOf[we_cannot_check_your_identity]
+
     private val personal_details_main: personal_details_main = app.injector.instanceOf[personal_details_main]
 
     implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
@@ -1004,6 +1024,7 @@ class PersonalDetailsCollectionControllerSpec
       enter_your_details_postcode,
       what_is_your_postcode,
       personal_details_main,
+      we_cannot_check_your_identity,
       mockIVConnector)
 
     implicit val hc: HeaderCarrier = HeaderCarrier()

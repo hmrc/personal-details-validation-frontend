@@ -63,3 +63,10 @@ timeout-dialog.minutes=funud
 timeout-dialog.minute=funud
 timeout-dialog.seconds=eiliad
 timeout-dialog.second=eiliad
+
+# we-cannot-check-your-identity
+we-cannot-check-your-identity.header = We cannot check your identity
+we-cannot-check-your-identity.para.1 = You must be at least 15 years and 9 months old to check your identity online. This is the age you are able to get a National Insurance number.
+we-cannot-check-your-identity.para.2 = You will normally be sent a National Insurance number automatically, in the 3 months before your 16th birthday if:
+we-cannot-check-your-identity.ul.1 = you live in the UK
+we-cannot-check-your-identity.ul.2 = a parent has filled in a <a href="{0}" class="govuk-link">Child Benefit</a> claim form for you

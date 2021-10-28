@@ -24,4 +24,5 @@ POST       /what-is-your-postcode    uk.gov.hmrc.personaldetailsvalidation.endpo
 GET        /personal-details-postcode uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPostCodeForm(completionUrl: CompletionUrl)
 POST       /personal-details-postcode uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitPostcode(completionUrl: CompletionUrl)
 
+GET        /we-cannot-check-your-identity   uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.weCannotCheckYourIdentity()
 GET        /assets/*file              controllers.Assets.at(path="/public", file)
