@@ -16,12 +16,13 @@
         a: link,
         formWithCSRF: PlayFrontendFormWithCSRF,
 )
-@(pageForm: Form[NinoDetails], completionUrl: CompletionUrl)(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
+@(pageForm: Form[NinoDetails], completionUrl: CompletionUrl, loggedInUser: Boolean)(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
     title = msgs("personal-details.title"),
     completionUrl = Some(completionUrl),
-    form = Some(pageForm)
+    form = Some(pageForm),
+    loggedInUser = loggedInUser
 ) {
 
     @preH1("personal-details-validation.faded-heading")
