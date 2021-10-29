@@ -25,7 +25,7 @@ personal-details.postcode.invalid=Enter a real postcode
 what-is-your-national-insurance-number.nino.label=What is your National Insurance number?
 what-is-your-national-insurance-number.nino.hint=It’s on your National Insurance card, benefit letter, payslip or P60. For example, QQ123456C
 what-is-your-national-insurance-number.nino.invalid=Enter your National Insurance number
-what-is-your-national-insurance-number.nino.unavailable=I do not know my National Insurance number
+what-is-your-national-insurance-number.nino.unavailable=I do not have a National Insurance number, or have lost or forgotten it
 
 what-is-your-postcode.postcode.label=What is your postcode?
 what-is-your-postcode.postcode.hint=For example SW1A 2AA
