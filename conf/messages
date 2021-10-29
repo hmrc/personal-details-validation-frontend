@@ -4,6 +4,7 @@ error.prefix=Error:
 error-summary.heading=There is a problem
 personal-details.title=Enter your details - Confirm your identity
 personal-details.faded-heading=Confirm your identity
+personal-details-validation.faded-heading=Check your identity
 personal-details.header=Enter your details
 personal-details.header.postcode=Enter your postcode instead
 personal-details.paragraph=This is to help us confirm who you are, so we know what questions to ask you.
@@ -20,6 +21,11 @@ personal-details.nino.unavailable=I do not know my National Insurance number
 personal-details.postcode=Postcode
 personal-details.postcode.hint=For example: AB12 3YZ
 personal-details.postcode.invalid=Enter a real postcode
+
+what-is-your-national-insurance-number.nino.label=What is your National Insurance number?
+what-is-your-national-insurance-number.nino.hint=It’s on your National Insurance card, benefit letter, payslip or P60. For example, QQ123456C
+what-is-your-national-insurance-number.nino.invalid=Enter your National Insurance number
+what-is-your-national-insurance-number.nino.unavailable=I do not know my National Insurance number
 
 what-is-your-postcode.postcode.label=What is your postcode?
 what-is-your-postcode.postcode.hint=For example SW1A 2AA
