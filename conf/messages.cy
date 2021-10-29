@@ -4,6 +4,7 @@ error.prefix=Gwall:
 error-summary.heading=Mae problem wedi codi
 personal-details.title=Nodwch eich manylion - Cadarnhau pwy ydych
 personal-details.faded-heading=Cadarnhau pwy ydych
+personal-details-validation.faded-heading=Cadarnhau pwy ydych
 personal-details.header=Nodwch eich manylion
 personal-details.header.postcode=Nodwch eich cod post yn lle hynny
 personal-details.paragraph=Mae hyn o gymorth i ni gadarnhau pwy ydych, fel ein bod yn gwybod pa gwestiynau i’w gofyn i chi.
@@ -20,6 +21,11 @@ personal-details.nino.unavailable=Nid wyf yn gwybod fy Rhif Yswiriant Gwladol
 personal-details.postcode=Cod post
 personal-details.postcode.hint=Er enghraifft: AB12 3YZ
 personal-details.postcode.invalid=Nodwch god post go iawn
+
+what-is-your-national-insurance-number.nino.label=Beth yw eich rhif Yswiriant Gwladol?
+what-is-your-national-insurance-number.nino.hint=Mae hwn ar eich cerdyn Yswiriant Gwladol, llythyr ynghylch budd-daliadau, slip cyflog neu P60. Er enghraifft, QQ123456C
+what-is-your-national-insurance-number.nino.invalid=Rhowch eich rhif Yswiriant Gwladol
+what-is-your-national-insurance-number.nino.unavailable=Nid wyf yn gwybod fy Rhif Yswiriant Gwladol
 
 what-is-your-postcode.postcode.label=Beth yw eich cod post?
 what-is-your-postcode.postcode.hint=Er enghraifft SW1A 2AA
