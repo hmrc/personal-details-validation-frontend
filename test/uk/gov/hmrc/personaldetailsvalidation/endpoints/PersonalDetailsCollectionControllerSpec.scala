@@ -46,12 +46,12 @@ import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators.{person
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue}
-import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main, what_is_your_postcode, what_is_your_nino}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details, enter_your_details_nino, enter_your_details_postcode, personal_details_main, what_is_your_nino, what_is_your_postcode}
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.views.ViewConfig
+
 import java.time.LocalDate
 import java.util.UUID
-
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.we_cannot_check_your_identity
 
 import scala.concurrent.duration._
@@ -1002,6 +1002,7 @@ class PersonalDetailsCollectionControllerSpec
 
     private val enter_your_details_postcode: enter_your_details_postcode = app.injector.instanceOf[enter_your_details_postcode]
     private val what_is_your_postcode: what_is_your_postcode = app.injector.instanceOf[what_is_your_postcode]
+    private val enter_your_details: enter_your_details = app.injector.instanceOf[enter_your_details]
 
     private val enter_your_details_nino: enter_your_details_nino = app.injector.instanceOf[enter_your_details_nino]
     private val what_is_your_nino: what_is_your_nino = app.injector.instanceOf[what_is_your_nino]
@@ -1024,6 +1025,7 @@ class PersonalDetailsCollectionControllerSpec
       enter_your_details_postcode,
       what_is_your_postcode,
       what_is_your_nino,
+      enter_your_details,
       personal_details_main,
       we_cannot_check_your_identity,
       mockIVConnector)

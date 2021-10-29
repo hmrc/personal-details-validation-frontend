@@ -21,6 +21,7 @@ object Constants {
   val H1_CLASS: String = "govuk-heading-xl"
   val LEGEND_H1_CLASS: String = "govuk-fieldset__legend--xl"
   val LABEL_H1_CLASS: String = "govuk-label--xl"
+  val BOLD_FONT: String = "govuk-!-font-weight-bold"
 
 
 }

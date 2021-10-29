@@ -29,15 +29,14 @@ import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue}
-import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details_nino, enter_your_details_postcode, personal_details_main, what_is_your_postcode, what_is_your_nino}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.we_cannot_check_your_identity
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
+
 import java.time.LocalDate
-
 import javax.inject.Inject
-import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.we_cannot_check_your_identity
-
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -50,6 +49,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                                                     enterYourDetailsPostcode: enter_your_details_postcode,
                                                     what_is_your_postcode: what_is_your_postcode,
                                                     what_is_your_nino: what_is_your_nino,
+                                                    enter_your_details: enter_your_details,
                                                     personalDetailsMain: personal_details_main,
                                                     weCannotCheckYourIdentityPage : we_cannot_check_your_identity,
                                                     ivConnector: IdentityVerificationConnector)
@@ -125,6 +125,31 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     appConfig.isLoggedInUser.flatMap { isLoggedIn =>
       initialForm.bindFromRequest().fold (
         formWithErrors => Future.successful(Ok(personalDetailsMain(formWithErrors, completionUrl, isLoggedIn))),
+        mainDetails => {
+          val updatedSessionData = request.session.data ++ Map(
+            FIRST_NAME_KEY -> mainDetails.firstName.value,
+            LAST_NAME_KEY -> mainDetails.lastName.value,
+            DOB_KEY -> mainDetails.dateOfBirth.toString
+          )
+          Future.successful(Redirect(routes.PersonalDetailsCollectionController.showNinoForm(completionUrl))
+            .withSession(Session(updatedSessionData))
+          )
+        }
+      )
+    }
+
+  }
+
+  def enterYourDetails(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String]):
+    Action[AnyContent] = Action { implicit request =>
+       Ok(enter_your_details(initialForm, completionUrl, false))
+    }
+
+
+  def submitYourDetails(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+    appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+      initialForm.bindFromRequest().fold (
+        formWithErrors => Future.successful(Ok(enter_your_details(formWithErrors, completionUrl, isLoggedIn))),
         mainDetails => {
           val updatedSessionData = request.session.data ++ Map(
             FIRST_NAME_KEY -> mainDetails.firstName.value,
