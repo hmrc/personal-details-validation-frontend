@@ -174,6 +174,32 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
       Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None)))
   }
 
+  def whatIsYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
+    appConfig.isLoggedInUser.flatMap {
+      isLoggedIn => Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn)))
+    }
+  }
+
+  def submitYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
+    if (appConfig.isMultiPageEnabled) {
+      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+        ninoForm.bindFromRequest().fold (
+          formWithErrors => Future.successful(Ok(what_is_your_nino(formWithErrors, completionUrl, isLoggedIn))),
+          ninoForm => {
+            retrieveMainDetails match {
+              case (Some(fn), Some(ln), Some(dob)) =>
+                val personalDetails = PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln),ninoForm.nino, LocalDate.parse(dob))
+                submitPersonalDetails(personalDetails, completionUrl, isLoggedIn)
+              case _ => EitherT.rightT[Future, Result](BadRequest)
+            }
+          }.merge
+        )
+      }
+    } else {
+      Future.successful(BadRequest)
+    }
+  }
+
   def submitNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
       appConfig.isLoggedInUser.flatMap { isLoggedIn =>
@@ -250,14 +276,6 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     } else {
       Future.successful(BadRequest)
     }
-  }
-
-  def whatIsYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl)))
-  }
-
-  def submitYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl)))
   }
 
   private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, isLoggedInUser: Boolean)(implicit request: Request[_]) : EitherT[Future, Result, Result] = {
