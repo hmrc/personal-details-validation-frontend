@@ -22,18 +22,19 @@
     title = msgs("personal-details.title"),
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
+    formErrors = pageForm.errors,
     loggedInUser = loggedInUser
 ) {
-
-    @preH1("personal-details-validation.faded-heading")
 
     @formWithCSRF(
         routes.PersonalDetailsCollectionController.submitYourNino(completionUrl),
         'autocomplete -> "off",
         'novalidate -> "novalidate") {
 
+
         @textbox(
-            field =pageForm("nino"),
+            field = pageForm("nino"),
+            caption = Some(msgs("personal-details-validation.faded-heading")),
             label = "what-is-your-national-insurance-number.nino.label",
             labelIsHeading = true,
             classes = "govuk-input--width-10",

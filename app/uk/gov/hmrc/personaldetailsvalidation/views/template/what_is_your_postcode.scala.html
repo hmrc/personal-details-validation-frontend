@@ -39,10 +39,9 @@
     title = msgs("personal-details.title"),
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
+    formErrors = pageForm.errors,
     loggedInUser = loggedInUser
 ) {
-
-    @preH1("personal-details-validation.faded-heading")
 
     @formWithCSRF(
         routes.PersonalDetailsCollectionController.submitYourPostCode(completionUrl),
@@ -52,6 +51,7 @@
         @textbox(
             field =pageForm("postcode"),
             label = "what-is-your-postcode.postcode.label",
+            caption = Some(msgs("personal-details-validation.faded-heading")),
             labelIsHeading = true,
             classes = "govuk-input--width-10",
             autocomplete = Some("postcode"),

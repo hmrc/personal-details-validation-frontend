@@ -35,6 +35,7 @@
   scriptsBlock: Option[Html] = None,
   completionUrl: Option[CompletionUrl] = None,
   form: Option[Form[_]] = None,
+  formErrors: Seq[FormError] = Seq.empty,
   loggedInUser: Boolean = true
 )(contentBlock: Html)(implicit request: Request[_], requestHeader: RequestHeader, messages: Messages, appConfig: ViewConfig)
 
@@ -79,8 +80,16 @@
     <script src='@routes.Assets.at("javascripts/gtm_dl.js")'></script>
 }
 
+@pageTitle = @{
+    if(formErrors.nonEmpty){
+        messages("error.prefix") + " " + title + " - GOV.UK"
+    } else {
+        title + " - GOV.UK"
+    }
+}
+
 @govukLayout(
-    pageTitle = Some(title + " - GOV.UK"),
+    pageTitle = Some(pageTitle),
     headBlock = Some(head(headBlock, CompletionUrl(completionUrl.getOrElse("").toString))),
     headerBlock = Some(headerBlock),
     scriptsBlock = Some(scripts),
