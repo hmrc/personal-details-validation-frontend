@@ -25,6 +25,7 @@ import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.formmappings.SimpleDateUtil
 import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.model._
@@ -301,10 +302,23 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     }
 
   def submit(completionUrl: CompletionUrl, alternativeVersion: Boolean): Action[AnyContent] = Action.async { implicit request =>
-    appConfig.isLoggedInUser.flatMap {isLoggedInUser =>
-      personalDetailsSubmission.submit(completionUrl, alternativeVersion, isLoggedInUser)
+    import SimpleDateUtil._
+    if(dateOfBirth(request).exists(
+      dob => isDateInThePast(dob) && !isAgeAbove15YearsNineMonths(dob)
+    )) {
+      // VER-1357: The Person has entered a Valid Date which is in the past.
+      // The Person is younger than 15 years 9 Months old, which
+      // we can't deal with as they won't have a NINO at that age.
+      Future {
+        Redirect(
+          routes.PersonalDetailsCollectionController.weCannotCheckYourIdentity
+        )
+      }
+    } else {
+      appConfig.isLoggedInUser.flatMap { isLoggedInUser =>
+        personalDetailsSubmission.submit(completionUrl, alternativeVersion, isLoggedInUser)
+      }
     }
-
   }
 
   /**

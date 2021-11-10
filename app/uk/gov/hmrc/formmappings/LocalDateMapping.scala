@@ -22,6 +22,7 @@ import java.time.{DateTimeException, LocalDate}
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import play.api.data.validation.{Constraint, ValidationError}
 import play.api.data.{FormError, Mapping, ObjectMapping}
+import play.api.mvc.{AnyContent, MessagesRequest}
 import uk.gov.hmrc.personaldetailsvalidation.model.DateErrorMessage
 
 import scala.language.implicitConversions
@@ -207,6 +208,51 @@ private object LocalDateMapping {
           case Validated.Valid(validValue) => map(validValue)
           case invalid@Validated.Invalid(_) => invalid
         }
+    }
+  }
+}
+
+object SimpleDateUtil {
+  /**
+    * Is a Person older than 15 years 9 Months?
+    *
+    * @param birthDate the date a person was born
+    * @return true if the birthDate is Older than 15 years 9 Months
+   **/
+  def isAgeAbove15YearsNineMonths(birthDate: LocalDate): Boolean = {
+    val MINIMUM_AGE_REQUIRED_IN_MONTHS: Int = 189 // 15 Years and 9 months
+    val currentDate = LocalDate.now()
+    ChronoUnit.MONTHS.between(birthDate, currentDate) >=
+      MINIMUM_AGE_REQUIRED_IN_MONTHS
+  }
+
+  /**
+    * Is a given Date in the past?
+    *
+    * @param date a Date to check
+    * @return true if the date is in the future
+    */
+  def isDateInThePast(date : LocalDate) : Boolean =
+    LocalDate.now().isAfter(date)
+
+  /**
+    * Simple mechanism of Attempting to get a Date from a Request
+    * If it fails to parse a Date, it will just return a None
+    */
+  def dateOfBirth(request : MessagesRequest[AnyContent]) : Option[LocalDate] = {
+    request.body.asFormUrlEncoded.flatMap {
+      data => {
+
+        def retrieve(v : String) :String =
+          data.apply(v).headOption.getOrElse("")
+
+        val year = retrieve("dateOfBirth.year")
+        val month = retrieve("dateOfBirth.month")
+        val day = retrieve("dateOfBirth.day")
+        Try {
+          LocalDate.of(year.toInt, month.toInt, day.toInt)
+        }.toOption
+      }
     }
   }
 }
