@@ -1,25 +1,34 @@
 # microservice specific routes
 
-GET        /assets/*file                              controllers.Assets.at(path="/public", file)
-GET        /language/:language                        uk.gov.hmrc.language.ChangeLanguageEndpoint.switchToLanguage(language: String)
+GET        /language/:language        uk.gov.hmrc.language.ChangeLanguageEndpoint.switchToLanguage(language: String)
 
-GET        /sign-out                                  uk.gov.hmrc.personaldetailsvalidation.endpoints.SignOutController.signOut()
-GET        /signed-out                                uk.gov.hmrc.personaldetailsvalidation.endpoints.SignOutController.signedOut()
+GET        /sign-out                  uk.gov.hmrc.personaldetailsvalidation.endpoints.SignOutController.signOut()
+GET        /signed-out                uk.gov.hmrc.personaldetailsvalidation.endpoints.SignOutController.signedOut()
 
-GET        /keep-alive                                uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.keepAlive()
-GET        /redirect-after-timeout                    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl: CompletionUrl)
+GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: CompletionUrl, origin: Option[String])
 
-GET        /start                                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: CompletionUrl, origin: Option[String])
-GET        /personal-details                          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, origin: Option[String])
+GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false, origin: Option[String])
+POST       /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submit(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false)
 
-GET        /enter-your-details                        uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.enterYourDetails(completionUrl: CompletionUrl)
-POST       /enter-your-details                        uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitYourDetails(completionUrl: CompletionUrl)
+GET        /enter-your-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.enterYourDetails(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false, origin: Option[String])
+POST       /enter-your-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitYourDetails(completionUrl: CompletionUrl)
+
+GET        /keep-alive                uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.keepAlive()
+GET        /redirect-after-timeout    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl: CompletionUrl)
+
+POST       /main-personal-details     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitMainDetails(completionUrl: CompletionUrl)
+
+GET        /personal-details-nino     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showNinoForm(completionUrl: CompletionUrl)
+POST       /personal-details-nino     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitNino(completionUrl: CompletionUrl)
 
 GET        /what-is-your-national-insurance-number    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.whatIsYourNino(completionUrl: CompletionUrl)
 POST       /what-is-your-national-insurance-number    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitYourNino(completionUrl: CompletionUrl)
 
-GET        /what-is-your-postcode                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl: CompletionUrl)
-POST       /what-is-your-postcode                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitYourPostCode(completionUrl: CompletionUrl)
+GET        /what-is-your-postcode    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl: CompletionUrl)
+POST       /what-is-your-postcode    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitYourPostCode(completionUrl: CompletionUrl)
 
-GET        /we-cannot-check-your-identity             uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.weCannotCheckYourIdentity()
+GET        /personal-details-postcode uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPostCodeForm(completionUrl: CompletionUrl)
+POST       /personal-details-postcode uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitPostcode(completionUrl: CompletionUrl)
 
+GET        /we-cannot-check-your-identity   uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.weCannotCheckYourIdentity()
+GET        /assets/*file              controllers.Assets.at(path="/public", file)

@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
 
 case class JourneyUpdate(journeyStatus: Option[String])
 
 object JourneyUpdate {
-  implicit val format: OFormat[JourneyUpdate] = Json.format[JourneyUpdate]
+  implicit val format = Json.format[JourneyUpdate]
 }

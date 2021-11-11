@@ -16,18 +16,26 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-import uk.gov.hmrc.domain.Nino
-
 import java.time.LocalDate
+
+import uk.gov.hmrc.domain.Nino
 
 sealed trait PersonalDetails
 
-case class PersonalDetailsWithNino(firstName: NonEmptyString,
-                                   lastName: NonEmptyString,
-                                   nino: Nino,
-                                   dateOfBirth: LocalDate) extends PersonalDetails
+case class NinoDetails(nino : Nino)
 
-case class PersonalDetailsWithPostcode(firstName: NonEmptyString,
-                                       lastName: NonEmptyString,
-                                       postCode: NonEmptyString,
-                                       dateOfBirth: LocalDate) extends PersonalDetails
+case class PostcodeDetails(postcode : NonEmptyString)
+
+case class InitialPersonalDetails(firstName : NonEmptyString,
+                                   lastName : NonEmptyString,
+                                   dateOfBirth : LocalDate) extends PersonalDetails
+
+case class PersonalDetailsWithNino(firstName : NonEmptyString,
+                                     lastName : NonEmptyString,
+                                     nino : Nino,
+                                     dateOfBirth : LocalDate) extends PersonalDetails
+
+case class PersonalDetailsWithPostcode(firstName : NonEmptyString,
+                                       lastName : NonEmptyString,
+                                       postCode : NonEmptyString,
+                                       dateOfBirth : LocalDate) extends PersonalDetails

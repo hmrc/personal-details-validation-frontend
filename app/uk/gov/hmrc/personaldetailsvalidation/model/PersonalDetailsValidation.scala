@@ -18,7 +18,6 @@ package uk.gov.hmrc.personaldetailsvalidation.model
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{Reads, __}
-
 sealed trait PersonalDetailsValidation
 
 final case class SuccessfulPersonalDetailsValidation(validationId: ValidationId) extends PersonalDetailsValidation
@@ -30,6 +29,5 @@ object PersonalDetailsValidation {
     ).tupled.map {
     case ("success", validationId) => SuccessfulPersonalDetailsValidation(ValidationId(validationId))
     case ("failure", validationId) => FailedPersonalDetailsValidation(ValidationId(validationId))
-    case _ => throw new scala.RuntimeException("Unable to read PersonalDetailsValidation")
   }
 }
