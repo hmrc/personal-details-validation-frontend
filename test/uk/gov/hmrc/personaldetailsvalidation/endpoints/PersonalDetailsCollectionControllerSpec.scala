@@ -72,15 +72,12 @@ class PersonalDetailsCollectionControllerSpec
         .expects(false, true, completionUrl, request)
         .returning(Html("content"))
 
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(false)
-
       val result = controller.showPage(completionUrl, alternativeVersion = false, None)(request)
 
       verify(result).has(statusCode = OK, content = "content")
     }
 
     "return OK with simplified first page when the multi page flag is enabled" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val result = controller.showPage(completionUrl, alternativeVersion = false, None)(request)
 
@@ -128,7 +125,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "return OK with simplified first page, containing data from session, when the multi page flag is enabled" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val req = request.withSession(
         "firstName" -> "Jim",
@@ -438,7 +434,6 @@ class PersonalDetailsCollectionControllerSpec
 
   "showNinoForm" should {
     "return OK with the ability to enter the Nino if postcode feature is enabled" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val req = request.withSession(
         "firstName" -> "Jim",
@@ -481,8 +476,6 @@ class PersonalDetailsCollectionControllerSpec
     "Redirect to main if not displaying multi pages" in new Setup {
       val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None).url
 
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(false)
-
       val req = request.withSession(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -506,7 +499,6 @@ class PersonalDetailsCollectionControllerSpec
 
   "showPostCodeForm" should {
     "return OK with the ability to enter the Post Code" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val req = request.withSession(
         "firstName" -> "Jim",
@@ -541,8 +533,6 @@ class PersonalDetailsCollectionControllerSpec
     "Redirect to main if not displaying multi pages" in new Setup {
       val expectedUrl = routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None).url
 
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(false)
-
       val req = request.withSession(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -565,7 +555,6 @@ class PersonalDetailsCollectionControllerSpec
 
   "submitNino" should {
     "succeed when given a valid Nino" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
       val validationId = ValidationId(UUID.randomUUID().toString)
       val expectedRedirect = Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
 
@@ -598,7 +587,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "Bad Request if not displaying multi pages" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(false)
 
       val req = request.withFormUrlEncodedBody("nino" -> "AA000001A").withSession(
         "firstName" -> "Jim",
@@ -612,7 +600,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error nino missing" in new Setup with BindFromRequestTooling {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val req = request.withSession(
         "firstName" -> "Jim",
@@ -636,7 +623,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error nino invalid" in new Setup with BindFromRequestTooling {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val req = request.withFormUrlEncodedBody("nino" -> "INVALID") .withSession(
         "firstName" -> "Jim",
@@ -660,7 +646,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "redirect to showPage if no details found" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
       val validationId = ValidationId(UUID.randomUUID().toString)
 
       val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](FailedPersonalDetailsValidation(validationId))
@@ -730,7 +715,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "Bad Request if the initial details are not present in the request" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val result = controller.submitNino(completionUrl)(request.withFormUrlEncodedBody("nino" -> "AA000001A"))
 
@@ -740,7 +724,6 @@ class PersonalDetailsCollectionControllerSpec
 
   "submitPostcode" should {
     "succeed when given a valid Nino" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val validationId = ValidationId(UUID.randomUUID().toString)
       val expectedRedirect = Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
@@ -774,7 +757,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "Bad Request if not displaying multi pages" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(false)
 
       val req = request.withFormUrlEncodedBody("postcode" -> "BN1 1NB").withSession(
         "firstName" -> "Jim",
@@ -788,7 +770,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error nino missing" in new Setup with BindFromRequestTooling {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val req = request.withSession(
         "firstName" -> "Jim",
@@ -812,7 +793,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "display error field validation error nino invalid" in new Setup with BindFromRequestTooling {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val req = request.withFormUrlEncodedBody("postcode" -> "INVALID") .withSession(
         "firstName" -> "Jim",
@@ -836,7 +816,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "Bad Request if the initial details are not present in the request" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
 
       val result = controller.submitPostcode(completionUrl)(request.withFormUrlEncodedBody("postcode" -> "BN11 1NN"))
 
@@ -844,7 +823,6 @@ class PersonalDetailsCollectionControllerSpec
     }
 
     "redirect to showPage if no details found" in new Setup {
-      (mockAppConfig.isMultiPageEnabled _).expects().returns(true)
       val validationId = ValidationId(UUID.randomUUID().toString)
 
       val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](new FailedPersonalDetailsValidation(validationId))

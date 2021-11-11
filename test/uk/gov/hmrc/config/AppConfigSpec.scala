@@ -16,31 +16,24 @@
 
 package uk.gov.hmrc.config
 
-import play.api.Configuration
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import support.UnitSpec
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-class AppConfigSpec  extends UnitSpec {
+class AppConfigSpec extends UnitSpec with GuiceOneAppPerSuite {
+
+  val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
   "AppConfig" should {
-    "return that the multi page flag is enabled when specified." in new Setup {
-      override val testConfig: Map[String, Any] = Map("feature.multi-page.enabled" -> true)
-      appConfig.isMultiPageEnabled shouldBe true
+    "return logout page." in {
+      appConfig.logoutPage shouldBe "https://www.ete.access.service.gov.uk/logout"
     }
 
-    "return that the multi page flag is disabled when specified." in new Setup {
-      override val testConfig: Map[String, Any] = Map("feature.multi-page.enabled" -> false)
-      appConfig.isMultiPageEnabled shouldBe false
+    "return basGatewayUrl." in {
+      appConfig.basGatewayUrl shouldBe "http://localhost:9553"
     }
 
-    "return that the multi page flag is disabled by default." in new Setup {
-      appConfig.isMultiPageEnabled shouldBe false
+    "return logoutPath." in new {
+      appConfig.logoutPath shouldBe "/bas-gateway/sign-out-without-state"
     }
-  }
-
-  trait Setup {
-    val testConfig: Map[String, Any] = Map.empty
-
-    lazy val appConfig = new AppConfig(Configuration.from(testConfig), new ServicesConfig(Configuration.empty))
   }
 }

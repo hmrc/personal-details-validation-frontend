@@ -28,7 +28,6 @@ class AppConfig @Inject()(val configuration: Configuration, servicesConfig: Serv
   var isLoggedInUser: Future[Boolean] = Future.successful(true)
 
   lazy val ivUrl = servicesConfig.baseUrl("identity-verification")
-  def isMultiPageEnabled : Boolean = configuration.getOptional[Boolean]("feature.multi-page.enabled").getOrElse(false)
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
 
   lazy val platformAnalyticsUrl = servicesConfig.baseUrl("platform-analytics")
