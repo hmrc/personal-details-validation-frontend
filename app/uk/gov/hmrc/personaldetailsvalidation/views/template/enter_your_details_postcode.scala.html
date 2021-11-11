@@ -1,0 +1,75 @@
+@*
+ * Copyright 2021 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.views.html.template.layout
+@import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+@import uk.gov.hmrc.personaldetailsvalidation.model.PostcodeDetails
+@import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
+
+@this(
+    mainTemplate: layout,
+    govukErrorSummary : GovukErrorSummary,
+    govukInput: GovukInput,
+    formWithCSRF: FormWithCSRF,
+    govukButton: GovukButton
+)
+@(pageForm: Form[PostcodeDetails],
+  completionUrl: CompletionUrl,
+  loggedInUser: Boolean
+)(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
+
+@mainTemplate(
+    title = messages("personal-details.title"),
+    completionUrl = Some(completionUrl),
+    form = Some(pageForm),
+    loggedInUser = loggedInUser
+) {
+    <a id="identifiersBackLink" href="${@routes.PersonalDetailsCollectionController.showNinoForm(completionUrl)}"
+    class="govuk-body govuk-back-link">@messages("button.back.text")</a>
+
+    <span class="govuk-caption-xl">@messages("personal-details.faded-heading")</span>
+    <h1 class="govuk-heading-l">@messages("personal-details.header.postcode")</h1>
+
+    @formWithCSRF(
+        routes.PersonalDetailsCollectionController.submitPostcode(completionUrl),
+        'autocomplete -> "off",
+        'novalidate -> "novalidate") {
+
+        @govukInput(
+            Input(
+                id = "postcode",
+                name = "postcode",
+                attributes = Map("autocomplete" -> "postcode"),
+                value = pageForm("postcode").value,
+                classes = "govuk-input--width-5",
+                label = Label(
+                    content = Text(messages("personal-details.postcode"))
+                ),
+                errorMessage =  pageForm.errors.asTextErrorMessageForField("postcode")
+            )
+        )
+
+        @govukButton(
+            Button(
+                attributes = Map("id" -> "continue"),
+                content = Text(messages("continue.button.text")),
+                inputType = Some("submit")
+            )
+        )
+   }
+}

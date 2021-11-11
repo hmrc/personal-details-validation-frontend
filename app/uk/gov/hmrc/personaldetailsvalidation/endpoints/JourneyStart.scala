@@ -40,15 +40,14 @@ private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: Val
                                                       logger: Logger)
                                                      (implicit ec: ExecutionContext) {
 
+  import PersonalDetailsSubmission._
   import validationIdValidator._
-
-  val validationIdSessionKey = "ValidationId"
 
   def findRedirect(completionUrl: CompletionUrl, origin: Option[String])
                   (implicit request: Request[_], headerCarrier: HeaderCarrier): Interpretation[Result] =
     findValidationIdInSession match {
       case None =>
-        Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl,origin))
+        Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, origin))
       case Some(sessionValidationId) =>
         verify(sessionValidationId)
           .map(findRedirectUsing(_, sessionValidationId, completionUrl, origin))
@@ -64,7 +63,7 @@ private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: Val
   private def findRedirectUsing(validationResult: Boolean, validationId: ValidationId,
                                 completionUrl: CompletionUrl, origin: Option[String]): Result =
     validationResult match {
-      case false => Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin))
+      case false => Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, origin))
       case true => Redirect(completionUrl.value, validationId.toQueryParam)
     }
 

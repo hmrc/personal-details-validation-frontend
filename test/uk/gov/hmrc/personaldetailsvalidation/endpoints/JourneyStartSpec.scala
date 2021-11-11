@@ -36,15 +36,18 @@ import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, ValidationId}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
 
-class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactory {
+class JourneyStartSpec
+  extends UnitSpec
+    with GuiceOneAppPerSuite
+    with MockFactory {
 
-  val validationIdSessionKey = "ValidationId"
+  import PersonalDetailsSubmission._
 
   "findRedirect" should {
 
     "return redirect to the GET /personal-details if there's no 'validationId' in the session" in new Setup {
       journeyStart.findRedirect(completionUrl, origin) shouldBe
-        Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin))
+        Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, origin))
     }
 
     "return redirect to the given completionUrl with 'validationId' appended as a query parameter " +
@@ -68,7 +71,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
         .expects(validationId, headerCarrier, executionContext)
         .returning(EitherT.rightT[Id, ProcessingError](false))
 
-      journeyStart.findRedirect(completionUrl, origin) shouldBe Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin))
+      journeyStart.findRedirect(completionUrl, origin) shouldBe Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, origin))
     }
 
     "log an validation error and return redirect to the given completionUrl with 'technicalError' " +
