@@ -25,16 +25,14 @@
 @import uk.gov.hmrc.views.Constants._
 
 
-@this(
-    mainTemplate: layout,
-    dateField: DateInput,
-    formWithCSRF: FormWithCSRF,
-    textbox: InputText,
-    button: button,
-    h1: h1,
-    p: Paragraph,
-    preH1: preH1,
-)
+@this(mainTemplate: layout,
+      dateField: DateInput,
+      formWithCSRF: FormWithCSRF,
+      textbox: InputText,
+      button: button,
+      h1: h1,
+      p: Paragraph,
+      preH1: preH1)
 
 @(pageForm: Form[InitialPersonalDetails], completionUrl: CompletionUrl, loggedInUser: Boolean
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)

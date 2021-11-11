@@ -86,18 +86,8 @@ class MessagesEntriesSpec extends UnitSpec with GuiceOneAppPerSuite {
     cyMessages filter emptyValues shouldBe empty
   }
 
-  //TODO commenting this test case since we-cannot-check-your-identity welsh transaction not available yet
-//  "There should be different messages defined for both languages" in {
-//    defaultMessages collect entriesWithTheSameValues(in = cyMessages) shouldBe empty
-//  }
-
   private val emptyValues: ((String, String)) => Boolean = {
     case (_, v) => v.isEmpty
   }
 
-  private def entriesWithTheSameValues(in: Map[String, String]): PartialFunction[(String, String), (String, String)] = {
-    case entry@(defaultKey, defaultValue) if ( defaultKey != "header.govuk.url" && defaultValue == cyMessages(defaultKey) ) => {
-      entry
-    }
-  }
 }

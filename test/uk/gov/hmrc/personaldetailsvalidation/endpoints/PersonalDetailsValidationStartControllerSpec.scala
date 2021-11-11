@@ -32,10 +32,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import scala.concurrent.Future
 
 class PersonalDetailsValidationStartControllerSpec
-  extends UnitSpec
-    with AsyncMockFactory
-    with AsyncMockArgumentMatchers
-    with ScalaFutures {
+  extends UnitSpec with AsyncMockFactory with AsyncMockArgumentMatchers with ScalaFutures {
 
   "start" should {
 

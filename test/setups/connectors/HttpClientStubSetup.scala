@@ -17,15 +17,15 @@
 package setups.connectors
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import akka.stream.Materializer
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.Matchers._
-import play.api.{ConfigLoader, Configuration}
 import play.api.libs.json.{JsObject, JsValue, Writes}
 import play.api.libs.ws.WSClient
+import play.api.{ConfigLoader, Configuration}
 import uk.gov.hmrc.http.hooks.HttpHook
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HttpClient, HttpResponse}
 import uk.gov.hmrc.integration.servicemanager.AhcWsClientFactory
 import uk.gov.hmrc.play.http.ws.WSHttp
 
@@ -102,7 +102,7 @@ trait HttpClientStubSetup extends MockFactory {
     extends HttpClient
       with WSHttp {
 
-    implicit val mat: ActorMaterializer = ActorMaterializer()(actorSystem)
+    implicit val mat: Materializer = Materializer.apply(actorSystem)
 
     override val wsClient: WSClient = AhcWsClientFactory.createClient()
 
@@ -124,7 +124,6 @@ trait HttpClientStubSetup extends MockFactory {
 
     override protected def actorSystem: ActorSystem = ActorSystem()
 
-//    override protected def configuration: Config = None
     override protected def configuration: Config = ConfigFactory.load()
   }
 

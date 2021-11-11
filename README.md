@@ -5,9 +5,8 @@ personal-details-validation-frontend service is used to capture name, surname, d
 
 ### Test
 ```
-sbt test it:test
+sbt test
 ```
-The integration tests require chromedriver or firefoxdriver. https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver#quick-installation
 
 
 # API
