@@ -106,7 +106,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
       }.flatMap { _ =>
         appConfig.isLoggedInUser.map { isLoggedIn =>
           val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
-          if (isIVCall) {
+          if (appConfig.isMultiPageEnabled) {
             val form: Form[InitialPersonalDetails] = retrieveMainDetails match {
               case (Some(firstName), Some(lastName), Some(dob)) =>
                 val pd = InitialPersonalDetails(NonEmptyString(firstName), NonEmptyString(lastName), LocalDate.parse(dob))
@@ -166,7 +166,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def showNinoForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    if (isIVCall) {
+    if (hasMainDetailsAndIsMultiPage) {
       appConfig.isLoggedInUser.flatMap {
         isLoggedIn => Future.successful(Ok(enterYourDetailsNino(ninoForm, completionUrl, isLoggedIn)))
       }
@@ -181,7 +181,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def submitYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    if (isIVCall) {
+    if (appConfig.isMultiPageEnabled) {
       appConfig.isLoggedInUser.flatMap { isLoggedIn =>
         ninoForm.bindFromRequest().fold (
           formWithErrors => Future.successful(Ok(what_is_your_nino(formWithErrors, completionUrl, isLoggedIn))),
@@ -201,7 +201,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def submitNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    if (isIVCall) {
+    if (appConfig.isMultiPageEnabled) {
       appConfig.isLoggedInUser.flatMap { isLoggedIn =>
         ninoForm.bindFromRequest().fold(
           formWithErrors => Future.successful(Ok(enterYourDetailsNino(formWithErrors, completionUrl, isLoggedIn))),
@@ -223,7 +223,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   @Deprecated // will be removed after whatIsYourPostCode goes live
   def showPostCodeForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    if (isIVCall) {
+    if (hasMainDetailsAndIsMultiPage) {
       appConfig.isLoggedInUser.flatMap {
         isLoggedIn => Future.successful(Ok(enterYourDetailsPostcode(postcodeForm, completionUrl, isLoggedIn)))
       }
@@ -239,7 +239,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def submitYourPostCode(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    if (isIVCall) {
+    if (appConfig.isMultiPageEnabled) {
       appConfig.isLoggedInUser.flatMap { isLoggedIn =>
         postcodeForm.bindFromRequest().fold (
           formWithErrors => Future.successful(Ok(what_is_your_postcode(formWithErrors, completionUrl, isLoggedIn))),
@@ -259,7 +259,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def submitPostcode(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    if (isIVCall) {
+    if (appConfig.isMultiPageEnabled) {
       appConfig.isLoggedInUser.flatMap { isLoggedIn =>
         postcodeForm.bindFromRequest().fold (
           formWithErrors => Future.successful(Ok(enterYourDetailsPostcode(formWithErrors, completionUrl, isLoggedIn))),
@@ -294,8 +294,11 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   private def retrieveMainDetails(implicit request: Request[_]): (Option[String], Option[String], Option[String]) =
     (request.session.get(FIRST_NAME_KEY), request.session.get(LAST_NAME_KEY), request.session.get(DOB_KEY))
 
-  private def isIVCall(implicit request: Request[_]): Boolean =
-    request.session.get("journeyId").isDefined //The "journeyId" is only added when the journey started from IV
+  private def hasMainDetailsAndIsMultiPage(implicit request: Request[_]): Boolean =
+    retrieveMainDetails match {
+      case (Some(_), Some(_), Some(_)) if appConfig.isMultiPageEnabled => true
+      case _ => false
+    }
 
   def submit(completionUrl: CompletionUrl, alternativeVersion: Boolean): Action[AnyContent] = Action.async { implicit request =>
     appConfig.isLoggedInUser.flatMap {isLoggedInUser =>
