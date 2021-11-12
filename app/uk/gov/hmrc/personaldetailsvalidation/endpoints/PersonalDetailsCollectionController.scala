@@ -35,8 +35,7 @@ import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
 
-import java.time.temporal.ChronoUnit
-import java.time.{LocalDate, Period}
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -141,10 +140,11 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   }
 
-  def enterYourDetails(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String]):
-    Action[AnyContent] = Action { implicit request =>
-       Ok(enter_your_details(initialForm, completionUrl, false))
-    }
+  def enterYourDetails(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String], withError: Boolean = false): Action[AnyContent] =
+    Action { implicit request =>
+      if (withError) Ok(enter_your_details(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, false))
+      else Ok(enter_your_details(initialForm, completionUrl, false))
+  }
 
 
   def submitYourDetails(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
@@ -295,7 +295,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
       result = pdv match {
         case FailedPersonalDetailsValidation(_) => {
           val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
-          Ok(personalDetailsMain(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, isLoggedInUser)).withSession(cleanedSession)
+          Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, origin = None, withError = true)).withSession(cleanedSession)
         }
         case _ => personalDetailsSubmission.result(completionUrl, pdv, isLoggedInUser = isLoggedInUser)
       }
