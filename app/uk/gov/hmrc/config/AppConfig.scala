@@ -28,6 +28,7 @@ class AppConfig @Inject()(val configuration: Configuration, servicesConfig: Serv
   var isLoggedInUser: Future[Boolean] = Future.successful(true)
 
   lazy val ivUrl = servicesConfig.baseUrl("identity-verification")
+  //todo: remove the isMultiPageEnabled once PDV has only one journey lift.
   def isMultiPageEnabled : Boolean = configuration.getOptional[Boolean]("feature.multi-page.enabled").getOrElse(false)
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
 
