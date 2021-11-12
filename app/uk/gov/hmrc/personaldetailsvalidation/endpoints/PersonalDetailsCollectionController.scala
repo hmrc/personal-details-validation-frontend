@@ -113,7 +113,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
                 initialForm.fill(pd)
               case _ => initialForm
             }
-            Ok(personalDetailsMain(form, completionUrl, isLoggedIn)).withSession(sessionWithOrigin)
+            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, origin = origin)).withSession(sessionWithOrigin)
           } else {
             Ok(page.render(alternativeVersion, isLoggedIn)).withSession(sessionWithOrigin)
           }
@@ -156,9 +156,15 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
             LAST_NAME_KEY -> mainDetails.lastName.value,
             DOB_KEY -> mainDetails.dateOfBirth.toString
           )
-          Future.successful(Redirect(routes.PersonalDetailsCollectionController.showNinoForm(completionUrl))
-            .withSession(Session(updatedSessionData))
-          )
+          if (appConfig.isMultiPageEnabled){
+            Future.successful(Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl))
+              .withSession(Session(updatedSessionData))
+            )
+          } else {
+            Future.successful(Redirect(routes.PersonalDetailsCollectionController.showNinoForm(completionUrl))
+              .withSession(Session(updatedSessionData))
+            )
+          }
         }
       )
     }

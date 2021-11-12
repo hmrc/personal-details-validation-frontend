@@ -39,7 +39,7 @@
     form = Some(pageForm),
     loggedInUser = loggedInUser
 ) {
-    <a id="identifiersBackLink" href="${@routes.PersonalDetailsCollectionController.showNinoForm(completionUrl)}"
+    <a id="identifiersBackLink" href="@routes.PersonalDetailsCollectionController.showNinoForm(completionUrl)"
     class="govuk-body govuk-back-link">@messages("button.back.text")</a>
 
     <span class="govuk-caption-xl">@messages("personal-details.faded-heading")</span>
