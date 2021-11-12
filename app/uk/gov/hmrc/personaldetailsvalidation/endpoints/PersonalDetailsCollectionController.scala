@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import cats.data.EitherT
 import cats.implicits._
 import play.api.data.Forms.mapping
-import play.api.data.{Form, Mapping}
+import play.api.data.{Form, FormError, Mapping}
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -35,7 +35,8 @@ import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
 
-import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import java.time.{LocalDate, Period}
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -149,7 +150,11 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   def submitYourDetails(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
     appConfig.isLoggedInUser.flatMap { isLoggedIn =>
       initialForm.bindFromRequest().fold (
-        formWithErrors => Future.successful(Ok(enter_your_details(formWithErrors, completionUrl, isLoggedIn))),
+        formWithErrors => {
+          val tooYoung: Boolean = formWithErrors.errors.contains(FormError("dateOfBirth",List("personal-details.dateOfBirth.tooYoung"),List()))
+          if (tooYoung) Future.successful(Redirect(routes.PersonalDetailsCollectionController.weCannotCheckYourIdentity()))
+          else Future.successful(Ok(enter_your_details(formWithErrors, completionUrl, isLoggedIn)))
+        },
         mainDetails => {
           val updatedSessionData = request.session.data ++ Map(
             FIRST_NAME_KEY -> mainDetails.firstName.value,
