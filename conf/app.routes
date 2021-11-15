@@ -10,7 +10,7 @@ GET        /start                     uk.gov.hmrc.personaldetailsvalidation.endp
 GET        /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false, origin: Option[String])
 POST       /personal-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submit(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false)
 
-GET        /enter-your-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.enterYourDetails(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false, origin: Option[String])
+GET        /enter-your-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.enterYourDetails(completionUrl: CompletionUrl, alternativeVersion: Boolean ?= false, origin: Option[String], withError: Boolean ?= false)
 POST       /enter-your-details          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitYourDetails(completionUrl: CompletionUrl)
 
 GET        /keep-alive                uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.keepAlive()
