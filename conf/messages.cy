@@ -25,9 +25,9 @@ personal-details.postcode.invalid=Nodwch god post go iawn
 what-is-your-national-insurance-number.nino.label=Beth yw eich rhif Yswiriant Gwladol?
 what-is-your-national-insurance-number.nino.hint=Mae hwn ar eich cerdyn Yswiriant Gwladol, llythyr ynghylch budd-daliadau, slip cyflog neu P60. Er enghraifft, QQ123456C
 what-is-your-national-insurance-number.nino.invalid=Rhowch eich rhif Yswiriant Gwladol
-what-is-your-national-insurance-number.nino.unavailable=Nid wyf yn gwybod fy Rhif Yswiriant Gwladol
+what-is-your-national-insurance-number.nino.unavailable=Does dim rhif Yswiriant Gwladol gennyf, neu dwi wedi ei golli neu wedi’i anghofio
 
-what-is-your-postcode.postcode.label=Beth yw eich cod post?
+what-is-your-postcode.postcode.label=Beth yw’ch cod post?
 what-is-your-postcode.postcode.hint=Er enghraifft SW1A 2AA
 what-is-your-postcode.postcode.invalid=Nodwch god post go iawn
 
@@ -70,9 +70,8 @@ timeout-dialog.minute=funud
 timeout-dialog.seconds=eiliad
 timeout-dialog.second=eiliad
 
-# we-cannot-check-your-identity
-we-cannot-check-your-identity.header = We cannot check your identity
-we-cannot-check-your-identity.para.1 = You must be at least 15 years and 9 months old to check your identity online. This is the age you are able to get a National Insurance number.
-we-cannot-check-your-identity.para.2 = You will normally be sent a National Insurance number automatically, in the 3 months before your 16th birthday if:
-we-cannot-check-your-identity.ul.1 = you live in the UK
-we-cannot-check-your-identity.ul.2 = a parent has filled in a <a href="{0}" class="govuk-link">Child Benefit</a> claim form for you
+we-cannot-check-your-identity.header=Ni allwn wirio pwy ydych
+we-cannot-check-your-identity.para.1=Mae’n rhaid i chi fod yn 15 oed a 9 mis oed, o leiaf, i wirio pwy ydych ar-lein. Dyma’r oedran y gallwch gael rhif Yswiriant Gwladol.
+we-cannot-check-your-identity.para.2=Fel arfer, byddwch yn cael rhif Yswiriant Gwladol yn awtomatig, yn y 3 mis cyn eich pen-blwydd yn 16 oed os yw’r canlynol yn wir:
+we-cannot-check-your-identity.ul.1=rydych yn byw yn y DU
+we-cannot-check-your-identity.ul.2= mae rhiant wedi llenwi ffurflen hawlio <a href="{0}" class="govuk-link">Budd-dal Plant</a> i chi
