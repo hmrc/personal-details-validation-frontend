@@ -22,4 +22,5 @@ sealed trait MonitoringEvent
 case object TimeoutContinue extends MonitoringEvent
 case object TimedOut extends MonitoringEvent
 case object SignedOut extends MonitoringEvent
+case object UnderNinoAge extends MonitoringEvent
 
