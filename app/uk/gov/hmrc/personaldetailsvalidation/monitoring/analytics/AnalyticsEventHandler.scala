@@ -34,6 +34,7 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
       case TimeoutContinue => sendEvent(timeoutContinue)
       case TimedOut => sendEvent(timeoutSignOut)
       case SignedOut => sendEvent(signedOut)
+      case UnderNinoAge => sendEvent(underNinoAge)
       case _ => ()
     }
   }
@@ -71,6 +72,11 @@ trait AnalyticsRequestFactory {
 
   def signedOut(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "personal_detail_validation_result", "sign_out_pdv", dimensions)
+    AnalyticsRequest(clientId, Seq(gaEvent))
+  }
+
+  def underNinoAge(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
+    val gaEvent = Event("sos_iv", "personal_detail_validation_result", "under_nino_age", dimensions)
     AnalyticsRequest(clientId, Seq(gaEvent))
   }
 

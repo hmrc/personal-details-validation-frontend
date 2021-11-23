@@ -28,15 +28,16 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, SignedOut, TimedOut, TimeoutContinue}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.we_cannot_check_your_identity
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
-
 import java.time.LocalDate
+
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -337,6 +338,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   }
 
   def weCannotCheckYourIdentity(): Action[AnyContent] = Action.async { implicit request =>
-      Future.successful(Ok(weCannotCheckYourIdentityPage()))
+    eventDispatcher.dispatchEvent(SignedOut)
+    Future.successful(Ok(weCannotCheckYourIdentityPage()))
   }
 }
