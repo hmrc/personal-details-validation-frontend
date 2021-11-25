@@ -23,7 +23,6 @@
 @mainTemplate(
     title = msgs("personal-details.title"),
     completionUrl = Some(completionUrl),
-    backLinkUrl = Some(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, loggedInUser, Some(origin)).url),
     form = Some(pageForm),
     formErrors = pageForm.errors,
     loggedInUser = loggedInUser
