@@ -14,60 +14,32 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.views.ViewConfig
-@import uk.gov.hmrc.views.html.partials.Head
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.header.Header
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcReportTechnicalIssueHelper}
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-@import uk.gov.hmrc.views.html.partials.{Heading1, Paragraph}
+@import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.views.html.partials.{Head, Heading1, Paragraph}
 
 @this(
- govukLayout: GovukLayout,
- head: Head,
- hmrcHeader: hmrcHeader,
- reportTechnicalIssue: HmrcReportTechnicalIssueHelper,
- hmrcStandardFooter: HmrcStandardFooter,
- languageSelection: HmrcLanguageSelect,
- h1 : Heading1,
- p : Paragraph
+  hmrcLayout: HmrcLayout,
+  head: Head,
+  hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
+  govukErrorSummary: GovukErrorSummary,
+  h1 : Heading1,
+  p : Paragraph
 )
 
-@(pageTitle: String, heading: String, message: String
-)(implicit request: Request[_], messages: Messages, appConfig: ViewConfig, headBlock: Option[Html] = None)
-
-@beforeContentBlockSection = {
- @languageSelection(LanguageSelect(
-  messages.lang.code match {
-   case "en" => En
-   case "cy" => Cy
-  },
-  appConfig.languageLinks: _*
- ))
-}
+@(
+   pageTitle: String,
+   heading: String,
+   message: String
+)(implicit request: Request[_], messages: Messages, appConfig: ViewConfig)
 
 @contentSection = {
- @h1(content = Text(heading))
- @p(message)
+  @h1(content = Text(heading))
+  @p(message)
 }
 
-@headerBlock = {
- @hmrcHeader(Header(
-  language = if(messages.lang.code == "cy") Cy else En,
-  displayHmrcBanner = false
- ))
-}
-
-@scripts = {
- <script src='@routes.Assets.at("lib/govuk-frontend/govuk/all.js")'></script>
- <script src='@routes.Assets.at("lib/hmrc-frontend/hmrc/all.js")'></script>
- <script src='@routes.Assets.at("javascripts/scripts.js")'></script>
-}
-
-@govukLayout(
+@hmrcLayout(
  pageTitle = Some(pageTitle),
- headBlock = Some(head(headBlock, CompletionUrl("#"))),
- headerBlock = Some(headerBlock),
- scriptsBlock = Some(scripts),
- beforeContentBlock = Some(beforeContentBlockSection),
- footerBlock = Some(hmrcStandardFooter())
+ isWelshTranslationAvailable = true
 )(contentSection)
-

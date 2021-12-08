@@ -1,4 +1,4 @@
-//push any data-gtag objects in the format "key:value, key:value" into global dataLayer
+ //push any data-gtag objects in the format "key:value, key:value" into global dataLayer
 (function (d, w) {
 
 	function ready(fn) {

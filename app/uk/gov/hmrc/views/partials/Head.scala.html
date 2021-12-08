@@ -14,18 +14,17 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcTimeoutDialog
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+@import uk.gov.hmrc.views.ViewConfig
 
-@this(
-    hmrcTimeoutDialog: HmrcTimeoutDialog,
-    trackingConsentSnippet: HmrcTrackingConsentSnippet
-)
+@this(hmrcTimeoutDialog: HmrcTimeoutDialog)
 
-@(headBlock: Option[Html] = None, completionUrl: CompletionUrl)(implicit viewConfig: ViewConfig, messages: Messages)
-@trackingConsentSnippet()
+@(completionUrl: CompletionUrl, headBlock: Option[Html] = None)(implicit viewConfig: ViewConfig, messages: Messages)
+
 @headBlock
+
 <link href="@controllers.routes.Assets.at("stylesheets/styles.css")" media="screen" rel="stylesheet" type="text/css">
 
 @hmrcTimeoutDialog(
