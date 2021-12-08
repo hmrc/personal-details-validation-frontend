@@ -28,7 +28,7 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, SignedOut, TimedOut, TimeoutContinue, UnderNinoAge}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue, UnderNinoAge}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.we_cannot_check_your_identity
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage

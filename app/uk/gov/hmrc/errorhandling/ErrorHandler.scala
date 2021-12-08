@@ -31,15 +31,15 @@ import scala.concurrent.Future
 import scala.language.implicitConversions
 
 @Singleton
-class ErrorHandler @Inject()(appConfig: AppConfig, errorTemplate: error_template)
+class ErrorHandler @Inject()(appConfig: AppConfig, error_template: error_template)
                             (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, viewConfig: ViewConfig, messagesApi: MessagesApi)
   extends DwpI18nSupport(appConfig, messagesApi) {
 
   import ErrorHandler.bindingError
 
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
-                                    (implicit request: Request[_]): Html =
-    errorTemplate(pageTitle, heading, message)
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html = {
+    error_template(pageTitle, heading, message)
+  }
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
     statusCode match {

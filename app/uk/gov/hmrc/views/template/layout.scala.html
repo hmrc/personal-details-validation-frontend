@@ -15,22 +15,20 @@
  *@
 
 @import play.twirl.api.HtmlFormat
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.header.Header
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcReportTechnicalIssueHelper}
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.views.ViewConfig
-@import uk.gov.hmrc.views.html.includes.summaryErrors
 @import uk.gov.hmrc.views.html.partials.Head
+@import uk.gov.hmrc.views.html.includes.summaryErrors
 
-
-@this(govukLayout: GovukLayout,
-      head: Head,
-      hmrcHeader: hmrcHeader,
-      govukBackLink: GovukBackLink,
-      reportTechnicalIssue: HmrcReportTechnicalIssueHelper,
-      hmrcStandardFooter: HmrcStandardFooter,
-      languageSelection: HmrcLanguageSelect,
-      govukErrorSummary: GovukErrorSummary
+@this(
+    hmrcLayout: HmrcLayout,
+    govukBackLink: GovukBackLink,
+    additionalHead: Head,
+    hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
+    govukErrorSummary: GovukErrorSummary
 )
+
 @(title: String,
   headBlock: Option[Html] = None,
   scriptsBlock: Option[Html] = None,
@@ -41,28 +39,8 @@
   loggedInUser: Boolean = true
 )(contentBlock: Html)(implicit request: Request[_], requestHeader: RequestHeader, messages: Messages, appConfig: ViewConfig)
 
-@beforeContentBlockSection = {
-    @languageSelection(LanguageSelect(
-         messages.lang.code match {
-            case "en" => En
-            case "cy" => Cy
-        },
-        appConfig.languageLinks: _*
-    ))
-}
 
 @contentSection = {
-    @backLinkUrl.map{ url =>
-        <div class="govuk-!-margin-bottom-3">
-            @if(url != "None"){@govukBackLink(
-                BackLink(
-                href = url,
-                attributes = Map("id" -> "back-link"),
-                content = Text(messages("button.back.text"))
-                )
-                )}
-        </div>
-    }
     <div class="gtm-tag" data-gtag=""></div>
 
     @if(form && completionUrl) {
@@ -70,26 +48,16 @@
     }
 
     @contentBlock
+
     @if(!requestHeader.session.get("loginOrigin").exists(_.startsWith("dwp-iv"))) {
         <div class="govuk-!-margin-top-6">
-            @reportTechnicalIssue()
+            @hmrcReportTechnicalIssueHelper()
         </div>
     }
 }
 
-@headerBlock = {
-    @hmrcHeader(Header(
-        language = if(messages.lang.code == "cy") Cy else En,
-        displayHmrcBanner = false,
-        signOutHref = if (loggedInUser && appConfig.signOutEnabled) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None
-    ))
-}
-
 @scripts = {
     @scriptsBlock.getOrElse(HtmlFormat.empty)
-    <script src='@routes.Assets.at("lib/govuk-frontend/govuk/all.js")'></script>
-    <script src='@routes.Assets.at("lib/hmrc-frontend/hmrc/all.js")'></script>
-    <script src='@routes.Assets.at("javascripts/scripts.js")'></script>
     <script src='@routes.Assets.at("javascripts/gtm_dl.js")'></script>
 }
 
@@ -101,12 +69,11 @@
     }
 }
 
-@govukLayout(
+@hmrcLayout(
     pageTitle = Some(pageTitle),
-    headBlock = Some(head(headBlock, CompletionUrl(completionUrl.getOrElse("").toString))),
-    headerBlock = Some(headerBlock),
-    scriptsBlock = Some(scripts),
-    beforeContentBlock = Some(beforeContentBlockSection),
-    footerBlock = Some(hmrcStandardFooter())
+    isWelshTranslationAvailable = true,
+    additionalScriptsBlock = Some(scripts),
+    additionalHeadBlock = Some(additionalHead( CompletionUrl(completionUrl.getOrElse("").toString))),
+    signOutUrl = if (loggedInUser && appConfig.signOutEnabled) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None,
+    backLinkUrl = backLinkUrl
 )(contentSection)
-
