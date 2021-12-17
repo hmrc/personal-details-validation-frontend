@@ -1,5 +1,7 @@
 # microservice specific routes
 
+->         /hmrc-frontend                   hmrcfrontend.Routes
+
 GET        /language/:language        uk.gov.hmrc.language.ChangeLanguageEndpoint.switchToLanguage(language: String)
 
 GET        /sign-out                  uk.gov.hmrc.personaldetailsvalidation.endpoints.SignOutController.signOut()
