@@ -94,8 +94,10 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
       verifying("personal-details.postcode.invalid", postcodeFormatValidation _)
   }
 
-  private def postcodeFormatValidation(postcode: NonEmptyString) =
-    postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
+  def postcodeFormatValidation(postcode: NonEmptyString) = {
+    val postcodeRegex = """^[a-zA-Z]{1,2}[0-9][0-9a-zA-Z]?\s?[0-9][a-zA-Z]{2}$"""
+    postcode.value.matches(postcodeRegex)
+  }
 
   def showPage(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String]): Action[AnyContent] =
     Action.async { implicit request =>
