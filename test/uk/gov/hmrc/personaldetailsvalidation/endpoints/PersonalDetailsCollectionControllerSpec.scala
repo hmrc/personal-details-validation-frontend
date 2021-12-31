@@ -26,7 +26,6 @@ import org.jsoup.nodes.Document
 import org.mockito.Mockito
 import org.scalacheck.Gen
 import org.scalamock.scalatest.AsyncMockFactory
-import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.mvc.Results._
@@ -61,8 +60,7 @@ class PersonalDetailsCollectionControllerSpec
   extends UnitSpec
     with AsyncMockFactory
     with AsyncMockArgumentMatchers
-    with GuiceOneAppPerSuite
-    with ScalaFutures {
+    with GuiceOneAppPerSuite {
 
   "showPage" should {
 
@@ -496,6 +494,25 @@ class PersonalDetailsCollectionControllerSpec
       redirectLocation(await(result)(5 seconds)).get shouldBe expectedUrl
     }
   }
+
+  "Postcode Regex validation should work as expected" should{
+
+  "validate valid postcodes" in new Setup {
+    controller.postcodeFormatValidation(NonEmptyString("BN12 4XH")) shouldBe false
+    controller.postcodeFormatValidation(NonEmptyString("bn12 4xh")) shouldBe true //lowercase also ok
+    controller.postcodeFormatValidation(NonEmptyString("L13 1xy")) shouldBe true
+    controller.postcodeFormatValidation(NonEmptyString("J1 2FE")) shouldBe true
+  }
+
+  "not validate invalid postcodes that will fail on the address lookup service" in new Setup{
+    controller.postcodeFormatValidation(NonEmptyString("BN12   4XH")) shouldBe false //can't have more than 1 space
+    // according to existing code
+    controller.postcodeFormatValidation(NonEmptyString("J1 22FE")) shouldBe false //can't have 2 numbers in 2nd part
+    controller.postcodeFormatValidation(NonEmptyString("CRO 2JJ")) shouldBe false //first part doesn't end with number
+    controller.postcodeFormatValidation(NonEmptyString("CR 2JJ")) shouldBe false //first part doesn't end with number
+    controller.postcodeFormatValidation(NonEmptyString("J1 2F")) shouldBe false //2nd part doesn't end in 2 letters
+  }
+ }
 
   "showPostCodeForm" should {
     "return OK with the ability to enter the Post Code" in new Setup {
