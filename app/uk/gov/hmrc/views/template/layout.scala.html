@@ -74,6 +74,6 @@
     isWelshTranslationAvailable = true,
     additionalScriptsBlock = Some(scripts),
     additionalHeadBlock = Some(additionalHead( CompletionUrl(completionUrl.getOrElse("").toString))),
-    signOutUrl = if (loggedInUser && appConfig.signOutEnabled) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None,
+    signOutUrl = if (loggedInUser) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None,
     backLinkUrl = backLinkUrl
 )(contentSection)
