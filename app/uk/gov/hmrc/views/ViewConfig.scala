@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,6 @@ class ViewConfig @Inject()(val configuration: Configuration,
   lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")
   lazy val timeout: Int = configuration.get[Int]("timeoutDialog.timeout-seconds")
   lazy val timeoutCountdown: Int = configuration.get[Int]("timeoutDialog.timeout-countdown-seconds")
-
-  lazy val signOutEnabled: Boolean = configuration.get[Boolean]("isSignOutEnabled")
 
   def languageMap: Map[String, Lang] =
     configuration.load[Seq[String]]("play.i18n.langs", default = Seq("en", "cy"))
