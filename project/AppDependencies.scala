@@ -1,9 +1,8 @@
-import play.sbt.PlayImport._
 import sbt._
 
 private object AppDependencies {
 
-  def apply(): Seq[ModuleID] = compile ++ test ++ it
+  def apply(): Seq[ModuleID] = compile ++ test
 
   private val compile = Seq(
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.2",
@@ -24,10 +23,4 @@ private object AppDependencies {
     "org.pegdown" % "pegdown" % "1.6.0" % Test
   )
 
-  private val it = Seq(
-    "com.github.tomakehurst" % "wiremock-jre8" % "2.27.2" % IntegrationTest,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % IntegrationTest,
-    "uk.gov.hmrc" %% "service-integration-test" % "1.1.0-play-27" % IntegrationTest,
-    "org.pegdown" % "pegdown" % "1.6.0" % IntegrationTest
-  )
 }

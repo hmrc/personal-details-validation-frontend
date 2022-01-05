@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.ExecutionContext
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class PersonalDetailsValidationStartController @Inject()(journeyStart: FuturedJourneyStart,
                                                         mcc: MessagesControllerComponents)
-                                                        (implicit ec: ExecutionContext)
   extends FrontendController(mcc) {
 
   def start(completionUrl: CompletionUrl, origin: Option[String]): Action[AnyContent] = Action.async { implicit request =>

@@ -16,19 +16,17 @@
 
 package uk.gov.hmrc.formmappings
 
-import java.time.LocalDate
-
 import generators.Generators.Implicits._
 import org.scalacheck.Gen
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.data.FormError
 import play.api.data.Forms.mapping
 import support.UnitSpec
 import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
 
-class MappingsSpec
-  extends UnitSpec
-    with GeneratorDrivenPropertyChecks {
+import java.time.LocalDate
+
+class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
   import Mappings._
 

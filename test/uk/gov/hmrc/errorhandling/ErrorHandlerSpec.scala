@@ -30,10 +30,7 @@ import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
 import uk.gov.hmrc.views.html.template.error_template
 
-class ErrorHandlerSpec
-  extends UnitSpec
-    with GuiceOneAppPerSuite
-    with ScalaFutures {
+class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite with ScalaFutures {
 
   "standardErrorTemplate" should {
 
