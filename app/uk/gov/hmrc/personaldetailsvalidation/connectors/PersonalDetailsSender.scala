@@ -19,12 +19,12 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 import play.api.http.Status.CREATED
 import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.errorhandling.ProcessingError
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.higherKinds
 
 
 @Singleton
