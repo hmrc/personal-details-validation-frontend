@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.partials.Head
 @import uk.gov.hmrc.views.html.includes.summaryErrors
+@import views.html.helper.CSPNonce
 
 @this(
     hmrcLayout: HmrcLayout,
@@ -58,7 +59,7 @@
 
 @scripts = {
     @scriptsBlock.getOrElse(HtmlFormat.empty)
-    <script src='@routes.Assets.at("javascripts/gtm_dl.js")'></script>
+    <script @{CSPNonce.attr} src='@routes.Assets.at("javascripts/gtm_dl.js")'></script>
 }
 
 @pageTitle = @{
@@ -75,5 +76,6 @@
     additionalScriptsBlock = Some(scripts),
     additionalHeadBlock = Some(additionalHead( CompletionUrl(completionUrl.getOrElse("").toString))),
     signOutUrl = if (loggedInUser) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None,
-    backLinkUrl = backLinkUrl
+    backLinkUrl = backLinkUrl,
+    nonce = CSPNonce.get
 )(contentSection)

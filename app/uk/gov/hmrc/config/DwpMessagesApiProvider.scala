@@ -29,7 +29,7 @@ import scala.collection.breakOut
 
 class DwpMessagesApiProvider @Inject()(environment: Environment, configuration: Configuration,
                                        langs: Langs, httpConfiguration: HttpConfiguration)
-  extends DefaultMessagesApiProvider(environment, configuration, langs, httpConfiguration) with Logging{
+  extends DefaultMessagesApiProvider(environment, configuration, langs, httpConfiguration) with Logging {
 
   override protected def loadAllMessages: Map[String, Map[String, String]] = {
     (langs.availables.map { lang =>

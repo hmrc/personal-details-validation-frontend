@@ -20,8 +20,8 @@ import akka.Done
 import play.api.Logging
 import play.api.libs.json.{Json, OWrites}
 import uk.gov.hmrc.config.AppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,7 +36,7 @@ class AnalyticsConnector @Inject() (appConfig: AppConfig, http: HttpClient) exte
 
   def sendEvent(request: AnalyticsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Done] = {
     val url = s"$serviceUrl/platform-analytics/event"
-    http.POST(url, request).map(_ => Done).recover {
+    http.POST[AnalyticsRequest, HttpResponse](url, request).map(_ => Done).recover {
       case _ : Throwable =>
         logger.error(s"Couldn't send analytics event $request")
         Done
