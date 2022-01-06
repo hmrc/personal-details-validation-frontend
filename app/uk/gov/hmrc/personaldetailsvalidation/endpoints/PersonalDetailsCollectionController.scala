@@ -34,10 +34,9 @@ import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
+
 import java.time.LocalDate
-
 import javax.inject.Inject
-
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -143,10 +142,12 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   }
 
-  def enterYourDetails(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String], withError: Boolean = false): Action[AnyContent] =
-    Action { implicit request =>
-      if (withError) Ok(enter_your_details(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, false))
-      else Ok(enter_your_details(initialForm, completionUrl, false))
+  def enterYourDetails(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String],
+                       withError: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+        if (withError) Future.successful(Ok(enter_your_details(initialForm.withGlobalError("personal-details" + ".validation.failed"), completionUrl, isLoggedIn)))
+        else Future.successful(Ok(enter_your_details(initialForm, completionUrl, isLoggedIn)))
+      }
   }
 
 

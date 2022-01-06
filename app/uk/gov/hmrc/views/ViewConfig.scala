@@ -20,15 +20,20 @@ import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.i18n.Lang
 import play.api.mvc.Call
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.config.DwpMessagesApiProvider
 import uk.gov.hmrc.config.implicits._
 import uk.gov.hmrc.config.ops._
 import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, Language}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.language.routes
+
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ViewConfig @Inject()(val configuration: Configuration,
-                           protected val dwpMessagesApiProvider: DwpMessagesApiProvider)
+                           protected val dwpMessagesApiProvider: DwpMessagesApiProvider,
+                           val authConnector: AuthConnector) extends AuthorisedFunctions
 {
   lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
   lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
@@ -51,6 +56,14 @@ class ViewConfig @Inject()(val configuration: Configuration,
     dwpMessagesApiProvider.get.messages.keySet.find(_ == validatedCode) match {
       case Some(_) => code
       case None => throw new RuntimeException(s"No messages.$code defined")
+    }
+  }
+
+  def isLoggedIn(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+    authorised(){
+      Future.successful(true)
+    }.recover{
+      case _ => false
     }
   }
 
