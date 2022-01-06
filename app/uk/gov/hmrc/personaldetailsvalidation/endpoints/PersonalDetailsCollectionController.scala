@@ -182,22 +182,22 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   def showNinoForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (hasMainDetailsAndIsMultiPage) {
-      appConfig.isLoggedInUser.flatMap {
-        isLoggedIn => Future.successful(Ok(enterYourDetailsNino(ninoForm, completionUrl, isLoggedIn)))
+      viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+        Future.successful(Ok(enterYourDetailsNino(ninoForm, completionUrl, isLoggedIn)))
       }
     } else
       Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None)))
   }
 
   def whatIsYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    appConfig.isLoggedInUser.flatMap {
-      isLoggedIn => Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn)))
+    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+      Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn)))
     }
   }
 
   def submitYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
-      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+      viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
         ninoForm.bindFromRequest().fold (
           formWithErrors => Future.successful(Ok(what_is_your_nino(formWithErrors, completionUrl, isLoggedIn))),
           ninoForm => {
@@ -217,7 +217,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   def submitNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
-      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+      viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
         ninoForm.bindFromRequest().fold(
           formWithErrors => Future.successful(Ok(enterYourDetailsNino(formWithErrors, completionUrl, isLoggedIn))),
           ninoForm => {
