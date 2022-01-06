@@ -73,10 +73,14 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     }
   }
 
-  def enterYourDetails(implicit completionUrl: CompletionUrl): Action[AnyContent] = Action.async {
+  def enterYourDetails(completionUrl: CompletionUrl, notMarch: Boolean = false): Action[AnyContent] = Action.async {
     implicit request =>
       appConfig.isLoggedInUser.map { isLoggedIn =>
-        Ok(enter_your_details(initialForm, completionUrl, loggedInUser = isLoggedIn))
+        if (notMarch) {
+          Ok(enter_your_details(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, loggedInUser = isLoggedIn))
+        } else {
+          Ok(enter_your_details(initialForm, completionUrl, loggedInUser = isLoggedIn))
+        }
       }
   }
 
@@ -154,8 +158,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
         case SuccessfulPersonalDetailsValidation(_) => personalDetailsSubmission.successResult(completionUrl, pdv)
         case _ =>
           val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
-          Ok(enter_your_details(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, isLoggedInUser))
-            .withSession(cleanedSession)
+          Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, notMarch = true)).withSession(cleanedSession)
       }
     } yield result
   }.recover {

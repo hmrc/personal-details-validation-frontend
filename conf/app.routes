@@ -14,7 +14,7 @@ GET        /redirect-after-timeout                    uk.gov.hmrc.personaldetail
 GET        /start                                     uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: CompletionUrl, origin: Option[String])
 GET        /personal-details                          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, origin: Option[String])
 
-GET        /enter-your-details                        uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.enterYourDetails(completionUrl: CompletionUrl)
+GET        /enter-your-details                        uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.enterYourDetails(completionUrl: CompletionUrl, notMarch: Boolean ?= false)
 POST       /enter-your-details                        uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitYourDetails(completionUrl: CompletionUrl)
 
 GET        /what-is-your-national-insurance-number    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.whatIsYourNino(completionUrl: CompletionUrl)
