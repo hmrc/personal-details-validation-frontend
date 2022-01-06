@@ -17,7 +17,6 @@
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import akka.stream.Materializer
-import cats.Id
 import com.kenshoo.play.metrics.Metrics
 import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -26,23 +25,25 @@ import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.PersonalDetailsSender
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
 
+import scala.concurrent.ExecutionContext
+
 class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite with ScalaCheckDrivenPropertyChecks {
 
   private trait Setup {
-    implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
-    implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders(("origin", origin))
-    implicit val materializer: Materializer = app.materializer
 
     val origin: String = "Unknown-Origin"
 
-    val personalDetailsValidationConnector = mock[PersonalDetailsSender[Id]]
-    val logger = mock[Logger]
-    val metrics = mock[Metrics]
+    implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
+    implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders(("origin", origin))
+    implicit val materializer: Materializer = app.materializer
+    implicit val ec: ExecutionContext = ExecutionContext.global
+
+    val personalDetailsValidationConnector: PersonalDetailsSender = mock[PersonalDetailsSender]
+    val metrics: Metrics = mock[Metrics]
     val pdvMetrics = new MockPdvMetrics
 
     class MockPdvMetrics extends PdvMetrics(metrics) {
@@ -64,6 +65,6 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
       }
     }
 
-    new PersonalDetailsSubmission[Id](personalDetailsValidationConnector, pdvMetrics, logger)
+    new PersonalDetailsSubmission(personalDetailsValidationConnector, pdvMetrics)
   }
 }

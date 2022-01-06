@@ -16,15 +16,10 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import cats.Monad
-import cats.data.EitherT
-import cats.implicits._
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
-import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.logging.Logger
-import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedPersonalDetailsSender, PersonalDetailsSender}
+import uk.gov.hmrc.personaldetailsvalidation.connectors.PersonalDetailsSender
 import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
@@ -33,33 +28,19 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-private class FuturedPersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: FuturedPersonalDetailsSender,
-                                                         pdvMetrics: PdvMetrics,
-                                                         logger: Logger)
-                                                        (implicit ec: ExecutionContext)
-  extends PersonalDetailsSubmission[Future](personalDetailsValidationConnector, pdvMetrics, logger)
-
-private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetailsValidationConnector: PersonalDetailsSender[Interpretation],
-                                                                   pdvMetrics: PdvMetrics,
-                                                                   logger: Logger) {
+class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: PersonalDetailsSender,
+                                          pdvMetrics: PdvMetrics)(implicit ec: ExecutionContext){
 
   val validationIdSessionKey = "ValidationId"
 
-  def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl)
+  def submitPersonalDetails(personalDetails: PersonalDetails)
                            (implicit request: Request[_],
-                            headerCarrier: HeaderCarrier,
-                            executionContext: ExecutionContext) : EitherT[Interpretation, Result, PersonalDetailsValidation] = {
+                            headerCarrier: HeaderCarrier): Future[PersonalDetailsValidation] = {
     val origin = request.session.get("origin").getOrElse("Unknown-Origin")
     for {
-      personalDetailsValidation <- personalDetailsValidationConnector.submitValidationRequest(personalDetails, origin) leftMap errorToRedirect(to = completionUrl)
+      personalDetailsValidation <- personalDetailsValidationConnector.submitValidationRequest(personalDetails, origin)
       _ = pdvMetrics.matchPersonalDetails(personalDetails)
     } yield personalDetailsValidation
-  }
-
-  private def errorToRedirect(to: CompletionUrl): ProcessingError => Result = {
-    error =>
-      logger.error(error)
-      Redirect(to.value, error.toQueryParam)
   }
 
   private val UUIDRegex = """[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}"""
