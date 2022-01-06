@@ -25,8 +25,6 @@ import scala.concurrent.Future
 @Singleton
 class AppConfig @Inject()(val configuration: Configuration, servicesConfig: ServicesConfig)  {
 
-  var isLoggedInUser: Future[Boolean] = Future.successful(false)
-
   lazy val ivUrl = servicesConfig.baseUrl("identity-verification")
   //todo: remove the isMultiPageEnabled once PDV has only one journey lift.
   def isMultiPageEnabled : Boolean = configuration.getOptional[Boolean]("feature.multi-page.enabled").getOrElse(false)

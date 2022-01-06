@@ -63,7 +63,7 @@ object ViewConfigMockFactory extends MockFactory with GuiceOneAppPerSuite {
 
     dwpMessagesApi
   }
-  
+
   val authConnector: AuthConnector = app.injector.instanceOf[AuthConnector]
 
   def apply(): ViewConfig =
