@@ -22,17 +22,20 @@
 @import uk.gov.hmrc.views.html.partials._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 
-@this(mainTemplate: layout,
-      textbox: InputText,
-      button: button,
-      h1: h1,
-      preH1: preH1,
-      formWithCSRF: PlayFrontendFormWithCSRF)
-
+@this(
+        mainTemplate: layout,
+        textbox: InputText,
+        button: button,
+        h1: h1,
+        preH1: preH1,
+        formWithCSRF: PlayFrontendFormWithCSRF,
+)
 @(pageForm: Form[PostcodeDetails],
         completionUrl: CompletionUrl,
         loggedInUser: Boolean
 )(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
+
+@origin = @{ request.session.get("loginOrigin").getOrElse("")}
 
 @mainTemplate(
     title = msgs("personal-details.title"),

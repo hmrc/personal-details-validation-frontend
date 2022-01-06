@@ -27,11 +27,12 @@ class AppConfig @Inject()(val configuration: Configuration, servicesConfig: Serv
 
   var isLoggedInUser: Future[Boolean] = Future.successful(false)
 
-  lazy val ivUrl: String = servicesConfig.baseUrl("identity-verification")
-
+  lazy val ivUrl = servicesConfig.baseUrl("identity-verification")
+  //todo: remove the isMultiPageEnabled once PDV has only one journey lift.
+  def isMultiPageEnabled : Boolean = configuration.getOptional[Boolean]("feature.multi-page.enabled").getOrElse(false)
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
 
-  lazy val platformAnalyticsUrl: String = servicesConfig.baseUrl("platform-analytics")
+  lazy val platformAnalyticsUrl = servicesConfig.baseUrl("platform-analytics")
 
   lazy val logoutPage: String = servicesConfig.getConfString("logoutPage", "https://www.access.service.gov.uk/logout")
   lazy val basGatewayUrl: String = servicesConfig.getConfString("auth.bas-gateway.url", throw new RuntimeException("Bas gateway url required"))

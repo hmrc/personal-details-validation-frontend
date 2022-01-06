@@ -17,33 +17,253 @@
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import akka.stream.Materializer
+import cats.Id
+import cats.data.EitherT
 import com.kenshoo.play.metrics.Metrics
+import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+import play.api.http.HeaderNames
+import play.api.mvc.Results._
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import play.twirl.api.Html
 import support.UnitSpec
+import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.logging.Logger
 import uk.gov.hmrc.personaldetailsvalidation.connectors.PersonalDetailsSender
+import uk.gov.hmrc.personaldetailsvalidation.generators.ObjectGenerators._
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.completionUrls
+import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
+import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
+import scala.concurrent.{ExecutionContext, Future}
 
 class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite with ScalaCheckDrivenPropertyChecks {
 
+  import PersonalDetailsSubmission._
+
+  val isLoggedInUser = true
+
+  "bindValidateAndRedirect" should {
+
+    "return BAD_REQUEST when form binds with errors" in new Setup {
+
+      val completionUrl = completionUrls.generateOne
+
+      (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(false, true, request, completionUrl)
+        .returning(Left(Html("page with errors")))
+
+      val result = submitter.submit(completionUrl, isLoggedInUser = isLoggedInUser)
+
+      status(result) shouldBe BAD_REQUEST
+      contentAsString(Future.successful(result)) shouldBe "page with errors"
+      result.session.get(validationIdSessionKey) shouldBe None
+    }
+
+    "bind the request to PersonalDetailsWithNino, " +
+      "post it to the validation service, " +
+      "return redirect to completionUrl with appended validationId query parameter " +
+      "if post to the validation service returned successful personal details validation " +
+      "and we update the GA counter for Ninos" in new Setup {
+
+      val completionUrl = completionUrls.generateOne
+      val personalDetails = personalDetailsObjects.generateOne
+      val personalDetailsValidation = successfulPersonalDetailsValidationObjects.generateOne
+
+      val ninoCounterBefore = pdvMetrics.ninoCounter
+      val postCodeCounterBefore = pdvMetrics.postCodeCounter
+
+      (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(false, true, request, completionUrl)
+        .returning(Right(personalDetails))
+
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _:String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, origin, headerCarrier, executionContext)
+        .returning(EitherT.rightT[Id, ProcessingError](personalDetailsValidation))
+
+      val result = submitter.submit(completionUrl, isLoggedInUser = isLoggedInUser)
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(s"${completionUrl.value}&validationId=${personalDetailsValidation.validationId}")
+      result.session.get(validationIdSessionKey) shouldBe Some(personalDetailsValidation.validationId.value)
+
+      pdvMetrics.ninoCounter shouldBe (ninoCounterBefore + 1)
+      postCodeCounterBefore shouldBe pdvMetrics.postCodeCounter
+    }
+
+    "bind the request to PersonalDetailsWithPostcode, " +
+      "post it to the validation service, " +
+      "return redirect to completionUrl with appended validationId query parameter " +
+      "if post to the validation service returned successful personal details validation " +
+      "and we update the GA counter for PostCode" in new Setup {
+
+      val completionUrl = completionUrls.generateOne
+      val personalDetails = personalDetailsObjectsWithPostcode.generateOne
+      val personalDetailsValidation = successfulPersonalDetailsValidationObjects.generateOne
+
+      val ninoCounterBefore = pdvMetrics.ninoCounter
+      val postCodeCounterBefore = pdvMetrics.postCodeCounter
+
+      (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(true, true, request, completionUrl)
+        .returning(Right(personalDetails))
+
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, origin, headerCarrier, executionContext)
+        .returning(EitherT.rightT[Id, ProcessingError](personalDetailsValidation))
+
+      val result = submitter.submit(completionUrl, true, isLoggedInUser = isLoggedInUser)
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(s"${completionUrl.value}&validationId=${personalDetailsValidation.validationId}")
+      result.session.get(validationIdSessionKey) shouldBe Some(personalDetailsValidation.validationId.value)
+
+      ninoCounterBefore shouldBe pdvMetrics.ninoCounter
+      (postCodeCounterBefore + 1) shouldBe pdvMetrics.postCodeCounter
+    }
+
+    "bind the request to PersonalDetailsWithNino, " +
+      "post it to the validation service, " +
+      "the service returns an error of some kind" +
+      "and we do not update the GA counter for Nino" in new Setup {
+
+      val completionUrl = completionUrls.generateOne
+      val personalDetails = personalDetailsObjects.generateOne
+      val usePostCode = false
+
+      val ninoCounterBefore = pdvMetrics.ninoCounter
+      val postCodeCounterBefore = pdvMetrics.postCodeCounter
+
+      (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(usePostCode, true, request, completionUrl)
+        .returning(Right(personalDetails))
+
+      val error = ProcessingError("some message")
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, origin, headerCarrier, executionContext)
+        .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
+
+      (logger.error(_: ProcessingError)).expects(error)
+
+      submitter.submit(completionUrl, usePostCode, isLoggedInUser = isLoggedInUser)
+
+      ninoCounterBefore shouldBe pdvMetrics.ninoCounter
+      postCodeCounterBefore shouldBe pdvMetrics.postCodeCounter
+    }
+
+    "bind the request to PersonalDetailsWithPostcode, " +
+      "post it to the validation service, " +
+      "the service returns an error of some kind" +
+      "and we do not update the GA counter for PostCode" in new Setup {
+
+      val completionUrl = completionUrls.generateOne
+      val personalDetails = personalDetailsObjects.generateOne
+      val usePostCode = true
+
+      val ninoCounterBefore = pdvMetrics.ninoCounter
+      val postCodeCounterBefore = pdvMetrics.postCodeCounter
+
+      (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+        .expects(usePostCode, true, request, completionUrl)
+        .returning(Right(personalDetails))
+
+      val error = ProcessingError("some message")
+      (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(personalDetails, origin, headerCarrier, executionContext)
+        .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
+
+      (logger.error(_: ProcessingError)).expects(error)
+
+      submitter.submit(completionUrl, usePostCode, isLoggedInUser = isLoggedInUser)
+
+      ninoCounterBefore shouldBe pdvMetrics.ninoCounter
+      postCodeCounterBefore shouldBe pdvMetrics.postCodeCounter
+    }
+
+    val usePostcodeFormOptions = List(true, false)
+
+    usePostcodeFormOptions.foreach { usePostcodeForm =>
+
+      "bind the request to PersonalDetails, " +
+        "post it to the validation service, " +
+        "render the form with error" +
+        s"if post to the validation service returned failed personal details validation and usePostcodeForm=$usePostcodeForm" in new Setup {
+
+        val completionUrl = completionUrls.generateOne
+        val personalDetails = personalDetailsObjects.generateOne
+        val failedPersonalDetailsValidation = failedPersonalDetailsValidationObjects.generateOne
+        val completionUrlWithValidationId = CompletionUrl(Redirect(completionUrl.value, failedPersonalDetailsValidation.validationId.toQueryParam).header.headers.getOrElse(HeaderNames.LOCATION, completionUrl.value))
+
+        (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+          .expects(usePostcodeForm, true, request, completionUrl)
+          .returning(Right(personalDetails))
+
+        (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(personalDetails, origin, headerCarrier, executionContext)
+          .returning(EitherT.rightT[Id, ProcessingError](failedPersonalDetailsValidation))
+
+        val html = Html("OK")
+
+        (page.renderValidationFailure(_: Boolean, _: Boolean)(_: CompletionUrl, _: Request[_]))
+          .expects(usePostcodeForm, true, completionUrlWithValidationId, request)
+          .returning(html)
+
+        val result = submitter.submit(completionUrl, usePostcodeForm, isLoggedInUser = isLoggedInUser)
+
+        status(result) shouldBe OK
+        bodyOf(result) shouldBe html.toString()
+
+        result.session.get(validationIdSessionKey) shouldBe Some(failedPersonalDetailsValidation.validationId.value)
+      }
+    }
+
+    usePostcodeFormOptions.foreach { usePostcodeForm =>
+
+      "bind the request to PersonalDetails, " +
+        "post it to the validation service and " +
+        "return redirect to completionUrl with appended 'technicalError' query parameter " +
+        s"if post to the validation service fails and usePostcodeForm=$usePostcodeForm" in new Setup {
+
+        val completionUrl = completionUrls.generateOne
+        val personalDetails = personalDetailsObjects.generateOne
+        (page.bindFromRequest(_: Boolean, _: Boolean)(_: Request[_], _: CompletionUrl))
+          .expects(usePostcodeForm, true, request, completionUrl)
+          .returning(Right(personalDetails))
+
+        val error = ProcessingError("some message")
+        (personalDetailsValidationConnector.submitValidationRequest(_: PersonalDetails, _: String)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(personalDetails, origin, headerCarrier, executionContext)
+          .returning(EitherT.leftT[Id, PersonalDetailsValidation](error))
+
+        (logger.error(_: ProcessingError)).expects(error)
+
+        val result = submitter.submit(completionUrl, usePostcodeForm, isLoggedInUser = isLoggedInUser)
+
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(s"${completionUrl.value}&technicalError=")
+
+        result.session.get(validationIdSessionKey) shouldBe None
+      }
+    }
+  }
+
   private trait Setup {
-
-    val origin: String = "Unknown-Origin"
-
     implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier().withExtraHeaders(("origin", origin))
     implicit val materializer: Materializer = app.materializer
-    implicit val ec: ExecutionContext = ExecutionContext.global
 
-    val personalDetailsValidationConnector: PersonalDetailsSender = mock[PersonalDetailsSender]
-    val metrics: Metrics = mock[Metrics]
+    val origin: String = "Unknown-Origin"
+
+    val page = mock[PersonalDetailsPage]
+    val personalDetailsValidationConnector = mock[PersonalDetailsSender[Id]]
+    val logger = mock[Logger]
+    val metrics = mock[Metrics]
     val pdvMetrics = new MockPdvMetrics
 
     class MockPdvMetrics extends PdvMetrics(metrics) {
@@ -65,6 +285,6 @@ class PersonalDetailsSubmissionSpec extends UnitSpec with MockFactory with Guice
       }
     }
 
-    new PersonalDetailsSubmission(personalDetailsValidationConnector, pdvMetrics)
+    val submitter = new PersonalDetailsSubmission[Id](page, personalDetailsValidationConnector, pdvMetrics, logger)
   }
 }

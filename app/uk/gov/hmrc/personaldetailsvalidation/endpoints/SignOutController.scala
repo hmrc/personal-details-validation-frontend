@@ -41,7 +41,7 @@ class SignOutController @Inject()(cc: MessagesControllerComponents, eventDispatc
     Future.successful(Redirect(appConfig.ggLogoutUrl, ggRedirectParms))
   }
 
-  def signedOut(): Action[AnyContent] = Action {
+  def signedOut(): Action[AnyContent] = Action { implicit request =>
     appConfig.isLoggedInUser = Future.successful(false)
     Redirect(appConfig.logoutPage)
   }

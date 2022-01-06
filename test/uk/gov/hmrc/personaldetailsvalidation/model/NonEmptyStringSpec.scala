@@ -17,10 +17,12 @@
 package uk.gov.hmrc.personaldetailsvalidation.model
 
 import org.scalacheck.Gen
-import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import support.UnitSpec
 
-class NonEmptyStringSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
+class NonEmptyStringSpec
+  extends UnitSpec
+    with GeneratorDrivenPropertyChecks {
 
   "apply" should {
 
