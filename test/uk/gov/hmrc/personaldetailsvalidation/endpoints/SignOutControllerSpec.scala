@@ -16,20 +16,18 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import org.mockito.Mockito
-import org.scalamock.scalatest.AsyncMockFactory
+import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Request, Result}
 import play.api.test.FakeRequest
-import scalamock.AsyncMockArgumentMatchers
 import support.UnitSpec
 import uk.gov.hmrc.config.AppConfig
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, SignedOut}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, MonitoringEvent, SignedOut}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class SignOutControllerSpec extends UnitSpec with AsyncMockFactory with AsyncMockArgumentMatchers with GuiceOneAppPerSuite {
+class SignOutControllerSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite {
 
   val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
@@ -42,9 +40,9 @@ class SignOutControllerSpec extends UnitSpec with AsyncMockFactory with AsyncMoc
 
   "SignOut Controller" should {
     "Redirect to logout" in {
-      val result: Future[Result]  = controller.signOut().apply(request)
+      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(SignedOut, *, *, *)
 
-      Mockito.verify(mockEventDispatcher).dispatchEvent(SignedOut)
+      val result: Future[Result]  = controller.signOut().apply(request)
 
       val expectedRedirectLocation =
         Some("http://localhost:9553/bas-gateway/sign-out-without-state?continue=http%3A%2F%2Flocalhost%3A9968%2Fpersonal-details-validation%2Fsigned-out&origin=pve")
