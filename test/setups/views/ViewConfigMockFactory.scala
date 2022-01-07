@@ -21,6 +21,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.HttpConfiguration
 import play.api.i18n.DefaultLangsProvider
 import play.api.{ConfigLoader, Configuration, Environment}
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.DwpMessagesApiProvider
 import uk.gov.hmrc.views.ViewConfig
 
@@ -63,6 +64,8 @@ object ViewConfigMockFactory extends MockFactory with GuiceOneAppPerSuite {
     dwpMessagesApi
   }
 
+  val authConnector: AuthConnector = app.injector.instanceOf[AuthConnector]
+
   def apply(): ViewConfig =
-    new ViewConfig(configuration, messagesApi)
+    new ViewConfig(configuration, messagesApi, authConnector)
 }

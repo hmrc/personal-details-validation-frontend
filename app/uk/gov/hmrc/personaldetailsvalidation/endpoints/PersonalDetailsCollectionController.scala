@@ -34,10 +34,9 @@ import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
+
 import java.time.LocalDate
-
 import javax.inject.Inject
-
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -101,31 +100,25 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   def showPage(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String]): Action[AnyContent] =
     Action.async { implicit request =>
-      authorised(){
-        appConfig.isLoggedInUser = Future.successful(true)
-        appConfig.isLoggedInUser
-      }.recover {
-        case ex: Exception => appConfig.isLoggedInUser = Future.successful(false)
-      }.flatMap { _ =>
-        appConfig.isLoggedInUser.map { isLoggedIn =>
-          val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
-          if (appConfig.isMultiPageEnabled) {
-            val form: Form[InitialPersonalDetails] = retrieveMainDetails match {
-              case (Some(firstName), Some(lastName), Some(dob)) =>
-                val pd = InitialPersonalDetails(NonEmptyString(firstName), NonEmptyString(lastName), LocalDate.parse(dob))
-                initialForm.fill(pd)
-              case _ => initialForm
-            }
-            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, origin = origin)).withSession(sessionWithOrigin)
-          } else {
-            Ok(page.render(alternativeVersion, isLoggedIn)).withSession(sessionWithOrigin)
-          }
+      val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
+      if (appConfig.isMultiPageEnabled) {
+        val form: Form[InitialPersonalDetails] = retrieveMainDetails match {
+          case (Some(firstName), Some(lastName), Some(dob)) =>
+            val pd = InitialPersonalDetails(NonEmptyString(firstName), NonEmptyString(lastName), LocalDate.parse(dob))
+            initialForm.fill(pd)
+          case _ => initialForm
+        }
+        Future.successful(Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, origin =
+          origin)).withSession(sessionWithOrigin))
+      } else {
+        viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+          Future.successful(Ok(page.render(alternativeVersion, isLoggedIn)).withSession(sessionWithOrigin))
         }
       }
     }
 
   def submitMainDetails(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
       initialForm.bindFromRequest().fold (
         formWithErrors => Future.successful(Ok(personalDetailsMain(formWithErrors, completionUrl, isLoggedIn))),
         mainDetails => {
@@ -143,15 +136,17 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   }
 
-  def enterYourDetails(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String], withError: Boolean = false): Action[AnyContent] =
-    Action { implicit request =>
-      if (withError) Ok(enter_your_details(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, false))
-      else Ok(enter_your_details(initialForm, completionUrl, false))
+  def enterYourDetails(implicit completionUrl: CompletionUrl, alternativeVersion: Boolean, origin: Option[String],
+                       withError: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+        if (withError) Future.successful(Ok(enter_your_details(initialForm.withGlobalError("personal-details" + ".validation.failed"), completionUrl, isLoggedIn)))
+        else Future.successful(Ok(enter_your_details(initialForm, completionUrl, isLoggedIn)))
+      }
   }
 
 
   def submitYourDetails(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
       initialForm.bindFromRequest().fold (
         formWithErrors => {
           val tooYoung: Boolean = formWithErrors.errors.contains(FormError("dateOfBirth",List("personal-details.dateOfBirth.tooYoung"),List()))
@@ -181,22 +176,22 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   def showNinoForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (hasMainDetailsAndIsMultiPage) {
-      appConfig.isLoggedInUser.flatMap {
-        isLoggedIn => Future.successful(Ok(enterYourDetailsNino(ninoForm, completionUrl, isLoggedIn)))
+      viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+        Future.successful(Ok(enterYourDetailsNino(ninoForm, completionUrl, isLoggedIn)))
       }
     } else
       Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None)))
   }
 
   def whatIsYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    appConfig.isLoggedInUser.flatMap {
-      isLoggedIn => Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn)))
+    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+      Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn)))
     }
   }
 
   def submitYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
-      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+      viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
         ninoForm.bindFromRequest().fold (
           formWithErrors => Future.successful(Ok(what_is_your_nino(formWithErrors, completionUrl, isLoggedIn))),
           ninoForm => {
@@ -216,7 +211,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   def submitNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
-      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+      viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
         ninoForm.bindFromRequest().fold(
           formWithErrors => Future.successful(Ok(enterYourDetailsNino(formWithErrors, completionUrl, isLoggedIn))),
           ninoForm => {
@@ -238,8 +233,8 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
   @Deprecated // will be removed after whatIsYourPostCode goes live
   def showPostCodeForm(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (hasMainDetailsAndIsMultiPage) {
-      appConfig.isLoggedInUser.flatMap {
-        isLoggedIn => Future.successful(Ok(enterYourDetailsPostcode(postcodeForm, completionUrl, isLoggedIn)))
+      viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+         Future.successful(Ok(enterYourDetailsPostcode(postcodeForm, completionUrl, isLoggedIn)))
       }
     } else
       Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, false, None)))
@@ -247,14 +242,14 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   /** This endpoint will replace showPostCodeForm after it goes live  */
   def whatIsYourPostCode(completionUrl: CompletionUrl) = Action.async { implicit request =>
-    appConfig.isLoggedInUser.flatMap {
-      isLoggedIn => Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn)))
+    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+       Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn)))
     }
   }
 
   def submitYourPostCode(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
-      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+      viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
         postcodeForm.bindFromRequest().fold (
           formWithErrors => Future.successful(Ok(what_is_your_postcode(formWithErrors, completionUrl, isLoggedIn))),
           postCodeForm => {
@@ -274,7 +269,7 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
 
   def submitPostcode(completionUrl: CompletionUrl) = Action.async { implicit request =>
     if (appConfig.isMultiPageEnabled) {
-      appConfig.isLoggedInUser.flatMap { isLoggedIn =>
+      viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
         postcodeForm.bindFromRequest().fold (
           formWithErrors => Future.successful(Ok(enterYourDetailsPostcode(formWithErrors, completionUrl, isLoggedIn))),
           postCodeForm => {
@@ -315,8 +310,8 @@ class PersonalDetailsCollectionController @Inject()(page: PersonalDetailsPage,
     }
 
   def submit(completionUrl: CompletionUrl, alternativeVersion: Boolean): Action[AnyContent] = Action.async { implicit request =>
-    appConfig.isLoggedInUser.flatMap {isLoggedInUser =>
-      personalDetailsSubmission.submit(completionUrl, alternativeVersion, isLoggedInUser)
+    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+      personalDetailsSubmission.submit(completionUrl, alternativeVersion, isLoggedIn)
     }
 
   }

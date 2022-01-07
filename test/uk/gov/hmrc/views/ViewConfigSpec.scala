@@ -18,14 +18,17 @@ package uk.gov.hmrc.views
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.HttpConfiguration
 import play.api.i18n.{DefaultLangsProvider, Lang}
 import play.api.{Configuration, Environment}
 import setups.configs.ConfigSetup
 import support.UnitSpec
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.DwpMessagesApiProvider
 
-class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFactory {
+class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFactory with GuiceOneAppPerSuite {
+  val authConnector: AuthConnector = app.injector.instanceOf[AuthConnector]
 
   private val scenarios = Tables.Table(
     ("propertyName",   "propertyAccessor",                            "configKey"),
@@ -104,7 +107,7 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFa
     val dwpMessagesApiProvider = new DwpMessagesApiProvider(Environment.simple(), configuration,
       new DefaultLangsProvider(configuration).get, HttpConfiguration())
 
-    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, dwpMessagesApiProvider)
+    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, dwpMessagesApiProvider, authConnector)
 
     def expectMessagesFilesExistsFor(codes: String*) = {
       dwpMessagesApiProvider.get.messages
@@ -123,9 +126,10 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFa
       "play.i18n.langCookieMaxAge" -> null
     ))
 
+
     val messagesApi = new DwpMessagesApiProvider(Environment.simple(), configuration,
       new DefaultLangsProvider(configuration).get, HttpConfiguration())
-    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, messagesApi)
+    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, messagesApi, authConnector)
 
     def expectMessagesFilesExistsFor(codes: String*) = {
       messagesApi.get.messages

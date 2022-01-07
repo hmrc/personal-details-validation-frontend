@@ -36,7 +36,10 @@
     preH1: preH1,
 )
 
-@(pageForm: Form[InitialPersonalDetails], completionUrl: CompletionUrl, loggedInUser: Boolean
+@(
+    pageForm: Form[InitialPersonalDetails],
+    completionUrl: CompletionUrl,
+    loggedInUser: Boolean
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
