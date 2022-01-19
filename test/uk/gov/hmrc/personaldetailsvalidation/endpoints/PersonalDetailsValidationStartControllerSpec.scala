@@ -28,7 +28,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class PersonalDetailsValidationStartControllerSpec extends UnitSpec with MockFactory with ScalaFutures with GuiceOneAppPerSuite {
 
@@ -57,8 +57,7 @@ class PersonalDetailsValidationStartControllerSpec extends UnitSpec with MockFac
 
   private trait Setup {
 
-    implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
-    implicit val ec: ExecutionContext = ExecutionContext.global
+    protected implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
 
     val journeyStart: FuturedJourneyStart = mock[FuturedJourneyStart]
 

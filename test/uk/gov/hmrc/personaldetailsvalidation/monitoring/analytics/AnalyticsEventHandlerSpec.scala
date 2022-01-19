@@ -25,7 +25,7 @@ import play.api.test.FakeRequest
 import support.UnitSpec
 import uk.gov.hmrc.config.AppConfig
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,6 +49,22 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
       eventually {
         analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
           Event("sos_iv", "pdv_modal_timeout", "end", dimensions)))
+      }
+    }
+
+    "send SignedOut" in new Setup {
+      dispatcher.dispatchEvent(SignedOut)(request, hc, global)
+      eventually {
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+          Event("sos_iv", "personal_detail_validation_result", "sign_out_pdv", dimensions)))
+      }
+    }
+
+    "send UnderNinoAge" in new Setup {
+      dispatcher.dispatchEvent(UnderNinoAge)(request, hc, global)
+      eventually {
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+          Event("sos_iv", "personal_detail_validation_result", "under_nino_age", dimensions)))
       }
     }
 
@@ -79,7 +95,6 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     object TestHandler extends AnalyticsEventHandler(appConfg, TestConnector)
 
     val dispatcher = new EventDispatcher(TestHandler)
-
   }
 
 }

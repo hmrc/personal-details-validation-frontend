@@ -17,10 +17,10 @@
 package uk.gov.hmrc.personaldetailsvalidation.model
 
 import org.scalacheck.Gen
-import org.scalatest.prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 import support.{TestStringValue, UnitSpec}
 
-class StringValueSpec extends UnitSpec with PropertyChecks {
+class StringValueSpec extends UnitSpec with ScalaCheckPropertyChecks {
 
   val generatedStrings = Gen.alphaStr
 

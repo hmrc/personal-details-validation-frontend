@@ -8,17 +8,14 @@
 @import uk.gov.hmrc.views.html.partials._
 @import uk.gov.hmrc.govukfrontend.views.html.components.{FormWithCSRF => PlayFrontendFormWithCSRF}
 
-@this(
-        mainTemplate: layout,
-        textbox: InputText,
-        button: button,
-        preH1: preH1,
-        a: link,
-        formWithCSRF: PlayFrontendFormWithCSRF,
-)
-@(pageForm: Form[NinoDetails], completionUrl: CompletionUrl, loggedInUser: Boolean)(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
+@this(mainTemplate: layout,
+      textbox: InputText,
+      button: button,
+      preH1: preH1,
+      a: link,
+      formWithCSRF: PlayFrontendFormWithCSRF)
 
-@origin = @{ request.session.get("loginOrigin").getOrElse("")}
+@(pageForm: Form[NinoDetails], completionUrl: CompletionUrl, loggedInUser: Boolean)(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
     title = msgs("personal-details.title"),
@@ -32,7 +29,6 @@
         routes.PersonalDetailsCollectionController.submitYourNino(completionUrl),
         'autocomplete -> "off",
         'novalidate -> "novalidate") {
-
 
         @textbox(
             field = pageForm("nino"),
