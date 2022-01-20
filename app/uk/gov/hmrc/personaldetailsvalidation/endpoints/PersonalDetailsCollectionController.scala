@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import cats.data.EitherT
-import cats.implicits._
 import play.api.data.FormError
 import play.api.i18n.MessagesApi
 import play.api.mvc._
@@ -39,7 +37,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: FuturedPersonalDetailsSubmission,
+class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: PersonalDetailsSubmission,
                                                     appConfig: AppConfig,
                                                     val eventDispatcher: EventDispatcher,
                                                     val controllerComponents: MessagesControllerComponents,
@@ -102,13 +100,13 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: F
     }
   }
 
-  def whatIsYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
+  def whatIsYourNino(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
       Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn)))
     }
   }
 
-  def submitYourNino(completionUrl: CompletionUrl) = Action.async { implicit request =>
+  def submitYourNino(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
       ninoForm.bindFromRequest().fold (
         formWithErrors => Future.successful(Ok(what_is_your_nino(formWithErrors, completionUrl, isLoggedIn))),
@@ -117,20 +115,20 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: F
             case (Some(fn), Some(ln), Some(dob)) =>
               val personalDetails = PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln),ninoForm.nino, LocalDate.parse(dob))
               submitPersonalDetails(personalDetails, completionUrl, isLoggedIn)
-            case _ => EitherT.rightT[Future, Result](BadRequest)
+            case _ => Future.successful(BadRequest)
           }
-        }.merge
+        }
       )
     }
   }
 
-  def whatIsYourPostCode(completionUrl: CompletionUrl) = Action.async { implicit request =>
+  def whatIsYourPostCode(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
        Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn)))
     }
   }
 
-  def submitYourPostCode(completionUrl: CompletionUrl) = Action.async { implicit request =>
+  def submitYourPostCode(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
       postcodeForm.bindFromRequest().fold (
         formWithErrors => Future.successful(Ok(what_is_your_postcode(formWithErrors, completionUrl, isLoggedIn))),
@@ -139,16 +137,16 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: F
             case (Some(fn), Some(ln), Some(dob)) =>
               val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln), postCodeForm.postcode, LocalDate.parse(dob))
               submitPersonalDetails(personalDetails, completionUrl, isLoggedIn)
-            case _ => EitherT.rightT[Future, Result](BadRequest)
+            case _ => Future.successful(BadRequest)
           }
-        }.merge
+        }
       )
     }
   }
 
-  private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, isLoggedInUser: Boolean)(implicit request: Request[_]) : EitherT[Future, Result, Result] = {
+  private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, isLoggedInUser: Boolean)(implicit request: Request[_]): Future[Result] = {
     for {
-      pdv <- personalDetailsSubmission.submitPersonalDetails(personalDetails, completionUrl)
+      pdv <- personalDetailsSubmission.submitPersonalDetails(personalDetails)
       result = pdv match {
         case SuccessfulPersonalDetailsValidation(_) => personalDetailsSubmission.successResult(completionUrl, pdv)
         case _ =>
@@ -156,6 +154,8 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: F
           Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, withError = true)).withSession(cleanedSession)
       }
     } yield result
+  }.recover {
+    case _ => Redirect(completionUrl.value)
   }
 
   private def retrieveMainDetails(implicit request: Request[_]): (Option[String], Option[String], Option[String]) =

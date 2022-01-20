@@ -22,8 +22,7 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.HttpConfiguration
 import play.api.i18n.{DefaultLangsProvider, Lang}
 import play.api.{Configuration, Environment}
-import setups.configs.ConfigSetup
-import support.UnitSpec
+import support.{ConfigSetup, UnitSpec}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.DwpMessagesApiProvider
 

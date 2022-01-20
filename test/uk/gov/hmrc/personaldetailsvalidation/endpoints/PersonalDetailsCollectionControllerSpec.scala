@@ -18,9 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
-import cats.data._
-import cats.implicits._
-import generators.Generators.Implicits._
+import support.Generators.Implicits._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
@@ -366,7 +364,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
       val expectedRedirect: Result = Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
 
-      val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](SuccessfulPersonalDetailsValidation(validationId))
+      val pdv : Future[PersonalDetailsValidation] = Future.successful(SuccessfulPersonalDetailsValidation(validationId))
 
       val expectedPersonalDetails: PersonalDetailsWithNino = PersonalDetailsWithNino(
         NonEmptyString("Jim"),
@@ -381,8 +379,8 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, *, *, *)
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(_: Request[_], _: HeaderCarrier))
+        .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
       (personalDetailsSubmitterMock.successResult(_ : CompletionUrl, _ : PersonalDetailsValidation)(_: Request[_]))
@@ -397,7 +395,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     "redirect to showPage if no details found" in new Setup {
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
 
-      val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](FailedPersonalDetailsValidation(validationId))
+      val pdv : Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId))
 
       val expectedPersonalDetails: PersonalDetailsWithNino = PersonalDetailsWithNino(
         NonEmptyString("Jim"),
@@ -413,8 +411,8 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "journeyId" -> "1234567890"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, *, *, *)
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(_: Request[_], _: HeaderCarrier))
+        .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
       val result: Future[Result] = controller.submitYourNino(completionUrl)(req)
@@ -437,7 +435,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
       val expectedRedirect: Result = Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
 
-      val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](SuccessfulPersonalDetailsValidation(validationId))
+      val pdv : Future[PersonalDetailsValidation] = Future.successful(SuccessfulPersonalDetailsValidation(validationId))
 
       val expectedPersonalDetails: PersonalDetailsWithPostcode = PersonalDetailsWithPostcode(
         NonEmptyString("Jim"),
@@ -452,8 +450,8 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, *, *, *)
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(_: Request[_], _: HeaderCarrier))
+        .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
       (personalDetailsSubmitterMock.successResult(_ : CompletionUrl, _ : PersonalDetailsValidation)(_: Request[_]))
@@ -515,7 +513,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     "redirect to showPage if no details found" in new Setup {
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
 
-      val pdv : EitherT[Future, Result, PersonalDetailsValidation] = EitherT.rightT[Future, Result](FailedPersonalDetailsValidation(validationId))
+      val pdv : Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId))
 
       val expectedPersonalDetails: PersonalDetailsWithPostcode = PersonalDetailsWithPostcode(
         NonEmptyString("Jim"),
@@ -531,8 +529,8 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "journeyId" -> "1234567890"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails, _ : CompletionUrl)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(expectedPersonalDetails, completionUrl, *, *, *)
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(_: Request[_], _: HeaderCarrier))
+        .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
       val result: Future[Result] = controller.submitYourPostCode(completionUrl)(req)
@@ -597,7 +595,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     implicit val lang: Lang = Lang("en-GB")
     implicit val messages: Messages = MessagesImpl(lang, dwpMessagesApiProvider.get)
 
-    val personalDetailsSubmitterMock: FuturedPersonalDetailsSubmission = mock[FuturedPersonalDetailsSubmission]
+    val personalDetailsSubmitterMock: PersonalDetailsSubmission = mock[PersonalDetailsSubmission]
     val mockAppConfig: AppConfig = mock[AppConfig]
     val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
     val mockIVConnector: IdentityVerificationConnector = mock[IdentityVerificationConnector]

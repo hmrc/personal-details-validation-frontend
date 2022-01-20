@@ -17,12 +17,11 @@
 package uk.gov.hmrc.personaldetailsvalidation.generators
 
 import org.scalacheck.Gen
+import support.Generators._
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators._
 import uk.gov.hmrc.personaldetailsvalidation.model._
 
 object ObjectGenerators {
-
-  import ValuesGenerators._
-  import generators.Generators._
 
   implicit val personalDetailsObjects: Gen[PersonalDetailsWithNino] = for {
     firstName <- nonEmptyStringObjects

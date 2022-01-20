@@ -16,45 +16,39 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import cats.Monad
-import cats.implicits._
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Request, Result}
+import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.logging.Logger
-import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedValidationIdValidator, ValidationIdValidator}
+import uk.gov.hmrc.personaldetailsvalidation.connectors.ValidationIdValidator
 import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, ValidationId}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.{higherKinds, implicitConversions}
 
 @Singleton
-private class FuturedJourneyStart @Inject()(validationIdValidator: FuturedValidationIdValidator,
-                                            logger: Logger)
-                                           (implicit ec: ExecutionContext)
-  extends JourneyStart[Future](validationIdValidator, logger)
-
-private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: ValidationIdValidator[Interpretation],
-                                                      logger: Logger)
-                                                     (implicit ec: ExecutionContext) {
+class JourneyStart @Inject()(validationIdValidator: ValidationIdValidator,
+                             logger: Logger)(implicit ec: ExecutionContext) {
 
   import validationIdValidator._
 
   val validationIdSessionKey = "ValidationId"
 
   def findRedirect(completionUrl: CompletionUrl, origin: Option[String])
-                  (implicit request: Request[_], headerCarrier: HeaderCarrier): Interpretation[Result] =
+                  (implicit request: Request[_], headerCarrier: HeaderCarrier): Future[Result] =
     findValidationIdInSession match {
       case None =>
-        Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin))
+        Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin)))
       case Some(sessionValidationId) =>
         verify(sessionValidationId)
           .map(findRedirectUsing(_, sessionValidationId, completionUrl, origin))
-          .valueOr { error =>
-            logger.error(error)
-            Redirect(completionUrl.value, error.toQueryParam)
+          .recover {
+            case error: Throwable =>
+              val processingError = ProcessingError(error.getMessage)
+              logger.error(processingError)
+              Redirect(completionUrl.value, processingError.toQueryParam)
           }
     }
 
@@ -63,11 +57,9 @@ private class JourneyStart[Interpretation[_] : Monad](validationIdValidator: Val
 
   private def findRedirectUsing(validationResult: Boolean, validationId: ValidationId,
                                 completionUrl: CompletionUrl, origin: Option[String]): Result =
-    validationResult match {
-      case false => Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin))
-      case true => Redirect(completionUrl.value, validationId.toQueryParam)
+    if (validationResult) {
+      Redirect(completionUrl.value, validationId.toQueryParam)
+    } else {
+      Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin))
     }
-
-  private implicit def pure[R](value: R): Interpretation[R] =
-    implicitly[Monad[Interpretation]].pure(value)
 }

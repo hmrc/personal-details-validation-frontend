@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.formmappings
 
-import generators.Generators.Implicits._
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
-import play.api.data.{FormError, Mapping}
 import play.api.data.Forms.mapping
-import support.UnitSpec
+import play.api.data.{FormError, Mapping}
+import support.Generators.Implicits._
+import support.{Generators, UnitSpec}
 import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
 
 import java.time.LocalDate
@@ -267,7 +267,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
     )(identity)(Some.apply)
   }
 
-  private trait DateMappingSetup extends generators.Generators {
+  private trait DateMappingSetup extends Generators {
 
     val dateFieldName = "date"
     val errorKeyPrefix = "error.key"

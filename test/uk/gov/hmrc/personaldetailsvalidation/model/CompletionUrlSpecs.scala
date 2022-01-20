@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-import generators.Generators.strings
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+import support.Generators.strings
 import support.UnitSpec
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 

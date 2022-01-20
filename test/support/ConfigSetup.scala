@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package setups.configs
+package support
 
 import play.api.Configuration
 

@@ -16,48 +16,25 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
-import javax.inject.{Inject, Singleton}
-import cats.data.EitherT
-import play.api.http.Status.{NOT_FOUND, OK}
-import uk.gov.hmrc.errorhandling.ProcessingError
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.higherKinds
-
-private[personaldetailsvalidation] trait ValidationIdValidator[Interpretation[_]] {
-  def verify(validationId: ValidationId)
-            (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): EitherT[Interpretation, ProcessingError, Boolean]
-}
 
 @Singleton
-private[personaldetailsvalidation] class FuturedValidationIdValidator @Inject()(httpClient: HttpClient,
-                                                                                connectorConfig: ConnectorConfig)
-  extends ValidationIdValidator[Future] {
+class ValidationIdValidator @Inject()(httpClient: HttpClient,connectorConfig: ConnectorConfig) {
 
   import connectorConfig.personalDetailsValidationBaseUrl
 
-  override def verify(validationId: ValidationId)
-                     (implicit headerCarrier: HeaderCarrier,
-                      executionContext: ExecutionContext): EitherT[Future, ProcessingError, Boolean] = EitherT {
+  def verify(validationId: ValidationId)
+            (implicit headerCarrier: HeaderCarrier,
+             executionContext: ExecutionContext): Future[Boolean] = {
 
     val url = s"$personalDetailsValidationBaseUrl/personal-details-validation/${validationId.value}"
 
-    httpClient
-      .GET(url)
-      .recover(toProcessingError(url))
+    httpClient.GET[Boolean](url)
   }
 
-  private implicit val validationIdHttpReads: HttpReads[Either[ProcessingError, Boolean]] = new HttpReads[Either[ProcessingError, Boolean]] {
-    override def read(method: String, url: String, response: HttpResponse): Either[ProcessingError, Boolean] = response.status match {
-      case OK => Right(true)
-      case NOT_FOUND => Right(false)
-      case other => Left(ProcessingError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
-    }
-  }
-
-  private def toProcessingError(url: String): PartialFunction[Throwable, Either[ProcessingError, Boolean]] = {
-    case exception => Left(ProcessingError(s"Call to GET $url threw: $exception"))
-  }
 }

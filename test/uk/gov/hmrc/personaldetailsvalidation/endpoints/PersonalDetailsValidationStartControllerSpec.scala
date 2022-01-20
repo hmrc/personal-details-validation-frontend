@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import generators.Generators.Implicits._
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc.Results.Redirect
 import play.api.mvc._
 import play.api.test.FakeRequest
+import support.Generators.Implicits._
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
@@ -59,7 +59,7 @@ class PersonalDetailsValidationStartControllerSpec extends UnitSpec with MockFac
 
     protected implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
 
-    val journeyStart: FuturedJourneyStart = mock[FuturedJourneyStart]
+    val journeyStart: JourneyStart = mock[JourneyStart]
 
     val url: CompletionUrl = ValuesGenerators.completionUrls.generateOne
 
