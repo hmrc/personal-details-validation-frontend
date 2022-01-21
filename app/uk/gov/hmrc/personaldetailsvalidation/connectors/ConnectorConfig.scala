@@ -16,17 +16,15 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
-import javax.inject.{Inject, Singleton}
-
 import play.api.Configuration
+import uk.gov.hmrc.config.implicits._
+import uk.gov.hmrc.config.ops._
 import uk.gov.hmrc.http.Host
 
+import javax.inject.{Inject, Singleton}
+
 @Singleton
-private class ConnectorConfig @Inject()(configuration: Configuration) {
-
-  import uk.gov.hmrc.config.ops._
-  import uk.gov.hmrc.config.implicits._
-
+class ConnectorConfig @Inject()(configuration: Configuration) {
   lazy val personalDetailsValidationBaseUrl: String =
     configuration.loadMandatory[Host]("personal-details-validation").toString()
 }

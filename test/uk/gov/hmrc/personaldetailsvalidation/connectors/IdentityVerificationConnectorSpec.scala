@@ -77,8 +77,8 @@ class IdentityVerificationConnectorSpec
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-    val appConfig = app.injector.instanceOf[AppConfig]
-    val mockHttpClient = mock[HttpClient]
+    val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+    val mockHttpClient: HttpClient = mock[HttpClient]
     val redirectingUrl = "/mdtp/personal-details-validation-complete/261948fb-b807-4e5a-a5ca-3cdcc5009be4"
 
     val ivConnector = new IdentityVerificationConnector(appConfig, mockHttpClient){

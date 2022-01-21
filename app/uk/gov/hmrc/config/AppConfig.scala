@@ -16,21 +16,19 @@
 
 package uk.gov.hmrc.config
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import scala.concurrent.Future
+import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AppConfig @Inject()(val configuration: Configuration, servicesConfig: ServicesConfig)  {
+class AppConfig @Inject()(val configuration: Configuration, servicesConfig: ServicesConfig) {
 
-  lazy val ivUrl = servicesConfig.baseUrl("identity-verification")
-  //todo: remove the isMultiPageEnabled once PDV has only one journey lift.
-  def isMultiPageEnabled : Boolean = configuration.getOptional[Boolean]("feature.multi-page.enabled").getOrElse(false)
+  lazy val ivUrl: String = servicesConfig.baseUrl("identity-verification")
+
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
 
-  lazy val platformAnalyticsUrl = servicesConfig.baseUrl("platform-analytics")
+  lazy val platformAnalyticsUrl: String = servicesConfig.baseUrl("platform-analytics")
 
   lazy val logoutPage: String = servicesConfig.getConfString("logoutPage", "https://www.access.service.gov.uk/logout")
   lazy val basGatewayUrl: String = servicesConfig.getConfString("auth.bas-gateway.url", throw new RuntimeException("Bas gateway url required"))

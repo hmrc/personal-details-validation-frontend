@@ -16,24 +16,25 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
-import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import uk.gov.hmrc.config.AppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyUpdate
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class IdentityVerificationConnector @Inject()(appConfig: AppConfig,
                                               httpClient: HttpClient) extends Logging {
 
-  def updateJourney(redirectingUrl: String)(implicit hc: HeaderCarrier, ec: ExecutionContext) = {
+  def updateJourney(redirectingUrl: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Any = {
 
     val journeyId = extractJourneyId(redirectingUrl)
     val status = JourneyUpdate(Some("Timeout"))
     if (journeyId.isDefined) {
-      httpClient.PATCH(s"${appConfig.ivUrl}/identity-verification/journey/${journeyId.get}", status)
+      httpClient.PATCH[JourneyUpdate, HttpResponse](s"${appConfig.ivUrl}/identity-verification/journey/${journeyId.get}", status)
         .recover {
         case ex: Exception => logger.warn(s"VER-333- cannot update IV journey ${ex.getMessage}")
       }

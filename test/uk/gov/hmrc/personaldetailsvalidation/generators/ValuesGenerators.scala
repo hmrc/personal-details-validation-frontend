@@ -16,17 +16,16 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.generators
 
-import java.net.URI
-
 import org.scalacheck.Gen
+import org.scalacheck.Gen.oneOf
+import support.Generators._
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, NonEmptyString, ValidationId}
 
-object ValuesGenerators {
+import java.net.URI
 
-  import generators.Generators._
-  import org.scalacheck.Gen.oneOf
+object ValuesGenerators {
 
   implicit val uris: Gen[URI] = for {
     path <- Gen.nonEmptyListOf(strings(5, 10)).map(_.mkString("/"))

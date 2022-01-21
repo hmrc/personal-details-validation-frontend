@@ -17,11 +17,12 @@
 package setups
 
 import ch.qos.logback.classic.spi.ILoggingEvent
-import ch.qos.logback.classic.{Level, Logger ⇒ LogbackLogger}
+import ch.qos.logback.classic.{Level, Logger => LogbackLogger}
 import ch.qos.logback.core.read.ListAppender
 import play.api.LoggerLike
 
 import scala.collection.JavaConverters._
+
 trait LogCapturing {
 
   private def withCaptureOfLoggingFrom(logger: LogbackLogger)(body: (=> List[ILoggingEvent]) => Unit) {

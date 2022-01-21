@@ -16,19 +16,17 @@
 
 package uk.gov.hmrc.formmappings
 
-import java.time.LocalDate
-
-import generators.Generators.Implicits._
 import org.scalacheck.Gen
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
-import play.api.data.FormError
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.data.Forms.mapping
-import support.UnitSpec
+import play.api.data.{FormError, Mapping}
+import support.Generators.Implicits._
+import support.{Generators, UnitSpec}
 import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
 
-class MappingsSpec
-  extends UnitSpec
-    with GeneratorDrivenPropertyChecks {
+import java.time.LocalDate
+
+class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
   import Mappings._
 
@@ -88,7 +86,7 @@ class MappingsSpec
 
     "return the 'required' error if all date parts are missing" in new DateMappingSetup with DateMapping {
 
-      val bindResult = dateMapping.bind(Map.empty)
+      val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(Map.empty)
 
       bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.required")))
     }
@@ -164,18 +162,18 @@ class MappingsSpec
         s"$dateFieldName.day" -> "29"
       )
 
-      val bindResult = dateMapping.bind(partsWithInvalids)
+      val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(partsWithInvalids)
 
       bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.invalid")))
     }
 
     "return the 'invalid' error if date parts are invalid and there are additional constraints added" in new DateMappingSetup {
 
-      val dateMapping = mapping(
+      val dateMapping: Mapping[LocalDate] = mapping(
         dateFieldName -> mandatoryLocalDate(errorKeyPrefix).verifying("special.error", _.isAfter(LocalDate.of(2017, 11, 24)))
       )(identity)(Some.apply)
 
-      val bindResult = dateMapping.bind(Map(
+      val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(Map(
         s"$dateFieldName.year" -> "a",
         s"$dateFieldName.month" -> "b",
         s"$dateFieldName.day" -> "c"
@@ -209,7 +207,7 @@ class MappingsSpec
         s"$dateFieldName.day" -> "2"
       )
 
-      val bindResult = dateMapping.bind(partsWithInvalids)
+      val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(partsWithInvalids)
 
       bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.tooYoung")))
     }
@@ -264,12 +262,12 @@ class MappingsSpec
 
     self: DateMappingSetup =>
 
-    val dateMapping = mapping(
+    val dateMapping: Mapping[LocalDate] = mapping(
       dateFieldName -> mandatoryLocalDate(errorKeyPrefix)
     )(identity)(Some.apply)
   }
 
-  private trait DateMappingSetup extends generators.Generators {
+  private trait DateMappingSetup extends Generators {
 
     val dateFieldName = "date"
     val errorKeyPrefix = "error.key"
@@ -287,10 +285,6 @@ class MappingsSpec
       s"$dateFieldName.month" -> date.getMonthValue.toString,
       s"$dateFieldName.day" -> date.getDayOfMonth.toString
     )
-
-    val toPartName: ((String, String)) => String = {
-      case (partName, _) => partName
-    }
 
     def toErrorKeySuffixed(suffix: String): String => String =
       name => s"$errorKeyPrefix.$name.$suffix"

@@ -18,8 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 import org.scalamock.scalatest.MockFactory
 import play.api.Configuration
-import setups.configs.ConfigSetup
-import support.UnitSpec
+import support.{ConfigSetup, UnitSpec}
 
 class ConnectorConfigSpec
   extends UnitSpec

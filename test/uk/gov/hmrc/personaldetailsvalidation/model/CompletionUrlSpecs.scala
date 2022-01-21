@@ -16,15 +16,13 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-import generators.Generators.strings
 import org.scalacheck.Gen
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
+import support.Generators.strings
 import support.UnitSpec
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 
-class CompletionUrlSpecs
-  extends UnitSpec
-    with GeneratorDrivenPropertyChecks {
+class CompletionUrlSpecs extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
   private val urls = Gen.nonEmptyListOf(strings(10)).map(_.mkString("/", "/", ""))
 

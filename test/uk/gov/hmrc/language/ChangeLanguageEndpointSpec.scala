@@ -22,20 +22,16 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
 import play.api.i18n.{DefaultLangs, Lang, MessagesApi}
-import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import setups.views.ViewConfigMockFactory
 import support.UnitSpec
 import uk.gov.hmrc.config.DwpMessagesApiProvider
-import uk.gov.hmrc.errorhandling.ErrorHandler
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.views.ViewConfig
 
-class ChangeLanguageEndpointSpec
-  extends UnitSpec
-    with ScalaFutures
-    with GuiceOneAppPerSuite {
+class ChangeLanguageEndpointSpec extends UnitSpec with ScalaFutures with GuiceOneAppPerSuite {
 
   "switchTo" should {
 
@@ -60,7 +56,7 @@ class ChangeLanguageEndpointSpec
     "return Redirect to a Referer with the default lang " +
       "if the Referer is present in the request but requested language is unknown" in new Setup {
 
-      val result = await(controller.switchToLanguage("non-defined-lang")(request.withHeaders(REFERER -> "referer-url")))
+      val result: Result = await(controller.switchToLanguage("non-defined-lang")(request.withHeaders(REFERER -> "referer-url")))
 
       status(result) shouldBe SEE_OTHER
       result.newCookies.head.name shouldBe "PLAY_LANG"
@@ -93,8 +89,6 @@ class ChangeLanguageEndpointSpec
       "play.i18n.langs" -> List("en", "cy"),
       "play.i18n.descriptions" -> Map("en" -> "english", "cy" -> "cymraeg")
     )
-
-    val errorHandler = mock[ErrorHandler]
 
     val languageUtils = new LanguageUtils(new DefaultLangs(Seq(Lang("en"), Lang("cy"))), Configuration.from(testConfig))
 

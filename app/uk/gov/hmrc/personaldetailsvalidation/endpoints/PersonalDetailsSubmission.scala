@@ -16,67 +16,31 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import cats.Monad
-import cats.data.EitherT
-import cats.implicits._
-import javax.inject.{Inject, Singleton}
-import play.api.http.HeaderNames
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
-import play.twirl.api.Html
-import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.logging.Logger
-import uk.gov.hmrc.personaldetailsvalidation.connectors.{FuturedPersonalDetailsSender, PersonalDetailsSender}
+import uk.gov.hmrc.personaldetailsvalidation.connectors.PersonalDetailsSender
 import uk.gov.hmrc.personaldetailsvalidation.model.QueryParamConverter._
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.PdvMetrics
-import uk.gov.hmrc.personaldetailsvalidation.views.pages.PersonalDetailsPage
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-private class FuturedPersonalDetailsSubmission @Inject()(personalDetailsPage: PersonalDetailsPage,
-                                                         personalDetailsValidationConnector: FuturedPersonalDetailsSender,
-                                                         pdvMetrics: PdvMetrics,
-                                                         logger: Logger)
-                                                        (implicit ec: ExecutionContext)
-  extends PersonalDetailsSubmission[Future](personalDetailsPage, personalDetailsValidationConnector, pdvMetrics, logger)
+class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: PersonalDetailsSender,
+                                          pdvMetrics: PdvMetrics)(implicit ec: ExecutionContext){
 
-private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetailsPage: PersonalDetailsPage,
-                                                                   personalDetailsValidationConnector: PersonalDetailsSender[Interpretation],
-                                                                   pdvMetrics: PdvMetrics,
-                                                                   logger: Logger) {
+  val validationIdSessionKey = "ValidationId"
 
-  import PersonalDetailsSubmission._
-
-  def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, usePostcodeForm: Boolean = false, isLoggedInUser: Boolean)
+  def submitPersonalDetails(personalDetails: PersonalDetails)
                            (implicit request: Request[_],
-                            headerCarrier: HeaderCarrier,
-                            executionContext: ExecutionContext) : EitherT[Interpretation, Result, PersonalDetailsValidation] = {
+                            headerCarrier: HeaderCarrier): Future[PersonalDetailsValidation] = {
     val origin = request.session.get("origin").getOrElse("Unknown-Origin")
     for {
-      personalDetailsValidation <- personalDetailsValidationConnector.submitValidationRequest(personalDetails, origin) leftMap errorToRedirect(to = completionUrl)
+      personalDetailsValidation <- personalDetailsValidationConnector.submitValidationRequest(personalDetails, origin)
       _ = pdvMetrics.matchPersonalDetails(personalDetails)
     } yield personalDetailsValidation
-  }
-
-  def submit(completionUrl: CompletionUrl, usePostcodeForm: Boolean = false, isLoggedInUser: Boolean)
-            (implicit request: Request[_],
-             headerCarrier: HeaderCarrier,
-             executionContext: ExecutionContext): Interpretation[Result] = {
-    for {
-      personalDetails <- pure(personalDetailsPage.bindFromRequest(usePostcodeForm, isLoggedInUser)(request, completionUrl)) leftMap pageWithErrorToBadRequest
-      personalDetailsValidation <- submitPersonalDetails(personalDetails, completionUrl, usePostcodeForm, isLoggedInUser)
-    } yield result(completionUrl, personalDetailsValidation, usePostcodeForm, isLoggedInUser)
-  }.merge
-
-  private val pageWithErrorToBadRequest: Html => Result = BadRequest(_)
-
-  private def errorToRedirect(to: CompletionUrl): ProcessingError => Result = {
-    error =>
-      logger.error(error)
-      Redirect(to.value, error.toQueryParam)
   }
 
   private val UUIDRegex = """[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}"""
@@ -84,22 +48,14 @@ private class PersonalDetailsSubmission[Interpretation[_] : Monad](personalDetai
   private def stripValidationId(redirectUrl: String): String =
     redirectUrl.replaceAll(s"""[?&]validationId=$UUIDRegex""", "")
 
-  def result(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation, usePostcodeForm: Boolean = false, isLoggedInUser: Boolean)
-                    (implicit request: Request[_]): Result = {
+  def successResult(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation)
+                   (implicit request: Request[_]): Result = {
     val strippedCompletionUrl = stripValidationId(completionUrl.value)
     personalDetailsValidation match {
       case SuccessfulPersonalDetailsValidation(validationId) =>
         Redirect(strippedCompletionUrl, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
-      case FailedPersonalDetailsValidation(validationId) =>
-        val redirectUrl = Redirect(strippedCompletionUrl,validationId.toQueryParam).header.headers.getOrElse(HeaderNames.LOCATION, strippedCompletionUrl)
-        Ok(personalDetailsPage.renderValidationFailure(usePostcodeForm, isLoggedInUser)(CompletionUrl(redirectUrl), request))
-          .addingToSession(validationIdSessionKey -> validationId.value)
+      case _ => throw new scala.RuntimeException("Unable to redirect success validation")
     }
   }
-  private def pure[L, R](maybeValue: Either[L, R]): EitherT[Interpretation, L, R] =
-    EitherT(implicitly[Monad[Interpretation]].pure(maybeValue))
-}
 
-private object PersonalDetailsSubmission {
-  val validationIdSessionKey = "ValidationId"
 }
