@@ -19,15 +19,29 @@
 @this(underlying: GovukDateInput)
 @(form: Form[_], fieldPrefix: String, fieldName: String)(implicit messages: Messages)
 
-@dateErrors = @{form(fieldName).errors}
+@dayError = @{
+    if(form(s"$fieldName.day").value.contains("")){ "govuk-input--error"} else {""}
+}
 
-<div class="govuk-form-group date-of-birth-wrapper @if(dateErrors.nonEmpty) {govuk-form-group--error}">
+@monthError = @{
+    if(form(s"$fieldName.month").value.contains("")){ "govuk-input--error"} else {""}
+}
+
+@yearError = @{
+    if(form(s"$fieldName.year").value.contains("")){ "govuk-input--error"} else {""}
+}
+
+@allError = @{
+    if(!dayError && !monthError && !yearError && form(s"$fieldName").hasErrors) {"govuk-input--error"} else {""}
+}
+
+<div class="govuk-form-group date-of-birth-wrapper @if(form(fieldName).hasErrors){govuk-form-group--error}">
     @underlying(DateInput(
         fieldName,
         items = Seq(
-            InputItem(name = s"$fieldName.day", classes = "govuk-input--width-2", label = Some(Messages(s"$fieldPrefix.$fieldName.day")), value = form(s"$fieldName.day").value),
-            InputItem(name = s"$fieldName.month", classes = "govuk-input--width-2", label = Some(Messages(s"$fieldPrefix.$fieldName.month")), value = form(s"$fieldName.month").value),
-            InputItem(name = s"$fieldName.year", classes = "govuk-input--width-4", label = Some(Messages(s"$fieldPrefix.$fieldName.year")), value = form(s"$fieldName.year").value)
+            InputItem(name = s"$fieldName.day", classes = s"govuk-input--width-2 $dayError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.day")), value = form(s"$fieldName.day").value),
+            InputItem(name = s"$fieldName.month", classes = s"govuk-input--width-2 $monthError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.month")), value = form(s"$fieldName.month").value),
+            InputItem(name = s"$fieldName.year", classes = s"govuk-input--width-4 $yearError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.year")), value = form(s"$fieldName.year").value)
         ),
         fieldset = Some(Fieldset(
             legend = Some(Legend(content = Text(messages(s"$fieldPrefix.$fieldName")), classes = "govuk-fieldset__legend--s")),
