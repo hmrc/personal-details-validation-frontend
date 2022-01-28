@@ -17,7 +17,8 @@
 package support
 import akka.stream.Materializer
 import akka.util.ByteString
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.HeaderNames._
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
@@ -28,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-abstract class UnitSpec extends WordSpec with Matchers {
+abstract class UnitSpec extends AnyWordSpec with Matchers {
 
   implicit val timeout : Duration = 5 minutes
 
