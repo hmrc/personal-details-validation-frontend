@@ -18,7 +18,10 @@
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.mvc.{Action, AnyContent, DefaultMessagesControllerComponents}
+import play.api.http.Status
+import play.api.mvc.{Action, AnyContent, DefaultMessagesControllerComponents, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
@@ -31,21 +34,37 @@ import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_det
 import support.UnitSpec
 import setups.views.ViewSetup
 import uk.gov.hmrc.scalatestaccessibilitylinter.AccessibilityMatchers
-import scala.concurrent.ExecutionContext
+
+import scala.concurrent.{ExecutionContext, Future}
 
 
 class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatchers {
 
   val isLoggedInUser = true
-
+  private val fakeRequest = FakeRequest("GET", "/")
   val url: CompletionUrl = ValuesGenerators.completionUrls.generateOne
 
   "render" should {
 
     "return the nino page" in new Setup {
 
-      val document: Action[AnyContent] = controller.whatIsYourNino(url)
-      document.toString() should passAccessibilityChecks
+      val result: Future[Result] = controller.whatIsYourNino(url)(fakeRequest)
+      status(result) shouldBe Status.OK
+      contentAsString(result) should passAccessibilityChecks
+    }
+
+    "return the postcode page" in new Setup {
+
+      val result: Future[Result] = controller.whatIsYourPostCode(url)(fakeRequest)
+      status(result) shouldBe Status.OK
+      contentAsString(result) should passAccessibilityChecks
+    }
+
+    "return the enter your details page" in new Setup {
+
+      val result: Future[Result] = controller.enterYourDetails(url)(fakeRequest)
+      status(result) shouldBe Status.OK
+      contentAsString(result) should passAccessibilityChecks
     }
   }
 
