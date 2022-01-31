@@ -83,3 +83,4 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions += "-P:silencer:pathFilters=target/.*",
     // scalacOptions += s"-Wconf:src=${target.value}/.*:s"  // Scala 2.12.14 equivalent
   )
+  .settings(A11yTest / unmanagedSourceDirectories += (baseDirectory.value / "accessibility"))

@@ -15,9 +15,13 @@ private object AppDependencies {
 
   private val test = Seq(
     "org.jsoup" % "jsoup" % "1.13.1" % Test,
+    "com.vladsch.flexmark" % "flexmark-all" % "0.35.10" % Test,
     "org.scalacheck" %% "scalacheck" % "1.15.3" % Test,
     "org.scalamock" %% "scalamock" % "5.1.0" % Test,
-    "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
+    "org.scalatest" %% "scalatest" % "3.2.3" % Test,
+    "org.scalatestplus" %% "scalatestplus-mockito" % "1.0.0-M2" % Test,
+    "org.scalatestplus" %% "scalatestplus-scalacheck" % "3.1.0.0-RC2" % Test,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test,
     "uk.gov.hmrc" %% "service-integration-test" % "1.1.0-play-27" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test
   )
