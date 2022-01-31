@@ -40,8 +40,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatchers {
 
-  val isLoggedInUser = true
   private val fakeRequest = FakeRequest("GET", "/")
+
+  val isLoggedInUser = true
   val url: CompletionUrl = ValuesGenerators.completionUrls.generateOne
 
   "render" should {
