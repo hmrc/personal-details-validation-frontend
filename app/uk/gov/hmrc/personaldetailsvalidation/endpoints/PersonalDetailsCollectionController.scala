@@ -28,7 +28,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model.NinoDetailsForm.ninoForm
 import uk.gov.hmrc.personaldetailsvalidation.model.PostcodeDetailsForm.postcodeForm
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue, UnderNinoAge}
-import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.we_cannot_check_your_identity
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages._
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
@@ -44,6 +44,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
                                                     what_is_your_postcode: what_is_your_postcode,
                                                     what_is_your_nino: what_is_your_nino,
                                                     enter_your_details: enter_your_details,
+                                                    incorrect_details: incorrect_details,
                                                     weCannotCheckYourIdentityPage : we_cannot_check_your_identity,
                                                     ivConnector: IdentityVerificationConnector)
                                                    (implicit val authConnector: AuthConnector,
@@ -182,5 +183,9 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   def weCannotCheckYourIdentity(): Action[AnyContent] = Action.async { implicit request =>
     eventDispatcher.dispatchEvent(UnderNinoAge)
     Future.successful(Ok(weCannotCheckYourIdentityPage()))
+  }
+
+  def incorrectDetails(completionUrl: CompletionUrl, attempt: Int): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(incorrect_details(completionUrl, attempt)))
   }
 }

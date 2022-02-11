@@ -1,0 +1,53 @@
+@import uk.gov.hmrc.views.html.template.layout
+@import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.incorrect_details_accordion
+@import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
+@import uk.gov.hmrc.views.html.partials._
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+
+@this(
+    main: layout,
+    accordion: incorrect_details_accordion,
+    h1: h1,
+    p: Paragraph,
+    a: link,
+    ul: ul,
+    btn: button
+)
+
+@(completionUrl: CompletionUrl, attempt: Int)(implicit request: Request[_], appConfig: ViewConfig, msgs: Messages)
+
+@origin = @{request.session.get("origin").getOrElse("")}
+@attemptsRemaining = @{attempt-1}
+@lockoutPeriod = @{appConfig.lockoutPeriod}
+@failedAttemptsMax = @{appConfig.failedAttemptsMax}
+
+@main(title = msgs("multi_option_incorrect_details.h1")){
+    @h1("multi_option_incorrect_details.h1")
+    @p(msgs("multi_option_incorrect_details.p1"))
+    @if(attempt < failedAttemptsMax){
+        @p(msgs("multi_option_incorrect_details.p2"))
+        @p(msgs("multi_option_incorrect_details.p3"))
+        @accordion()
+    }
+    @if(attemptsRemaining == 1) {
+        @if(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"){
+            @p(msgs("multi_option_incorrect_details.p4.last.sa", s"${appConfig.addTaxesFrontendBaseUrl}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin")).toString))
+        } else {
+            @p(msgs("multi_option_incorrect_details.p4.last"))
+        }
+        @p(msgs("multi_option_incorrect_details.final-attempt", lockoutPeriod))
+    } else {
+        @if(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa") {
+            @p(msgs("multi_option_incorrect_details.p4.sa", attemptsRemaining))
+        } else {
+            @p(msgs("multi_option_incorrect_details.p4", attemptsRemaining))
+        }
+    }
+    @a(key = "multi_option_incorrect_details.button",
+        href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl).url,
+        // IV uses a retryAttempt, we could use something similar: href = routes.MultiOptionJourneyController.retryAttempt(Some("failed-attempt_retry")).url,
+        classes = Some("govuk-button")
+    )
+}
+

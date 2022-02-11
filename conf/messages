@@ -77,3 +77,39 @@ we-cannot-check-your-identity.para.1=You must be at least 15 years and 9 months 
 we-cannot-check-your-identity.para.2=You will normally be sent a National Insurance number automatically, in the 3 months before your 16th birthday if:
 we-cannot-check-your-identity.ul.1=you live in the UK
 we-cannot-check-your-identity.ul.2=a parent has filled in a <a href="{0}" class="govuk-link">Child Benefit</a> claim form for you
+
+multi_option_incorrect_details.h1=The information you gave does not match our records
+multi_option_incorrect_details.p1=This means that some or all of the details you entered were incorrect.
+multi_option_incorrect_details.p2=If your details change, you have a legal responsibility to update your documents and records with HMRC and other organisations. You will not be able to use documents containing out of date information to confirm your identity.
+multi_option_incorrect_details.p3=More detailed help and advice on confirming your identity is available below.
+multi_option_incorrect_details.accordion.heading1=First and last names
+multi_option_incorrect_details.accordion.accordion1.1=You need to enter your first name and last name so it matches our records.
+multi_option_incorrect_details.accordion.accordion1.2=A first name is sometimes referred to as a given name. A last name is sometimes referred to as a family or surname.
+multi_option_incorrect_details.accordion.accordion1.3=You must <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">tell HMRC your name has changed (opens in new tab)</a>, for example if you have got married or divorced.
+multi_option_incorrect_details.accordion.accordion1.4=Your name will be updated automatically <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">if you change gender (opens in new tab)</a>.
+multi_option_incorrect_details.accordion.heading2=Date of birth
+multi_option_incorrect_details.accordion.accordion2.1=Details for your date of birth must be entered as numbers and include a day, month and year. For example, 31 3 1980.
+multi_option_incorrect_details.accordion.accordion2.2=If you enter 9 or less for a month you do not need to include a leading zero.
+multi_option_incorrect_details.accordion.heading3=National Insurance number
+multi_option_incorrect_details.accordion.accordion3.1=A National Insurance number is made up of letters and numbers and never changes. For example, QQ123456C. It makes sure your National Insurance contributions and tax are recorded against your name only.
+multi_option_incorrect_details.accordion.accordion3.2=You will normally be sent a National Insurance number automatically, in the 3 months before your 16th birthday if:
+multi_option_incorrect_details.accordion.accordion3.3=you live in the UK
+multi_option_incorrect_details.accordion.accordion3.4=a parent has filled in a <a href="https://www.gov.uk/child-benefit" class="govuk-link" target="_blank" rel="noopener noreferrer">Child Benefit (opens in new tab)</a> claim form for you
+multi_option_incorrect_details.accordion.accordion3.5=You can find your National Insurance number:
+multi_option_incorrect_details.accordion.accordion3.6=on your payslip
+multi_option_incorrect_details.accordion.accordion3.7=on your P60
+multi_option_incorrect_details.accordion.accordion3.8=on letters about your tax, pension or benefits
+multi_option_incorrect_details.accordion.accordion3.9=in the National Insurance section of your <a href="https://www.gov.uk/personal-tax-account" class="govuk-link" target="_blank" rel="noopener noreferrer">personal tax account (opens in new tab)</a>
+multi_option_incorrect_details.accordion.accordion3.10=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Find your National Insurance number (opens in new tab)</a> if you've lost it.
+multi_option_incorrect_details.accordion.accordion3.11=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Apply for a National Insurance number (opens in new tab)</a> if you do not have one.
+multi_option_incorrect_details.accordion.heading4=Postcode
+multi_option_incorrect_details.accordion.accordion4.1=The postcode option will only work for UK addresses. For example SW1A 2AA.
+multi_option_incorrect_details.accordion.accordion4.2=You can enter your postcode in upper or lower case, with or without spaces.
+multi_option_incorrect_details.accordion.accordion4.3=If you change your address you must make sure your documents and records with HMRC and other organisations are up to date.
+multi_option_incorrect_details.accordion.accordion4.4=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Tell HMRC when you change your address (opens in new tab).</a>
+multi_option_incorrect_details.p4=<span class="govuk-!-font-weight-bold">You have {0} more attempts</span> to prove your identity.
+multi_option_incorrect_details.p4.sa=<span class="govuk-!-font-weight-bold">You have {0} more attempts</span> to prove your identity, or you can <a href="{1}" class="govuk-link" target="_blank" rel="noopener noreferrer">request a secure pin to be sent to you by post</a>.
+multi_option_incorrect_details.p4.last=<span class="govuk-!-font-weight-bold">You have 1 more attempt</span> to prove your identity.
+multi_option_incorrect_details.p4.last.sa=<span class="govuk-!-font-weight-bold">You have 1 more attempt</span> to prove your identity, or you can <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">request a secure pin to be sent to you by post</a>.
+multi_option_incorrect_details.final-attempt=If you enter incorrect details again, we will <span class="govuk-!-font-weight-bold">lock your account for {0}</span>. We do this to stop malicious and fraudulent attempts to access your details.
+multi_option_incorrect_details.button=Try again
