@@ -24,7 +24,7 @@
 @lockoutPeriod = @{viewConfig.lockoutPeriod}
 @failedAttemptsMax = @{viewConfig.failedAttemptsMax}
 
-@main(title = msgs("multi_option_incorrect_details.h1")){
+@main(title = msgs("multi_option_incorrect_details.h1"), hideDeskpro = true){
     @h1("multi_option_incorrect_details.h1")
     @p(msgs("multi_option_incorrect_details.p1"))
     @if(attempt < failedAttemptsMax){
