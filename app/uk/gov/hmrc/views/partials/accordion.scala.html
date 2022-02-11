@@ -1,0 +1,12 @@
+
+
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukAccordion
+
+@this(govukAccordion: GovukAccordion)
+
+@(items:Seq[Section])(implicit messages: Messages)
+
+@govukAccordion(Accordion(
+    id = "accordion-incorrect-details",
+    items = items
+))

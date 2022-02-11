@@ -27,11 +27,13 @@ import uk.gov.hmrc.config.ops._
 import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, Language}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.language.routes
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ViewConfig @Inject()(val configuration: Configuration,
+                           servicesConfig: ServicesConfig,
                            protected val dwpMessagesApiProvider: DwpMessagesApiProvider,
                            val authConnector: AuthConnector) extends AuthorisedFunctions
 {
@@ -41,6 +43,13 @@ class ViewConfig @Inject()(val configuration: Configuration,
   lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")
   lazy val timeout: Int = configuration.get[Int]("timeoutDialog.timeout-seconds")
   lazy val timeoutCountdown: Int = configuration.get[Int]("timeoutDialog.timeout-countdown-seconds")
+  lazy val lockoutPeriod: String = configuration.getOptional[String]("lockout.period").getOrElse("24 hours")
+  lazy val failedAttemptsEnabled: Boolean = configuration.getOptional[Boolean]("failed-attempts.enabled").getOrElse(false)
+  lazy val failedAttemptsMax: Int = configuration.get[Int]("failed-attempts.max")
+  lazy val isLocal: Boolean = configuration.getOptional[Boolean]("isLocal").getOrElse(false)
+
+  def addTaxesFrontendBaseUrl(): String =
+    if (isLocal) servicesConfig.baseUrl("add-taxes-frontend") else ""
 
   def languageMap: Map[String, Lang] =
     configuration.load[Seq[String]]("play.i18n.langs", default = Seq("en", "cy"))
@@ -65,18 +74,6 @@ class ViewConfig @Inject()(val configuration: Configuration,
     }.recover{
       case _ => false
     }
-  }
-
-  // old templates
-  def routeToSwitchLanguage: String => Call =
-    (lang: String) => routes.ChangeLanguageEndpoint.switchToLanguage(lang)
-
-  // new templates
-  def languageLinks: Seq[(Language, String)] = {
-    Seq(
-      (En, routes.ChangeLanguageEndpoint.switchToLanguage("english").url),
-      (Cy, routes.ChangeLanguageEndpoint.switchToLanguage("cymraeg").url)
-    )
   }
 
 }

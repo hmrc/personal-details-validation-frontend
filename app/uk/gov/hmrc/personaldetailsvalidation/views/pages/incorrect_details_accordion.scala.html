@@ -1,0 +1,72 @@
+@import uk.gov.hmrc.views.html.partials._
+@import uk.gov.hmrc.views.ViewConfig
+
+@this(
+    p: Paragraph,
+    a: link,
+    ul: ul,
+    accordion: accordion,
+    btn: button
+)
+
+@()(implicit request: Request[_], appConfig: ViewConfig, msgs: Messages)
+
+@origin = @{
+    request.session.get("origin").getOrElse("")
+}
+
+@section1Content = {
+    @p(msgs("multi_option_incorrect_details.accordion.accordion1.1"))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion1.2"))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion1.3", "https://www.gov.uk/tell-hmrc-change-of-details"))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion1.4", "https://www.gov.uk/tell-hmrc-change-of-details/gender-change"))
+}
+
+@section2Content = {
+    @p(msgs("multi_option_incorrect_details.accordion.accordion2.1"))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion2.2"))
+}
+
+@section3Content = {
+    @p(msgs("multi_option_incorrect_details.accordion.accordion3.1"))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion3.2"))
+    @ul(Seq(
+        "multi_option_incorrect_details.accordion.accordion3.3",
+        "multi_option_incorrect_details.accordion.accordion3.4"
+    ))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion3.5"))
+    @ul(Seq(
+        "multi_option_incorrect_details.accordion.accordion3.6",
+        "multi_option_incorrect_details.accordion.accordion3.7",
+        "multi_option_incorrect_details.accordion.accordion3.8",
+        "multi_option_incorrect_details.accordion.accordion3.9"
+    ))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion3.10","https://www.gov.uk/lost-national-insurance-number"))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion3.11","https://www.gov.uk/apply-national-insurance-number"))
+}
+
+@section4Content = {
+    @p(msgs("multi_option_incorrect_details.accordion.accordion4.1"))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion4.2"))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion4.3"))
+    @p(msgs("multi_option_incorrect_details.accordion.accordion4.4","https://www.gov.uk/tell-hmrc-change-address"))
+}
+
+@accordion(Seq(
+    Section(
+        headingContent = Text(msgs("multi_option_incorrect_details.accordion.heading1")),
+        content = HtmlContent(section1Content)
+    ),
+    Section(
+        headingContent = Text(msgs("multi_option_incorrect_details.accordion.heading2")),
+        content = HtmlContent(section2Content)
+    ),
+    Section(
+        headingContent = Text(msgs("multi_option_incorrect_details.accordion.heading3")),
+        content = HtmlContent(section3Content)
+    ),
+    Section(
+        headingContent = Text(msgs("multi_option_incorrect_details.accordion.heading4")),
+        content = HtmlContent(section4Content)
+    )
+))

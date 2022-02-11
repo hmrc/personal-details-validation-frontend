@@ -75,3 +75,39 @@ we-cannot-check-your-identity.para.1=Mae’n rhaid i chi fod yn 15 oed a 9 mis o
 we-cannot-check-your-identity.para.2=Fel arfer, byddwch yn cael rhif Yswiriant Gwladol yn awtomatig, yn y 3 mis cyn eich pen-blwydd yn 16 oed os yw’r canlynol yn wir:
 we-cannot-check-your-identity.ul.1=rydych yn byw yn y DU
 we-cannot-check-your-identity.ul.2= mae rhiant wedi llenwi ffurflen hawlio <a href="{0}" class="govuk-link">Budd-dal Plant</a> i chi
+
+multi_option_incorrect_details.h1=Nid yw’r wybodaeth a roesoch yn cyd-fynd â’n cofnodion
+multi_option_incorrect_details.p1=Mae hyn yn golygu bod yr holl fanylion a nodwyd gennych, neu rywfaint ohonynt, yn anghywir.
+multi_option_incorrect_details.p2=Os bydd eich manylion yn newid, mae gennych gyfrifoldeb cyfreithiol i ddiweddaru’ch dogfennau a’ch cofnodion gyda CThEM a sefydliadau eraill. Ni fyddwch yn gallu defnyddio dogfennau sy’n cynnwys gwybodaeth sydd wedi dyddio i gadarnhau pwy ydych.
+multi_option_incorrect_details.p3=Mae cymorth a chyngor manylach ar gadarnhau pwy ydych ar gael isod.
+multi_option_incorrect_details.accordion.heading1=Enwau cyntaf ac olaf
+multi_option_incorrect_details.accordion.accordion1.1=Mae angen i chi nodi’ch enw cyntaf a’ch enw olaf fel eu bod yn cyd-fynd â’n cofnodion.
+multi_option_incorrect_details.accordion.accordion1.2=Weithiau cyfeirir at enw cyntaf fel enw a roddwyd. Weithiau cyfeirir at enw olaf fel enw teuluol neu gyfenw.
+multi_option_incorrect_details.accordion.accordion1.3=Mae’n rhaid i chi <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">roi gwybod i CThEM os yw’ch enw wedi newid (yn agor tab newydd)</a>, er enghraifft os ydych wedi priodi neu ysgaru.
+multi_option_incorrect_details.accordion.accordion1.4=Bydd eich enw’n cael ei ddiweddaru’n awtomatig <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">os byddwch yn newid eich rhywedd (yn agor tab newydd)</a>.
+multi_option_incorrect_details.accordion.heading2=Dyddiad geni
+multi_option_incorrect_details.accordion.accordion2.1=Mae’n rhaid nodi’ch dyddiad geni fel rhifau ac mae’n rhaid iddo gynnwys diwrnod, mis a blwyddyn. Er enghraifft, 31 3 1980.
+multi_option_incorrect_details.accordion.accordion2.2=Os ydych yn nodi’r ffigur 9 neu lai ar gyfer mis, nid oes angen i chi gynnwys sero ar flaen y rhif.
+multi_option_incorrect_details.accordion.heading3=Rhif Yswiriant Gwladol
+multi_option_incorrect_details.accordion.accordion3.1=Mae rhif Yswiriant Gwladol yn cynnwys llythrennau a rhifau ac nid yw byth yn newid. Er enghraifft, QQ123456C. Mae’n sicrhau bod eich cyfraniadau Yswiriant Gwladol a’ch treth yn cael eu cofnodi yn erbyn eich enw chi’n unig.
+multi_option_incorrect_details.accordion.accordion3.2=Fel arfer, cewch eich rhif Yswiriant Gwladol yn awtomatig, yn y 3 mis cyn eich pen-blwydd yn 16 oed:
+multi_option_incorrect_details.accordion.accordion3.3=os ydych yn byw yn y DU
+multi_option_incorrect_details.accordion.accordion3.4=os yw rhiant wedi llenwi ffurflen hawlio <a href="https://www.gov.uk/child-benefit" class="govuk-link" target="_blank" rel="noopener noreferrer">Budd-dal Plant (yn agor tab newydd)</a> i chi
+multi_option_incorrect_details.accordion.accordion3.5=Gallwch ddod o hyd i’ch rhif Yswiriant Gwladol:
+multi_option_incorrect_details.accordion.accordion3.6=ar eich slip cyflog
+multi_option_incorrect_details.accordion.accordion3.7=ar eich P60
+multi_option_incorrect_details.accordion.accordion3.8=ar lythyrau ynghylch treth, pensiynau neu fudd-daliadau
+multi_option_incorrect_details.accordion.accordion3.9=yn yr adran Yswiriant Gwladol o’ch <a href="https://www.gov.uk/personal-tax-account" class="govuk-link" target="_blank" rel="noopener noreferrer">cyfrif treth personol (yn agor tab newydd)</a>
+multi_option_incorrect_details.accordion.accordion3.10=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Dewch o hyd i’ch rhif Yswiriant Gwladol (yn agor tab newydd) os ydych chi wedi ei golli.
+multi_option_incorrect_details.accordion.accordion3.11=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Gwnewch gais am rif Yswiriant Gwladol (yn agor tab newydd) os nad oes gennych un.</a>
+multi_option_incorrect_details.accordion.heading4=Cod post
+multi_option_incorrect_details.accordion.accordion4.1=Bydd yr opsiwn cod post ond yn gweithio ar gyfer cyfeiriadau yn y DU. Er enghraifft SW1A 2AA.
+multi_option_incorrect_details.accordion.accordion4.2=Gallwch nodi’ch cod post mewn llythrennau mawr neu fach, gyda bylchau neu heb fylchau.
+multi_option_incorrect_details.accordion.accordion4.3=Os byddwch yn newid eich cyfeiriad, mae’n rhaid i chi wneud yn siŵr bod eich dogfennau a’ch cofnodion gyda CThEM a sefydliadau eraill yn gyfredol.
+multi_option_incorrect_details.accordion.accordion4.4=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Rhowch wybod i CThEM pan fyddwch chi’n newid eich cyfeiriad (yn agor tab newydd).</a>
+multi_option_incorrect_details.p4=<span class="govuk-!-font-weight-bold">Mae gennych {0} ymgais arall</span> i brofi pwy ydych.
+multi_option_incorrect_details.p4.sa=<span class="govuk-!-font-weight-bold">YMae gennych {0} ymgais arall</span> i brofi pwy ydych, neu gallwch <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">ofyn am gael ‘pin’ diogel drwy’r post</a>.
+multi_option_incorrect_details.p4.last=<span class="govuk-!-font-weight-bold">Mae gennych 1 ymgais arall</span> i brofi pwy ydych.
+multi_option_incorrect_details.p4.last.sa=<span class="govuk-!-font-weight-bold">Mae gennych 1 ymgais arall</span> i brofi pwy ydych, neu gallwch <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">ofyn am gael ‘pin’ diogel drwy’r post</a>.
+multi_option_incorrect_details.final-attempt=If you enter incorrect details again, we will <span class="govuk-!-font-weight-bold">lock your account for {0}</span>. We do this to stop malicious and fraudulent attempts to access your details.
+multi_option_incorrect_details.button=Rhowch gynnig arall arni

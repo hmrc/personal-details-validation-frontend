@@ -37,7 +37,8 @@
   backLinkUrl: Option[String] = None,
   form: Option[Form[_]] = None,
   formErrors: Seq[FormError] = Seq.empty,
-  loggedInUser: Boolean = true
+  loggedInUser: Boolean = true,
+  hideDeskpro: Boolean = false
 )(contentBlock: Html)(implicit request: Request[_], requestHeader: RequestHeader, messages: Messages, appConfig: ViewConfig)
 
 
@@ -50,7 +51,7 @@
 
     @contentBlock
 
-    @if(!requestHeader.session.get("loginOrigin").exists(_.startsWith("dwp-iv"))) {
+    @if(!hideDeskpro && !requestHeader.session.get("loginOrigin").exists(_.startsWith("dwp-iv"))) {
         <div class="govuk-!-margin-top-6">
             @hmrcReportTechnicalIssueHelper()
         </div>
