@@ -29,7 +29,7 @@ import support.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.EventDispatcher
-import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.we_cannot_check_your_identity
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, we_cannot_check_your_identity}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details, what_is_your_nino, what_is_your_postcode}
 import support.UnitSpec
 import setups.views.ViewSetup
@@ -82,6 +82,7 @@ class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatch
     private val controllerComponents: DefaultMessagesControllerComponents = app.injector.instanceOf[DefaultMessagesControllerComponents]
     private val enter_your_details: enter_your_details = app.injector.instanceOf[enter_your_details]
     private val what_is_your_nino: what_is_your_nino = app.injector.instanceOf[what_is_your_nino]
+    private val incorrect_details: incorrect_details = app.injector.instanceOf[incorrect_details]
     private val what_is_your_postcode: what_is_your_postcode = app.injector.instanceOf[what_is_your_postcode]
     private val we_cannot_check_your_identity: we_cannot_check_your_identity = app.injector.instanceOf[we_cannot_check_your_identity]
     private val ivConnector: IdentityVerificationConnector = app.injector.instanceOf[IdentityVerificationConnector]
@@ -93,8 +94,9 @@ class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatch
         eventDispatcher,
         controllerComponents,
         what_is_your_postcode,
-        what_is_your_nino,
+        what_is_your_nino,,
         enter_your_details,
+        incorrect_details,
         we_cannot_check_your_identity,
         ivConnector)(authConnector, mockDwpMessagesApi, viewConfig, executionContext, messagesApi)
   }
