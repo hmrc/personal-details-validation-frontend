@@ -94,7 +94,7 @@ class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatch
         eventDispatcher,
         controllerComponents,
         what_is_your_postcode,
-        what_is_your_nino,,
+        what_is_your_nino,
         enter_your_details,
         incorrect_details,
         we_cannot_check_your_identity,
