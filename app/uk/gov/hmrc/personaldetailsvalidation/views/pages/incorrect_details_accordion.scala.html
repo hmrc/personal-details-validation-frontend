@@ -1,5 +1,4 @@
 @import uk.gov.hmrc.views.html.partials._
-@import views.html.helper.CSPNonce
 @import uk.gov.hmrc.views.ViewConfig
 
 @this(
@@ -15,22 +14,6 @@
 @origin = @{
     request.session.get("origin").getOrElse("")
 }
-
-<script @{CSPNonce.attr}>
-    document.addEventListener('DOMContentLoaded', function () {
-
-        const secondaryButtons = document.getElementsByClassName('button-with-content');
-
-        function showHiddenDiv() {
-           let divToShow = this.id+"-content";
-           document.getElementById(divToShow).style.display = 'block';
-        }
-
-        for (let i = 0; i < secondaryButtons.length; i++) {
-            secondaryButtons[i].addEventListener('click', showHiddenDiv)
-        }
-    });
-</script>
 
 @section1Content = {
     @p(msgs("multi_option_incorrect_details.accordion.accordion1.1"))
