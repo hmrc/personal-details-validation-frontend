@@ -43,10 +43,11 @@ class ViewConfig @Inject()(val configuration: Configuration,
   lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")
   lazy val timeout: Int = configuration.get[Int]("timeoutDialog.timeout-seconds")
   lazy val timeoutCountdown: Int = configuration.get[Int]("timeoutDialog.timeout-countdown-seconds")
-  lazy val lockoutPeriod: String = configuration.loadMandatory("lockout.period")
+  lazy val lockoutPeriod: String = configuration.getOptional[String]("lockout.period").getOrElse("24 hours")
   lazy val failedAttemptsEnabled: Boolean = configuration.getOptional[Boolean]("failed-attempts.enabled").getOrElse(false)
   lazy val failedAttemptsMax: Int = configuration.get[Int]("failed-attempts.max")
   lazy val isLocal: Boolean = configuration.getOptional[Boolean]("isLocal").getOrElse(false)
+
   def addTaxesFrontendBaseUrl(): String =
     if (isLocal) servicesConfig.baseUrl("add-taxes-frontend") else ""
 

@@ -38,7 +38,7 @@ import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConn
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring._
-import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.we_cannot_check_your_identity
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, we_cannot_check_your_identity}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.views.ViewConfig
 
@@ -604,6 +604,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     val stubMessagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
     val enter_your_details: enter_your_details = app.injector.instanceOf[enter_your_details]
+    val incorrect_details: incorrect_details = app.injector.instanceOf[incorrect_details]
     val what_is_your_postcode: what_is_your_postcode = app.injector.instanceOf[what_is_your_postcode]
     val what_is_your_nino: what_is_your_nino = app.injector.instanceOf[what_is_your_nino]
 
@@ -625,6 +626,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       what_is_your_postcode,
       what_is_your_nino,
       enter_your_details,
+      incorrect_details,
       we_cannot_check_your_identity,
       mockIVConnector)
   }

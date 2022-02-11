@@ -25,9 +25,11 @@ import play.api.{Configuration, Environment}
 import support.{ConfigSetup, UnitSpec}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.DwpMessagesApiProvider
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFactory with GuiceOneAppPerSuite {
   val authConnector: AuthConnector = app.injector.instanceOf[AuthConnector]
+  val servicesConfig: ServicesConfig = app.injector.instanceOf[ServicesConfig]
 
   private val scenarios = Tables.Table(
     ("propertyName",   "propertyAccessor",                            "configKey"),
@@ -106,7 +108,7 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFa
     val dwpMessagesApiProvider = new DwpMessagesApiProvider(Environment.simple(), configuration,
       new DefaultLangsProvider(configuration).get, HttpConfiguration())
 
-    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, dwpMessagesApiProvider, authConnector)
+    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, servicesConfig, dwpMessagesApiProvider, authConnector)
 
     def expectMessagesFilesExistsFor(codes: String*) = {
       dwpMessagesApiProvider.get.messages
@@ -128,7 +130,7 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFa
 
     val messagesApi = new DwpMessagesApiProvider(Environment.simple(), configuration,
       new DefaultLangsProvider(configuration).get, HttpConfiguration())
-    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, messagesApi, authConnector)
+    val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, servicesConfig, messagesApi, authConnector)
 
     def expectMessagesFilesExistsFor(codes: String*) = {
       messagesApi.get.messages

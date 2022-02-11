@@ -23,6 +23,7 @@ import play.api.i18n.DefaultLangsProvider
 import play.api.{ConfigLoader, Configuration, Environment}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.DwpMessagesApiProvider
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.views.ViewConfig
 
 object ViewConfigMockFactory extends MockFactory with GuiceOneAppPerSuite {
@@ -48,6 +49,10 @@ object ViewConfigMockFactory extends MockFactory with GuiceOneAppPerSuite {
 
     (configMock.get(_: String)(_:ConfigLoader[Int])).expects(v1 = "timeoutDialog.timeout-seconds", *).returning(5)
     (configMock.get(_: String)(_:ConfigLoader[Int])).expects(v1 = "timeoutDialog.timeout-countdown-seconds", *).returning(5)
+    (configMock.get[String](_ : String)(_ : ConfigLoader[String])).expects("lockout.period", *).returning("24 hours")
+    (configMock.get(_: String)(_:ConfigLoader[Boolean])).expects(v1 = "failed-attempts.enabled", *).returning(false)
+    (configMock.get(_: String)(_:ConfigLoader[Int])).expects(v1 = "failed-attempts.max", *).returning(5)
+    (configMock.get(_: String)(_:ConfigLoader[Boolean])).expects(v1 = "isLocal", *).returning(false)
 
     configMock
   }
@@ -64,8 +69,9 @@ object ViewConfigMockFactory extends MockFactory with GuiceOneAppPerSuite {
     dwpMessagesApi
   }
 
+  val servicesConfig: ServicesConfig = app.injector.instanceOf[ServicesConfig]
   val authConnector: AuthConnector = app.injector.instanceOf[AuthConnector]
 
   def apply(): ViewConfig =
-    new ViewConfig(configuration, messagesApi, authConnector)
+    new ViewConfig(configuration, servicesConfig, messagesApi, authConnector)
 }
