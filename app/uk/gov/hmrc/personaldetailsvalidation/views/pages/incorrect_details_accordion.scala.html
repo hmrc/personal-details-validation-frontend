@@ -11,10 +11,6 @@
 
 @()(implicit request: Request[_], appConfig: ViewConfig, msgs: Messages)
 
-@origin = @{
-    request.session.get("origin").getOrElse("")
-}
-
 @section1Content = {
     @p(msgs("multi_option_incorrect_details.accordion.accordion1.1"))
     @p(msgs("multi_option_incorrect_details.accordion.accordion1.2"))

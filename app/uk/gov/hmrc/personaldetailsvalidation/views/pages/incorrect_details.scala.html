@@ -34,14 +34,14 @@
     }
     @if(attemptsRemaining == 1) {
         @if(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"){
-            @p(msgs("multi_option_incorrect_details.p4.last.sa", s"${viewConfig.addTaxesFrontendBaseUrl}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin")).toString))
+            @p(htmlContent = Html(msgs("multi_option_incorrect_details.p4.last.sa", s"${viewConfig.addTaxesFrontendBaseUrl}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin")))
         } else {
             @p(msgs("multi_option_incorrect_details.p4.last"))
         }
         @p(msgs("multi_option_incorrect_details.final-attempt", lockoutPeriod))
     } else {
         @if(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa") {
-            @p(msgs("multi_option_incorrect_details.p4.sa", attemptsRemaining))
+            @p(htmlContent = Html(msgs("multi_option_incorrect_details.p4.sa", attemptsRemaining, s"${viewConfig.addTaxesFrontendBaseUrl}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin")))
         } else {
             @p(msgs("multi_option_incorrect_details.p4", attemptsRemaining))
         }
