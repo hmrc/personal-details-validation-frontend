@@ -21,7 +21,8 @@
 
 @origin = @{request.session.get("origin").getOrElse("")}
 @attemptsRemaining = @{attempt - 1}
-@lockoutPeriod = @{viewConfig.lockoutPeriod}
+@lockoutPeriodEn = @{viewConfig.lockoutPeriodEn}
+@lockoutPeriodCy = @{viewConfig.lockoutPeriodCy}
 @failedAttemptsMax = @{viewConfig.failedAttemptsMax}
 
 @main(title = msgs("multi_option_incorrect_details.h1"), hideDeskpro = true){
@@ -38,7 +39,7 @@
         } else {
             @p(msgs("multi_option_incorrect_details.p4.last"))
         }
-        @p(msgs("multi_option_incorrect_details.final-attempt", lockoutPeriod))
+        @p(msgs("multi_option_incorrect_details.final-attempt", if(msgs.lang.code == "en")lockoutPeriodEn else lockoutPeriodCy))
     } else {
         @if(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa") {
             @p(htmlContent = Html(msgs("multi_option_incorrect_details.p4.sa", attemptsRemaining, s"${viewConfig.addTaxesFrontendBaseUrl}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin")))

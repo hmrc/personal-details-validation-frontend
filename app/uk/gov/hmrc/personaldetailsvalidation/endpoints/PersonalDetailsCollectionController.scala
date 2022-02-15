@@ -45,6 +45,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
                                                     what_is_your_nino: what_is_your_nino,
                                                     enter_your_details: enter_your_details,
                                                     incorrect_details: incorrect_details,
+                                                    locked_out: locked_out,
                                                     weCannotCheckYourIdentityPage : we_cannot_check_your_identity,
                                                     ivConnector: IdentityVerificationConnector)
                                                    (implicit val authConnector: AuthConnector,
@@ -187,5 +188,9 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def incorrectDetails(completionUrl: CompletionUrl, attempt: Int): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(incorrect_details(completionUrl, attempt)))
+  }
+
+  def lockedOut(): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(locked_out()))
   }
 }

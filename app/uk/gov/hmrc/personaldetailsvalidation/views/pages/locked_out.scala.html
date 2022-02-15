@@ -1,0 +1,28 @@
+@import uk.gov.hmrc.views.html.template.layout
+@import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.incorrect_details_accordion
+@import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.views.html.partials._
+
+@this(
+    main: layout,
+    accordion: incorrect_details_accordion,
+    h1: h1,
+    p: Paragraph,
+    a: link,
+    ul: ul,
+    btn: button
+)
+
+
+@()(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
+
+@lockoutPeriodEn = @{viewConfig.lockoutPeriodEn}
+@lockoutPeriodCy = @{viewConfig.lockoutPeriodCy}
+
+@main(title = msgs("multi_option_incorrect_details.locked_out.h1"), hideDeskpro = true){
+    @h1("multi_option_incorrect_details.locked_out.h1")
+    @p(msgs("multi_option_incorrect_details.locked_out.p1", if(msgs.lang.code == "en")lockoutPeriodEn else lockoutPeriodCy))
+    @p(msgs("multi_option_incorrect_details.locked_out.p2", "https://www.tax.service.gov.uk/helpline/which-service-are-you-trying-to-access"))
+    @p(msgs("multi_option_incorrect_details.locked_out.p3"))
+}
+
