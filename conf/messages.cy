@@ -111,3 +111,8 @@ multi_option_incorrect_details.p4.last=<span class="govuk-!-font-weight-bold">Ma
 multi_option_incorrect_details.p4.last.sa=<span class="govuk-!-font-weight-bold">Mae gennych 1 ymgais arall</span> i brofi pwy ydych, neu gallwch <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">ofyn am gael ‘pin’ diogel drwy’r post</a>.
 multi_option_incorrect_details.final-attempt=If you enter incorrect details again, we will <span class="govuk-!-font-weight-bold">lock your account for {0}</span>. We do this to stop malicious and fraudulent attempts to access your details.
 multi_option_incorrect_details.button=Rhowch gynnig arall arni
+
+multi_option_incorrect_details.locked_out.h1=Rydych wedi cael eich cloi allan
+multi_option_incorrect_details.locked_out.p1=Rydych wedi nodi manylion nad ydynt yn cyd-fynd â’n cofnodion gormod o weithiau. Mae hyn yn golygu na allwch roi cynnig arall arni am {0}.
+multi_option_incorrect_details.locked_out.p2=Alternatively, our <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">phone advisers</a> may be able to help you access the service you need in another way.
+multi_option_incorrect_details.locked_out.p3=However, they will not be able to help you confirm your identity online or give you access to online services.
