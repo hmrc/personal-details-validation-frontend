@@ -114,5 +114,5 @@ multi_option_incorrect_details.button=Rhowch gynnig arall arni
 
 multi_option_incorrect_details.locked_out.h1=Rydych wedi cael eich cloi allan
 multi_option_incorrect_details.locked_out.p1=Rydych wedi nodi manylion nad ydynt yn cyd-fynd â’n cofnodion gormod o weithiau. Mae hyn yn golygu na allwch roi cynnig arall arni am {0}.
-multi_option_incorrect_details.locked_out.p2=Fel arall, efallai gall ein <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">hymgynghorwyr dros y ffôn</a> eich helpu i gael mynediad at y gwasanaeth sydd ei angen arnoch mewn ffordd arall.
+multi_option_incorrect_details.locked_out.p2=Fel arall, efallai gall ein <a href="{0}" class="govuk-link">hymgynghorwyr dros y ffôn</a> eich helpu i gael mynediad at y gwasanaeth sydd ei angen arnoch mewn ffordd arall.
 multi_option_incorrect_details.locked_out.p3=Fodd bynnag, ni fyddant yn gallu’ch helpu i gadarnhau pwy ydych ar-lein, na rhoi mynediad i chi at wasanaethau ar-lein.
