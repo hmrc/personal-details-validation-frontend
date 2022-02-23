@@ -51,7 +51,23 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
   "showPage" should {
 
+    "Redirect to lockedOut page when user tried 5 times" in new Setup {
+
+      (personalDetailsSubmitterMock.getUserAttempts()(_: HeaderCarrier))
+        .expects(*)
+        .returns(Future.successful(5))
+
+      val result: Future[Result] = controller.showPage(completionUrl, None)(request)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get shouldBe "/personal-details-validation/incorrect-details/you-have-been-locked-out"
+    }
+
     "Redirect to enter-your-details page when user call /personal-details" in new Setup {
+
+      (personalDetailsSubmitterMock.getUserAttempts()(_: HeaderCarrier))
+        .expects(*)
+        .returns(Future.successful(0))
 
       val result: Future[Result] = controller.showPage(completionUrl, None)(request)
 
@@ -395,7 +411,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     "redirect to showPage if no details found" in new Setup {
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
 
-      val pdv : Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId))
+      val pdv : Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId, "", 0))
 
       val expectedPersonalDetails: PersonalDetailsWithNino = PersonalDetailsWithNino(
         NonEmptyString("Jim"),
@@ -513,7 +529,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     "redirect to showPage if no details found" in new Setup {
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
 
-      val pdv : Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId))
+      val pdv : Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId, "", 0))
 
       val expectedPersonalDetails: PersonalDetailsWithPostcode = PersonalDetailsWithPostcode(
         NonEmptyString("Jim"),
@@ -596,7 +612,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     implicit val messages: Messages = MessagesImpl(lang, dwpMessagesApiProvider.get)
 
     val personalDetailsSubmitterMock: PersonalDetailsSubmission = mock[PersonalDetailsSubmission]
-    val mockAppConfig: AppConfig = mock[AppConfig]
+    val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
     val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
     val mockIVConnector: IdentityVerificationConnector = mock[IdentityVerificationConnector]
     implicit val mockViewConfig: ViewConfig = app.injector.instanceOf[ViewConfig]
@@ -621,7 +637,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     val controller = new PersonalDetailsCollectionController(
       personalDetailsSubmitterMock,
-      mockAppConfig,
+      appConfig,
       mockEventDispatcher,
       stubMessagesControllerComponents,
       what_is_your_postcode,

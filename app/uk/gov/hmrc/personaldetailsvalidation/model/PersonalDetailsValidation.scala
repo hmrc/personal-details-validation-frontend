@@ -22,14 +22,17 @@ import play.api.libs.json.{Reads, __}
 sealed trait PersonalDetailsValidation
 
 final case class SuccessfulPersonalDetailsValidation(validationId: ValidationId) extends PersonalDetailsValidation
-case class FailedPersonalDetailsValidation(validationId: ValidationId) extends PersonalDetailsValidation
+case class FailedPersonalDetailsValidation(validationId: ValidationId, maybeCredId: String, attempt: Int) extends PersonalDetailsValidation
 
 object PersonalDetailsValidation {
   implicit val reads: Reads[PersonalDetailsValidation] = (
-    (__ \ "validationStatus").read[String] and (__ \ "id").read[String]
+    (__ \ "validationStatus").read[String] and
+      (__ \ "id").read[String] and
+      ((__ \ "credentialId").read[String] or Reads.pure("")) and
+      ((__ \ "attempts").read[Int] or Reads.pure(0))
     ).tupled.map {
-    case ("success", validationId) => SuccessfulPersonalDetailsValidation(ValidationId(validationId))
-    case ("failure", validationId) => FailedPersonalDetailsValidation(ValidationId(validationId))
+    case ("success", validationId, _, _) => SuccessfulPersonalDetailsValidation(ValidationId(validationId))
+    case ("failure", validationId, credentialId, attempts) => FailedPersonalDetailsValidation(ValidationId(validationId), credentialId, attempts)
     case _ => throw new scala.RuntimeException("Unable to read PersonalDetailsValidation")
   }
 }

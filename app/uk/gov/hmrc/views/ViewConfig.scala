@@ -16,19 +16,16 @@
 
 package uk.gov.hmrc.views
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.i18n.Lang
-import play.api.mvc.Call
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.config.DwpMessagesApiProvider
 import uk.gov.hmrc.config.implicits._
 import uk.gov.hmrc.config.ops._
-import uk.gov.hmrc.hmrcfrontend.views.viewmodels.language.{Cy, En, Language}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.language.routes
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -37,6 +34,8 @@ class ViewConfig @Inject()(val configuration: Configuration,
                            protected val dwpMessagesApiProvider: DwpMessagesApiProvider,
                            val authConnector: AuthConnector) extends AuthorisedFunctions
 {
+  lazy val retryLimit: Int = configuration.getOptional[Int]("retry.limit").getOrElse(5)
+
   lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
   lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")

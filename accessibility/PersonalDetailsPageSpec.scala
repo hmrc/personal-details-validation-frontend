@@ -19,20 +19,20 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status
-import play.api.mvc.{Action, AnyContent, DefaultMessagesControllerComponents, Result}
+import play.api.mvc.{DefaultMessagesControllerComponents, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
+import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout}
+import setups.views.ViewSetup
+import support.Generators.Implicits._
+import support.UnitSpec
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
-import support.Generators.Implicits._
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.EventDispatcher
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, we_cannot_check_your_identity}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details, what_is_your_nino, what_is_your_postcode}
-import support.UnitSpec
-import setups.views.ViewSetup
 import uk.gov.hmrc.scalatestaccessibilitylinter.AccessibilityMatchers
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -1,10 +1,9 @@
-@import uk.gov.hmrc.views.html.template.layout
+@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.incorrect_details_accordion
 @import uk.gov.hmrc.views.ViewConfig
-@import uk.gov.hmrc.config.AppConfig
-@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.views.html.partials._
-@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+@import uk.gov.hmrc.views.html.template.layout
 
 @this(
     main: layout,
@@ -20,10 +19,11 @@
 @(completionUrl: CompletionUrl, attempt: Int)(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
 
 @origin = @{request.session.get("origin").getOrElse("")}
-@attemptsRemaining = @{attempt - 1}
+@attemptsRemaining = @{viewConfig.retryLimit - attempt}
 @lockoutPeriodEn = @{viewConfig.lockoutPeriodEn}
 @lockoutPeriodCy = @{viewConfig.lockoutPeriodCy}
 @failedAttemptsMax = @{viewConfig.failedAttemptsMax}
+@isSA = @{(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa")}
 
 @main(title = msgs("multi_option_incorrect_details.h1"), hideDeskpro = true){
     @h1("multi_option_incorrect_details.h1")
@@ -34,14 +34,14 @@
         @accordion()
     }
     @if(attemptsRemaining == 1) {
-        @if(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"){
+        @if(isSA){
             @p(htmlContent = Html(msgs("multi_option_incorrect_details.p4.last.sa", s"${viewConfig.addTaxesFrontendBaseUrl}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin")))
         } else {
             @p(msgs("multi_option_incorrect_details.p4.last"))
         }
         @p(msgs("multi_option_incorrect_details.final-attempt", if(msgs.lang.code == "en")lockoutPeriodEn else lockoutPeriodCy))
     } else {
-        @if(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa") {
+        @if(isSA) {
             @p(htmlContent = Html(msgs("multi_option_incorrect_details.p4.sa", attemptsRemaining, s"${viewConfig.addTaxesFrontendBaseUrl}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin")))
         } else {
             @p(msgs("multi_option_incorrect_details.p4", attemptsRemaining))
