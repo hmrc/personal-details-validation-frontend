@@ -65,10 +65,14 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     Action.async { implicit request =>
       val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
       personalDetailsSubmission.getUserAttempts().map { attempts =>
-        if (appConfig.retryIsEnabled && attempts < appConfig.retryLimit) {
-          Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl)).withSession(sessionWithOrigin)
+        if (appConfig.retryIsEnabled) {
+          if (attempts < appConfig.retryLimit) {
+            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl)).withSession(sessionWithOrigin)
+          } else {
+            Redirect(routes.PersonalDetailsCollectionController.lockedOut())
+          }
         } else {
-          Redirect(routes.PersonalDetailsCollectionController.lockedOut())
+          Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl)).withSession(sessionWithOrigin)
         }
       }
     }
