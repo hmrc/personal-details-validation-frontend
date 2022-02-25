@@ -22,13 +22,12 @@
 @attemptsRemaining = @{viewConfig.retryLimit - attempt}
 @lockoutPeriodEn = @{viewConfig.lockoutPeriodEn}
 @lockoutPeriodCy = @{viewConfig.lockoutPeriodCy}
-@failedAttemptsMax = @{viewConfig.failedAttemptsMax}
 @isSA = @{(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa")}
 
 @main(title = msgs("multi_option_incorrect_details.h1"), hideDeskpro = true){
     @h1("multi_option_incorrect_details.h1")
     @p(msgs("multi_option_incorrect_details.p1"))
-    @if(attempt < failedAttemptsMax){
+    @if(attempt < viewConfig.retryLimit){
         @p(msgs("multi_option_incorrect_details.p2"))
         @p(msgs("multi_option_incorrect_details.p3"))
         @accordion()

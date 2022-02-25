@@ -44,8 +44,6 @@ class ViewConfig @Inject()(val configuration: Configuration,
   lazy val timeoutCountdown: Int = configuration.get[Int]("timeoutDialog.timeout-countdown-seconds")
   lazy val lockoutPeriodEn: String = configuration.getOptional[String]("lockout.period.en").getOrElse("24 hours")
   lazy val lockoutPeriodCy: String = configuration.getOptional[String]("lockout.period.cy").getOrElse("24 awr")
-  lazy val failedAttemptsEnabled: Boolean = configuration.getOptional[Boolean]("failed-attempts.enabled").getOrElse(false)
-  lazy val failedAttemptsMax: Int = configuration.get[Int]("failed-attempts.max")
   lazy val isLocal: Boolean = configuration.getOptional[Boolean]("isLocal").getOrElse(false)
 
   def addTaxesFrontendBaseUrl(): String =
