@@ -32,7 +32,6 @@
 
 @(title: String,
   headBlock: Option[Html] = None,
-  scriptsBlock: Option[Html] = None,
   completionUrl: Option[CompletionUrl] = None,
   backLinkUrl: Option[String] = None,
   form: Option[Form[_]] = None,
@@ -43,8 +42,6 @@
 
 
 @contentSection = {
-    <div class="gtm-tag" data-gtag=""></div>
-
     @if(form && completionUrl) {
         @summaryErrors(theForm = form, govukErrorSummary = govukErrorSummary, completionUrl.get)
     }
@@ -58,11 +55,6 @@
     }
 }
 
-@scripts = {
-    @scriptsBlock.getOrElse(HtmlFormat.empty)
-    <script @{CSPNonce.attr} src='@routes.Assets.at("javascripts/gtm_dl.js")'></script>
-}
-
 @pageTitle = @{
     if(formErrors.nonEmpty){
         messages("error.prefix") + " " + title + " - GOV.UK"
@@ -74,7 +66,6 @@
 @hmrcLayout(
     pageTitle = Some(pageTitle),
     isWelshTranslationAvailable = true,
-    additionalScriptsBlock = Some(scripts),
     additionalHeadBlock = Some(additionalHead( CompletionUrl(completionUrl.getOrElse("").toString))),
     signOutUrl = if (loggedInUser) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None,
     backLinkUrl = backLinkUrl,
