@@ -559,7 +559,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
   "keep-alive" should {
 
     "return 200 OK" in new Setup {
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(TimeoutContinue, *, *, *)
+      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(TimeoutContinue(), *, *, *)
       val result: Future[Result] = controller.keepAlive()(request)
       status(result) shouldBe 200
     }
@@ -570,7 +570,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "return 200 OK" in new Setup {
 
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(UnderNinoAge, *, *, *)
+      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(UnderNinoAge(), *, *, *)
 
       val result: Future[Result] = controller.weCannotCheckYourIdentity()(request)
       status(result) shouldBe 200
@@ -588,7 +588,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     "redirect user to continueUrl with userTimeout parameter" in new Setup {
 
       private val redirectUrl = s"${completionUrl.value}&userTimeout="
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(TimedOut, *, *, *)
+      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(TimedOut(), *, *, *)
       (mockIVConnector.updateJourney(_: String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *)
 
       private val result = controller.redirectAfterTimeout(completionUrl)(request)
