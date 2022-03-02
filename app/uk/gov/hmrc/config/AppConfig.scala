@@ -26,11 +26,20 @@ class AppConfig @Inject()(val configuration: Configuration, servicesConfig: Serv
 
   lazy val ivUrl: String = servicesConfig.baseUrl("identity-verification")
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
+
+  //Lockout related configs
+  lazy val retryIsEnabled: Boolean = configuration.getOptional[Boolean]("retry.isEnabled").getOrElse(true)
+  lazy val retryLimit: Int = configuration.getOptional[Int]("retry.limit").getOrElse(5)
+
+  //GA related configs
   lazy val platformAnalyticsUrl: String = servicesConfig.baseUrl("platform-analytics")
+  lazy val originDimension: Int = configuration.get[Int]("google-analytics.origin-dimension")
+
+  //logout related configs
   lazy val logoutPage: String = servicesConfig.getConfString("logoutPage", "https://www.access.service.gov.uk/logout")
   lazy val basGatewayUrl: String = servicesConfig.getConfString("auth.bas-gateway.url", throw new RuntimeException("Bas gateway url required"))
   lazy val logoutPath: String = servicesConfig.getConfString("auth.logOutUrl", "")
   lazy val ggLogoutUrl = s"$basGatewayUrl$logoutPath"
   lazy val logoutCallback: String = servicesConfig.getConfString("auth.logoutCallbackUrl", "/personal-details-validation/signed-out")
-  lazy val originDimension: Int = configuration.get[Int]("google-analytics.origin-dimension")
+
 }

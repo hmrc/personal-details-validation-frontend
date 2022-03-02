@@ -64,9 +64,17 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   def showPage(implicit completionUrl: CompletionUrl, origin: Option[String]): Action[AnyContent] =
     Action.async { implicit request =>
       val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
-      Future.successful(
-        Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl)).withSession(sessionWithOrigin)
-      )
+      personalDetailsSubmission.getUserAttempts().map { attempts =>
+        if (appConfig.retryIsEnabled) {
+          if (attempts < appConfig.retryLimit) {
+            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl)).withSession(sessionWithOrigin)
+          } else {
+            Redirect(routes.PersonalDetailsCollectionController.lockedOut())
+          }
+        } else {
+          Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl)).withSession(sessionWithOrigin)
+        }
+      }
     }
 
   def enterYourDetails(implicit completionUrl: CompletionUrl, withError: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
@@ -151,9 +159,18 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
       pdv <- personalDetailsSubmission.submitPersonalDetails(personalDetails)
       result = pdv match {
         case SuccessfulPersonalDetailsValidation(_) => personalDetailsSubmission.successResult(completionUrl, pdv)
-        case _ =>
-          val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
-          Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, withError = true)).withSession(cleanedSession)
+        case FailedPersonalDetailsValidation(_, maybeCredId, attempt) =>
+          if (appConfig.retryIsEnabled && maybeCredId.nonEmpty) {
+            val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
+            if (attempt < appConfig.retryLimit) {
+              Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attempt)).withSession(cleanedSession)
+            } else {
+              Redirect(routes.PersonalDetailsCollectionController.lockedOut()).withSession(cleanedSession)
+            }
+          } else {
+            val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
+            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, withError = true)).withSession(cleanedSession)
+          }
       }
     } yield result
   }.recover {

@@ -54,4 +54,8 @@ class PersonalDetailsSender @Inject()(httpClient: HttpClient, connectorConfig: C
       )
   }
 
+  def getUserAttempts()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[Int] = {
+    httpClient.GET[Int](url + "/get-user-attempts")
+  }
+
 }

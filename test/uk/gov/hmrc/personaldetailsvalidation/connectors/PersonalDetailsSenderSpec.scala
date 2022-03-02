@@ -53,9 +53,9 @@ class PersonalDetailsSenderSpec extends UnitSpec with MockFactory with ScalaFutu
       (mockHttpClient.POST[PersonalDetails, PersonalDetailsValidation](_: String, _: PersonalDetails, _: Seq[(String, String)])(_: Writes[PersonalDetails],
         _: HttpReads[PersonalDetailsValidation], _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *, *, *, *, *, *)
-        .returning(Future.successful(FailedPersonalDetailsValidation(validationId)))
+        .returning(Future.successful(FailedPersonalDetailsValidation(validationId, "", 0)))
 
-      connector.submitValidationRequest(personalDetailsWithNino, origin).futureValue shouldBe FailedPersonalDetailsValidation(validationId)
+      connector.submitValidationRequest(personalDetailsWithNino, origin).futureValue shouldBe FailedPersonalDetailsValidation(validationId, "", 0)
     }
 
     "returned SuccessfulPersonalDetailsValidation from POST to /personal-details-validation with postcode" in new Setup {
@@ -77,9 +77,9 @@ class PersonalDetailsSenderSpec extends UnitSpec with MockFactory with ScalaFutu
       (mockHttpClient.POST[PersonalDetails, PersonalDetailsValidation](_: String, _: PersonalDetails, _: Seq[(String, String)])(_: Writes[PersonalDetails],
         _: HttpReads[PersonalDetailsValidation], _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *, *, *, *, *, *)
-        .returning(Future.successful(FailedPersonalDetailsValidation(validationId)))
+        .returning(Future.successful(FailedPersonalDetailsValidation(validationId, "", 0)))
 
-      connector.submitValidationRequest(personalDetailsWithPostcode, origin).futureValue shouldBe FailedPersonalDetailsValidation(validationId)
+      connector.submitValidationRequest(personalDetailsWithPostcode, origin).futureValue shouldBe FailedPersonalDetailsValidation(validationId, "", 0)
     }
   }
 
