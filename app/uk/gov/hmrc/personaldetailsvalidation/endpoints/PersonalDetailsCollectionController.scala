@@ -164,7 +164,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
             if (attempt < appConfig.retryLimit) {
               val origin = request.session.get("origin").getOrElse("")
-              val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"
+              val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa" || origin.contains("dwp")
               if (isSA) Redirect(routes.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl, attempt)).withSession(cleanedSession)
               else Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attempt)).withSession(cleanedSession)
             } else {
