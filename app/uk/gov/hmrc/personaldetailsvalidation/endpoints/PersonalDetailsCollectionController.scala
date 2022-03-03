@@ -166,7 +166,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             val attemptsRemaining = viewConfig.retryLimit - attempt
             if (attempt < appConfig.retryLimit) {
               val origin = request.session.get("origin").getOrElse("")
-              val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa" || origin.contains("dwp")
+              val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"
               eventDispatcher.dispatchEvent(PdvFailedAttempt(appConfig.retryLimit - attempt))
               if (isSA) Redirect(routes.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl, attemptsRemaining)).withSession(cleanedSession)
               else Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attemptsRemaining)).withSession(cleanedSession)
