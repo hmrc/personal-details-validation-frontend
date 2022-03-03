@@ -124,7 +124,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
           retrieveMainDetails match {
             case (Some(fn), Some(ln), Some(dob)) =>
               val personalDetails = PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln),ninoForm.nino, LocalDate.parse(dob))
-              submitPersonalDetails(personalDetails, completionUrl, isLoggedIn)
+              submitPersonalDetails(personalDetails, completionUrl)
             case _ => Future.successful(BadRequest)
           }
         }
@@ -146,7 +146,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
           retrieveMainDetails match {
             case (Some(fn), Some(ln), Some(dob)) =>
               val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln), postCodeForm.postcode, LocalDate.parse(dob))
-              submitPersonalDetails(personalDetails, completionUrl, isLoggedIn)
+              submitPersonalDetails(personalDetails, completionUrl)
             case _ => Future.successful(BadRequest)
           }
         }
@@ -154,7 +154,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     }
   }
 
-  private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, isLoggedInUser: Boolean)(implicit request: Request[_]): Future[Result] = {
+  private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl)(implicit request: Request[_]): Future[Result] = {
     for {
       pdv <- personalDetailsSubmission.submitPersonalDetails(personalDetails)
       result = pdv match {
@@ -163,7 +163,10 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
           if (appConfig.retryIsEnabled && maybeCredId.nonEmpty) {
             val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
             if (attempt < appConfig.retryLimit) {
-              Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attempt)).withSession(cleanedSession)
+              val origin = request.session.get("origin").getOrElse("")
+              val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"
+              if (isSA) Redirect(routes.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl, attempt)).withSession(cleanedSession)
+              else Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attempt)).withSession(cleanedSession)
             } else {
               Redirect(routes.PersonalDetailsCollectionController.lockedOut()).withSession(cleanedSession)
             }
@@ -204,7 +207,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }
 
   def incorrectDetails(completionUrl: CompletionUrl, attempt: Int): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(incorrect_details(completionUrl, attempt)))
+    Future.successful(Ok(incorrect_details(completionUrl, attempt, isSA = false)))
+  }
+
+  def incorrectDetailsForSa(completionUrl: CompletionUrl, attempt: Int): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(incorrect_details(completionUrl, attempt, isSA = true)))
   }
 
   def lockedOut(): Action[AnyContent] = Action.async { implicit request =>

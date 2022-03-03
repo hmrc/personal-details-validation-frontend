@@ -20,7 +20,7 @@ POST       /what-is-your-postcode                               uk.gov.hmrc.pers
 GET        /we-cannot-check-your-identity                       uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.weCannotCheckYourIdentity()
 
 GET        /incorrect-details/you-have-been-locked-out          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.lockedOut()
-GET        /incorrect-details/pin-in-the-post/:attempt          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.incorrectDetails(completionUrl: CompletionUrl, attempt: Int)
+GET        /incorrect-details/pin-in-the-post/:attempt          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl: CompletionUrl, attempt: Int)
 GET        /incorrect-details/:attempt                          uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.incorrectDetails(completionUrl: CompletionUrl, attempt: Int)
 
 GET        /sign-out                                            uk.gov.hmrc.personaldetailsvalidation.endpoints.SignOutController.signOut()

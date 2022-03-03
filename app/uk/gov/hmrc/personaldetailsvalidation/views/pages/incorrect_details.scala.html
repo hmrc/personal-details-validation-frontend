@@ -16,13 +16,12 @@
 )
 
 
-@(completionUrl: CompletionUrl, attempt: Int)(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
+@(completionUrl: CompletionUrl, attempt: Int, isSA: Boolean)(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
 
 @origin = @{request.session.get("origin").getOrElse("")}
 @attemptsRemaining = @{viewConfig.retryLimit - attempt}
 @lockoutPeriodEn = @{viewConfig.lockoutPeriodEn}
 @lockoutPeriodCy = @{viewConfig.lockoutPeriodCy}
-@isSA = @{(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa")}
 
 @main(title = msgs("multi_option_incorrect_details.h1"), hideDeskpro = true){
     @h1("multi_option_incorrect_details.h1")
