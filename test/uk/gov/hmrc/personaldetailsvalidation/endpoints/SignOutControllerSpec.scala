@@ -40,7 +40,7 @@ class SignOutControllerSpec extends UnitSpec with MockFactory with GuiceOneAppPe
 
   "SignOut Controller" should {
     "Redirect to logout" in {
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(SignedOut, *, *, *)
+      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(SignedOut(), *, *, *)
 
       val result: Future[Result]  = controller.signOut().apply(request)
 

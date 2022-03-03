@@ -52,13 +52,13 @@ class EventDispatcherSpec extends UnitSpec with MockFactory {
     
     "sends event successfully" in new Setup {
       val eventDispatcher = new EventDispatcher(workingEventDispatcher)
-      eventDispatcher.dispatchEvent(TimeoutContinue)
+      eventDispatcher.dispatchEvent(TimeoutContinue())
       invoked shouldBe true
     }
 
     "send events and returned with error" in new Setup {
       val eventDispatcher = new EventDispatcher(brokenEventDispatcher)
-      eventDispatcher.dispatchEvent(TimeoutContinue)
+      eventDispatcher.dispatchEvent(TimeoutContinue())
       invoked shouldBe false
     }
   }

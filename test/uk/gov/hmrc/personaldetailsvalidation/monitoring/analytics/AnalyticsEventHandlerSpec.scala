@@ -37,7 +37,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     val dimensions: Seq[DimensionValue] = Seq(DimensionValue(6, "unknown"))
 
     "send pdv_modal_timeout continue event when user clicks on stay signed in " in new Setup {
-      dispatcher.dispatchEvent(TimeoutContinue)(request, hc, global)
+      dispatcher.dispatchEvent(TimeoutContinue())(request, hc, global)
       eventually {
         analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
           Event("sos_iv", "pdv_modal_timeout", "continue", dimensions)))
@@ -45,7 +45,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     }
 
     "send pdv_modal_timeout ends event when user is not responded " in new Setup {
-      dispatcher.dispatchEvent(TimedOut)(request, hc, global)
+      dispatcher.dispatchEvent(TimedOut())(request, hc, global)
       eventually {
         analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
           Event("sos_iv", "pdv_modal_timeout", "end", dimensions)))
@@ -53,7 +53,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     }
 
     "send SignedOut" in new Setup {
-      dispatcher.dispatchEvent(SignedOut)(request, hc, global)
+      dispatcher.dispatchEvent(SignedOut())(request, hc, global)
       eventually {
         analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
           Event("sos_iv", "personal_detail_validation_result", "sign_out_pdv", dimensions)))
@@ -61,7 +61,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     }
 
     "send UnderNinoAge" in new Setup {
-      dispatcher.dispatchEvent(UnderNinoAge)(request, hc, global)
+      dispatcher.dispatchEvent(UnderNinoAge())(request, hc, global)
       eventually {
         analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
           Event("sos_iv", "personal_detail_validation_result", "under_nino_age", dimensions)))
@@ -69,9 +69,25 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     }
 
     "check sessionId and clientId before sending pdv_modal_timeout event " in new Setup {
-      dispatcher.dispatchEvent(TimedOut)(FakeRequest(), hc, global)
+      dispatcher.dispatchEvent(TimedOut())(FakeRequest(), hc, global)
       eventually {
         analyticsRequests shouldBe List.empty[AnalyticsRequest]
+      }
+    }
+
+    "send PdvFailedAttempt" in new Setup {
+      dispatcher.dispatchEvent(PdvFailedAttempt(4))(request, hc, global)
+      eventually{
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+          Event("sos_iv", "pdv_locking", "pdv_fail4", dimensions)))
+      }
+    }
+
+    "send pdvLockedOut" in new Setup {
+      dispatcher.dispatchEvent(PdvLockedOut())(request, hc, global)
+      eventually{
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+          Event("sos_iv", "pdv_locking", "pdv_locked-out", dimensions)))
       }
     }
   }

@@ -19,8 +19,10 @@ package uk.gov.hmrc.personaldetailsvalidation.monitoring
 sealed trait MonitoringEvent
 
 //Timeout events
-case object TimeoutContinue extends MonitoringEvent
-case object TimedOut extends MonitoringEvent
-case object SignedOut extends MonitoringEvent
-case object UnderNinoAge extends MonitoringEvent
+case class TimeoutContinue() extends MonitoringEvent
+case class TimedOut() extends MonitoringEvent
+case class SignedOut() extends MonitoringEvent
+case class UnderNinoAge() extends MonitoringEvent
+case class PdvFailedAttempt(attempts: Int) extends MonitoringEvent
+case class PdvLockedOut() extends MonitoringEvent
 

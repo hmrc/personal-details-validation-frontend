@@ -31,10 +31,12 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
 
   override def handleEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     event match {
-      case TimeoutContinue => sendEvent(timeoutContinue)
-      case TimedOut => sendEvent(timeoutSignOut)
-      case SignedOut => sendEvent(signedOut)
-      case UnderNinoAge => sendEvent(underNinoAge)
+      case e:TimeoutContinue => sendEvent(timeoutContinue)
+      case e:TimedOut => sendEvent(timeoutSignOut)
+      case e:SignedOut => sendEvent(signedOut)
+      case e:UnderNinoAge => sendEvent(underNinoAge)
+      case e:PdvFailedAttempt => sendEvent(pdvFailedAttempt(e.attempts))
+      case e:PdvLockedOut => sendEvent(pdvLockedOut)
       case _ => ()
     }
   }
@@ -77,6 +79,16 @@ trait AnalyticsRequestFactory {
 
   def underNinoAge(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "personal_detail_validation_result", "under_nino_age", dimensions)
+    AnalyticsRequest(clientId, Seq(gaEvent))
+  }
+
+  def pdvFailedAttempt(attemptsLeft: Int)(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
+    val gaEvent = Event("sos_iv","pdv_locking",s"pdv_fail$attemptsLeft",dimensions)
+    AnalyticsRequest(clientId, Seq(gaEvent))
+  }
+
+  def pdvLockedOut(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
+    val gaEvent = Event("sos_iv","pdv_locking","pdv_locked-out",dimensions)
     AnalyticsRequest(clientId, Seq(gaEvent))
   }
 
