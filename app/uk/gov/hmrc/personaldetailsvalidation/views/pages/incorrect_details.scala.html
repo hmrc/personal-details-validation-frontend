@@ -16,23 +16,23 @@
 )
 
 
-@(completionUrl: CompletionUrl, attempt: Int)(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
+@(completionUrl: CompletionUrl, attemptsRemaining: Int, isSA: Boolean)(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
 
 @origin = @{request.session.get("origin").getOrElse("")}
-@attemptsRemaining = @{viewConfig.retryLimit - attempt}
 @lockoutPeriodEn = @{viewConfig.lockoutPeriodEn}
 @lockoutPeriodCy = @{viewConfig.lockoutPeriodCy}
-@isSA = @{(origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa")}
 
 @main(title = msgs("multi_option_incorrect_details.h1"), hideDeskpro = true){
     @h1("multi_option_incorrect_details.h1")
     @p(msgs("multi_option_incorrect_details.p1"))
-    @if(attempt < viewConfig.retryLimit){
-        @p(msgs("multi_option_incorrect_details.p2"))
-        @p(msgs("multi_option_incorrect_details.p3"))
-        @accordion()
+    @if(attemptsRemaining < viewConfig.retryLimit){
+        @if(viewConfig.retryLimit - attemptsRemaining != 1){
+            @p(msgs("multi_option_incorrect_details.p2"))
+            @p(msgs("multi_option_incorrect_details.p3"))
+            @accordion()
+        }
     }
-    @if(attemptsRemaining == 1) {
+    @if(attemptsRemaining == 1){
         @if(isSA){
             @p(htmlContent = Html(msgs("multi_option_incorrect_details.p4.last.sa", s"${viewConfig.addTaxesFrontendBaseUrl}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin")))
         } else {
@@ -52,4 +52,3 @@
         classes = Some("govuk-button")
     )
 }
-
