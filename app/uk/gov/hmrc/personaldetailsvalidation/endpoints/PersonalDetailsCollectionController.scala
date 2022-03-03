@@ -27,14 +27,15 @@ import uk.gov.hmrc.personaldetailsvalidation.model.InitialPersonalDetailsForm.in
 import uk.gov.hmrc.personaldetailsvalidation.model.NinoDetailsForm.ninoForm
 import uk.gov.hmrc.personaldetailsvalidation.model.PostcodeDetailsForm.postcodeForm
 import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, TimedOut, TimeoutContinue, UnderNinoAge}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, PdvFailedAttempt, PdvLockedOut, TimedOut, TimeoutContinue, UnderNinoAge}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages._
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
-
 import java.time.LocalDate
+
 import javax.inject.Inject
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: PersonalDetailsSubmission,
@@ -166,9 +167,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             if (attempt < appConfig.retryLimit) {
               val origin = request.session.get("origin").getOrElse("")
               val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa" || origin.contains("dwp")
+              eventDispatcher.dispatchEvent(PdvFailedAttempt(appConfig.retryLimit - attempt))
               if (isSA) Redirect(routes.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl, attemptsRemaining)).withSession(cleanedSession)
               else Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attemptsRemaining)).withSession(cleanedSession)
             } else {
+              eventDispatcher.dispatchEvent(PdvLockedOut())
               Redirect(routes.PersonalDetailsCollectionController.lockedOut()).withSession(cleanedSession)
             }
           } else {
@@ -188,7 +191,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     * redirect user to the completionUrl with a timeout status
     */
   def redirectAfterTimeout(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
-    eventDispatcher.dispatchEvent(TimedOut)
+    eventDispatcher.dispatchEvent(TimedOut())
     ivConnector.updateJourney(completionUrl.value)
     Future.successful(Redirect(completionUrl.value, Map("userTimeout" -> Seq(""))))
   }
@@ -198,12 +201,12 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     *
     * */
   def keepAlive: Action[AnyContent] = Action.async { implicit request =>
-    eventDispatcher.dispatchEvent(TimeoutContinue)
+    eventDispatcher.dispatchEvent(TimeoutContinue())
     Future.successful(Ok("OK"))
   }
 
   def weCannotCheckYourIdentity(): Action[AnyContent] = Action.async { implicit request =>
-    eventDispatcher.dispatchEvent(UnderNinoAge)
+    eventDispatcher.dispatchEvent(UnderNinoAge())
     Future.successful(Ok(weCannotCheckYourIdentityPage()))
   }
 

@@ -31,7 +31,7 @@ class SignOutController @Inject()(cc: MessagesControllerComponents, eventDispatc
 
   def signOut(): Action[AnyContent] = Action.async { implicit request =>
 
-    eventDispatcher.dispatchEvent(SignedOut)
+    eventDispatcher.dispatchEvent(SignedOut())
 
     val ggRedirectParms = Map(
       "continue" -> Seq(s"${appConfig.logoutCallback}"),
