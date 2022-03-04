@@ -46,7 +46,7 @@ class JourneyStart @Inject()(validationIdValidator: ValidationIdValidator,
           .map(findRedirectUsing(_, sessionValidationId, completionUrl, origin))
           .recover {
             case error: Throwable =>
-              val processingError = ProcessingError(error.getMessage)
+              val processingError = ProcessingError("Unable to start this journey: " + error.getMessage)
               logger.error(processingError)
               Redirect(completionUrl.value, processingError.toQueryParam)
           }

@@ -34,13 +34,13 @@ class IdentityVerificationConnector @Inject()(appConfig: AppConfig,
     val journeyId = extractJourneyId(redirectingUrl)
     val status = JourneyUpdate(Some("Timeout"))
     if (journeyId.isDefined) {
-      httpClient.PATCH[JourneyUpdate, HttpResponse](s"${appConfig.ivUrl}/identity-verification/journey/${journeyId.get}", status)
+      httpClient.PATCH[JourneyUpdate, HttpResponse](s"${appConfig.ivUrl}/identity-verification/journey/${journeyId.getOrElse("")}", status)
         .recover {
-        case ex: Exception => logger.warn(s"VER-333- cannot update IV journey ${ex.getMessage}")
+        case ex: Exception => logger.warn(s"IV returns error ${ex.getMessage}, update IV journey might failed for ${journeyId.getOrElse("")}")
       }
     }
     else
-      logger.warn(s"VER-333- cannot extract IV journeyId from redirecting url : = $redirectingUrl")
+      logger.warn(s"Cannot extract IV journeyId from redirecting url: $redirectingUrl")
   }
 
   def extractJourneyId(url: String): Option[String] = url.split('/') match {

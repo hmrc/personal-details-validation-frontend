@@ -17,7 +17,7 @@
 package uk.gov.hmrc.personaldetailsvalidation.monitoring
 
 import org.scalamock.scalatest.MockFactory
-import play.api.mvc.Request
+import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
 import support.UnitSpec
 import uk.gov.hmrc.config.AppConfig
@@ -31,35 +31,24 @@ class EventDispatcherSpec extends UnitSpec with MockFactory {
   
   trait Setup {
 
-    implicit val request = FakeRequest()
-    implicit val hc = HeaderCarrier()
+    implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+    implicit val hc: HeaderCarrier = HeaderCarrier()
     
     var invoked: Boolean = false
-    val mockAppConfg = mock[AppConfig]
-    val mockAnalyticsConnector = mock[AnalyticsConnector]
-    val brokenEventDispatcher = new AnalyticsEventHandler(mockAppConfg, mockAnalyticsConnector) {
-      override def handleEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext) =
-        throw new RuntimeException("Expected Error")
-    }
+    val mockAppConfg: AppConfig = mock[AppConfig]
+    val mockAnalyticsConnector: AnalyticsConnector = mock[AnalyticsConnector]
 
-    val workingEventDispatcher = new AnalyticsEventHandler(mockAppConfg, mockAnalyticsConnector) {
-      override def handleEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext) =
+    val workingEventDispatcher: AnalyticsEventHandler = new AnalyticsEventHandler(mockAppConfg, mockAnalyticsConnector) {
+      override def handleEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Unit =
         invoked = true
     }
   }
 
   "Event Dispatcher" should {
-    
     "sends event successfully" in new Setup {
       val eventDispatcher = new EventDispatcher(workingEventDispatcher)
       eventDispatcher.dispatchEvent(TimeoutContinue())
       invoked shouldBe true
-    }
-
-    "send events and returned with error" in new Setup {
-      val eventDispatcher = new EventDispatcher(brokenEventDispatcher)
-      eventDispatcher.dispatchEvent(TimeoutContinue())
-      invoked shouldBe false
     }
   }
 }

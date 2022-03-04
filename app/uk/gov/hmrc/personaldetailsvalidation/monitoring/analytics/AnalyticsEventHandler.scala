@@ -55,7 +55,7 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
       val analyticsRequest = reqCreator(clientId, dimensions)
       connector.sendEvent(analyticsRequest)
     } else  {
-      logger.info("VER-381 - No sessionId found in request")
+      logger.info("Unable to sent ga events - No sessionId found in request")
     }
   }
 }

@@ -43,10 +43,6 @@ class DwpMessagesApiProvider @Inject()(environment: Environment, configuration: 
 
     val dwpMessagesPrefix = configuration.getOptional[String]("dwp.messages")
 
-    if (dwpMessagesPrefix.isEmpty) {
-      logger.warn(s"DWP messages file location property 'dwp.messages' not set in app config")
-    }
-
     environment.classLoader.getResources(joinPaths(dwpMessagesPrefix, file)).asScala.toList match {
       case r if r.isEmpty =>
         logger.warn(s"DWP messages directory in 'dwp.messages' : $dwpMessagesPrefix is not valid")

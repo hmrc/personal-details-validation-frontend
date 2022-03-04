@@ -32,11 +32,7 @@ trait EventHandler {
 class EventDispatcher @Inject()(analyticsEventHandler: AnalyticsEventHandler) extends Logging {
 
   def dispatchEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
-    try {
-      analyticsEventHandler.handleEvent(event)
-    } catch {
-      case ex: Exception => logger.warn(s"Exception when invoking event handler:", ex)
-    }
-
+    analyticsEventHandler.handleEvent(event)
   }
+
 }

@@ -37,8 +37,8 @@ class AnalyticsConnector @Inject() (appConfig: AppConfig, http: HttpClient) exte
   def sendEvent(request: AnalyticsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Done] = {
     val url = s"$serviceUrl/platform-analytics/event"
     http.POST[AnalyticsRequest, HttpResponse](url, request).map(_ => Done).recover {
-      case _ : Throwable =>
-        logger.error(s"Couldn't send analytics event $request")
+      case e: Throwable =>
+        logger.error(s"platform-analytics returns error $e, might failed to send analytics event for $request")
         Done
     }
   }
