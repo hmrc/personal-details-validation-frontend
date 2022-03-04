@@ -58,7 +58,7 @@ class AnalyticsConnectorSpec extends UnitSpec with Eventually with GuiceOneAppPe
         await(analyticsConnector.sendEvent(analyticsRequest)(hc, global)) shouldBe Done
 
         eventually {
-          events.map(_.getMessage).head.contains("Couldn't send analytics event") shouldBe true
+          events.map(_.getMessage).head.contains("platform-analytics returns error java.lang.RuntimeException, might failed") shouldBe true
         }
       }
 

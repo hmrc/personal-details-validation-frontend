@@ -80,7 +80,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
         .expects(validationId, headerCarrier, executionContext)
         .returning(Future.failed(new RuntimeException(validationError.message)))
 
-      (logger.error(_: ProcessingError)).expects(validationError)
+      (logger.error(_: ProcessingError)).expects(ProcessingError("Unable to start this journey: some message"))
 
       val result: Future[Result] = journeyStart.findRedirect(completionUrl, origin)
       status(result) shouldBe SEE_OTHER
