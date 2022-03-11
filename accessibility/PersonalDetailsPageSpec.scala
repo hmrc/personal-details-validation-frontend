@@ -44,26 +44,27 @@ class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatch
 
   val isLoggedInUser = true
   val url: CompletionUrl = ValuesGenerators.completionUrls.generateOne
+  val failureUrl: Option[CompletionUrl] = None
 
   "render" should {
 
     "return the nino page" in new Setup {
 
-      val result: Future[Result] = controller.whatIsYourNino(url)(fakeRequest)
+      val result: Future[Result] = controller.whatIsYourNino(url, failureUrl)(fakeRequest)
       status(result) shouldBe Status.OK
       contentAsString(result) should passAccessibilityChecks
     }
 
     "return the postcode page" in new Setup {
 
-      val result: Future[Result] = controller.whatIsYourPostCode(url)(fakeRequest)
+      val result: Future[Result] = controller.whatIsYourPostCode(url, failureUrl)(fakeRequest)
       status(result) shouldBe Status.OK
       contentAsString(result) should passAccessibilityChecks
     }
 
     "return the enter your details page" in new Setup {
 
-      val result: Future[Result] = controller.enterYourDetails(url)(fakeRequest)
+      val result: Future[Result] = controller.enterYourDetails(url, false, failureUrl)(fakeRequest)
       status(result) shouldBe Status.OK
       contentAsString(result) should passAccessibilityChecks
     }

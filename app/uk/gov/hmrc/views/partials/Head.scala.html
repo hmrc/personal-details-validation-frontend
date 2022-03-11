@@ -21,7 +21,7 @@
 
 @this(hmrcTimeoutDialog: HmrcTimeoutDialog)
 
-@(completionUrl: CompletionUrl, headBlock: Option[Html] = None)(implicit viewConfig: ViewConfig, messages: Messages)
+@(completionUrl: CompletionUrl, headBlock: Option[Html] = None, failureUrl: Option[CompletionUrl])(implicit viewConfig: ViewConfig, messages: Messages)
 
 @headBlock
 
@@ -30,7 +30,7 @@
         timeout = Some(viewConfig.timeout),
         countdown = Some(viewConfig.timeoutCountdown),
         keepAliveUrl = Some(routes.PersonalDetailsCollectionController.keepAlive().url),
-        signOutUrl = Some(routes.PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl).url),
+        signOutUrl = Some(routes.PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl, failureUrl).url),
         language = Some(messages.lang.code)
     )
 )

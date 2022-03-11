@@ -30,8 +30,9 @@
       formWithCSRF: PlayFrontendFormWithCSRF)
 
 @(pageForm: Form[PostcodeDetails],
-        completionUrl: CompletionUrl,
-        loggedInUser: Boolean
+  completionUrl: CompletionUrl,
+  loggedInUser: Boolean,
+  failureUrl: Option[CompletionUrl]
 )(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
@@ -39,11 +40,12 @@
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
     formErrors = pageForm.errors,
-    loggedInUser = loggedInUser
+    loggedInUser = loggedInUser,
+    failureUrl = failureUrl
 ) {
 
     @formWithCSRF(
-        routes.PersonalDetailsCollectionController.submitYourPostCode(completionUrl),
+        routes.PersonalDetailsCollectionController.submitYourPostCode(completionUrl, failureUrl),
         'autocomplete -> "off",
         'novalidate -> "novalidate") {
 

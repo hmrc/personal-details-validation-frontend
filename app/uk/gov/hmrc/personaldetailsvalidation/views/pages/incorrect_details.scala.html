@@ -16,13 +16,13 @@
 )
 
 
-@(completionUrl: CompletionUrl, attemptsRemaining: Int, isSA: Boolean)(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
+@(completionUrl: CompletionUrl, attemptsRemaining: Int, isSA: Boolean, failureUrl: Option[CompletionUrl])(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
 
 @origin = @{request.session.get("origin").getOrElse("")}
 @lockoutPeriodEn = @{viewConfig.lockoutPeriodEn}
 @lockoutPeriodCy = @{viewConfig.lockoutPeriodCy}
 
-@main(title = msgs("multi_option_incorrect_details.h1"), hideDeskpro = true){
+@main(title = msgs("multi_option_incorrect_details.h1"), hideDeskpro = true, failureUrl = failureUrl){
     @h1("multi_option_incorrect_details.h1")
     @p(msgs("multi_option_incorrect_details.p1"))
     @if(attemptsRemaining < viewConfig.retryLimit){
@@ -47,7 +47,7 @@
         }
     }
     @a(key = "multi_option_incorrect_details.button",
-        href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl).url,
+        href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl).url,
         // IV uses a retryAttempt, we could use something similar: href = routes.MultiOptionJourneyController.retryAttempt(Some("failed-attempt_retry")).url,
         classes = Some("govuk-button")
     )

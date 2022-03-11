@@ -15,18 +15,19 @@
       a: link,
       formWithCSRF: PlayFrontendFormWithCSRF)
 
-@(pageForm: Form[NinoDetails], completionUrl: CompletionUrl, loggedInUser: Boolean)(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
+@(pageForm: Form[NinoDetails], completionUrl: CompletionUrl, loggedInUser: Boolean, failureUrl: Option[CompletionUrl])(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
     title = msgs("personal-details.title"),
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
     formErrors = pageForm.errors,
-    loggedInUser = loggedInUser
+    loggedInUser = loggedInUser,
+    failureUrl = failureUrl
 ) {
 
     @formWithCSRF(
-        routes.PersonalDetailsCollectionController.submitYourNino(completionUrl),
+        routes.PersonalDetailsCollectionController.submitYourNino(completionUrl, failureUrl),
         'autocomplete -> "off",
         'novalidate -> "novalidate") {
 
@@ -41,7 +42,7 @@
         )
 
         <p class="govuk-body">
-            @a(href = routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl).url, key = "what-is-your-national-insurance-number.nino.unavailable", id = Some("nino-unknown"))
+            @a(href = routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl, failureUrl).url, key = "what-is-your-national-insurance-number.nino.unavailable", id = Some("nino-unknown"))
         </p>
 
         @button()

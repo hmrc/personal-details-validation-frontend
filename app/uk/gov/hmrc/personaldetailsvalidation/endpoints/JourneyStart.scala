@@ -36,19 +36,21 @@ class JourneyStart @Inject()(validationIdValidator: ValidationIdValidator,
 
   val validationIdSessionKey = "ValidationId"
 
-  def findRedirect(completionUrl: CompletionUrl, origin: Option[String])
+  def findRedirect(completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl])
                   (implicit request: Request[_], headerCarrier: HeaderCarrier): Future[Result] =
     findValidationIdInSession match {
       case None =>
-        Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin)))
+        Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin, failureUrl)))
       case Some(sessionValidationId) =>
         verify(sessionValidationId)
-          .map(findRedirectUsing(_, sessionValidationId, completionUrl, origin))
+          .map(findRedirectUsing(_, sessionValidationId, completionUrl, origin, failureUrl))
           .recover {
-            case error: Throwable =>
+            case error: Throwable => {
               val processingError = ProcessingError("Unable to start this journey: " + error.getMessage)
               logger.error(processingError)
-              Redirect(completionUrl.value, processingError.toQueryParam)
+              val redirectUrl: String = if (failureUrl.isDefined) {failureUrl.get.value} else {completionUrl.value}
+              Redirect(redirectUrl, processingError.toQueryParam)
+            }
           }
     }
 
@@ -56,10 +58,10 @@ class JourneyStart @Inject()(validationIdValidator: ValidationIdValidator,
     request.session.get(validationIdSessionKey).map(ValidationId(_))
 
   private def findRedirectUsing(validationResult: Boolean, validationId: ValidationId,
-                                completionUrl: CompletionUrl, origin: Option[String]): Result =
+                                completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl]): Result =
     if (validationResult) {
       Redirect(completionUrl.value, validationId.toQueryParam)
     } else {
-      Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin))
+      Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin, failureUrl))
     }
 }

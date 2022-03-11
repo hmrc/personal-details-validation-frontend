@@ -62,40 +62,42 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   private val pdvSessionKeys : List[String] = List("firstName", "lastName", "dob")
 
-  def showPage(implicit completionUrl: CompletionUrl, origin: Option[String]): Action[AnyContent] =
+  def showPage(implicit completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl]): Action[AnyContent] =
     Action.async { implicit request =>
       val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
       personalDetailsSubmission.getUserAttempts().map { attempts =>
         if (appConfig.retryIsEnabled) {
           if (attempts < appConfig.retryLimit) {
-            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl)).withSession(sessionWithOrigin)
-          } else {
-            Redirect(routes.PersonalDetailsCollectionController.lockedOut())
-          }
+            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl)).withSession(sessionWithOrigin)
+          } else if (failureUrl.isDefined) {
+              Redirect(failureUrl.get.value)
+            } else {
+              Redirect(routes.PersonalDetailsCollectionController.lockedOut())
+            }
         } else {
-          Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl)).withSession(sessionWithOrigin)
+          Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl)).withSession(sessionWithOrigin)
         }
       }
     }
 
-  def enterYourDetails(implicit completionUrl: CompletionUrl, withError: Boolean = false): Action[AnyContent] = Action.async { implicit request =>
+  def enterYourDetails(completionUrl: CompletionUrl, withError: Boolean = false, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.map { isLoggedIn: Boolean =>
       if (withError) {
-        Ok(enter_your_details(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, loggedInUser = isLoggedIn))
+        Ok(enter_your_details(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, loggedInUser = isLoggedIn, failureUrl))
       } else {
-        Ok(enter_your_details(initialForm, completionUrl, loggedInUser = isLoggedIn))
+        Ok(enter_your_details(initialForm, completionUrl, loggedInUser = isLoggedIn, failureUrl))
       }
-      }
+    }
   }
 
 
-  def submitYourDetails(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+  def submitYourDetails(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
       initialForm.bindFromRequest().fold (
         formWithErrors => {
           val tooYoung: Boolean = formWithErrors.errors.contains(FormError("dateOfBirth",List("personal-details.dateOfBirth.tooYoung"),List()))
           if (tooYoung) Future.successful(Redirect(routes.PersonalDetailsCollectionController.weCannotCheckYourIdentity()))
-          else Future.successful(Ok(enter_your_details(formWithErrors, completionUrl, isLoggedIn)))
+          else Future.successful(Ok(enter_your_details(formWithErrors, completionUrl, isLoggedIn, failureUrl)))
         },
         mainDetails => {
           val updatedSessionData = request.session.data ++ Map(
@@ -104,28 +106,28 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             DOB_KEY -> mainDetails.dateOfBirth.toString
           )
           Future.successful(
-            Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl)).withSession(Session(updatedSessionData))
+            Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl)).withSession(Session(updatedSessionData))
           )
         }
       )
     }
   }
 
-  def whatIsYourNino(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+  def whatIsYourNino(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
-      Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn)))
+      Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn, failureUrl)))
     }
   }
 
-  def submitYourNino(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+  def submitYourNino(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
       ninoForm.bindFromRequest().fold (
-        formWithErrors => Future.successful(Ok(what_is_your_nino(formWithErrors, completionUrl, isLoggedIn))),
+        formWithErrors => Future.successful(Ok(what_is_your_nino(formWithErrors, completionUrl, isLoggedIn, failureUrl))),
         ninoForm => {
           retrieveMainDetails match {
             case (Some(fn), Some(ln), Some(dob)) =>
               val personalDetails = PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln),ninoForm.nino, LocalDate.parse(dob))
-              submitPersonalDetails(personalDetails, completionUrl)
+              submitPersonalDetails(personalDetails, completionUrl, failureUrl)
             case _ => Future.successful(BadRequest)
           }
         }
@@ -133,21 +135,21 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     }
   }
 
-  def whatIsYourPostCode(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+  def whatIsYourPostCode(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
-       Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn)))
+       Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn, failureUrl)))
     }
   }
 
-  def submitYourPostCode(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+  def submitYourPostCode(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
       postcodeForm.bindFromRequest().fold (
-        formWithErrors => Future.successful(Ok(what_is_your_postcode(formWithErrors, completionUrl, isLoggedIn))),
+        formWithErrors => Future.successful(Ok(what_is_your_postcode(formWithErrors, completionUrl, isLoggedIn, failureUrl))),
         postCodeForm => {
           retrieveMainDetails match {
             case (Some(fn), Some(ln), Some(dob)) =>
               val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln), postCodeForm.postcode, LocalDate.parse(dob))
-              submitPersonalDetails(personalDetails, completionUrl)
+              submitPersonalDetails(personalDetails, completionUrl, failureUrl)
             case _ => Future.successful(BadRequest)
           }
         }
@@ -155,7 +157,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     }
   }
 
-  private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl)(implicit request: Request[_]): Future[Result] = {
+  private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl])(implicit request: Request[_]): Future[Result] = {
     for {
       pdv <- personalDetailsSubmission.submitPersonalDetails(personalDetails)
       result = pdv match {
@@ -168,20 +170,26 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
               val origin = request.session.get("origin").getOrElse("")
               val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"
               eventDispatcher.dispatchEvent(PdvFailedAttempt(appConfig.retryLimit - attempt))
-              if (isSA) Redirect(routes.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl, attemptsRemaining)).withSession(cleanedSession)
-              else Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attemptsRemaining)).withSession(cleanedSession)
+              if (isSA) Redirect(routes.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl, attemptsRemaining, failureUrl)).withSession(cleanedSession)
+              else Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attemptsRemaining, failureUrl)).withSession(cleanedSession)
             } else {
               eventDispatcher.dispatchEvent(PdvLockedOut())
-              Redirect(routes.PersonalDetailsCollectionController.lockedOut()).withSession(cleanedSession)
+              if (failureUrl.isDefined) {
+                Redirect(failureUrl.get.value).withSession(cleanedSession)
+              } else {
+                Redirect(routes.PersonalDetailsCollectionController.lockedOut()).withSession(cleanedSession)
+              }
             }
           } else {
             val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
-            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, withError = true)).withSession(cleanedSession)
+            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, withError = true, failureUrl)).withSession(cleanedSession)
           }
       }
     } yield result
   }.recover {
-    case _ => Redirect(completionUrl.value)
+    case _ =>
+      val redirectUrl: String = if (failureUrl.isDefined) {failureUrl.get.value} else {completionUrl.value}
+      Redirect(redirectUrl)
   }
 
   private def retrieveMainDetails(implicit request: Request[_]): (Option[String], Option[String], Option[String]) =
@@ -190,10 +198,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   /**
     * redirect user to the completionUrl with a timeout status
     */
-  def redirectAfterTimeout(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
+  def redirectAfterTimeout(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     eventDispatcher.dispatchEvent(TimedOut())
     ivConnector.updateJourney(completionUrl.value)
-    Future.successful(Redirect(completionUrl.value, Map("userTimeout" -> Seq(""))))
+    val redirectUrl: String = if (failureUrl.isDefined) {failureUrl.get.value} else {completionUrl.value}
+    Future.successful(Redirect(redirectUrl, Map("userTimeout" -> Seq(""))))
   }
 
   /**
@@ -210,12 +219,12 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     Future.successful(Ok(weCannotCheckYourIdentityPage()))
   }
 
-  def incorrectDetails(completionUrl: CompletionUrl, attemptsRemaining: Int): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(incorrect_details(completionUrl, attemptsRemaining, isSA = false)))
+  def incorrectDetails(completionUrl: CompletionUrl, attemptsRemaining: Int, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(incorrect_details(completionUrl, attemptsRemaining, isSA = false, failureUrl)))
   }
 
-  def incorrectDetailsForSa(completionUrl: CompletionUrl, attemptsRemaining: Int): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(incorrect_details(completionUrl, attemptsRemaining, isSA = true)))
+  def incorrectDetailsForSa(completionUrl: CompletionUrl, attemptsRemaining: Int, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(incorrect_details(completionUrl, attemptsRemaining, isSA = true, failureUrl)))
   }
 
   def lockedOut(): Action[AnyContent] = Action.async { implicit request =>
