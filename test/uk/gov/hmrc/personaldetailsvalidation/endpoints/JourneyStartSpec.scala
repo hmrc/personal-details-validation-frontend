@@ -41,7 +41,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
   "findRedirect" should {
 
     "return redirect to the GET /personal-details if there's no 'validationId' in the session" in new Setup {
-      await(journeyStart.findRedirect(completionUrl, origin)) shouldBe
+      await(journeyStart.findRedirect(completionUrl, origin, failureUrl)) shouldBe
         Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin))
     }
 
@@ -54,7 +54,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
         .expects(validationId, headerCarrier, executionContext)
         .returning(Future.successful(true))
 
-      await(journeyStart.findRedirect(completionUrl, origin)) shouldBe Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
+      await(journeyStart.findRedirect(completionUrl, origin, failureUrl)) shouldBe Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
     }
 
     "return redirect to the GET /personal-details " +
@@ -66,7 +66,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
         .expects(validationId, headerCarrier, executionContext)
         .returning(Future.successful(false))
 
-      await(journeyStart.findRedirect(completionUrl, origin)) shouldBe Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin))
+      await(journeyStart.findRedirect(completionUrl, origin, failureUrl)) shouldBe Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin))
     }
 
     "log an validation error and return redirect to the given completionUrl with 'technicalError' " +
@@ -82,7 +82,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
 
       (logger.error(_: ProcessingError)).expects(ProcessingError("Unable to start this journey: some message"))
 
-      val result: Future[Result] = journeyStart.findRedirect(completionUrl, origin)
+      val result: Future[Result] = journeyStart.findRedirect(completionUrl, origin, failureUrl)
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)) shouldBe Some(s"${completionUrl.value}&technicalError=")
     }
@@ -95,6 +95,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
     val origin: Option[String] = Some("test")
 
     val completionUrl: CompletionUrl = completionUrls.generateOne
+    val failureUrl: Option[CompletionUrl] = None
     val validationId: ValidationId = validationIds.generateOne
 
     val validationIdValidator: ValidationIdValidator = mock[ValidationIdValidator]

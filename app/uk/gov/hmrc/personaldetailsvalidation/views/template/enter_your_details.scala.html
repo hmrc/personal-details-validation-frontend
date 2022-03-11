@@ -33,13 +33,12 @@
     button: button,
     h1: h1,
     p: Paragraph,
-    preH1: preH1,
-)
+    preH1: preH1)
 
-@(
-    pageForm: Form[InitialPersonalDetails],
-    completionUrl: CompletionUrl,
-    loggedInUser: Boolean
+@(pageForm: Form[InitialPersonalDetails],
+  completionUrl: CompletionUrl,
+  loggedInUser: Boolean,
+  failureUrl: Option[CompletionUrl]
 )(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
@@ -47,13 +46,14 @@
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
     formErrors = pageForm.errors,
-    loggedInUser = loggedInUser
+    loggedInUser = loggedInUser,
+    failureUrl = failureUrl
 ) {
 
     @preH1("personal-details-validation.faded-heading")
     @h1("personal-details.header")
 
-    @formWithCSRF(routes.PersonalDetailsCollectionController.submitYourDetails(completionUrl),
+    @formWithCSRF(routes.PersonalDetailsCollectionController.submitYourDetails(completionUrl, failureUrl),
         'autocomplete -> "off",
         'novalidate -> "novalidate") {
 

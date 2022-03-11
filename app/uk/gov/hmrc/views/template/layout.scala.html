@@ -37,7 +37,8 @@
   form: Option[Form[_]] = None,
   formErrors: Seq[FormError] = Seq.empty,
   loggedInUser: Boolean = true,
-  hideDeskpro: Boolean = false
+  hideDeskpro: Boolean = false,
+  failureUrl: Option[CompletionUrl] = None
 )(contentBlock: Html)(implicit request: Request[_], requestHeader: RequestHeader, messages: Messages, appConfig: ViewConfig)
 
 
@@ -66,7 +67,7 @@
 @hmrcLayout(
     pageTitle = Some(pageTitle),
     isWelshTranslationAvailable = true,
-    additionalHeadBlock = Some(additionalHead( CompletionUrl(completionUrl.getOrElse("").toString))),
+    additionalHeadBlock = Some(additionalHead( CompletionUrl(completionUrl.getOrElse("").toString), failureUrl = failureUrl)),
     signOutUrl = if (loggedInUser) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None,
     backLinkUrl = backLinkUrl,
     nonce = CSPNonce.get

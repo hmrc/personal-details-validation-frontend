@@ -51,13 +51,13 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
   "showPage" should {
 
-    "Redirect to lockedOut page when user tried 5 times" in new Setup {
+    "Redirect to lockedOut page when user tried 5 times and there is no failureUrl" in new Setup {
 
       (personalDetailsSubmitterMock.getUserAttempts()(_: HeaderCarrier))
         .expects(*)
         .returns(Future.successful(5))
 
-      val result: Future[Result] = controller.showPage(completionUrl, None)(request)
+      val result: Future[Result] = controller.showPage(completionUrl, None, failureUrl)(request)
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)).get shouldBe "/personal-details-validation/incorrect-details/you-have-been-locked-out"
@@ -69,7 +69,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         .expects(*)
         .returns(Future.successful(0))
 
-      val result: Future[Result] = controller.showPage(completionUrl, None)(request)
+      val result: Future[Result] = controller.showPage(completionUrl, None, failureUrl)(request)
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)).get.contains("/personal-details-validation/enter-your-details?completionUrl=") shouldBe true
@@ -78,7 +78,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "return enter-your-details page, containing data from session" in new Setup {
 
-      val result: Future[Result] = controller.enterYourDetails(completionUrl)(request)
+      val result: Future[Result] = controller.enterYourDetails(completionUrl, withError = false, failureUrl)(request)
 
       status(result) shouldBe OK
       contentType(result) shouldBe Some(HTML)
@@ -103,7 +103,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dateOfBirth.year" -> "1939"
       ).withSession("journeyId" -> "1234567890")
 
-      val result: Future[Result] = controller.submitYourDetails(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)(5 seconds)).get shouldBe expectedUrl
@@ -132,7 +132,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dateOfBirth.year" -> "1939"
       ).withSession("journeyId" -> "1234567890")
 
-      val result: Future[Result] = controller.submitYourDetails(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -154,7 +154,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dateOfBirth.year" -> "1939"
       ).withSession("journeyId" -> "1234567890")
 
-      val result: Future[Result] = controller.submitYourDetails(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -176,7 +176,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dateOfBirth.year" -> "1939"
       ).withSession("journeyId" -> "1234567890")
 
-      val result: Future[Result] = controller.submitYourDetails(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -198,7 +198,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dateOfBirth.year" -> "1939"
       ).withSession("journeyId" -> "1234567890")
 
-      val result: Future[Result] = controller.submitYourDetails(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -220,7 +220,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dateOfBirth.month" -> "09"
       ).withSession("journeyId" -> "1234567890")
 
-      val result: Future[Result] = controller.submitYourDetails(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -240,7 +240,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "lastName" -> "Ferguson"
       ).withSession("journeyId" -> "1234567890")
 
-      val result: Future[Result] = controller.submitYourDetails(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -263,7 +263,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dateOfBirth.year" -> "1939"
       ).withSession("journeyId" -> "1234567890")
 
-      val result: Future[Result] = controller.submitYourDetails(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -286,7 +286,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dateOfBirth.year" -> "1939"
       ).withSession("journeyId" -> "1234567890")
 
-      val result: Future[Result] = controller.submitYourDetails(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -310,7 +310,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dateOfBirth.year" -> "aaa"
       ).withSession("journeyId" -> "1234567890")
 
-      val result: Future[Result] = controller.submitYourDetails(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -333,7 +333,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dob" -> "1939-09-01"
       )
 
-      val result: Future[Result] = controller.whatIsYourNino(completionUrl)(req)
+      val result: Future[Result] = controller.whatIsYourNino(completionUrl, failureUrl)(req)
 
       contentType(result) shouldBe Some(HTML)
       charset(result) shouldBe Some("utf-8")
@@ -361,7 +361,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "lastName" -> "Ferguson",
         "dob" -> "1939-09-01"
       )
-      val result: Future[Result] = controller.whatIsYourPostCode(completionUrl)(req)
+      val result: Future[Result] = controller.whatIsYourPostCode(completionUrl, failureUrl)(req)
 
       contentType(result) shouldBe Some(HTML)
       charset(result) shouldBe Some("utf-8")
@@ -369,7 +369,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       val document: Document = Jsoup.parse(contentAsString(result))
 
       document.select("h1.govuk-label-wrapper").text() shouldBe messages("personal-details.faded-heading") + " " + messages("what-is-your-postcode.postcode.label")
-      document.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submitYourPostCode(completionUrl).url
+      document.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submitYourPostCode(completionUrl, failureUrl).url
       document.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
@@ -403,7 +403,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         .expects(*, *, *)
         .returns(expectedRedirect)
 
-      val result: Future[Result] = controller.submitYourNino(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(req)
 
       await(result) shouldBe expectedRedirect
     }
@@ -431,7 +431,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
-      val result: Future[Result] = controller.submitYourNino(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(req)
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)).get.contains("/personal-details-validation/enter-your-details?completionUrl=") shouldBe true
@@ -439,7 +439,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "Bad Request if the initial details are not present in the request" in new Setup {
 
-      val result: Future[Result] = controller.submitYourNino(completionUrl)(request.withFormUrlEncodedBody("nino" -> "AA000001A"))
+      val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(request.withFormUrlEncodedBody("nino" -> "AA000001A"))
 
       status(result) shouldBe BAD_REQUEST
     }
@@ -474,7 +474,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         .expects(*, *, *)
         .returns(expectedRedirect)
 
-      val result: Future[Result] = controller.submitYourPostCode(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(req)
 
       await(result) shouldBe expectedRedirect
     }
@@ -487,7 +487,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dob" -> "1939-09-01"
       )
 
-      val result: Future[Result] = controller.submitYourPostCode(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -508,7 +508,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dob" -> "1939-09-01"
       )
 
-      val result: Future[Result] = controller.submitYourPostCode(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(req)
 
       status(result) shouldBe OK
 
@@ -522,7 +522,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
 
     "Bad Request if the initial details are not present in the request" in new Setup {
-      val result: Future[Result] = controller.submitYourPostCode(completionUrl)(request.withFormUrlEncodedBody("postcode" -> "BN11 1NN"))
+      val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(request.withFormUrlEncodedBody("postcode" -> "BN11 1NN"))
       status(result) shouldBe BAD_REQUEST
     }
 
@@ -549,7 +549,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
-      val result: Future[Result] = controller.submitYourPostCode(completionUrl)(req)
+      val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(req)
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)).get.contains("/personal-details-validation/enter-your-details?completionUrl=") shouldBe true
@@ -591,7 +591,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(TimedOut(), *, *, *)
       (mockIVConnector.updateJourney(_: String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *)
 
-      private val result = controller.redirectAfterTimeout(completionUrl)(request)
+      private val result = controller.redirectAfterTimeout(completionUrl, failureUrl)(request)
       status(result) shouldBe 303
       redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
     }
@@ -603,6 +603,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
     val completionUrl: CompletionUrl = ValuesGenerators.completionUrls.generateOne
+    val failureUrl: Option[CompletionUrl] = None
 
     implicit val system: ActorSystem = ActorSystem()
     implicit val materializer: Materializer = Materializer.apply(system)

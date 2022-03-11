@@ -12,7 +12,7 @@ sbt test
 
 | Path                                    | Description                              |
 |:--------------------------------------- |:---------------------------------------- |
-| GET /personal-details-validation/start?completionUrl=:completionUrl&origin=test | Start capturing user's personal details  |
+| GET /personal-details-validation/start?completionUrl=:completionUrl&origin=test&failureUrl=aFailureUrl | Start capturing user's personal details  |
     
 ## GET /personal-details-validation/start?completionUrl=:completionUrl&origin=test
 Displays a page to capture user's details. After capturing user's details, these details are checked against citizen details database. 
@@ -28,6 +28,7 @@ Also, if there is technical error in personal-details-validation component, then
 |:------------- |:--------------------------------------------- |
 | completionUrl | Mandatory. Should be a url-encoded relative URL or starts with `http://localhost`.    |
 | origin        | Option. Reporting origin as a custom dimension in PDV GA events.    |
+| failureUrl    | Option. Redirect the user to the url when pdv failed 5 times, without this user will see a default lockout page.    |
     
 ### Example redirects
 | CompletionUrl                 | Redirect url                                                                  |

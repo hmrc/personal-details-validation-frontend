@@ -27,7 +27,7 @@ class PersonalDetailsValidationStartController @Inject()(journeyStart: JourneySt
                                                         mcc: MessagesControllerComponents)
   extends FrontendController(mcc) {
 
-  def start(completionUrl: CompletionUrl, origin: Option[String]): Action[AnyContent] = Action.async { implicit request =>
-    journeyStart.findRedirect(completionUrl, origin)
+  def start(completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
+    journeyStart.findRedirect(completionUrl, origin, failureUrl)
   }
 }
