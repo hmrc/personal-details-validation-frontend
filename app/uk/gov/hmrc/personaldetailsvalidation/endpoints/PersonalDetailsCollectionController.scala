@@ -176,7 +176,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
               val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"
               val pdvFailedAttempt = PdvFailedAttempt(attempt, appConfig.retryLimit, personalDetails.journeyVersion, maybeCredId, origin)
               dataStreamAuditService.audit(pdvFailedAttempt)
-              eventDispatcher.dispatchEvent(pdvFailedAttempt)
+              eventDispatcher.dispatchEvent(pdvFailedAttempt.copy(attempts = attemptsRemaining))
               if (isSA) Redirect(routes.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl, attemptsRemaining, failureUrl)).withSession(cleanedSession)
               else Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attemptsRemaining, failureUrl)).withSession(cleanedSession)
             } else {
