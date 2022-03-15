@@ -27,19 +27,20 @@ import uk.gov.hmrc.personaldetailsvalidation.model.InitialPersonalDetailsForm.in
 import uk.gov.hmrc.personaldetailsvalidation.model.NinoDetailsForm.ninoForm
 import uk.gov.hmrc.personaldetailsvalidation.model.PostcodeDetailsForm.postcodeForm
 import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, PdvFailedAttempt, PdvLockedOut, TimedOut, TimeoutContinue, UnderNinoAge}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
+import uk.gov.hmrc.personaldetailsvalidation.monitoring._
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages._
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
+
 import java.time.LocalDate
-
 import javax.inject.Inject
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: PersonalDetailsSubmission,
                                                     appConfig: AppConfig,
+                                                    dataStreamAuditService: DataStreamAuditService,
                                                     val eventDispatcher: EventDispatcher,
                                                     val controllerComponents: MessagesControllerComponents,
                                                     what_is_your_postcode: what_is_your_postcode,
@@ -65,9 +66,13 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   def showPage(implicit completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl]): Action[AnyContent] =
     Action.async { implicit request =>
       val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
-      personalDetailsSubmission.getUserAttempts().map { attempts =>
+      personalDetailsSubmission.getUserAttempts().map { attemptsDetails =>
         if (appConfig.retryIsEnabled) {
-          if (attempts < appConfig.retryLimit) {
+          if (attemptsDetails.attempts >= appConfig.retryLimit) {
+            val pdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", attemptsDetails.maybeCredId.getOrElse(""), origin.getOrElse(""))
+            dataStreamAuditService.audit(pdvLockedOut)
+          }
+          if (attemptsDetails.attempts < appConfig.retryLimit) {
             Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl)).withSession(sessionWithOrigin)
           } else if (failureUrl.isDefined) {
               Redirect(failureUrl.get.value)
@@ -166,14 +171,18 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
           if (appConfig.retryIsEnabled && maybeCredId.nonEmpty) {
             val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
             val attemptsRemaining = viewConfig.retryLimit - attempt
+            val origin = request.session.get("origin").getOrElse("")
             if (attempt < appConfig.retryLimit) {
-              val origin = request.session.get("origin").getOrElse("")
               val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"
-              eventDispatcher.dispatchEvent(PdvFailedAttempt(appConfig.retryLimit - attempt))
+              val pdvFailedAttempt = PdvFailedAttempt(attempt, appConfig.retryLimit, personalDetails.journeyVersion, maybeCredId, origin)
+              dataStreamAuditService.audit(pdvFailedAttempt)
+              eventDispatcher.dispatchEvent(pdvFailedAttempt.copy(attempts = attemptsRemaining))
               if (isSA) Redirect(routes.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl, attemptsRemaining, failureUrl)).withSession(cleanedSession)
               else Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attemptsRemaining, failureUrl)).withSession(cleanedSession)
             } else {
-              eventDispatcher.dispatchEvent(PdvLockedOut())
+              val pdvLockedOut = PdvLockedOut(personalDetails.journeyVersion, maybeCredId, origin)
+              dataStreamAuditService.audit(pdvLockedOut)
+              eventDispatcher.dispatchEvent(pdvLockedOut)
               if (failureUrl.isDefined) {
                 Redirect(failureUrl.get.value).withSession(cleanedSession)
               } else {

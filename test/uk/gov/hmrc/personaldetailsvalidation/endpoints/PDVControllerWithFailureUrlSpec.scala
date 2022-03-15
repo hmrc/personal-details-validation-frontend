@@ -32,8 +32,9 @@ import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
-import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.EventDispatcher
+import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, UserAttemptsDetails}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, MonitoringEvent, PdvLockedOut}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, we_cannot_check_your_identity}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details, what_is_your_nino, what_is_your_postcode}
 import uk.gov.hmrc.views.ViewConfig
@@ -53,7 +54,11 @@ class PDVControllerWithFailureUrlSpec extends UnitSpec with MockFactory with Sca
 
       (personalDetailsSubmitterMock.getUserAttempts()(_: HeaderCarrier))
         .expects(*)
-        .returns(Future.successful(5))
+        .returns(Future.successful(UserAttemptsDetails(5, None)))
+
+      val pdvLockedOut: PdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", "", "")
+      (mockDataStreamAuditService.audit(_: MonitoringEvent)(_: HeaderCarrier, _:ExecutionContext))
+        .expects(pdvLockedOut, *, *)
 
       val result: Future[Result] = controller.showPage(completionUrl, None, failureUrl)(request)
 
@@ -79,6 +84,7 @@ class PDVControllerWithFailureUrlSpec extends UnitSpec with MockFactory with Sca
 
     val personalDetailsSubmitterMock: PersonalDetailsSubmission = mock[PersonalDetailsSubmission]
     val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+    val mockDataStreamAuditService: DataStreamAuditService = mock[DataStreamAuditService]
     val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
     val mockIVConnector: IdentityVerificationConnector = mock[IdentityVerificationConnector]
     implicit val mockViewConfig: ViewConfig = app.injector.instanceOf[ViewConfig]
@@ -104,6 +110,7 @@ class PDVControllerWithFailureUrlSpec extends UnitSpec with MockFactory with Sca
     val controller = new PersonalDetailsCollectionController(
       personalDetailsSubmitterMock,
       appConfig,
+      mockDataStreamAuditService,
       mockEventDispatcher,
       stubMessagesControllerComponents,
       what_is_your_postcode,
