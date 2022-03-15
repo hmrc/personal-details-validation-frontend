@@ -58,7 +58,7 @@ class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: Pe
     }
   }
 
-  def getUserAttempts()(implicit headerCarrier: HeaderCarrier): Future[Int] = {
+  def getUserAttempts()(implicit headerCarrier: HeaderCarrier): Future[UserAttemptsDetails] = {
     personalDetailsValidationConnector.getUserAttempts()
   }
 

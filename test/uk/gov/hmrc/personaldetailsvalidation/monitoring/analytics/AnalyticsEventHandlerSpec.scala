@@ -76,7 +76,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     }
 
     "send PdvFailedAttempt" in new Setup {
-      dispatcher.dispatchEvent(PdvFailedAttempt(4))(request, hc, global)
+      dispatcher.dispatchEvent(PdvFailedAttempt(4, 5, "", "", ""))(request, hc, global)
       eventually{
         analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
           Event("sos_iv", "pdv_locking", "pdv_fail4", dimensions)))
@@ -84,7 +84,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     }
 
     "send pdvLockedOut" in new Setup {
-      dispatcher.dispatchEvent(PdvLockedOut())(request, hc, global)
+      dispatcher.dispatchEvent(PdvLockedOut("", "", ""))(request, hc, global)
       eventually{
         analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
           Event("sos_iv", "pdv_locking", "pdv_locked-out", dimensions)))

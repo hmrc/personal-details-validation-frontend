@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.personaldetailsvalidation.monitoring
+package uk.gov.hmrc.personaldetailsvalidation.model
 
-sealed trait MonitoringEvent
+import play.api.libs.json.{Format, Json}
 
-//Timeout events
-case class TimeoutContinue() extends MonitoringEvent
-case class TimedOut() extends MonitoringEvent
-case class SignedOut() extends MonitoringEvent
-case class UnderNinoAge() extends MonitoringEvent
-case class PdvFailedAttempt(attempts: Int, maxAttempts: Int, journeyVersion: String, credID: String, origin: String) extends MonitoringEvent
-case class PdvLockedOut(journeyVersion: String, credID: String, origin: String) extends MonitoringEvent
+case class UserAttemptsDetails(attempts: Int, maybeCredId: Option[String])
 
+object UserAttemptsDetails {
+  implicit val userAttemptsDetailsFormat: Format[UserAttemptsDetails] = Json.format[UserAttemptsDetails]
+}

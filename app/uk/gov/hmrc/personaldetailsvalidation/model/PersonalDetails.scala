@@ -20,14 +20,20 @@ import uk.gov.hmrc.domain.Nino
 
 import java.time.LocalDate
 
-sealed trait PersonalDetails
+sealed trait PersonalDetails {
+  val journeyVersion: String = ""
+}
 
 case class PersonalDetailsWithNino(firstName : NonEmptyString,
                                    lastName : NonEmptyString,
                                    nino : Nino,
-                                   dateOfBirth : LocalDate) extends PersonalDetails
+                                   dateOfBirth : LocalDate) extends PersonalDetails {
+  override val journeyVersion: String = "NINO"
+}
 
 case class PersonalDetailsWithPostcode(firstName : NonEmptyString,
                                        lastName : NonEmptyString,
                                        postCode : NonEmptyString,
-                                       dateOfBirth : LocalDate) extends PersonalDetails
+                                       dateOfBirth : LocalDate) extends PersonalDetails {
+  override val journeyVersion: String = "Postcode"
+}
