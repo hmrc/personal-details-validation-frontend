@@ -66,8 +66,8 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   def showPage(implicit completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl]): Action[AnyContent] =
     Action.async { implicit request =>
       val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
-      personalDetailsSubmission.getUserAttempts().map { attemptsDetails =>
-        if (appConfig.retryIsEnabled) {
+      if (appConfig.retryIsEnabled) {
+        personalDetailsSubmission.getUserAttempts().map { attemptsDetails =>
           if (attemptsDetails.attempts >= appConfig.retryLimit) {
             val pdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", attemptsDetails.maybeCredId.getOrElse(""), origin.getOrElse(""))
             dataStreamAuditService.audit(pdvLockedOut)
@@ -79,9 +79,10 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             } else {
               Redirect(routes.PersonalDetailsCollectionController.lockedOut())
             }
-        } else {
-          Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl)).withSession(sessionWithOrigin)
         }
+      }
+      else {
+        Future.successful(Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl)).withSession(sessionWithOrigin))
       }
     }
 
