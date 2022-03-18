@@ -24,5 +24,5 @@ case class TimedOut() extends MonitoringEvent
 case class SignedOut() extends MonitoringEvent
 case class UnderNinoAge() extends MonitoringEvent
 case class PdvFailedAttempt(attempts: Int, maxAttempts: Int, journeyVersion: String, credID: String, origin: String) extends MonitoringEvent
-case class PdvLockedOut(journeyVersion: String, credID: String, origin: String) extends MonitoringEvent
+case class PdvLockedOut(failureReason: String, credID: String, origin: String) extends MonitoringEvent
 
