@@ -58,12 +58,21 @@ class DataStreamAuditService @Inject()(auditConnector: AuditConnector) {
   }
 
   def sendPdvLockedOutEvent(event: PdvLockedOut)(implicit hc: HeaderCarrier, ec:ExecutionContext): Future[AuditResult] = {
-    val detail: JsObject = Json.obj(
-      "journeyVersion" -> "-",
-      "failureReason" -> event.failureReason,
-      "credID" -> event.credID,
-      "origin" -> event.origin
-    )
+    val detail: JsObject = if (event.journeyVersion.equals("reattempt PDV within 24 hours")) {
+      Json.obj(
+        "journeyVersion" -> "-",
+        "failureReason" -> event.journeyVersion,
+        "credID" -> event.credID,
+        "origin" -> event.origin
+      )
+    } else {
+      Json.obj(
+        "journeyVersion" -> event.journeyVersion,
+        "failureReason" -> "Previously locked",
+        "credID" -> event.credID,
+        "origin" -> event.origin
+      )
+    }
 
     val eventToSent: ExtendedDataEvent = {
       ExtendedDataEvent(
