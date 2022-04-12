@@ -15,7 +15,6 @@
     btn: button
 )
 
-
 @(completionUrl: CompletionUrl, attemptsRemaining: Int, isSA: Boolean, failureUrl: Option[CompletionUrl])(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
 
 @origin = @{request.session.get("origin").getOrElse("")}
@@ -29,7 +28,7 @@
         @if(viewConfig.retryLimit - attemptsRemaining != 1){
             @p(msgs("multi_option_incorrect_details.p2"))
             @p(msgs("multi_option_incorrect_details.p3"))
-            @accordion()
+            @accordion(completionUrl, failureUrl, attemptsRemaining)
         }
     }
     @if(attemptsRemaining == 1){
@@ -48,7 +47,6 @@
     }
     @a(key = "multi_option_incorrect_details.button",
         href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl).url,
-        // IV uses a retryAttempt, we could use something similar: href = routes.MultiOptionJourneyController.retryAttempt(Some("failed-attempt_retry")).url,
         classes = Some("govuk-button")
     )
 }

@@ -80,6 +80,12 @@ multi_option_incorrect_details.h1=Nid yw’r wybodaeth a roesoch yn cyd-fynd â�
 multi_option_incorrect_details.p1=Mae hyn yn golygu bod yr holl fanylion a nodwyd gennych, neu rywfaint ohonynt, yn anghywir.
 multi_option_incorrect_details.p2=Os bydd eich manylion yn newid, mae gennych gyfrifoldeb cyfreithiol i ddiweddaru’ch dogfennau a’ch cofnodion gyda CThEM a sefydliadau eraill. Ni fyddwch yn gallu defnyddio dogfennau sy’n cynnwys gwybodaeth sydd wedi dyddio i gadarnhau pwy ydych.
 multi_option_incorrect_details.p3=Mae cymorth a chyngor manylach ar gadarnhau pwy ydych ar gael isod.
+
+multi_option_incorrect_details.accordion.helped=A yw hyn wedi’ch helpu?
+multi_option_incorrect_details.accordion.btn1=Iawn – rhowch gynnig arall arni
+multi_option_incorrect_details.accordion.btn2=Na
+multi_option_incorrect_details.accordion.no.1=Os nad ydych yn gallu ateb y cwestiwn hwn o hyd, gallwch <a class="govuk-link" target="_blank" rel="noopener noreferrer" href="{0}">gysylltu â CThEM gan ddefnyddio ein gwasanaeth cymorth technegol ar-lein (yn agor tab newydd)</a>.
+
 multi_option_incorrect_details.accordion.heading1=Enwau cyntaf ac olaf
 multi_option_incorrect_details.accordion.accordion1.1=Mae angen i chi nodi’ch enw cyntaf a’ch enw olaf fel eu bod yn cyd-fynd â’n cofnodion.
 multi_option_incorrect_details.accordion.accordion1.2=Weithiau cyfeirir at enw cyntaf fel enw a roddwyd. Weithiau cyfeirir at enw olaf fel enw teuluol neu gyfenw.
