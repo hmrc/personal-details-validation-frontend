@@ -84,7 +84,7 @@ multi_option_incorrect_details.p3=Mae cymorth a chyngor manylach ar gadarnhau pw
 multi_option_incorrect_details.accordion.helped=A yw hyn wedi’ch helpu?
 multi_option_incorrect_details.accordion.btn1=Iawn – rhowch gynnig arall arni
 multi_option_incorrect_details.accordion.btn2=Na
-multi_option_incorrect_details.accordion.no.1=Os nad ydych yn gallu ateb y cwestiwn hwn o hyd, gallwch <a class="govuk-link" target="_blank" rel="noopener noreferrer" href="{0}">gysylltu â CThEM gan ddefnyddio ein gwasanaeth cymorth technegol ar-lein (yn agor tab newydd)</a>.
+multi_option_incorrect_details.accordion.no.1=Os nad ydych yn credu y gallwch nodi’r wybodaeth hon yn gywir am ba bynnag rheswm, gallwch <a class="govuk-link" target="_blank" rel="noopener noreferrer" href="{0}">gysylltu â CThEM drwy ddefnyddio ein gwasanaeth cymorth technegol ar-lein (yn agor tab newydd)</a>.
 
 multi_option_incorrect_details.accordion.heading1=Enwau cyntaf ac olaf
 multi_option_incorrect_details.accordion.accordion1.1=Mae angen i chi nodi’ch enw cyntaf a’ch enw olaf fel eu bod yn cyd-fynd â’n cofnodion.
