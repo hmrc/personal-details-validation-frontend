@@ -237,6 +237,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     Future.successful(Ok(incorrect_details(completionUrl, attemptsRemaining, isSA = true, failureUrl)))
   }
 
+  def contactTechnicalSupport(redirectUrl: String): Action[AnyContent] = Action { implicit request =>
+    // need some event set up? eventDispatcher.dispatchEvent()
+    Redirect(redirectUrl)
+  }
+
   def lockedOut(): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(locked_out()))
   }

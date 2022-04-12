@@ -9,6 +9,7 @@
 @(  msgKey: String = "continue.button.text",
     inputType: String = "submit",
     name: Option[String] = None,
+    classes: String = "",
     value: Option[String] = None,
     attrs: Map[String, String] = Map("id" -> "submit-button"),
 )(implicit messages: Messages)
@@ -18,6 +19,7 @@
         attributes = attrs,
         content = Text(messages(msgKey)),
         name = name,
+        classes = classes,
         value = value,
         inputType = Some(inputType)
     )
