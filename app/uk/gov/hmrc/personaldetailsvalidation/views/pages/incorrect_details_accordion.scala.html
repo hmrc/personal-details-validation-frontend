@@ -16,7 +16,9 @@
 
 @(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl], attemptsRemaining: Int)(implicit request: Request[_], appConfig: ViewConfig, msgs: Messages)
 
-@origin = @{request.session.get("origin").getOrElse("")}
+@origin = @{
+    if(LoginOriginHelper.isDwp) "dwp" else request.session.get("origin").getOrElse("")
+}
 
 @showExtraHelpContent = @{
     origin match {
