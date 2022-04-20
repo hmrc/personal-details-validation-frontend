@@ -1,8 +1,10 @@
+service.name=Tell us who you are
 continue.button.text=Yn eich blaen
 button.back.text=Yn ôl
 error.prefix=Gwall:
 error-summary.heading=Mae problem wedi codi
-personal-details.title=Nodwch eich manylion - Cadarnhau pwy ydych
+title.suffix= - Tell us who you are - GOV.UK
+personal-details.title=Nodwch eich manylion
 personal-details.faded-heading=Cadarnhau pwy ydych
 personal-details-validation.faded-heading=Gwirio pwy ydych
 personal-details.header=Nodwch eich manylion
@@ -22,11 +24,13 @@ personal-details.postcode=Cod post
 personal-details.postcode.hint=Er enghraifft: AB12 3YZ
 personal-details.postcode.invalid=Nodwch god post go iawn
 
+what-is-your-national-insurance-number.nino.title=Beth yw’ch rhif Yswiriant Gwladol?
 what-is-your-national-insurance-number.nino.label=Beth yw’ch rhif Yswiriant Gwladol?
 what-is-your-national-insurance-number.nino.hint=Mae hwn ar eich cerdyn Yswiriant Gwladol, llythyr ynghylch budd-daliadau, slip cyflog neu P60. Er enghraifft, QQ123456C
 what-is-your-national-insurance-number.nino.invalid=Rhowch eich rhif Yswiriant Gwladol
 what-is-your-national-insurance-number.nino.unavailable=Does dim rhif Yswiriant Gwladol gennyf, neu dwi wedi ei golli neu wedi’i anghofio
 
+what-is-your-postcode.postcode.title=Beth yw’ch cod post?
 what-is-your-postcode.postcode.label=Beth yw’ch cod post?
 what-is-your-postcode.postcode.hint=Er enghraifft SW1A 2AA
 what-is-your-postcode.postcode.invalid=Nodwch god post go iawn
@@ -54,7 +58,6 @@ personal-details.dateOfBirth.miss.month=Mae’n rhaid i’r dyddiad geni gynnwys
 personal-details.dateOfBirth.miss.month.year=Mae’n rhaid i’r dyddiad geni gynnwys mis a blwyddyn
 personal-details.dateOfBirth.miss.year=Mae’n rhaid i’r dyddiad geni gynnwys blwyddyn
 
-
 validation.error-summary.dwp-text=cadarnhewch pwy ydych gan ddefnyddio dull arall
 validation.error-summary.before-link-text=Nid oeddem yn gallu dod o hyd i unrhyw gofnodion sy’n cyd-fynd â’r manylion a nodwyd gennych. Rhowch gynnig arall arni, neu
 validation.error-summary.link-text=cysylltwch â CThEM
@@ -70,12 +73,14 @@ timeout-dialog.minute=funud
 timeout-dialog.seconds=eiliad
 timeout-dialog.second=eiliad
 
+we-cannot-check-your-identity.title=Ni allwn wirio pwy ydych
 we-cannot-check-your-identity.header=Ni allwn wirio pwy ydych
 we-cannot-check-your-identity.para.1=Mae’n rhaid i chi fod yn 15 oed a 9 mis oed, o leiaf, i wirio pwy ydych ar-lein. Dyma’r oedran y gallwch gael rhif Yswiriant Gwladol.
 we-cannot-check-your-identity.para.2=Fel arfer, byddwch yn cael rhif Yswiriant Gwladol yn awtomatig, yn y 3 mis cyn eich pen-blwydd yn 16 oed os yw’r canlynol yn wir:
 we-cannot-check-your-identity.ul.1=rydych yn byw yn y DU
 we-cannot-check-your-identity.ul.2= mae rhiant wedi llenwi ffurflen hawlio <a href="{0}" class="govuk-link">Budd-dal Plant</a> i chi
 
+multi_option_incorrect_details.title=Nid yw’r wybodaeth a roesoch yn cyd-fynd â’n cofnodion
 multi_option_incorrect_details.h1=Nid yw’r wybodaeth a roesoch yn cyd-fynd â’n cofnodion
 multi_option_incorrect_details.p1=Mae hyn yn golygu bod yr holl fanylion a nodwyd gennych, neu rywfaint ohonynt, yn anghywir.
 multi_option_incorrect_details.p2=Os bydd eich manylion yn newid, mae gennych gyfrifoldeb cyfreithiol i ddiweddaru’ch dogfennau a’ch cofnodion gyda CThEM a sefydliadau eraill. Ni fyddwch yn gallu defnyddio dogfennau sy’n cynnwys gwybodaeth sydd wedi dyddio i gadarnhau pwy ydych.
@@ -118,6 +123,7 @@ multi_option_incorrect_details.p4.last.sa=<span class="govuk-!-font-weight-bold"
 multi_option_incorrect_details.final-attempt=Os byddwch yn nodi manylion anghywir eto, byddwn yn <span class="govuk-!-font-weight-bold">cloi’ch cyfrif am {0}</span>. Rydym yn gwneud hyn er mwyn stopio ymdrechion maleisus neu dwyllodrus i gael mynediad at eich manylion.
 multi_option_incorrect_details.button=Rhowch gynnig arall arni
 
+multi_option_incorrect_details.locked_out.title=Rydych wedi cael eich cloi allan
 multi_option_incorrect_details.locked_out.h1=Rydych wedi cael eich cloi allan
 multi_option_incorrect_details.locked_out.p1=Rydych wedi nodi manylion nad ydynt yn cyd-fynd â’n cofnodion gormod o weithiau. Mae hyn yn golygu na allwch roi cynnig arall arni am {0}.
 multi_option_incorrect_details.locked_out.p2=Fel arall, efallai gall ein <a href="{0}" class="govuk-link">hymgynghorwyr dros y ffôn</a> eich helpu i gael mynediad at y gwasanaeth sydd ei angen arnoch mewn ffordd arall.

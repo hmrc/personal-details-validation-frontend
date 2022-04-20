@@ -1,8 +1,10 @@
+service.name=Tell us who you are
 continue.button.text=Continue
 button.back.text=Back
 error.prefix=Error:
 error-summary.heading=There is a problem
-personal-details.title=Enter your details - Confirm your identity
+title.suffix=- Tell us who you are - GOV.UK
+personal-details.title=Enter your details
 personal-details.faded-heading=Confirm your identity
 personal-details-validation.faded-heading=Check your identity
 personal-details.header=Enter your details
@@ -22,11 +24,13 @@ personal-details.postcode=Postcode
 personal-details.postcode.hint=For example: AB12 3YZ
 personal-details.postcode.invalid=Enter a real postcode
 
+what-is-your-national-insurance-number.nino.title=What is your National Insurance number?
 what-is-your-national-insurance-number.nino.label=What is your National Insurance number?
 what-is-your-national-insurance-number.nino.hint=It’s on your National Insurance card, benefit letter, payslip or P60. For example, QQ123456C
 what-is-your-national-insurance-number.nino.invalid=Enter your National Insurance number
 what-is-your-national-insurance-number.nino.unavailable=I do not have a National Insurance number, or have lost or forgotten it
 
+what-is-your-postcode.postcode.title=What is your postcode?
 what-is-your-postcode.postcode.label=What is your postcode?
 what-is-your-postcode.postcode.hint=For example SW1A 2AA
 what-is-your-postcode.postcode.invalid=Enter a real postcode
@@ -54,7 +58,6 @@ personal-details.dateOfBirth.miss.month=Date of birth must include a month
 personal-details.dateOfBirth.miss.month.year=Date of birth must include a month and year
 personal-details.dateOfBirth.miss.year=Date of birth must include a year
 
-
 validation.error-summary.before-link-text=We could not find any records that match the details you entered. Please try again, or
 validation.error-summary.link-text=contact HMRC
 validation.error-summary.after-link-text=to get help
@@ -72,12 +75,14 @@ timeout-dialog.second=second
 # errors
 global.error.InternalServerError500.title=Sorry, we are experiencing technical difficulties
 
+we-cannot-check-your-identity.title=We cannot check your identity
 we-cannot-check-your-identity.header=We cannot check your identity
 we-cannot-check-your-identity.para.1=You must be at least 15 years and 9 months old to check your identity online. This is the age you are able to get a National Insurance number.
 we-cannot-check-your-identity.para.2=You will normally be sent a National Insurance number automatically, in the 3 months before your 16th birthday if:
 we-cannot-check-your-identity.ul.1=you live in the UK
 we-cannot-check-your-identity.ul.2=a parent has filled in a <a href="{0}" class="govuk-link">Child Benefit</a> claim form for you
 
+multi_option_incorrect_details.title=The information you gave does not match our records
 multi_option_incorrect_details.h1=The information you gave does not match our records
 multi_option_incorrect_details.p1=This means that some or all of the details you entered were incorrect.
 multi_option_incorrect_details.p2=If your details change, you have a legal responsibility to update your documents and records with HMRC and other organisations. You will not be able to use documents containing out of date information to confirm your identity.
@@ -120,6 +125,7 @@ multi_option_incorrect_details.p4.last.sa=<span class="govuk-!-font-weight-bold"
 multi_option_incorrect_details.final-attempt=If you enter incorrect details again, we will <span class="govuk-!-font-weight-bold">lock your account for {0}</span>. We do this to stop malicious and fraudulent attempts to access your details.
 multi_option_incorrect_details.button=Try again
 
+multi_option_incorrect_details.locked_out.title=You have been locked out
 multi_option_incorrect_details.locked_out.h1=You have been locked out
 multi_option_incorrect_details.locked_out.p1=You have entered details that do not match our records too many times. This means that you cannot try again for {0}.
 multi_option_incorrect_details.locked_out.p2=Alternatively, our <a href="{0}" class="govuk-link">phone advisers</a> may be able to help you access the service you need in another way.

@@ -1,8 +1,10 @@
+service.name=Tell us who you are
 continue.button.text=Continue
 button.back.text=Back
 error.prefix=Error:
+title.suffix=- Tell us who you are - GOV.UK
 error-summary.heading=There are errors on the page
-personal-details.title=Enter your details - Confirm your identity
+personal-details.title=Enter your details
 personal-details.faded-heading=Check your identity
 personal-details.header=Enter your details
 personal-details.header.postcode=Enter your postcode instead

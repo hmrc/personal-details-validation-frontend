@@ -21,7 +21,7 @@
 @lockoutPeriodEn = @{viewConfig.lockoutPeriodEn}
 @lockoutPeriodCy = @{viewConfig.lockoutPeriodCy}
 
-@main(title = msgs("multi_option_incorrect_details.h1"), hideDeskpro = true, failureUrl = failureUrl){
+@main(title = msgs("multi_option_incorrect_details.title"), hideDeskpro = true, failureUrl = failureUrl){
     @h1("multi_option_incorrect_details.h1")
     @p(msgs("multi_option_incorrect_details.p1"))
     @if(attemptsRemaining < viewConfig.retryLimit){

@@ -58,9 +58,9 @@
 
 @pageTitle = @{
     if(formErrors.nonEmpty){
-        messages("error.prefix") + " " + title + " - GOV.UK"
+        messages("error.prefix") + " " + title + " " + messages("title.suffix")
     } else {
-        title + " - GOV.UK"
+        title + " " + messages("title.suffix")
     }
 }
 
