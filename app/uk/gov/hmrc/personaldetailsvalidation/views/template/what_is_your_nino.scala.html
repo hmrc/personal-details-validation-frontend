@@ -18,7 +18,7 @@
 @(pageForm: Form[NinoDetails], completionUrl: CompletionUrl, loggedInUser: Boolean, failureUrl: Option[CompletionUrl])(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
-    title = msgs("personal-details.title"),
+    title = msgs("what-is-your-national-insurance-number.nino.title"),
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
     formErrors = pageForm.errors,
