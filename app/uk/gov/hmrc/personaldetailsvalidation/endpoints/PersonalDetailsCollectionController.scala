@@ -86,7 +86,8 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
       }
     }
 
-  def enterYourDetails(completionUrl: CompletionUrl, withError: Boolean = false, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
+  def enterYourDetails(completionUrl: CompletionUrl, withError: Boolean = false, failureUrl: Option[CompletionUrl], maybeRetryGuidanceText: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
+    maybeRetryGuidanceText foreach (retryGuidanceText => eventDispatcher.dispatchEvent(PdvRetry(retryGuidanceText)))
     viewConfig.isLoggedIn.map { isLoggedIn: Boolean =>
       if (withError) {
         Ok(enter_your_details(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, loggedInUser = isLoggedIn, failureUrl))
@@ -95,7 +96,6 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
       }
     }
   }
-
 
   def submitYourDetails(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>

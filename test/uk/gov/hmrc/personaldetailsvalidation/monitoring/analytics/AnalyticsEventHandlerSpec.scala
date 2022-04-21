@@ -83,6 +83,14 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
       }
     }
 
+    "send PdvRetry" in new Setup {
+      dispatcher.dispatchEvent(PdvRetry("some-guidance-text"))(request, hc, global)
+      eventually{
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+          Event("sos_iv", "pdv_locking", "some-guidance-text_retry", dimensions)))
+      }
+    }
+
     "send pdvLockedOut" in new Setup {
       dispatcher.dispatchEvent(PdvLockedOut("", "", ""))(request, hc, global)
       eventually{

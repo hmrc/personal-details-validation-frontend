@@ -37,6 +37,7 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
       case e:UnderNinoAge => sendEvent(underNinoAge)
       case e:PdvFailedAttempt => sendEvent(pdvFailedAttempt(e.attempts))
       case e:PdvLockedOut => sendEvent(pdvLockedOut)
+      case e:PdvRetry => sendEvent(pdvRetry(e.retryGuidanceText))
       case _ => ()
     }
   }
@@ -89,6 +90,11 @@ trait AnalyticsRequestFactory {
 
   def pdvLockedOut(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv","pdv_locking","pdv_locked-out",dimensions)
+    AnalyticsRequest(clientId, Seq(gaEvent))
+  }
+
+  def pdvRetry(retryGuidanceText: String)(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
+    val gaEvent = Event("sos_iv","pdv_locking",s"${retryGuidanceText}_retry",dimensions)
     AnalyticsRequest(clientId, Seq(gaEvent))
   }
 

@@ -8,7 +8,7 @@ GET        /language/:language                                      uk.gov.hmrc.
 GET        /start                                                   uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsValidationStartController.start(completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl] ?= None)
 GET        /personal-details                                        uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.showPage(completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl] ?= None)
 
-GET        /enter-your-details                                      uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.enterYourDetails(completionUrl: CompletionUrl, withError: Boolean ?= false, failureUrl: Option[CompletionUrl] ?= None)
+GET        /enter-your-details                                      uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.enterYourDetails(completionUrl: CompletionUrl, withError: Boolean ?= false, failureUrl: Option[CompletionUrl] ?= None, maybeRetryGuidanceText: Option[String] ?= None)
 POST       /enter-your-details                                      uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitYourDetails(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl] ?= None)
 
 GET        /what-is-your-national-insurance-number                  uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.whatIsYourNino(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl] ?= None)
