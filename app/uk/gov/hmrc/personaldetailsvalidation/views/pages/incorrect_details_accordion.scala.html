@@ -69,7 +69,7 @@
     @p(msgs("multi_option_incorrect_details.accordion.accordion1.4", "https://www.gov.uk/tell-hmrc-change-of-details/gender-change"))
     @p(msgs("multi_option_incorrect_details.accordion.helped"))
         <div class="govuk-button-group">
-            @a(classes = Some("govuk-button govuk-button--secondary"), key = "multi_option_incorrect_details.accordion.btn1", href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl).url)
+            @a(classes = Some("govuk-button govuk-button--secondary"), key = "multi_option_incorrect_details.accordion.btn1", href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl, Some("first-last-name")).url)
             @if(showExtraHelpContent) {
                 @btn(classes = "govuk-button--secondary button-with-content",  msgKey = "multi_option_incorrect_details.accordion.btn2", attrs = Map("aria-controls" -> "accordion1-content", "id" -> "accordion1"))
             }
@@ -86,7 +86,7 @@
     @p(msgs("multi_option_incorrect_details.accordion.accordion2.2"))
     @p(msgs("multi_option_incorrect_details.accordion.helped"))
         <div class="govuk-button-group">
-            @a(classes = Some("govuk-button govuk-button--secondary"), key = msgs("multi_option_incorrect_details.accordion.btn1"), href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl).url)
+            @a(classes = Some("govuk-button govuk-button--secondary"), key = msgs("multi_option_incorrect_details.accordion.btn1"), href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl, Some("DOB")).url)
             @if(showExtraHelpContent) {
                 @btn(classes = "govuk-button--secondary button-with-content", msgKey = "multi_option_incorrect_details.accordion.btn2", attrs = Map("aria-controls" -> "accordion2-content", "id" -> "accordion2"))
             }
@@ -116,7 +116,7 @@
     @p(msgs("multi_option_incorrect_details.accordion.accordion3.11","https://www.gov.uk/apply-national-insurance-number"))
     @p(msgs("multi_option_incorrect_details.accordion.helped"))
         <div class="govuk-button-group">
-            @a(classes = Some("govuk-button govuk-button--secondary"), key = "multi_option_incorrect_details.accordion.btn1", href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl).url)
+            @a(classes = Some("govuk-button govuk-button--secondary"), key = "multi_option_incorrect_details.accordion.btn1", href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl, Some("NINO")).url)
             @if(showExtraHelpContent) {
                 @btn(classes = "govuk-button--secondary button-with-content", msgKey = "multi_option_incorrect_details.accordion.btn2", attrs = Map("aria-controls" -> "accordion3-content", "id" -> "accordion3"))
             }
@@ -135,7 +135,7 @@
     @p(msgs("multi_option_incorrect_details.accordion.accordion4.4","https://www.gov.uk/tell-hmrc-change-address"))
     @p(msgs("multi_option_incorrect_details.accordion.helped"))
         <div class="govuk-button-group">
-            @a(classes = Some("govuk-button govuk-button--secondary"), key = "multi_option_incorrect_details.accordion.btn1", href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl).url)
+            @a(classes = Some("govuk-button govuk-button--secondary"), key = "multi_option_incorrect_details.accordion.btn1", href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl, Some("postcode")).url)
             @if(showExtraHelpContent) {
                 @btn(classes = "govuk-button--secondary button-with-content", msgKey = "multi_option_incorrect_details.accordion.btn2", attrs = Map("aria-controls" -> "accordion4-content", "id" -> "accordion4"))
             }

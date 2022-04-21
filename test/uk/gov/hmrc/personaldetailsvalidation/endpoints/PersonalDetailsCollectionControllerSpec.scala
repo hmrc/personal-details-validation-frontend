@@ -95,6 +95,25 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
+
+    "return enter-your-details page, containing data from session with retry" in new Setup {
+
+      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *, *)
+        .returns(())
+
+      val result: Future[Result] = controller.enterYourDetails(completionUrl, withError = false, failureUrl, Some("retryText"))(request)
+
+      status(result) shouldBe OK
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+
+      document.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submitYourDetails(completionUrl).url
+      document.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
+      document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
+    }
   }
 
   "submitMainDetails" should {
