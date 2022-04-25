@@ -66,7 +66,6 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   def showPage(implicit completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl]): Action[AnyContent] =
     Action.async { implicit request =>
       val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
-      if (appConfig.retryIsEnabled) {
         personalDetailsSubmission.getUserAttempts().map { attemptsDetails =>
           if (attemptsDetails.attempts >= appConfig.retryLimit) {
             val pdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", attemptsDetails.maybeCredId.getOrElse(""), origin.getOrElse(""))
@@ -80,10 +79,6 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
               Redirect(routes.PersonalDetailsCollectionController.lockedOut())
             }
         }
-      }
-      else {
-        Future.successful(Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl)).withSession(sessionWithOrigin))
-      }
     }
 
   def enterYourDetails(completionUrl: CompletionUrl, withError: Boolean = false, failureUrl: Option[CompletionUrl], maybeRetryGuidanceText: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
@@ -169,7 +164,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
       result = pdv match {
         case SuccessfulPersonalDetailsValidation(_) => personalDetailsSubmission.successResult(completionUrl, pdv)
         case FailedPersonalDetailsValidation(_, maybeCredId, attempt) =>
-          if (appConfig.retryIsEnabled && maybeCredId.nonEmpty) {
+          if (maybeCredId.nonEmpty) {
             val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
             val attemptsRemaining = viewConfig.retryLimit - attempt
             val origin = request.session.get("origin").getOrElse("")
