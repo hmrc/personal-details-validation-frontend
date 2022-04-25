@@ -27,8 +27,7 @@ class AppConfig @Inject()(val configuration: Configuration, servicesConfig: Serv
   lazy val ivUrl: String = servicesConfig.baseUrl("identity-verification")
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
 
-  //Lockout related configs
-  lazy val retryIsEnabled: Boolean = configuration.getOptional[Boolean]("retry.isEnabled").getOrElse(true)
+  //Lockout
   lazy val retryLimit: Int = configuration.getOptional[Int]("retry.limit").getOrElse(5)
 
   //GA related configs
