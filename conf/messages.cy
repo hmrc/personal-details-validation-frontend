@@ -1,9 +1,9 @@
-service.name=Tell us who you are
+service.name=Rhowch wybod i ni pwy ydych
 continue.button.text=Yn eich blaen
 button.back.text=Yn ôl
 error.prefix=Gwall:
 error-summary.heading=Mae problem wedi codi
-title.suffix= - Tell us who you are - GOV.UK
+title.suffix=- Rhowch wybod i ni pwy ydych - GOV.UK
 personal-details.title=Nodwch eich manylion
 personal-details.faded-heading=Cadarnhau pwy ydych
 personal-details-validation.faded-heading=Gwirio pwy ydych
