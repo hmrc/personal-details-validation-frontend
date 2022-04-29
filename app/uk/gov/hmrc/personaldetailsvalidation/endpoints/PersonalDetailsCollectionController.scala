@@ -20,6 +20,7 @@ import play.api.data.FormError
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.circuitbreaker.UnhealthyServiceException
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
@@ -192,6 +193,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
       }
     } yield result
   }.recover {
+    case _: UnhealthyServiceException if appConfig.enabledCircuitBreaker => ??? //new screen being built in VER-2165
     case _ =>
       val redirectUrl: String = if (failureUrl.isDefined) {failureUrl.get.value} else {completionUrl.value}
       Redirect(redirectUrl)

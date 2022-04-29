@@ -27,6 +27,8 @@ class AppConfig @Inject()(val configuration: Configuration, servicesConfig: Serv
   lazy val ivUrl: String = servicesConfig.baseUrl("identity-verification")
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
 
+  lazy val enabledCircuitBreaker: Boolean = configuration.getOptional[Boolean]("circuit-breaker.enabled").getOrElse(false)
+
   //Lockout
   lazy val retryLimit: Int = configuration.getOptional[Int]("retry.limit").getOrElse(5)
 
