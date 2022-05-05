@@ -1,0 +1,42 @@
+@import uk.gov.hmrc.personaldetailsvalidation.model.LoginOriginHelper
+@import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.views.html.partials._
+@import uk.gov.hmrc.views.html.template.layout
+
+@this(
+    main: layout,
+    h1: h1,
+    p: Paragraph,
+    a: link,
+    ul: ul,
+    btn: button
+)
+
+@()(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
+
+@origin = @{request.session.get("origin").getOrElse("")}
+@journeyType = @{request.session.get("journeyType").getOrElse("")}
+@journeyId = @{request.session.get("journeyId").getOrElse("")}
+
+@contactLink = @{
+    if(LoginOriginHelper.isSa(origin)){
+        p(msgs("service_temporarily_unavailable.p2.sa", s"${viewConfig.addTaxesFrontendBaseUrl}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin"))
+    } else if (LoginOriginHelper.isDwp(origin)){
+        p(msgs("service_temporarily_unavailable.p2.dwp", s"${viewConfig.dwpGetHelpUrl}/$journeyId"))
+    } else {
+        if(journeyType == "UpliftNino"){
+            p(msgs("service_temporarily_unavailable.p2", "/helpline/call-options-no-answers"))
+        } else if(journeyType == "UpliftNoNino"){
+            p(msgs("service_temporarily_unavailable.p2", "/helpline/organisation/select-a-service"))
+        } else {
+            p(msgs("service_temporarily_unavailable.p2", "/helpline/which-service-are-you-trying-to-access"))
+        }
+    }
+}
+
+@main(title = msgs("service_temporarily_unavailable.h1"), hideDeskpro = true){
+    @h1("service_temporarily_unavailable.h1")
+    @p("service_temporarily_unavailable.p1")
+    @contactLink
+}
+

@@ -50,6 +50,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
                                                     incorrect_details: incorrect_details,
                                                     locked_out: locked_out,
                                                     weCannotCheckYourIdentityPage : we_cannot_check_your_identity,
+                                                    service_temporarily_unavailable: service_temporarily_unavailable,
                                                     ivConnector: IdentityVerificationConnector)
                                                    (implicit val authConnector: AuthConnector,
                                                     val dwpMessagesApiProvider: DwpMessagesApiProvider,
@@ -193,7 +194,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
       }
     } yield result
   }.recover {
-    case _: UnhealthyServiceException if appConfig.enabledCircuitBreaker => ??? //new screen being built in VER-2165
+    case _: UnhealthyServiceException if appConfig.enabledCircuitBreaker => Ok(service_temporarily_unavailable())
     case _ =>
       val redirectUrl: String = if (failureUrl.isDefined) {failureUrl.get.value} else {completionUrl.value}
       Redirect(redirectUrl)
@@ -241,5 +242,9 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def lockedOut(): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(locked_out()))
+  }
+
+  def serviceTemporarilyUnavailable(): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(service_temporarily_unavailable()))
   }
 }

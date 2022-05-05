@@ -130,3 +130,9 @@ multi_option_incorrect_details.locked_out.h1=You have been locked out
 multi_option_incorrect_details.locked_out.p1=You have entered details that do not match our records too many times. This means that you cannot try again for {0}.
 multi_option_incorrect_details.locked_out.p2=Alternatively, our <a href="{0}" class="govuk-link">phone advisers</a> may be able to help you access the service you need in another way.
 multi_option_incorrect_details.locked_out.p3=However, they will not be able to help you confirm your identity online or give you access to online services.
+
+service_temporarily_unavailable.h1=Sorry, the service is temporarily unavailable
+service_temporarily_unavailable.p1=You will be able to use the service again soon.
+service_temporarily_unavailable.p2=You can try again later, or if your request is urgent <a href="{0}" class="govuk-link">contact HMRC to get help</a>.
+service_temporarily_unavailable.p2.sa=<a href="{0}" class="govuk-link">You can request a secure pin to be sent to you by post.</a>
+service_temporarily_unavailable.p2.dwp=You can <a href="{0}" class="govuk-link">confirm your identity another way</a>.
