@@ -194,7 +194,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
       }
     } yield result
   }.recover {
-    case _: UnhealthyServiceException if appConfig.enabledCircuitBreaker => ??? //new screen being built in VER-2165
+    case _: UnhealthyServiceException if appConfig.enabledCircuitBreaker => Ok(service_temporarily_unavailable())
     case _ =>
       val redirectUrl: String = if (failureUrl.isDefined) {failureUrl.get.value} else {completionUrl.value}
       Redirect(redirectUrl)
