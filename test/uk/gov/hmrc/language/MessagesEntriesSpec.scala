@@ -25,7 +25,12 @@ class MessagesEntriesSpec extends UnitSpec with GuiceOneAppPerSuite {
   private val keysForPendingTranslations = Set(
     "global.error.InternalServerError500.message",
     "global.error.InternalServerError500.title",
-    "global.error.InternalServerError500.heading"
+    "global.error.InternalServerError500.heading",
+    "service_temporarily_unavailable.p2.sa",
+    "service_temporarily_unavailable.h1",
+    "service_temporarily_unavailable.p2",
+    "service_temporarily_unavailable.p2.dwp",
+    "service_temporarily_unavailable.p1"
   )
   private val keysNotNeeded = Set(
     "global.error.badRequest400.title",

@@ -35,7 +35,7 @@ import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, UserAttemptsDetails}
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, MonitoringEvent, PdvLockedOut}
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
-import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, we_cannot_check_your_identity}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, service_temporarily_unavailable, we_cannot_check_your_identity}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details, what_is_your_nino, what_is_your_postcode}
 import uk.gov.hmrc.views.ViewConfig
 
@@ -96,6 +96,7 @@ class PDVControllerWithFailureUrlSpec extends UnitSpec with MockFactory with Sca
     val locked_out: locked_out = app.injector.instanceOf[locked_out]
     val what_is_your_postcode: what_is_your_postcode = app.injector.instanceOf[what_is_your_postcode]
     val what_is_your_nino: what_is_your_nino = app.injector.instanceOf[what_is_your_nino]
+    val service_temporarily_unavailable: service_temporarily_unavailable = app.injector.instanceOf[service_temporarily_unavailable]
 
     val we_cannot_check_your_identity: we_cannot_check_your_identity = app.injector.instanceOf[we_cannot_check_your_identity]
 
@@ -119,6 +120,7 @@ class PDVControllerWithFailureUrlSpec extends UnitSpec with MockFactory with Sca
       incorrect_details,
       locked_out,
       we_cannot_check_your_identity,
+      service_temporarily_unavailable,
       mockIVConnector)
 
   }

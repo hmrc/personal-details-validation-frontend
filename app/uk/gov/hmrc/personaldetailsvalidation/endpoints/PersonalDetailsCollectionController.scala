@@ -50,6 +50,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
                                                     incorrect_details: incorrect_details,
                                                     locked_out: locked_out,
                                                     weCannotCheckYourIdentityPage : we_cannot_check_your_identity,
+                                                    service_temporarily_unavailable: service_temporarily_unavailable,
                                                     ivConnector: IdentityVerificationConnector)
                                                    (implicit val authConnector: AuthConnector,
                                                     val dwpMessagesApiProvider: DwpMessagesApiProvider,
@@ -241,5 +242,9 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def lockedOut(): Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(locked_out()))
+  }
+
+  def serviceTemporarilyUnavailable(): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(service_temporarily_unavailable()))
   }
 }
