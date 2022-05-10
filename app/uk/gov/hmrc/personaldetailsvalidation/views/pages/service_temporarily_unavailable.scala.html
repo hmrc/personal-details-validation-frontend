@@ -15,7 +15,6 @@
 @()(implicit request: Request[_], viewConfig: ViewConfig, msgs: Messages)
 
 @origin = @{request.session.get("origin").getOrElse("")}
-@journeyType = @{request.session.get("journeyType").getOrElse("")}
 @journeyId = @{request.session.get("journeyId").getOrElse("")}
 
 @contactLink = @{
@@ -24,13 +23,7 @@
     } else if (LoginOriginHelper.isDwp(origin)){
         p(msgs("service_temporarily_unavailable.p2.dwp", s"${viewConfig.dwpGetHelpUrl}/$journeyId"))
     } else {
-        if(journeyType == "UpliftNino"){
-            p(msgs("service_temporarily_unavailable.p2", "/helpline/call-options-no-answers"))
-        } else if(journeyType == "UpliftNoNino"){
-            p(msgs("service_temporarily_unavailable.p2", "/helpline/organisation/select-a-service"))
-        } else {
-            p(msgs("service_temporarily_unavailable.p2", "/helpline/which-service-are-you-trying-to-access"))
-        }
+        p(msgs("service_temporarily_unavailable.p2", "/helpline/which-service-are-you-trying-to-access"))
     }
 }
 
