@@ -36,7 +36,7 @@ class ValidationIdValidator @Inject()(httpClient: HttpClient,connectorConfig: Co
 
     val url = s"$personalDetailsValidationBaseUrl/personal-details-validation/${validationId.value}"
 
-    httpClient.GET[Boolean](url).recover{ case exception => false}
+    httpClient.GET[Boolean](url)
   }
 
   private implicit val validationIdHttpReads: HttpReads[Boolean] = new HttpReads[Boolean] {
