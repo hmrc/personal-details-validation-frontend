@@ -16,7 +16,7 @@ sbt test
     
 ## GET /personal-details-validation/start?completionUrl=:completionUrl&origin=test
 Displays a page to capture user's details. After capturing user's details, these details are checked against citizen details database. 
-If they match, this information is stored by [personal-details-validation](https://github.com/hmrc/personal-details-validation) backend service and the user is redirected to the completionUrl with `validationId` query parameter. It is a UUID and it can be used to retrieve the validation outcome and personal-details (if validation was successful) later using [personal-details-validation](https://github.com/hmrc/personal-details-validation#get-personal-details-validationvalidationid) backend service.
+If they match, this information is stored by [personal-details-validation](https://github.com/hmrc/personal-details-validation) backend service and the user is redirected to the completionUrl with `validationId` query parameter. It is a UUID and it can be used to retrieve the validation outcome at personal-details [personal-details-validation](https://github.com/hmrc/personal-details-validation#get-personal-details-validationvalidationid) backend service.
 If the details do not match, then the user is shown the blank form with an error at the top of the form.
 
 If the user does not interact with the browser for 15 minutes, and they ignore the modal timeout dialog, then they will be redirected back to the completionUrl with the `userTimeout` query parameter.
