@@ -36,19 +36,13 @@ class ValidationIdValidator @Inject()(httpClient: HttpClient,connectorConfig: Co
 
     val url = s"$personalDetailsValidationBaseUrl/personal-details-validation/${validationId.value}"
 
-    httpClient.GET[Boolean](url).recover(toProcessingError(url))
+    httpClient.GET[Boolean](url).recover{ case exception => false}
   }
 
-  private implicit val validationIdHttpReads: HttpReads[Either[ProcessingError, Boolean]] = new HttpReads[Either[ProcessingError, Boolean]] {
-    override def read(method: String, url: String, response: HttpResponse): Either[ProcessingError, Boolean] = response.status match {
-      case OK => Right(true)
-      case NOT_FOUND => Right(false)
-      case other => Left(ProcessingError(s"Unexpected response from $method $url with status: '$other' and body: ${response.body}"))
+  private implicit val validationIdHttpReads: HttpReads[Boolean] = new HttpReads[Boolean] {
+    override def read(method: String, url: String, response: HttpResponse): Boolean = response.status match {
+      case OK => true
+      case _ => false
     }
   }
-
-  private def toProcessingError(url: String): PartialFunction[Throwable, Either[ProcessingError, Boolean]] = {
-    case exception => Left(ProcessingError(s"Call to GET $url threw: $exception"))
-  }
-
 }
