@@ -26,4 +26,5 @@ case class UnderNinoAge() extends MonitoringEvent
 case class PdvFailedAttempt(attempts: Int, maxAttempts: Int, journeyVersion: String, credID: String, origin: String) extends MonitoringEvent
 case class PdvLockedOut(journeyVersion: String, credID: String, origin: String) extends MonitoringEvent
 case class PdvRetry(retryGuidanceText: String) extends MonitoringEvent
+case class PDVServiceUnavailable() extends MonitoringEvent
 
