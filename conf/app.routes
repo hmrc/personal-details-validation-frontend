@@ -32,5 +32,3 @@ GET        /redirect-after-timeout                                  uk.gov.hmrc.
 
 GET        /service-temporarily-unavailable                         uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.serviceTemporarilyUnavailable()
 
-
-

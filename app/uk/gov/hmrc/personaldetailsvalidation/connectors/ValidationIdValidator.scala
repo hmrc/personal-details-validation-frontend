@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import play.api.http.Status.OK
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
 
 import javax.inject.{Inject, Singleton}
@@ -35,6 +35,13 @@ class ValidationIdValidator @Inject()(httpClient: HttpClient,connectorConfig: Co
     val url = s"$personalDetailsValidationBaseUrl/personal-details-validation/${validationId.value}"
 
     httpClient.GET[Boolean](url)
+  }
+
+  private implicit val validationIdHttpReads: HttpReads[Boolean] = new HttpReads[Boolean] {
+    override def read(method: String, url: String, response: HttpResponse): Boolean = response.status match {
+      case OK => true
+      case _ => false
+    }
   }
 
 }
