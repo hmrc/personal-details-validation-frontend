@@ -20,7 +20,6 @@ import play.api.data.FormError
 import play.api.i18n.MessagesApi
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import uk.gov.hmrc.circuitbreaker.UnhealthyServiceException
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
@@ -28,8 +27,8 @@ import uk.gov.hmrc.personaldetailsvalidation.model.InitialPersonalDetailsForm.in
 import uk.gov.hmrc.personaldetailsvalidation.model.NinoDetailsForm.ninoForm
 import uk.gov.hmrc.personaldetailsvalidation.model.PostcodeDetailsForm.postcodeForm
 import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
 import uk.gov.hmrc.personaldetailsvalidation.monitoring._
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages._
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -196,6 +195,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }.recover {
     case _: Exception =>
       if (appConfig.enabledCircuitBreaker) {
+        eventDispatcher.dispatchEvent(PDVServiceUnavailable())
         Redirect(routes.PersonalDetailsCollectionController.serviceTemporarilyUnavailable())
       }
       else {

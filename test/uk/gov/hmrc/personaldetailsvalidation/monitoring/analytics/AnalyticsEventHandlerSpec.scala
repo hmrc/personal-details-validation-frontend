@@ -52,6 +52,14 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
       }
     }
 
+    "send PDVServiceUnavailable" in new Setup {
+      dispatcher.dispatchEvent(PDVServiceUnavailable())(request, hc, global)
+      eventually {
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+          Event("sos_iv", "personal_detail_validation_result", "pdv_service_unavailable", dimensions)))
+      }
+    }
+
     "send SignedOut" in new Setup {
       dispatcher.dispatchEvent(SignedOut())(request, hc, global)
       eventually {

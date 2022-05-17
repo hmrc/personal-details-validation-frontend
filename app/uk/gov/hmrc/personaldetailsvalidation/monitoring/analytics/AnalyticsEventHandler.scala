@@ -38,6 +38,7 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
       case e:PdvFailedAttempt => sendEvent(pdvFailedAttempt(e.attempts))
       case e:PdvLockedOut => sendEvent(pdvLockedOut)
       case e:PdvRetry => sendEvent(pdvRetry(e.retryGuidanceText))
+      case e:PDVServiceUnavailable => sendEvent(serviceUnavailable)
       case _ => ()
     }
   }
@@ -62,6 +63,11 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
 }
 
 trait AnalyticsRequestFactory {
+
+  def serviceUnavailable(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
+    val gaEvent = Event("sos_iv","personal_detail_validation_result",s"pdv_service_unavailable",dimensions)
+    AnalyticsRequest(clientId, Seq(gaEvent))
+  }
 
   def timeoutContinue(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "pdv_modal_timeout", "continue", dimensions)
