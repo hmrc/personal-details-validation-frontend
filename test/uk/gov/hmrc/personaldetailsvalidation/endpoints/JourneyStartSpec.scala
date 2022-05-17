@@ -50,7 +50,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
       "and it's valid" in new Setup {
       implicit val requestWithValidationId: FakeRequest[AnyContentAsEmpty.type] = request.withSession(validationIdSessionKey -> validationId.value)
 
-      (validationIdValidator.verify(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
+      (validationIdValidator.checkExists(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
         .returning(Future.successful(true))
 
@@ -62,7 +62,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
       "but it's not valid" in new Setup {
       implicit val requestWithValidationId: FakeRequest[AnyContentAsEmpty.type] = request.withSession(validationIdSessionKey -> validationId.value)
 
-      (validationIdValidator.verify(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
+      (validationIdValidator.checkExists(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
         .returning(Future.successful(false))
 
@@ -76,7 +76,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
 
       val validationError: ProcessingError = ProcessingError("some message")
 
-      (validationIdValidator.verify(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
+      (validationIdValidator.checkExists(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
         .returning(Future.failed(new RuntimeException(validationError.message)))
 

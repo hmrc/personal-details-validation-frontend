@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
-import play.api.http.Status.OK
+import play.api.http.Status.{NOT_FOUND, OK}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
 
@@ -28,8 +28,8 @@ class ValidationIdValidator @Inject()(httpClient: HttpClient,connectorConfig: Co
 
   import connectorConfig.personalDetailsValidationBaseUrl
 
-  def verify(validationId: ValidationId)
-            (implicit headerCarrier: HeaderCarrier,
+  def checkExists(validationId: ValidationId)
+                 (implicit headerCarrier: HeaderCarrier,
              executionContext: ExecutionContext): Future[Boolean] = {
 
     val url = s"$personalDetailsValidationBaseUrl/personal-details-validation/${validationId.value}"
@@ -37,11 +37,11 @@ class ValidationIdValidator @Inject()(httpClient: HttpClient,connectorConfig: Co
     httpClient.GET[Boolean](url)
   }
 
-  private implicit val validationIdHttpReads: HttpReads[Boolean] = new HttpReads[Boolean] {
-    override def read(method: String, url: String, response: HttpResponse): Boolean = response.status match {
+  private implicit val validationIdHttpReads: HttpReads[Boolean] = (_: String, _: String, response: HttpResponse) =>
+    response.status match {
       case OK => true
-      case _ => false
-    }
+      case NOT_FOUND => false
+      case status => throw new RuntimeException(s"Unexpected status returned from PDV: $status")
   }
 
 }
