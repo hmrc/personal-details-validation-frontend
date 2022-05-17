@@ -36,31 +36,48 @@ class JourneyStart @Inject()(validationIdValidator: ValidationIdValidator,
 
   val validationIdSessionKey = "ValidationId"
 
+  /** TODO review this code - it seems to be handling a situation where IV *sometimes* calls PDV twice,
+    * and handling this by storing the validationId and routing the user back to completion if subsequently called
+    * we should really be fixing this in IV instead!  See VER-2281
+    */
+
+  /**
+    * Redirect to /personal-details (the start of a new journey) if no validationId in session
+    * Redirect to /personal-details (the start of a new journey) if validationId exists in session but DOES NOT exist in BE (expired, incorrect, etc)
+    *
+    * Redirect to completionUrl if this journey has ALREADY been done recently (validationId in session AND exists in BE)
+    *
+    * If there are any exceptions thrown, redirect to failureUrl (if defined), otherwise completionUrl with a technicalError param
+    */
   def findRedirect(completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl])
                   (implicit request: Request[_], headerCarrier: HeaderCarrier): Future[Result] =
     findValidationIdInSession match {
       case None =>
         Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin, failureUrl)))
       case Some(sessionValidationId) =>
-        verify(sessionValidationId)
+        checkExists(sessionValidationId)
           .map(findRedirectUsing(_, sessionValidationId, completionUrl, origin, failureUrl))
           .recover {
-            case error: Throwable => {
+            case error: Throwable =>
               val processingError = ProcessingError("Unable to start this journey: " + error.getMessage)
               logger.error(processingError)
               val redirectUrl: String = if (failureUrl.isDefined) {failureUrl.get.value} else {completionUrl.value}
               Redirect(redirectUrl, processingError.toQueryParam)
-            }
           }
     }
 
+  /**
+    * PDV sets the validationId into the session ON SUBMIT of the PDV form.
+    * This effectively CACHES the the PDV journey info (IV seems to be trying to do PDV TWICE in some flows - we should fix this!!)
+    * Also: when do we *remove* the validationId from the session??  Never?
+    */
   private def findValidationIdInSession(implicit request: Request[_]): Option[ValidationId] =
     request.session.get(validationIdSessionKey).map(ValidationId(_))
 
-  private def findRedirectUsing(validationResult: Boolean, validationId: ValidationId,
+  private def findRedirectUsing(validationIdExists: Boolean, validationId: ValidationId,
                                 completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl]): Result =
-    if (validationResult) {
-      Redirect(completionUrl.value, validationId.toQueryParam)
+    if (validationIdExists) {
+      Redirect(completionUrl.value, validationId.toQueryParam) // TODO what if it was a *failure* result?
     } else {
       Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin, failureUrl))
     }

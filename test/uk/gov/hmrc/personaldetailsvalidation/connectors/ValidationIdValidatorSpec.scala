@@ -39,7 +39,7 @@ class ValidationIdValidatorSpec extends UnitSpec with MockFactory with ScalaFutu
         .expects(s"$baseUrl/personal-details-validation/$validationId", *, *, *, *, *)
         .returning(Future.successful(true))
 
-      await(validationIdValidator.verify(validationId)) shouldBe true
+      await(validationIdValidator.checkExists(validationId)) shouldBe true
     }
 
     "return false if call to GET /personal-details-validation/:validationId returns NOT_FOUND" in new Setup {
@@ -49,7 +49,7 @@ class ValidationIdValidatorSpec extends UnitSpec with MockFactory with ScalaFutu
         .expects(s"$baseUrl/personal-details-validation/$validationId", *, *, *, *, *)
         .returning(Future.successful(false))
 
-      await(validationIdValidator.verify(validationId)) shouldBe false
+      await(validationIdValidator.checkExists(validationId)) shouldBe false
     }
   }
 
