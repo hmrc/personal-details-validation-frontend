@@ -7,10 +7,10 @@ private object AppDependencies {
   private val compile = Seq(
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.2",
     "org.typelevel" %% "cats-core" % "2.0.0",
-    "uk.gov.hmrc"   %% "bootstrap-frontend-play-28" % "5.16.0",
-    "uk.gov.hmrc"   %% "domain" % "6.0.0-play-28",
-    "uk.gov.hmrc"   %% "play-language" % "5.1.0-play-28",
-    "uk.gov.hmrc"   %% "play-frontend-hmrc"  % "3.0.0-play-28",
+    "uk.gov.hmrc"   %% "bootstrap-frontend-play-28" % "5.24.0",
+    "uk.gov.hmrc"   %% "domain" % "8.1.0-play-28",
+    "uk.gov.hmrc"   %% "play-language" % "5.3.0-play-28",
+    "uk.gov.hmrc"   %% "play-frontend-hmrc"  % "3.21.0-play-28",
     "uk.gov.hmrc"   %% "reactive-circuit-breaker"  % "3.5.0"
   )
 
@@ -23,7 +23,6 @@ private object AppDependencies {
     "org.scalatestplus" %% "scalatestplus-mockito" % "1.0.0-M2" % Test,
     "org.scalatestplus" %% "scalatestplus-scalacheck" % "3.1.0.0-RC2" % Test,
     "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % Test,
-    "uk.gov.hmrc" %% "service-integration-test" % "1.1.0-play-27" % Test,
     "org.pegdown" % "pegdown" % "1.6.0" % Test
   )
 
