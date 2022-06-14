@@ -43,7 +43,7 @@ lazy val microservice = Project(appName, file("."))
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(defaultSettings(): _*)
   .settings(
-    scalaVersion := "2.12.14",
+    scalaVersion := "2.12.15",
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true
   )
@@ -69,6 +69,6 @@ lazy val microservice = Project(appName, file("."))
     Resolver.jcenterRepo
   ))
   .settings(
-    scalacOptions += s"-Wconf:src=${target.value}/.*:s"  // Scala 2.12.14 equivalent
+    scalacOptions += s"-Wconf:src=${target.value}/.*:s"
   )
   .settings(A11yTest / unmanagedSourceDirectories += (baseDirectory.value / "accessibility"))
