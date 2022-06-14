@@ -68,4 +68,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(resolvers ++= Seq(
     Resolver.jcenterRepo
   ))
+  .settings(
+    scalacOptions += s"-Wconf:src=${target.value}/.*:s"  // Scala 2.12.14 equivalent
+  )
   .settings(A11yTest / unmanagedSourceDirectories += (baseDirectory.value / "accessibility"))
