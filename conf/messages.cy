@@ -128,3 +128,9 @@ multi_option_incorrect_details.locked_out.h1=Rydych wedi cael eich cloi allan
 multi_option_incorrect_details.locked_out.p1=Rydych wedi nodi manylion nad ydynt yn cyd-fynd â’n cofnodion gormod o weithiau. Mae hyn yn golygu na allwch roi cynnig arall arni am {0}.
 multi_option_incorrect_details.locked_out.p2=Fel arall, efallai gall ein <a href="{0}" class="govuk-link">hymgynghorwyr dros y ffôn</a> eich helpu i gael mynediad at y gwasanaeth sydd ei angen arnoch mewn ffordd arall.
 multi_option_incorrect_details.locked_out.p3=Fodd bynnag, ni fyddant yn gallu’ch helpu i gadarnhau pwy ydych ar-lein, na rhoi mynediad i chi at wasanaethau ar-lein.
+
+service_temporarily_unavailable.h1=Mae’n ddrwg gennym, nid yw’r gwasanaeth ar gael ar hyn o bryd
+service_temporarily_unavailable.p1=Byddwch yn gallu defnyddio’r gwasanaeth eto cyn bo hir.
+service_temporarily_unavailable.p2=Gallwch roi cynnig arall arni yn nes ymlaen neu, os yw’ch cais ar frys, <a href="{0}" class="govuk-link">cysylltwch â CThEM i gael help</a>.
+service_temporarily_unavailable.p2.sa=<a href="{0}" class="govuk-link">Gallwch ofyn am gael ‘pin’ diogel drwy’r post.</a>
+service_temporarily_unavailable.p2.dwp=Gallwch <a href="{0}" class="govuk-link">gadarnhau pwy ydych mewn ffordd aral</a>.
