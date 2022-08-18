@@ -53,9 +53,7 @@
     @preH1("personal-details-validation.faded-heading")
     @h1("personal-details.header")
 
-    @formWithCSRF(routes.PersonalDetailsCollectionController.submitYourDetails(completionUrl, failureUrl),
-        'autocomplete -> "off",
-        'novalidate -> "novalidate") {
+    @formWithCSRF(routes.PersonalDetailsCollectionController.submitYourDetails(completionUrl, failureUrl)) {
 
         @textbox(
             field = pageForm("firstName"),

@@ -39,9 +39,9 @@
     @underlying(DateInput(
         fieldName,
         items = Seq(
-            InputItem(name = s"$fieldName.day", classes = s"govuk-input--width-2 $dayError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.day")), value = form(s"$fieldName.day").value),
-            InputItem(name = s"$fieldName.month", classes = s"govuk-input--width-2 $monthError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.month")), value = form(s"$fieldName.month").value),
-            InputItem(name = s"$fieldName.year", classes = s"govuk-input--width-4 $yearError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.year")), value = form(s"$fieldName.year").value)
+            InputItem(name = s"$fieldName.day", classes = s"govuk-input--width-2 $dayError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.day")), value = form(s"$fieldName.day").value, autocomplete = if(fieldName == "dateOfBirth") Some("bday-day") else Some("")),
+            InputItem(name = s"$fieldName.month", classes = s"govuk-input--width-2 $monthError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.month")), value = form(s"$fieldName.month").value, autocomplete = if(fieldName == "dateOfBirth") Some("bday-month") else Some("")),
+            InputItem(name = s"$fieldName.year", classes = s"govuk-input--width-4 $yearError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.year")), value = form(s"$fieldName.year").value, autocomplete = if(fieldName == "dateOfBirth") Some("bday-year") else Some(""))
         ),
         fieldset = Some(Fieldset(
             legend = Some(Legend(content = Text(messages(s"$fieldPrefix.$fieldName")), classes = "govuk-fieldset__legend--s")),
