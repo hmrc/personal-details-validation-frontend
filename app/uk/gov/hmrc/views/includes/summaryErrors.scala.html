@@ -18,13 +18,14 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukErrorSummary
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 
 @(theForm: Option[Form[_]], govukErrorSummary: GovukErrorSummary, completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]
 )(implicit requestHeader: RequestHeader, messages: Messages)
 
 @validationText = {
     @if(requestHeader.session.get("loginOrigin").exists(_.startsWith("dwp-iv"))) {
-        @messages("validation.error-summary.before-link-text") <a href=routes.PersonalDetailsCollectionController.redirectAfterUserAborted(completionUrl,failureUrl).url>@messages("validation.error-summary.dwp-text")</a>
+        @messages("validation.error-summary.before-link-text") <a href=@routes.PersonalDetailsCollectionController.redirectAfterUserAborted(completionUrl,failureUrl).url>@messages("validation.error-summary.dwp-text")</a>
     } else {
         @messages("validation.error-summary.text")
     }
