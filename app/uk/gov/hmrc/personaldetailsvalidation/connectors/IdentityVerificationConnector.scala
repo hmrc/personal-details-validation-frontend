@@ -29,10 +29,10 @@ import scala.concurrent.ExecutionContext
 class IdentityVerificationConnector @Inject()(appConfig: AppConfig,
                                               httpClient: HttpClient) extends Logging {
 
-  def updateJourney(redirectingUrl: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Any = {
+  def updateJourney(redirectingUrl: String, journeyStatus: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Any = {
 
     val journeyId = extractJourneyId(redirectingUrl)
-    val status = JourneyUpdate(Some("Timeout"))
+    val status = JourneyUpdate(Some(journeyStatus))
     if (journeyId.isDefined) {
       httpClient.PATCH[JourneyUpdate, HttpResponse](s"${appConfig.ivUrl}/identity-verification/journey/${journeyId.getOrElse("")}", status)
         .recover {

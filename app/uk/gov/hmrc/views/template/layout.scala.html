@@ -44,7 +44,7 @@
 
 @contentSection = {
     @if(form && completionUrl) {
-        @summaryErrors(theForm = form, govukErrorSummary = govukErrorSummary, completionUrl.get)
+        @summaryErrors(theForm = form, govukErrorSummary = govukErrorSummary, completionUrl.get, failureUrl)
     }
 
     @contentBlock

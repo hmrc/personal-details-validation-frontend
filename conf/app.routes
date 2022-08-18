@@ -29,6 +29,7 @@ GET        /signed-out                                              uk.gov.hmrc.
 
 GET        /keep-alive                                              uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.keepAlive()
 GET        /redirect-after-timeout                                  uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl] ?= None)
+GET        /redirect-after-userabort                                uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.redirectAfterUserAborted(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl] ?= None)
 
 GET        /service-temporarily-unavailable                         uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.serviceTemporarilyUnavailable()
 
