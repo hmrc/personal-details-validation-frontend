@@ -26,10 +26,10 @@ class PostcodeDetailsSpecs extends UnitSpec {
       PostcodeDetailsForm.postcodeFormatValidation(NonEmptyString("bn12 4xh")) shouldBe true //lowercase also ok
       PostcodeDetailsForm.postcodeFormatValidation(NonEmptyString("L13 1xy")) shouldBe true
       PostcodeDetailsForm.postcodeFormatValidation(NonEmptyString("J1 2FE")) shouldBe true
+      PostcodeDetailsForm.postcodeFormatValidation(NonEmptyString("B   N 1 24  X H")) shouldBe true //spaces are allowed anywhere
     }
     "not validate invalid postcodes that will fail on the address lookup service" in {
-      PostcodeDetailsForm.postcodeFormatValidation(NonEmptyString("BN12   4XH")) shouldBe false //can't have more than 1 space
-      PostcodeDetailsForm.postcodeFormatValidation(NonEmptyString("J1 22FE")) shouldBe false //can't have 2 numbers in 2nd part
+      PostcodeDetailsForm.postcodeFormatValidation(NonEmptyString("J13 22FE")) shouldBe false //can't have 2 numbers in 2nd part
       PostcodeDetailsForm.postcodeFormatValidation(NonEmptyString("CR 2JJ")) shouldBe false //first part doesn't end with number
       PostcodeDetailsForm.postcodeFormatValidation(NonEmptyString("J1 2F")) shouldBe false //2nd part doesn't end in 2 letters
     }
