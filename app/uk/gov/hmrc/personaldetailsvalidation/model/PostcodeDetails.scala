@@ -30,7 +30,7 @@ object PostcodeDetailsForm {
   }
 
   def postcodeFormatValidation(postcode: NonEmptyString): Boolean =
-    postcode.value.matches("""([A-Za-z][A-HJ-Ya-hj-y]?[0-9][A-Za-z0-9]?|[A-Za-z][A-HJ-Ya-hj-y][A-Za-z])\s?[0-9][ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]{2}""")
+    postcode.value.matches("""([A-Za-z]\s*[A-HJ-Ya-hj-y]?\s*[0-9]\s*[A-Za-z0-9]?|[A-Za-z]\s*[A-HJ-Ya-hj-y]\s*[A-Za-z])\s*[0-9]\s*([ABDEFGHJLNPQRSTUWXYZabdefghjlnpqrstuwxyz]\s*){2}""")
 
   val postcodeForm: Form[PostcodeDetails] = Form(mapping(
     "postcode" -> postcodeValidation()
