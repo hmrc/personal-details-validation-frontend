@@ -212,10 +212,19 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     */
   def redirectAfterTimeout(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     eventDispatcher.dispatchEvent(TimedOut())
-    ivConnector.updateJourney(completionUrl.value)
+    ivConnector.updateJourney(completionUrl.value, "Timeout")
     val redirectUrl: String = if (failureUrl.isDefined) {failureUrl.get.value} else {completionUrl.value}
     Future.successful(Redirect(redirectUrl, Map("userTimeout" -> Seq(""))))
   }
+
+  /**
+   * redirect user to the completionUrl with a userAborted status
+   */
+  def redirectAfterUserAborted(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
+    ivConnector.updateJourney(completionUrl.value, "UserAborted")
+    Future.successful(Redirect(completionUrl.value, Map("userAborted" -> Seq(""))))
+  }
+
 
   /**
     * Endpoint which just has the side-effect of extending the Play session to avoid (the 15 min) timeout

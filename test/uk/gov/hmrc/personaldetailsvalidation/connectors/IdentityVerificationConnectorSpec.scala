@@ -40,11 +40,22 @@ class IdentityVerificationConnectorSpec
     with LogCapturing {
 
   "IV Connector" should {
-    "update the journey status in IV" in new Setup {
+    "update the journey status to Timeout in IV" in new Setup {
       (mockHttpClient.PATCH[JourneyUpdate, HttpResponse](_: String, _: JourneyUpdate, _: Seq[(String, String)])(_: Writes[JourneyUpdate], _: HttpReads[HttpResponse], _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *, *, *, *, *, *).returning(Future.successful(HttpResponse(200, "")))
       withCaptureOfLoggingFrom(ivConnector.testLogger) { logEvents =>
-        ivConnector.updateJourney(redirectingUrl)
+        ivConnector.updateJourney(redirectingUrl, "Timeout")
+        eventually {
+          logEvents.count(_.getLevel == Level.WARN) shouldBe 0
+        }
+      }
+    }
+
+    "update the journey status to UserAbort in IV" in new Setup {
+      (mockHttpClient.PATCH[JourneyUpdate, HttpResponse](_: String, _: JourneyUpdate, _: Seq[(String, String)])(_: Writes[JourneyUpdate], _: HttpReads[HttpResponse], _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *, *, *, *, *).returning(Future.successful(HttpResponse(200, "")))
+      withCaptureOfLoggingFrom(ivConnector.testLogger) { logEvents =>
+        ivConnector.updateJourney(redirectingUrl, "UserAbort")
         eventually {
           logEvents.count(_.getLevel == Level.WARN) shouldBe 0
         }
@@ -54,13 +65,13 @@ class IdentityVerificationConnectorSpec
     "failed to update journey status in IV" in new Setup {
       (mockHttpClient.PATCH[JourneyUpdate, HttpResponse](_: String, _: JourneyUpdate, _: Seq[(String, String)])(_: Writes[JourneyUpdate], _: HttpReads[HttpResponse], _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *, *, *, *, *, *).returning(Future.failed(new ServiceUnavailableException("IV is down")))
-        ivConnector.updateJourney(redirectingUrl)
+        ivConnector.updateJourney(redirectingUrl, "Timeout")
     }
 
     "failed extract journeyId from redirecting url" in new Setup {
 
       withCaptureOfLoggingFrom(ivConnector.testLogger) { logEvents =>
-        ivConnector.updateJourney("redirectingUrl")
+        ivConnector.updateJourney("redirectingUrl", "Timeout")
           eventually {
             logEvents.filter(_.getLevel == Level.WARN).loneElement.getMessage should include(s"Cannot extract IV journeyId from redirecting url")
           }

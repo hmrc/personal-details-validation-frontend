@@ -622,9 +622,23 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       private val redirectUrl = s"${completionUrl.value}&userTimeout="
       (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(TimedOut(), *, *, *)
-      (mockIVConnector.updateJourney(_: String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *)
+      (mockIVConnector.updateJourney(_: String, _:String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
 
       private val result = controller.redirectAfterTimeout(completionUrl, failureUrl)(request)
+      status(result) shouldBe 303
+      redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
+    }
+
+  }
+
+  "redirect-after-userAborted" should {
+
+    "redirect user to continueUrl with userAborted parameter" in new Setup {
+
+      private val redirectUrl = s"${completionUrl.value}&userAborted="
+      (mockIVConnector.updateJourney(_: String, _:String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
+
+      private val result = controller.redirectAfterUserAborted(completionUrl, failureUrl)(request)
       status(result) shouldBe 303
       redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
     }
