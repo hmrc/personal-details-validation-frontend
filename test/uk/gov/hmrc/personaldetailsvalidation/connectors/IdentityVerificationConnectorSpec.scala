@@ -40,11 +40,22 @@ class IdentityVerificationConnectorSpec
     with LogCapturing {
 
   "IV Connector" should {
-    "update the journey status in IV" in new Setup {
+    "update the journey status to Timeout in IV" in new Setup {
       (mockHttpClient.PATCH[JourneyUpdate, HttpResponse](_: String, _: JourneyUpdate, _: Seq[(String, String)])(_: Writes[JourneyUpdate], _: HttpReads[HttpResponse], _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *, *, *, *, *, *).returning(Future.successful(HttpResponse(200, "")))
       withCaptureOfLoggingFrom(ivConnector.testLogger) { logEvents =>
         ivConnector.updateJourney(redirectingUrl, "Timeout")
+        eventually {
+          logEvents.count(_.getLevel == Level.WARN) shouldBe 0
+        }
+      }
+    }
+
+    "update the journey status to UserAbort in IV" in new Setup {
+      (mockHttpClient.PATCH[JourneyUpdate, HttpResponse](_: String, _: JourneyUpdate, _: Seq[(String, String)])(_: Writes[JourneyUpdate], _: HttpReads[HttpResponse], _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *, *, *, *, *).returning(Future.successful(HttpResponse(200, "")))
+      withCaptureOfLoggingFrom(ivConnector.testLogger) { logEvents =>
+        ivConnector.updateJourney(redirectingUrl, "UserAbort")
         eventually {
           logEvents.count(_.getLevel == Level.WARN) shouldBe 0
         }
