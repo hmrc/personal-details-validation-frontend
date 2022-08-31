@@ -16,18 +16,20 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
+import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import uk.gov.hmrc.config.AppConfig
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyUpdate
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class IdentityVerificationConnector @Inject()(appConfig: AppConfig,
                                               httpClient: HttpClient) extends Logging {
+
+  val mdtpUrl = "/mdtp/personal-details-validation-complete/"
 
   def updateJourney(redirectingUrl: String, journeyStatus: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Any = {
 
@@ -43,10 +45,10 @@ class IdentityVerificationConnector @Inject()(appConfig: AppConfig,
       logger.warn(s"Cannot extract IV journeyId from redirecting url: $redirectingUrl")
   }
 
-  def extractJourneyId(url: String): Option[String] = url.split('/') match {
-    //IV redirectURL always follows pattern /mdtp/personal-details-validation-complete/261948fb-b807-4e5a-a5ca-3cdcc5009be4
-    case Array(_, _, _, journeyId) => Some(journeyId)
-    case _ => None
+  def extractJourneyId(url: String): Option[String] = {
+    if (url.contains(mdtpUrl)) {
+      Some(url.split(mdtpUrl).last)
+    } else None
   }
 
 }

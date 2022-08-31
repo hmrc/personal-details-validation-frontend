@@ -222,8 +222,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
    */
   def redirectAfterUserAborted(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     ivConnector.updateJourney(completionUrl.value, "UserAborted")
-    val redirectUrl: String = if (failureUrl.isDefined) {failureUrl.get.value} else {completionUrl.value}
-    Future.successful(Redirect(redirectUrl, Map("userAborted" -> Seq(""))))
+    Future.successful(Redirect(completionUrl.value, Map("userAborted" -> Seq(""))))
   }
 
 
