@@ -136,3 +136,8 @@ service_temporarily_unavailable.p1=You will be able to use the service again soo
 service_temporarily_unavailable.p2=You can try again later, or if your request is urgent <a href="{0}" class="govuk-link">contact HMRC to get help</a>.
 service_temporarily_unavailable.p2.sa=<a href="{0}" class="govuk-link">You can request a secure pin to be sent to you by post.</a>
 service_temporarily_unavailable.p2.dwp=You can <a href="{0}" class="govuk-link">confirm your identity another way</a>.
+
+you_have_been_timed_out.header=For your security, we timed you out
+you_have_been_timed_out.p1=We have timed you out for security reasons after 15 minutes of inactivity.
+you_have_been_timed_out.button=Start again
+you_have_been_timed_out.p2=You can <a href="https://www.gov.uk" class="govuk-link">return to GOV.UK</a> if you do not want to start again.

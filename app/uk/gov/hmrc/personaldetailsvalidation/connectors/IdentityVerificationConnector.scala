@@ -35,6 +35,7 @@ class IdentityVerificationConnector @Inject()(appConfig: AppConfig,
 
     val journeyId = extractJourneyId(redirectingUrl)
     val status = JourneyUpdate(Some(journeyStatus))
+    println(s"\n\n\n status =${status} \n\n\n")
     if (journeyId.isDefined) {
       httpClient.PATCH[JourneyUpdate, HttpResponse](s"${appConfig.ivUrl}/identity-verification/journey/${journeyId.getOrElse("")}", status)
         .recover {

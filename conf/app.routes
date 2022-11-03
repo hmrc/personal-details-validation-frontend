@@ -33,3 +33,4 @@ GET        /redirect-after-userabort                                uk.gov.hmrc.
 
 GET        /service-temporarily-unavailable                         uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.serviceTemporarilyUnavailable()
 
+GET         /you-have-been-timed-out                                uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.youHaveBeenTimedOut()
