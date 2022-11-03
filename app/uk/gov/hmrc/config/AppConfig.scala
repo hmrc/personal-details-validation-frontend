@@ -24,6 +24,8 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class AppConfig @Inject()(val configuration: Configuration, servicesConfig: ServicesConfig) {
 
+  lazy val helplineUrl: String = servicesConfig.baseUrl("helpline-frontend")
+
   lazy val ivUrl: String = servicesConfig.baseUrl("identity-verification")
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
 

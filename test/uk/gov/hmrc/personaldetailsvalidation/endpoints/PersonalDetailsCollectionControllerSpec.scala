@@ -578,6 +578,35 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)).get.contains("/personal-details-validation/enter-your-details?completionUrl=") shouldBe true
     }
+
+    "redirect to Helpline Service Deceased Page" in new Setup {
+
+      val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
+      val expectedRedirect: String = "/personal-details-validation/incorrect-details/deceased"
+
+      val pdv : Future[PersonalDetailsValidation] = Future.successful(SuccessfulPersonalDetailsValidation(validationId, deceased = true))
+
+      val expectedPersonalDetails: PersonalDetailsWithPostcode = PersonalDetailsWithPostcode(
+        NonEmptyString("Jim"),
+        NonEmptyString("Ferguson"),
+        NonEmptyString("BN1 1NB"),
+        LocalDate.parse("1939-09-01")
+      )
+
+      val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("postcode" -> "BN1 1NB").withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(_: Request[_], _: HeaderCarrier))
+        .expects(expectedPersonalDetails, *, *)
+        .returns(pdv)
+
+      val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(req)
+
+      redirectLocation(await(result)) shouldBe Some(expectedRedirect)
+    }
   }
 
   "keep-alive" should {
@@ -639,6 +668,17 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       (mockIVConnector.updateJourney(_: String, _:String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
 
       private val result = controller.redirectAfterUserAborted(completionUrl, failureUrl)(request)
+      status(result) shouldBe 303
+      redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
+    }
+
+  }
+
+  "redirectToHelplineServiceDeceasedPage" should {
+
+    "redirect user to Helpline Service Deceased Page" in new Setup {
+      val redirectUrl = "http://localhost:10102/helpline/has-this-person-died"
+      val result: Future[Result] = controller.redirectToHelplineServiceDeceasedPage()(request)
       status(result) shouldBe 303
       redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
     }

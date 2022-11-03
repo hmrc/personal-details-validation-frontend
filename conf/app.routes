@@ -19,6 +19,8 @@ POST       /what-is-your-postcode                                   uk.gov.hmrc.
 
 GET        /we-cannot-check-your-identity                           uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.weCannotCheckYourIdentity()
 
+GET        /incorrect-details/deceased                              uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.redirectToHelplineServiceDeceasedPage()
+
 GET        /incorrect-details/you-have-been-locked-out              uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.lockedOut()
 GET        /incorrect-details/pin-in-the-post/:attemptsRemaining    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl: CompletionUrl, attemptsRemaining: Int, failureUrl: Option[CompletionUrl] ?= None)
 GET        /incorrect-details/:attemptsRemaining                    uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.incorrectDetails(completionUrl: CompletionUrl, attemptsRemaining: Int, failureUrl: Option[CompletionUrl] ?= None)
