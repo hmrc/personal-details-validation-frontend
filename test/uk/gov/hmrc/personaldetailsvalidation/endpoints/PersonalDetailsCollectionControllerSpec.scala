@@ -39,12 +39,12 @@ import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
-import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, we_cannot_check_your_identity, service_temporarily_unavailable}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, service_temporarily_unavailable, we_cannot_check_your_identity, you_have_been_timed_out}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.views.ViewConfig
-
 import java.time.LocalDate
 import java.util.UUID
+
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -616,6 +616,21 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
   }
 
+  "you_have_been_timed_out" should {
+
+    "return 200 OK" in new Setup {
+
+      val result: Future[Result] = controller.youHaveBeenTimedOut()(request)
+      status(result) shouldBe 200
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+      document.select("h1").text() shouldBe messages("you_have_been_timed_out.header")
+    }
+
+  }
+
   "redirect-after-timeout" should {
 
     "redirect user to continueUrl with userTimeout parameter" in new Setup {
@@ -674,6 +689,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     val what_is_your_postcode: what_is_your_postcode = app.injector.instanceOf[what_is_your_postcode]
     val what_is_your_nino: what_is_your_nino = app.injector.instanceOf[what_is_your_nino]
     val service_temporarily_unavailable: service_temporarily_unavailable = app.injector.instanceOf[service_temporarily_unavailable]
+    val you_have_been_timed_out: you_have_been_timed_out = app.injector.instanceOf[you_have_been_timed_out]
 
     val we_cannot_check_your_identity: we_cannot_check_your_identity = app.injector.instanceOf[we_cannot_check_your_identity]
 
@@ -698,6 +714,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       locked_out,
       we_cannot_check_your_identity,
       service_temporarily_unavailable,
+      you_have_been_timed_out,
       mockIVConnector)
   }
 

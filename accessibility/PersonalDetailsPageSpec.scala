@@ -32,7 +32,7 @@ import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.EventDispatcher
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
-import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, service_temporarily_unavailable, we_cannot_check_your_identity}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, service_temporarily_unavailable, we_cannot_check_your_identity, you_have_been_timed_out}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details, what_is_your_nino, what_is_your_postcode}
 import uk.gov.hmrc.scalatestaccessibilitylinter.AccessibilityMatchers
 
@@ -91,6 +91,7 @@ class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatch
     private val we_cannot_check_your_identity: we_cannot_check_your_identity = app.injector.instanceOf[we_cannot_check_your_identity]
     private val ivConnector: IdentityVerificationConnector = app.injector.instanceOf[IdentityVerificationConnector]
     val service_temporarily_unavailable: service_temporarily_unavailable = app.injector.instanceOf[service_temporarily_unavailable]
+    val you_have_been_timed_out: you_have_been_timed_out = app.injector.instanceOf[you_have_been_timed_out]
 
     val controller: PersonalDetailsCollectionController =
       new PersonalDetailsCollectionController(
@@ -106,6 +107,7 @@ class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatch
         locked_out,
         we_cannot_check_your_identity,
         service_temporarily_unavailable,
+        you_have_been_timed_out,
         ivConnector)(authConnector, mockDwpMessagesApi, viewConfig, executionContext, messagesApi)
   }
 
