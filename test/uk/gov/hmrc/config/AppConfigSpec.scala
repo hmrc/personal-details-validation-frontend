@@ -24,6 +24,11 @@ class AppConfigSpec extends UnitSpec with GuiceOneAppPerSuite {
   val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
   "AppConfig" should {
+
+    "return helpline url." in {
+      appConfig.helplineUrl shouldBe "http://localhost:10102"
+    }
+
     "return logout page." in {
       appConfig.logoutPage shouldBe "https://www.ete.access.service.gov.uk/logout"
     }

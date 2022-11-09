@@ -52,7 +52,7 @@ class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: Pe
                    (implicit request: Request[_]): Result = {
     val strippedCompletionUrl = stripValidationId(completionUrl.value)
     personalDetailsValidation match {
-      case SuccessfulPersonalDetailsValidation(validationId) =>
+      case SuccessfulPersonalDetailsValidation(validationId, _) =>
         Redirect(strippedCompletionUrl, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
       case _ => throw new scala.RuntimeException("Unable to redirect success validation")
     }

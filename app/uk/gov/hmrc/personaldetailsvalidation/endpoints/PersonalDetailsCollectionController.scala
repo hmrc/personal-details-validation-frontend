@@ -165,7 +165,13 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     for {
       pdv <- personalDetailsSubmission.submitPersonalDetails(personalDetails)
       result = pdv match {
-        case SuccessfulPersonalDetailsValidation(_) => personalDetailsSubmission.successResult(completionUrl, pdv)
+        case SuccessfulPersonalDetailsValidation(_, deceased) =>
+          if (deceased) {
+            val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
+            Redirect(routes.PersonalDetailsCollectionController.redirectToHelplineServiceDeceasedPage()).withSession(cleanedSession)
+          } else {
+            personalDetailsSubmission.successResult(completionUrl, pdv)
+          }
         case FailedPersonalDetailsValidation(_, maybeCredId, attempt) =>
           if (maybeCredId.nonEmpty) {
             val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
@@ -250,9 +256,14 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     Future.successful(Ok(incorrect_details(completionUrl, attemptsRemaining, isSA = true, failureUrl)))
   }
 
-  def contactTechnicalSupport(redirectUrl: String): Action[AnyContent] = Action { implicit request =>
+  def contactTechnicalSupport(redirectUrl: String): Action[AnyContent] = Action { _ =>
     // need some event set up? eventDispatcher.dispatchEvent()
     Redirect(redirectUrl)
+  }
+
+  def redirectToHelplineServiceDeceasedPage(): Action[AnyContent] = Action.async { _ =>
+    val helplineServiceDeceasedPageUrl = appConfig.helplineUrl + "/helpline/has-this-person-died"
+    Future.successful(Redirect(helplineServiceDeceasedPageUrl))
   }
 
   def lockedOut(): Action[AnyContent] = Action.async { implicit request =>
