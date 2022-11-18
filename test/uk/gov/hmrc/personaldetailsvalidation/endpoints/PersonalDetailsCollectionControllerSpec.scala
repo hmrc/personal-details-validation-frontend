@@ -603,6 +603,8 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
+      (mockIVConnector.updateJourney(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
+
       val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(req)
 
       redirectLocation(await(result)) shouldBe Some(expectedRedirect)
