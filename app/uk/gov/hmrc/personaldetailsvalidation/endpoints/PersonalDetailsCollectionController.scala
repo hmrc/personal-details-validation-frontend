@@ -168,6 +168,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
         case SuccessfulPersonalDetailsValidation(_, deceased) =>
           if (deceased) {
             val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
+            ivConnector.updateJourney(completionUrl.value, "Deceased")
             Redirect(routes.PersonalDetailsCollectionController.redirectToHelplineServiceDeceasedPage()).withSession(cleanedSession)
           } else {
             personalDetailsSubmission.successResult(completionUrl, pdv)
