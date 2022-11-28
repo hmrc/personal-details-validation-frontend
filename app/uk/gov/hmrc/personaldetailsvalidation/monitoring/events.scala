@@ -18,6 +18,8 @@ package uk.gov.hmrc.personaldetailsvalidation.monitoring
 
 sealed trait MonitoringEvent
 
+
+case class BeginPDV() extends MonitoringEvent
 //Timeout events
 case class TimeoutContinue() extends MonitoringEvent
 case class TimedOut() extends MonitoringEvent

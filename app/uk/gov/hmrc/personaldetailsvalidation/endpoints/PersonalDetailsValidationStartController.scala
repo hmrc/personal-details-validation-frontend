@@ -18,16 +18,20 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{BeginPDV, EventDispatcher}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class PersonalDetailsValidationStartController @Inject()(journeyStart: JourneyStart,
-                                                        mcc: MessagesControllerComponents)
+                                                         eventDispatcher: EventDispatcher,
+                                                         mcc: MessagesControllerComponents)(implicit ec: ExecutionContext)
   extends FrontendController(mcc) {
 
   def start(completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
+    eventDispatcher.dispatchEvent(BeginPDV())
     journeyStart.findRedirect(completionUrl, origin, failureUrl)
   }
 }
