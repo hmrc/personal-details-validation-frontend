@@ -31,6 +31,7 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
 
   override def handleEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     event match {
+      case e:BeginPDV => sendEvent(serviceBegin)
       case e:TimeoutContinue => sendEvent(timeoutContinue)
       case e:TimedOut => sendEvent(timeoutSignOut)
       case e:SignedOut => sendEvent(signedOut)
@@ -63,6 +64,11 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
 }
 
 trait AnalyticsRequestFactory {
+
+  def serviceBegin(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
+    val gaEvent = Event("sos_iv", "personal_detail_validation_result", "begin",dimensions)
+    AnalyticsRequest(clientId, Seq(gaEvent))
+  }
 
   def serviceUnavailable(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv","personal_detail_validation_result",s"pdv_service_unavailable",dimensions)
