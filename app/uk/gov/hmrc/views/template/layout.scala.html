@@ -38,7 +38,8 @@
   formErrors: Seq[FormError] = Seq.empty,
   loggedInUser: Boolean = true,
   hideDeskpro: Boolean = false,
-  failureUrl: Option[CompletionUrl] = None
+  failureUrl: Option[CompletionUrl] = None,
+  headScripts: Option[Html] = None
 )(contentBlock: Html)(implicit request: Request[_], requestHeader: RequestHeader, messages: Messages, appConfig: ViewConfig)
 
 
@@ -56,6 +57,14 @@
     }
 }
 
+
+@headBlock = {
+    @headScripts
+    <link href="@controllers.routes.Assets.at("stylesheets/styles.css")" media="screen" rel="stylesheet" type="text/css">
+
+    @additionalHead( CompletionUrl(completionUrl.getOrElse("").toString), failureUrl = failureUrl)
+}
+
 @pageTitle = @{
     if(formErrors.nonEmpty){
         messages("error.prefix") + " " + title + " " + messages("title.suffix")
@@ -67,7 +76,7 @@
 @hmrcLayout(
     pageTitle = Some(pageTitle),
     isWelshTranslationAvailable = true,
-    additionalHeadBlock = Some(additionalHead( CompletionUrl(completionUrl.getOrElse("").toString), failureUrl = failureUrl)),
+    additionalHeadBlock = Some(headBlock),
     signOutUrl = if (loggedInUser) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None,
     backLinkUrl = backLinkUrl,
     nonce = CSPNonce.get
