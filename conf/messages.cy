@@ -139,3 +139,8 @@ you_have_been_timed_out.header=Er eich diogelwch, rydym wedi dod â’ch sesiwn 
 you_have_been_timed_out.p1=Rydym wedi dod â’ch sesiwn i ben am resymau diogelwch ar ôl 15 munud o anweithgarwch.
 you_have_been_timed_out.button=Dechrau eto
 you_have_been_timed_out.p2=Gallwch <a href="https://www.gov.uk" class="govuk-link">fynd yn ôl i GOV.UK</a> os nad ydych am ddechrau eto.
+
+you_have_been_timed_out_dwp.header=Er eich diogelwch, rydym wedi dod â’ch sesiwn i ben
+you_have_been_timed_out_dwp.p1=Rydym wedi dod â’ch sesiwn i ben am resymau diogelwch ar ôl 15 munud o anweithgarwch.
+you_have_been_timed_out_dwp.button=Dechrau eto
+you_have_been_timed_out_dwp.p2=Gallwch <a href="https://www.gov.uk" class="govuk-link">fynd yn ôl i GOV.UK</a> os nad ydych am ddechrau eto.

@@ -34,9 +34,7 @@ import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
 import java.time.LocalDate
-
 import javax.inject.Inject
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: PersonalDetailsSubmission,
@@ -52,6 +50,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
                                                     weCannotCheckYourIdentityPage : we_cannot_check_your_identity,
                                                     service_temporarily_unavailable: service_temporarily_unavailable,
                                                     you_have_been_timed_out: you_have_been_timed_out,
+                                                    you_have_been_timed_out_dwp: you_have_been_timed_out_dwp,
                                                     ivConnector: IdentityVerificationConnector)
                                                    (implicit val authConnector: AuthConnector,
                                                     val dwpMessagesApiProvider: DwpMessagesApiProvider,
@@ -276,7 +275,12 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }
 
   def youHaveBeenTimedOut() : Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(you_have_been_timed_out()))
+    val origin = request.session.get("origin").getOrElse("")
+    origin match {
+      case origin if LoginOriginHelper.isDwp(origin) => Future.successful (Ok (you_have_been_timed_out_dwp () ) )
+      case _ =>
+    Future.successful (Ok (you_have_been_timed_out () ) )
+    }
   }
 
 }

@@ -39,7 +39,7 @@ import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
-import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, service_temporarily_unavailable, we_cannot_check_your_identity, you_have_been_timed_out}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, service_temporarily_unavailable, we_cannot_check_your_identity, you_have_been_timed_out, you_have_been_timed_out_dwp}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.views.ViewConfig
 import java.time.LocalDate
@@ -732,6 +732,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     val what_is_your_nino: what_is_your_nino = app.injector.instanceOf[what_is_your_nino]
     val service_temporarily_unavailable: service_temporarily_unavailable = app.injector.instanceOf[service_temporarily_unavailable]
     val you_have_been_timed_out: you_have_been_timed_out = app.injector.instanceOf[you_have_been_timed_out]
+    val you_have_been_timed_out_dwp: you_have_been_timed_out_dwp = app.injector.instanceOf[you_have_been_timed_out_dwp]
 
     val we_cannot_check_your_identity: we_cannot_check_your_identity = app.injector.instanceOf[we_cannot_check_your_identity]
 
@@ -757,6 +758,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       we_cannot_check_your_identity,
       service_temporarily_unavailable,
       you_have_been_timed_out,
+      you_have_been_timed_out_dwp,
       mockIVConnector)
   }
 
