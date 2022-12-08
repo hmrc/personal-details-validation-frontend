@@ -140,4 +140,9 @@ service_temporarily_unavailable.p2.dwp=You can <a href="{0}" class="govuk-link">
 you_have_been_timed_out.header=For your security, we timed you out
 you_have_been_timed_out.p1=We have timed you out for security reasons after 15 minutes of inactivity.
 you_have_been_timed_out.button=Start again
-you_have_been_timed_out.p2=You can <a href="https://www.gov.uk" class="govuk-link">return to GOV.UK</a> if you do not want to start again.
+you_have_been_timed_out.p2=You can return to GOV.UK to start again.
+
+you_have_been_timed_out_dwp.header=For your security, we timed you out
+you_have_been_timed_out_dwp.p1=We have timed you out for security reasons after 15 minutes of inactivity.
+you_have_been_timed_out_dwp.button=Start again
+you_have_been_timed_out_dwp.p2=You can <a href="https://www.gov.uk" class="govuk-link">return to GOV.UK</a> if you do not want to start again.

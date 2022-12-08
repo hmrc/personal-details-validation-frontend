@@ -31,22 +31,20 @@
 @()(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
-    title = messages("you_have_been_timed_out.header")
+    title = messages("you_have_been_timed_out_dwp.header")
 ) {
 
 
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-5"> @messages("you_have_been_timed_out.header") </h1>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-5"> @messages("you_have_been_timed_out_dwp.header") </h1>
 
-    <p class="govuk-body"> @messages("you_have_been_timed_out.p1")</p>
+    <p class="govuk-body"> @messages("you_have_been_timed_out_dwp.p1")</p>
 
-    @p(messages("you_have_been_timed_out.p2"))
-
-    @a(key = "you_have_been_timed_out.button",
-        href = "https://www.gov.uk",
+    @a(key = "you_have_been_timed_out_dwp.button",
+        href = "",
         classes = Some("govuk-button")
     )
 
-
+    @p(messages("you_have_been_timed_out_dwp.p2"))
 }
 
 
