@@ -18,11 +18,10 @@
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.views.ViewConfig
+@import uk.gov.hmrc.personaldetailsvalidation.model.LoginOriginHelper
 
 @this(hmrcTimeoutDialog: HmrcTimeoutDialog)
-
-@(completionUrl: CompletionUrl, headBlock: Option[Html] = None, failureUrl: Option[CompletionUrl])(implicit viewConfig: ViewConfig, messages: Messages)
-
+@(completionUrl: CompletionUrl, headBlock: Option[Html] = None, failureUrl: Option[CompletionUrl])(implicit request: Request[_], viewConfig: ViewConfig, messages: Messages)
 @headBlock
 
 @hmrcTimeoutDialog(
@@ -31,6 +30,7 @@
         countdown = Some(viewConfig.timeoutCountdown),
         keepAliveUrl = Some(routes.PersonalDetailsCollectionController.keepAlive().url),
         signOutUrl = Some(routes.PersonalDetailsCollectionController.redirectAfterTimeout(completionUrl, failureUrl).url),
+        timeoutUrl = if (LoginOriginHelper.isNotDwp(request)) Some("/personal-details-validation/you-have-been-timed-out") else None,
         language = Some(messages.lang.code)
     )
 )
