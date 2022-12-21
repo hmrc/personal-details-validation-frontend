@@ -277,9 +277,9 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   def youHaveBeenTimedOut() : Action[AnyContent] = Action.async { implicit request =>
     val origin = request.session.get("origin").getOrElse("")
     origin match {
-      case origin if LoginOriginHelper.isDwp(origin) => Future.successful (Ok (you_have_been_timed_out_dwp () ) )
+      case origin if LoginOriginHelper.isDwp(origin) => Future.successful (Ok(you_have_been_timed_out_dwp()))
       case _ =>
-    Future.successful (Ok (you_have_been_timed_out () ) )
+    Future.successful(Ok(you_have_been_timed_out()))
     }
   }
 
