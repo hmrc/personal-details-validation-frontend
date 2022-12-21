@@ -170,7 +170,8 @@ private object LocalDateMapping {
     }
 
     private def toFormErrors(errorKeys: NonEmptyList[String]): List[FormError] = {
-      DateErrorMessage.getErrorSummaryMessage("dateOfBirth", errorKeys.toList).map(FormError(key, _))
+      val link : String = DateErrorMessage.getDateLink(key, errorKeys.toList)
+      DateErrorMessage.getErrorSummaryMessage(key, errorKeys.toList).map(FormError(link, _))
     }
 
     private implicit class ValidatedDateOps(validatedDate: Validated[Seq[FormError], LocalDate]) {

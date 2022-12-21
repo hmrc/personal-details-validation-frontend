@@ -51,6 +51,15 @@ object DateErrorMessage {
     else messages.toList
   }
 
+  def getDateLink(fieldName: String, messages: Seq[String]): String = {
+      dateLinkMaker(
+        messages.map(m => m).exists(_.contains("day.required")),
+        messages.map(m => m).exists(_.contains("month.required")),
+        messages.map(m => m).exists(_.contains("year.required")),
+        fieldName
+      )
+  }
+
   private def dateMessageMaker(argOne: Boolean, argTwo: Boolean, argThr: Boolean, fieldName: String): String = {
     (argOne, argTwo, argThr) match {
       case (true, false, false) => s"personal-details.$fieldName.miss.day"
@@ -60,6 +69,19 @@ object DateErrorMessage {
       case (false, true, true) => s"personal-details.$fieldName.miss.month.year"
       case (false, false, true) => s"personal-details.$fieldName.miss.year"
       case _ => s"personal-details.$fieldName.required"
+    }
+  }
+
+  def dateLinkMaker(argOne: Boolean, argTwo: Boolean, argThr: Boolean, fieldName: String): String = {
+    (argOne, argTwo, argThr) match {
+      case (true, false, false) => s"$fieldName-$fieldName.day"
+      case (true, true, false) => s"$fieldName-$fieldName.day"
+      case (true, false, true) => s"$fieldName-$fieldName.day"
+      case (false, true, false) => s"$fieldName-$fieldName.month"
+      case (false, true, true) => s"$fieldName-$fieldName.month"
+      case (false, false, true) => s"$fieldName-$fieldName.year"
+      case (false, false, false) => s"$fieldName"
+      case _ => s"$fieldName"
     }
   }
 
