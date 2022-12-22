@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.implicits._
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
+@import uk.gov.hmrc.hmrcfrontend.views.Implicits.RichErrorSummary
 
 @(theForm: Option[Form[_]], govukErrorSummary: GovukErrorSummary, completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]
 )(implicit requestHeader: RequestHeader, messages: Messages)
@@ -54,7 +55,7 @@
                     )
                 }).asTextErrorLinks,
                 title = Text(messages("validation.error-summary.heading"))
-            )
+            ).withFormErrorsAsText(theForm.get, mapping = Map("dateOfBirth" -> "dateOfBirth-dateOfBirth.day"))
         )
     }
 }

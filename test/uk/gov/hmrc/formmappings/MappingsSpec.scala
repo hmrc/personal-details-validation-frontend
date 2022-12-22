@@ -93,7 +93,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
     "return the 'required' error if there are blank values for parts" in new DateMappingSetup with DateMapping {
 
-      forAll(generatedPartNames, validDateParts) { (partToBeInvalid, allParts) =>
+      forAll(generatedPartNamesVariant, validDatePartsVariant) { (partToBeInvalid, allParts) =>
 
         val partsWithBlanks = allParts map {
           case (partName, _) if partName == partToBeInvalid => partName -> " "
@@ -104,7 +104,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
         bindResult shouldBe Left(
           Seq(partToBeInvalid)
-            .map(toErrorKeySuffixed("required"))
+            .map(toErrorKeyDateSuffixed("required"))
             .map(toFormError)
         )
       }
@@ -180,7 +180,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
       ))
 
       bindResult shouldBe Left(
-        List(FormError(dateFieldName, "personal-details.dateOfBirth.required"))
+        List(FormError(dateFieldName, "personal-details.date.required"))
       )
     }
 
@@ -278,6 +278,12 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
     val partNames = Seq(yearPartName, monthPartName, dayPartName)
     val generatedPartNames: Gen[String] = Gen.oneOf(partNames).suchThat(partNames.contains)
 
+    val yearPartNameVariant = s"$dateFieldName-$dateFieldName.year"
+    val monthPartNameVariant = s"$dateFieldName-$dateFieldName.month"
+    val dayPartNameVariant = s"$dateFieldName-$dateFieldName.day"
+    val partNamesVariant = Seq(yearPartNameVariant, monthPartNameVariant, dayPartNameVariant)
+    val generatedPartNamesVariant: Gen[String] = Gen.oneOf(partNamesVariant).suchThat(partNamesVariant.contains)
+
     val validDateParts: Gen[Seq[(String, String)]] = for {
       date <- legalLocalDates
     } yield Seq(
@@ -286,8 +292,19 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
       s"$dateFieldName.day" -> date.getDayOfMonth.toString
     )
 
+    val validDatePartsVariant: Gen[Seq[(String, String)]] = for {
+      date <- legalLocalDates
+    } yield Seq(
+      s"$dateFieldName-$dateFieldName.year" -> date.getYear.toString,
+      s"$dateFieldName-$dateFieldName.month" -> date.getMonthValue.toString,
+      s"$dateFieldName-$dateFieldName.day" -> date.getDayOfMonth.toString
+    )
+
     def toErrorKeySuffixed(suffix: String): String => String =
       name => s"$errorKeyPrefix.$name.$suffix"
+
+    def toErrorKeyDateSuffixed(suffix: String): String => String =
+      name => s"$errorKeyPrefix.date.$suffix"
 
     def toFormError(errorKey: String): FormError =
       FormError(dateFieldName, errorKey)

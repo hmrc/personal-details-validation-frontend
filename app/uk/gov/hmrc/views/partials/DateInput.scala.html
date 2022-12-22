@@ -35,7 +35,7 @@
     if(!dayError && !monthError && !yearError && form(s"$fieldName").hasErrors) {"govuk-input--error"} else {""}
 }
 
-<div class="govuk-form-group date-of-birth-wrapper @if(form(fieldName).hasErrors){govuk-form-group--error}">
+<div class="govuk-form-group date-of-birth-wrapper @if(dayError || monthError || yearError || allError){govuk-form-group--error}">
     @underlying(DateInput(
         fieldName,
         items = Seq(
