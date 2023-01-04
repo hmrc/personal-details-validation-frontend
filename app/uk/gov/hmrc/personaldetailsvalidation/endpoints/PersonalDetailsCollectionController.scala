@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -276,10 +276,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def youHaveBeenTimedOut() : Action[AnyContent] = Action.async { implicit request =>
     val origin = request.session.get("origin").getOrElse("")
-    origin match {
-      case origin if LoginOriginHelper.isDwp(origin) => Future.successful (Ok(you_have_been_timed_out_dwp()))
-      case _ =>
-    Future.successful(Ok(you_have_been_timed_out()))
+    viewConfig.isLoggedIn.map { isLoggedIn: Boolean =>
+      origin match {
+        case origin if LoginOriginHelper.isDwp(origin) => Ok(you_have_been_timed_out_dwp(loggedInUser = isLoggedIn))
+        case _ => Ok(you_have_been_timed_out(loggedInUser = isLoggedIn))
+      }
     }
   }
 
