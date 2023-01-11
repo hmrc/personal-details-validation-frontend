@@ -22,7 +22,7 @@ personal-details.ninoOrPostcode.required=Nodwch naill ai rhif Yswiriant Gwladol 
 personal-details.nino.unavailable=Nid wyf yn gwybod fy Rhif Yswiriant Gwladol
 personal-details.postcode=Cod post
 personal-details.postcode.hint=Er enghraifft: AB12 3YZ
-personal-details.postcode.invalid=Nodwch god post go iawn
+personal-details.postcode.invalid=Nodwch god post yn y DU sy’n ddilys
 
 what-is-your-national-insurance-number.nino.title=Beth yw’ch rhif Yswiriant Gwladol?
 what-is-your-national-insurance-number.nino.label=Beth yw’ch rhif Yswiriant Gwladol?
@@ -33,7 +33,7 @@ what-is-your-national-insurance-number.nino.unavailable=Does dim rhif Yswiriant 
 what-is-your-postcode.postcode.title=Beth yw’ch cod post?
 what-is-your-postcode.postcode.label=Beth yw’ch cod post?
 what-is-your-postcode.postcode.hint=Er enghraifft SW1A 2AA
-what-is-your-postcode.postcode.invalid=Nodwch god post go iawn
+what-is-your-postcode.postcode.invalid=Nodwch god post yn y DU sy’n ddilys
 
 personal-details.dateOfBirth=Dyddiad geni
 personal-details.dateOfBirth.hint=Er enghraifft, 31 3 1980
