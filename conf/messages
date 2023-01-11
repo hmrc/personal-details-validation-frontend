@@ -22,7 +22,7 @@ personal-details.ninoOrPostcode.required=Enter either National Insurance number 
 personal-details.nino.unavailable=I do not know my National Insurance number
 personal-details.postcode=Postcode
 personal-details.postcode.hint=For example: AB12 3YZ
-personal-details.postcode.invalid=Enter a real postcode
+personal-details.postcode.invalid=Enter a valid UK postcode
 
 what-is-your-national-insurance-number.nino.title=What is your National Insurance number?
 what-is-your-national-insurance-number.nino.label=What is your National Insurance number?
@@ -33,7 +33,7 @@ what-is-your-national-insurance-number.nino.unavailable=I do not have a National
 what-is-your-postcode.postcode.title=What is your postcode?
 what-is-your-postcode.postcode.label=What is your postcode?
 what-is-your-postcode.postcode.hint=For example SW1A 2AA
-what-is-your-postcode.postcode.invalid=Enter a real postcode
+what-is-your-postcode.postcode.invalid=Enter a valid UK postcode
 
 personal-details.dateOfBirth=Date of birth
 personal-details.dateOfBirth.hint=For example, 31 3 1980
