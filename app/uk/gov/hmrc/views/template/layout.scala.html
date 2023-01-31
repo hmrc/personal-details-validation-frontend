@@ -14,20 +14,20 @@
  * limitations under the License.
  *@
 
-@import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcReportTechnicalIssueHelper}
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.views.ViewConfig
-@import uk.gov.hmrc.views.html.partials.Head
 @import uk.gov.hmrc.views.html.includes.summaryErrors
 @import views.html.helper.CSPNonce
+@import uk.gov.hmrc.personaldetailsvalidation.model.LoginOriginHelper
 
 @this(
     hmrcLayout: HmrcLayout,
     govukBackLink: GovukBackLink,
-    additionalHead: Head,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-    govukErrorSummary: GovukErrorSummary
+    govukErrorSummary: GovukErrorSummary,
+    hmrcTimeoutDialog: HmrcTimeoutDialog
 )
 
 @(title: String,
@@ -39,7 +39,8 @@
   loggedInUser: Boolean = true,
   hideDeskpro: Boolean = false,
   failureUrl: Option[CompletionUrl] = None,
-  headScripts: Option[Html] = None
+  headScripts: Option[Html] = None,
+  showTimeoutDialog : Boolean = true
 )(contentBlock: Html)(implicit request: Request[_], requestHeader: RequestHeader, messages: Messages, appConfig: ViewConfig)
 
 
@@ -61,8 +62,18 @@
 @headBlock = {
     @headScripts
     <link href="@controllers.routes.Assets.at("stylesheets/styles.css")" media="screen" rel="stylesheet" type="text/css">
-
-    @additionalHead( CompletionUrl(completionUrl.getOrElse("").toString), failureUrl = failureUrl)
+    @if(showTimeoutDialog) {
+        @hmrcTimeoutDialog(
+            TimeoutDialog(
+                timeout = Some(appConfig.timeout),
+                countdown = Some(appConfig.timeoutCountdown),
+                keepAliveUrl = Some(routes.PersonalDetailsCollectionController.keepAlive().url),
+                signOutUrl = Some(routes.PersonalDetailsCollectionController.redirectAfterTimeout(CompletionUrl(completionUrl.getOrElse("").toString), failureUrl).url),
+                timeoutUrl = if(LoginOriginHelper.isNotDwp(request)) Some("/personal-details-validation/you-have-been-timed-out") else None,
+                language = Some(messages.lang.code)
+            )
+        )
+    }
 }
 
 @pageTitle = @{
