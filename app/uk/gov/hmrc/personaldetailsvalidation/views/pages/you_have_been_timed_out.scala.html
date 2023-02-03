@@ -17,6 +17,7 @@
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.partials._
 @import uk.gov.hmrc.views.html.template.layout
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 
 @this(
         mainTemplate: layout,
@@ -28,7 +29,7 @@
         govukButton: GovukButton
 )
 
-@(loggedInUser: Boolean)(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
+@(loggedInUser: Boolean, failureUrl: String)(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
     loggedInUser = loggedInUser,
@@ -44,7 +45,7 @@
     @p(messages("you_have_been_timed_out.p2"))
 
     @a(key = "you_have_been_timed_out.button",
-        href = "https://www.gov.uk",
+        href = failureUrl,
         classes = Some("govuk-button")
     )
 
