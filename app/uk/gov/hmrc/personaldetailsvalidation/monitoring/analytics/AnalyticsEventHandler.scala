@@ -44,8 +44,6 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
     }
   }
 
-  private def clientId(implicit request: Request[_]) = request.cookies.get("_ga").map(_.value)
-
   private def sendEvent(reqCreator: (Option[String], Seq[DimensionValue]) => AnalyticsRequest)
                        (implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
 
@@ -53,8 +51,12 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
     val origin: String = request.session.get("origin").getOrElse("unknown")
     val dimensions: Seq[DimensionValue] = Seq(DimensionValue(gaOriginDimension, origin))
 
+    val clientId: Option[String] = request.cookies.get("_ga").map(_.value)
     val xSessionId: Option[String] = request.headers.get(HeaderNames.xSessionId)
-    if(clientId.isDefined || xSessionId.isDefined) {
+
+    val gaClientId: Option[String] = if (clientId.isDefined) clientId else xSessionId
+
+    if(gaClientId.isDefined) {
       val analyticsRequest = reqCreator(clientId, dimensions)
       connector.sendEvent(analyticsRequest)
     } else  {
