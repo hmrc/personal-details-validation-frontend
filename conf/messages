@@ -145,4 +145,3 @@ you_have_been_timed_out.p2=You can <a href="https://www.gov.uk" class="govuk-lin
 you_have_been_timed_out_dwp.header=For your security, we timed you out
 you_have_been_timed_out_dwp.p1=We have timed you out for security reasons after 15 minutes of inactivity.
 you_have_been_timed_out_dwp.button=Start again
-you_have_been_timed_out_dwp.p2=You can <a href="https://www.gov.uk" class="govuk-link">return to GOV.UK</a> if you do not want to start again.
