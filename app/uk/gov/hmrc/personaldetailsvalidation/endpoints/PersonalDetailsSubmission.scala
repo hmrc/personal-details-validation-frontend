@@ -38,7 +38,11 @@ class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: Pe
                             headerCarrier: HeaderCarrier): Future[PersonalDetailsValidation] = {
     val origin = request.session.get("origin").getOrElse("Unknown-Origin")
     for {
-      personalDetailsValidation <- personalDetailsValidationConnector.submitValidationRequest(personalDetails, origin)
+      personalDetailsValidation <- {
+        val gaClientId: Option[String] = request.cookies.get("_ga").map(_.value)
+        val hc: HeaderCarrier = headerCarrier.copy(otherHeaders = Seq("_ga" -> gaClientId.getOrElse("")))
+        personalDetailsValidationConnector.submitValidationRequest(personalDetails, origin, hc)
+      }
       _ = pdvMetrics.matchPersonalDetails(personalDetails)
     } yield personalDetailsValidation
   }

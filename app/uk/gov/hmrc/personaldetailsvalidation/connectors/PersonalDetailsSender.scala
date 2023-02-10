@@ -32,8 +32,9 @@ class PersonalDetailsSender @Inject()(httpClient: HttpClient, connectorConfig: C
 
   private val url = s"$personalDetailsValidationBaseUrl/personal-details-validation"
 
-  def submitValidationRequest(personalDetails: PersonalDetails, origin: String)
-                             (implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[PersonalDetailsValidation] = {
+  def submitValidationRequest(personalDetails: PersonalDetails, origin: String, hc: HeaderCarrier)
+                             (implicit executionContext: ExecutionContext): Future[PersonalDetailsValidation] = {
+    implicit val headerCarrier: HeaderCarrier = hc
     httpClient.POST[PersonalDetails, PersonalDetailsValidation](url, body = personalDetails, headers = List(("origin", origin)))
   }
 

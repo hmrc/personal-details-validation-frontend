@@ -51,16 +51,13 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
     val origin: String = request.session.get("origin").getOrElse("unknown")
     val dimensions: Seq[DimensionValue] = Seq(DimensionValue(gaOriginDimension, origin))
 
-    val clientId: Option[String] = request.cookies.get("_ga").map(_.value)
-    val xSessionId: Option[String] = request.headers.get(HeaderNames.xSessionId)
-
-    val gaClientId: Option[String] = if (clientId.isDefined) clientId else xSessionId
+    val gaClientId: Option[String] = request.cookies.get("_ga").map(_.value)
 
     if(gaClientId.isDefined) {
-      val analyticsRequest = reqCreator(clientId, dimensions)
+      val analyticsRequest = reqCreator(gaClientId, dimensions)
       connector.sendEvent(analyticsRequest)
     } else  {
-      logger.info("Unable to sent ga events - No sessionId found in request")
+      logger.error("Unable to sent ga events - No gaClientId found in request")
     }
   }
 }
@@ -68,7 +65,7 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
 trait AnalyticsRequestFactory {
 
   def serviceBegin(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
-    val gaEvent = Event("sos_iv", "personal_detail_validation_result", "begin",dimensions)
+    val gaEvent = Event("sos_iv", "personal_detail_validation_result", "begin", dimensions)
     AnalyticsRequest(clientId, Seq(gaEvent))
   }
 

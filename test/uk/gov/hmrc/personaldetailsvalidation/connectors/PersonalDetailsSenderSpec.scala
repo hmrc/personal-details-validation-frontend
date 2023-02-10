@@ -43,7 +43,7 @@ class PersonalDetailsSenderSpec extends UnitSpec with MockFactory with ScalaFutu
         .expects(*, *, *, *, *, *, *)
         .returning(Future.successful(SuccessfulPersonalDetailsValidation(validationId)))
 
-      connector.submitValidationRequest(personalDetailsWithNino, origin).futureValue shouldBe SuccessfulPersonalDetailsValidation(validationId)
+      connector.submitValidationRequest(personalDetailsWithNino, origin, headerCarrier).futureValue shouldBe SuccessfulPersonalDetailsValidation(validationId)
     }
 
     "returned FailedPersonalDetailsValidation from POST to /personal-details-validation with nino" in new Setup {
@@ -55,7 +55,7 @@ class PersonalDetailsSenderSpec extends UnitSpec with MockFactory with ScalaFutu
         .expects(*, *, *, *, *, *, *)
         .returning(Future.successful(FailedPersonalDetailsValidation(validationId, "", 0)))
 
-      connector.submitValidationRequest(personalDetailsWithNino, origin).futureValue shouldBe FailedPersonalDetailsValidation(validationId, "", 0)
+      connector.submitValidationRequest(personalDetailsWithNino, origin, headerCarrier).futureValue shouldBe FailedPersonalDetailsValidation(validationId, "", 0)
     }
 
     "returned SuccessfulPersonalDetailsValidation from POST to /personal-details-validation with postcode" in new Setup {
@@ -67,7 +67,7 @@ class PersonalDetailsSenderSpec extends UnitSpec with MockFactory with ScalaFutu
         .expects(*, *, *, *, *, *, *)
         .returning(Future.successful(SuccessfulPersonalDetailsValidation(validationId)))
 
-      connector.submitValidationRequest(personalDetailsWithPostcode, origin).futureValue shouldBe SuccessfulPersonalDetailsValidation(validationId)
+      connector.submitValidationRequest(personalDetailsWithPostcode, origin, headerCarrier).futureValue shouldBe SuccessfulPersonalDetailsValidation(validationId)
     }
 
     "returned FailedPersonalDetailsValidation from POST to /personal-details-validation with postcode" in new Setup {
@@ -79,7 +79,7 @@ class PersonalDetailsSenderSpec extends UnitSpec with MockFactory with ScalaFutu
         .expects(*, *, *, *, *, *, *)
         .returning(Future.successful(FailedPersonalDetailsValidation(validationId, "", 0)))
 
-      connector.submitValidationRequest(personalDetailsWithPostcode, origin).futureValue shouldBe FailedPersonalDetailsValidation(validationId, "", 0)
+      connector.submitValidationRequest(personalDetailsWithPostcode, origin, headerCarrier).futureValue shouldBe FailedPersonalDetailsValidation(validationId, "", 0)
     }
   }
 
