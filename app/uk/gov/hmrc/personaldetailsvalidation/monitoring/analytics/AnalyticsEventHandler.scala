@@ -53,12 +53,12 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
 
     val gaClientId: Option[String] = request.cookies.get("_ga").map(_.value)
 
-    if(gaClientId.isDefined) {
-      val analyticsRequest = reqCreator(gaClientId, dimensions)
-      connector.sendEvent(analyticsRequest)
-    } else  {
-      logger.error("Unable to sent ga events - No gaClientId found in request")
+    if (gaClientId.isEmpty) {
+      logger.info("Unable to use users' cookies- No gaClientId found in request")
     }
+
+    val analyticsRequest = reqCreator(gaClientId, dimensions)
+    connector.sendEvent(analyticsRequest)
   }
 }
 
