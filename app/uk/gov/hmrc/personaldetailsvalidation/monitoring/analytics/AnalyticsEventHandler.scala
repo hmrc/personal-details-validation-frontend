@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics
 import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.config.AppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.monitoring._
 
 import javax.inject.{Inject, Singleton}
