@@ -67,14 +67,15 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def showPage(implicit completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl]): Action[AnyContent] =
     Action.async { implicit request =>
-      val sessionWithOrigin: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin))
+      val sessionWithOriginAndFailureUrl: Session = origin.fold[Session](request.session)(origin => request.session + ("origin" -> origin)
+        + ("failureUrl" -> failureUrl.getOrElse(CompletionUrl("")).value))
         personalDetailsSubmission.getUserAttempts().map { attemptsDetails =>
           if (attemptsDetails.attempts >= appConfig.retryLimit) {
             val pdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", attemptsDetails.maybeCredId.getOrElse(""), origin.getOrElse(""))
             dataStreamAuditService.audit(pdvLockedOut)
           }
           if (attemptsDetails.attempts < appConfig.retryLimit) {
-            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl)).withSession(sessionWithOrigin)
+            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl)).withSession(sessionWithOriginAndFailureUrl)
           } else if (failureUrl.isDefined) {
               Redirect(failureUrl.get.value)
             } else {
@@ -276,9 +277,10 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def youHaveBeenTimedOut() : Action[AnyContent] = Action.async { implicit request =>
     val origin = request.session.get("origin").getOrElse("")
+    val failureUrl = request.session.get("failureUrl").getOrElse("")
     viewConfig.isLoggedIn.map { isLoggedIn: Boolean =>
       origin match {
-        case origin if LoginOriginHelper.isDwp(origin) => Ok(you_have_been_timed_out_dwp(loggedInUser = isLoggedIn))
+        case origin if LoginOriginHelper.isDwp(origin) => Ok(you_have_been_timed_out_dwp(loggedInUser = isLoggedIn, failureUrl))
         case _ => Ok(you_have_been_timed_out(loggedInUser = isLoggedIn))
       }
     }
