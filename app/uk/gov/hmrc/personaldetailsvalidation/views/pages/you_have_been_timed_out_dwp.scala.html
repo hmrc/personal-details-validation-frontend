@@ -28,7 +28,7 @@
         govukButton: GovukButton
 )
 
-@(loggedInUser: Boolean)(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
+@(loggedInUser: Boolean, failureUrl: String)(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
     loggedInUser = loggedInUser,
@@ -42,7 +42,7 @@
     <p class="govuk-body"> @messages("you_have_been_timed_out_dwp.p1")</p>
 
     @a(key = "you_have_been_timed_out_dwp.button",
-        href = "",
+        href = failureUrl,
         classes = Some("govuk-button")
     )
 }
