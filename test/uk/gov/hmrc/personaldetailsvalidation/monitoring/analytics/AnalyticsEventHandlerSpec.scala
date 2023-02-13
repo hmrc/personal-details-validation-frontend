@@ -76,13 +76,6 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
       }
     }
 
-    "check sessionId and clientId before sending pdv_modal_timeout event " in new Setup {
-      dispatcher.dispatchEvent(TimedOut())(FakeRequest(), hc, global)
-      eventually {
-        analyticsRequests shouldBe List.empty[AnalyticsRequest]
-      }
-    }
-
     "send PdvFailedAttempt" in new Setup {
       dispatcher.dispatchEvent(PdvFailedAttempt(4, 5, "", "", ""))(request, hc, global)
       eventually{

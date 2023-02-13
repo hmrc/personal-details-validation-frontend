@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics
 import play.api.Logging
 import play.api.mvc.Request
 import uk.gov.hmrc.config.AppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.monitoring._
 
 import javax.inject.{Inject, Singleton}
@@ -51,24 +51,21 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
     val origin: String = request.session.get("origin").getOrElse("unknown")
     val dimensions: Seq[DimensionValue] = Seq(DimensionValue(gaOriginDimension, origin))
 
-    val clientId: Option[String] = request.cookies.get("_ga").map(_.value)
-    val xSessionId: Option[String] = request.headers.get(HeaderNames.xSessionId)
+    val gaClientId: Option[String] = request.cookies.get("_ga").map(_.value)
 
-    val gaClientId: Option[String] = if (clientId.isDefined) clientId else xSessionId
-
-    if(gaClientId.isDefined) {
-      val analyticsRequest = reqCreator(clientId, dimensions)
-      connector.sendEvent(analyticsRequest)
-    } else  {
-      logger.info("Unable to sent ga events - No sessionId found in request")
+    if (gaClientId.isEmpty) {
+      logger.info("Unable to use users' cookies- No gaClientId found in request")
     }
+
+    val analyticsRequest = reqCreator(gaClientId, dimensions)
+    connector.sendEvent(analyticsRequest)
   }
 }
 
 trait AnalyticsRequestFactory {
 
   def serviceBegin(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
-    val gaEvent = Event("sos_iv", "personal_detail_validation_result", "begin",dimensions)
+    val gaEvent = Event("sos_iv", "personal_detail_validation_result", "begin", dimensions)
     AnalyticsRequest(clientId, Seq(gaEvent))
   }
 

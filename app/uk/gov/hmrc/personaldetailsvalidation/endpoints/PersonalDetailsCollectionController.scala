@@ -33,6 +33,7 @@ import uk.gov.hmrc.personaldetailsvalidation.views.html.pages._
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import uk.gov.hmrc.views.ViewConfig
+
 import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -75,7 +76,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             dataStreamAuditService.audit(pdvLockedOut)
           }
           if (attemptsDetails.attempts < appConfig.retryLimit) {
-            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl)).withSession(sessionWithOriginAndFailureUrl)
+            Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, withError = false, failureUrl)).withSession(sessionWithOriginAndFailureUrl)
           } else if (failureUrl.isDefined) {
               Redirect(failureUrl.get.value)
             } else {
