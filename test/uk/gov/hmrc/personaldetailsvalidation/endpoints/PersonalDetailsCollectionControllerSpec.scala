@@ -651,7 +651,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "return 200 OK" in new Setup {
 
-      val result: Future[Result] = controller.youHaveBeenTimedOut()(request)
+      val result: Future[Result] = controller.youHaveBeenTimedOut(Some(failureUrl.getOrElse("").toString))(request)
       status(result) shouldBe 200
       contentType(result) shouldBe Some(HTML)
       charset(result) shouldBe Some("utf-8")
