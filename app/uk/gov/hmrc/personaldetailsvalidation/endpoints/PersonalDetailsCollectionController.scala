@@ -276,14 +276,10 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     Future.successful(Ok(service_temporarily_unavailable()))
   }
 
-  def youHaveBeenTimedOut() : Action[AnyContent] = Action.async { implicit request =>
-    val origin = request.session.get("origin").getOrElse("")
-    val failureUrl = request.session.get("failureUrl").getOrElse("")
+  def youHaveBeenTimedOut(failureUrl: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.map { isLoggedIn: Boolean =>
-      origin match {
-        case origin if LoginOriginHelper.isDwp(origin) => Ok(you_have_been_timed_out_dwp(loggedInUser = isLoggedIn, failureUrl))
-        case _ => Ok(you_have_been_timed_out(loggedInUser = isLoggedIn))
-      }
+       if(failureUrl.isDefined) Ok(you_have_been_timed_out_dwp(loggedInUser = isLoggedIn, failureUrl))
+       else Ok(you_have_been_timed_out(loggedInUser = isLoggedIn))
     }
   }
 

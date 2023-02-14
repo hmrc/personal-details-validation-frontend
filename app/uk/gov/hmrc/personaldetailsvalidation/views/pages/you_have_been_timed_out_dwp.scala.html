@@ -28,21 +28,13 @@
         govukButton: GovukButton
 )
 
-@(loggedInUser: Boolean, failureUrl: String)(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
+@(loggedInUser: Boolean, failureUrl: Option[String])(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
-@mainTemplate(
-    loggedInUser = loggedInUser,
-    title = messages("you_have_been_timed_out_dwp.header"),
-    showTimeoutDialog = false
-) {
-
-
+@mainTemplate(loggedInUser = loggedInUser, title = messages("you_have_been_timed_out_dwp.header"), showTimeoutDialog = false) {
     <h1 class="govuk-heading-l govuk-!-margin-bottom-5"> @messages("you_have_been_timed_out_dwp.header") </h1>
-
     <p class="govuk-body"> @messages("you_have_been_timed_out_dwp.p1")</p>
-
     @a(key = "you_have_been_timed_out_dwp.button",
-        href = failureUrl,
+        href = failureUrl.get,
         classes = Some("govuk-button")
     )
 }

@@ -69,7 +69,7 @@
                 countdown = Some(appConfig.timeoutCountdown),
                 keepAliveUrl = Some(routes.PersonalDetailsCollectionController.keepAlive().url),
                 signOutUrl = Some(routes.PersonalDetailsCollectionController.redirectAfterTimeout(CompletionUrl(completionUrl.getOrElse("").toString), failureUrl).url),
-                timeoutUrl = Some(routes.PersonalDetailsCollectionController.youHaveBeenTimedOut().url),
+                timeoutUrl = if(LoginOriginHelper.isDwp(request))Some(routes.PersonalDetailsCollectionController.youHaveBeenTimedOut(Some(failureUrl.getOrElse("").toString)).url) else Some(routes.PersonalDetailsCollectionController.youHaveBeenTimedOut().url),
                 language = Some(messages.lang.code)
             )
         )
