@@ -278,7 +278,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def youHaveBeenTimedOut(failureUrl: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.map { isLoggedIn: Boolean =>
-       if(failureUrl.isDefined) Ok(you_have_been_timed_out_dwp(loggedInUser = isLoggedIn, Some(failureUrl.get)))
+       if(failureUrl.isDefined) Ok(you_have_been_timed_out_dwp(loggedInUser = isLoggedIn, failureUrl))
        else Ok(you_have_been_timed_out(loggedInUser = isLoggedIn))
     }
   }
