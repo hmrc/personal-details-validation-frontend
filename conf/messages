@@ -15,9 +15,9 @@ personal-details.firstname.required=Enter your first name
 personal-details.lastname=Last name
 personal-details.lastname.required=Enter your last name
 personal-details.nino=National Insurance number
-personal-details.nino.hint=It’s on your National Insurance card, benefit letter, payslip or P60.<br />For example, QQ123456C
+personal-details.nino.hint=It’s on your National Insurance card, benefit letter, payslip or P60.<br />For example, QQ 12 34 56 C
 personal-details.nino.required=Enter your National Insurance number
-personal-details.nino.invalid=Enter your National Insurance number in the correct format
+personal-details.nino.invalid=Enter a valid National Insurance number
 personal-details.ninoOrPostcode.required=Enter either National Insurance number or Postcode, not both
 personal-details.nino.unavailable=I do not know my National Insurance number
 personal-details.postcode=Postcode
@@ -26,7 +26,7 @@ personal-details.postcode.invalid=Enter a valid UK postcode
 
 what-is-your-national-insurance-number.nino.title=What is your National Insurance number?
 what-is-your-national-insurance-number.nino.label=What is your National Insurance number?
-what-is-your-national-insurance-number.nino.hint=It’s on your National Insurance card, benefit letter, payslip or P60. For example, QQ123456C
+what-is-your-national-insurance-number.nino.hint=It’s on your National Insurance card, benefit letter, payslip or P60. For example, ‘QQ 12 34 56 C’.
 what-is-your-national-insurance-number.nino.invalid=Enter your National Insurance number
 what-is-your-national-insurance-number.nino.unavailable=I do not have a National Insurance number, or have lost or forgotten it
 
@@ -102,7 +102,7 @@ multi_option_incorrect_details.accordion.heading2=Date of birth
 multi_option_incorrect_details.accordion.accordion2.1=Details for your date of birth must be entered as numbers and include a day, month and year. For example, 31 3 1980.
 multi_option_incorrect_details.accordion.accordion2.2=If you enter 9 or less for a month you do not need to include a leading zero.
 multi_option_incorrect_details.accordion.heading3=National Insurance number
-multi_option_incorrect_details.accordion.accordion3.1=A National Insurance number is made up of letters and numbers and never changes. For example, QQ123456C. It makes sure your National Insurance contributions and tax are recorded against your name only.
+multi_option_incorrect_details.accordion.accordion3.1=A National Insurance number is made up of letters and numbers and never changes. For example, QQ 12 34 56 C. It makes sure your National Insurance contributions and tax are recorded against your name only.
 multi_option_incorrect_details.accordion.accordion3.2=You will normally be sent a National Insurance number automatically, in the 3 months before your 16th birthday if:
 multi_option_incorrect_details.accordion.accordion3.3=you live in the UK
 multi_option_incorrect_details.accordion.accordion3.4=a parent has filled in a <a href="https://www.gov.uk/child-benefit" class="govuk-link" target="_blank" rel="noopener noreferrer">Child Benefit (opens in new tab)</a> claim form for you
