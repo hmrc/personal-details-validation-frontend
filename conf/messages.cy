@@ -16,7 +16,7 @@ personal-details.lastname=Enw olaf
 personal-details.lastname.required=Nodwch eich enw olaf
 personal-details.nino=Rhif Yswiriant Gwladol
 personal-details.nino.required=Rhowch eich rhif Yswiriant Gwladol
-personal-details.nino.hint=Er enghraifft, QQ 12 34 56 C
+personal-details.nino.hint=Er enghraifft, ‘QQ 12 34 56 C’
 personal-details.nino.invalid=Rhowch rif Yswiriant Gwladol dilys
 personal-details.ninoOrPostcode.required=Nodwch naill ai rhif Yswiriant Gwladol neu God Post – peidiwch â nodi’r ddau
 personal-details.nino.unavailable=Nid wyf yn gwybod fy Rhif Yswiriant Gwladol
@@ -100,7 +100,7 @@ multi_option_incorrect_details.accordion.heading2=Dyddiad geni
 multi_option_incorrect_details.accordion.accordion2.1=Mae’n rhaid nodi’ch dyddiad geni fel rhifau ac mae’n rhaid iddo gynnwys diwrnod, mis a blwyddyn. Er enghraifft, 31 3 1980.
 multi_option_incorrect_details.accordion.accordion2.2=Os ydych yn nodi’r ffigur 9 neu lai ar gyfer mis, nid oes angen i chi gynnwys sero ar flaen y rhif.
 multi_option_incorrect_details.accordion.heading3=Rhif Yswiriant Gwladol
-multi_option_incorrect_details.accordion.accordion3.1=Mae rhif Yswiriant Gwladol yn cynnwys llythrennau a rhifau ac nid yw byth yn newid. Er enghraifft, QQ 12 34 56 C. Mae’n sicrhau bod eich cyfraniadau Yswiriant Gwladol a’ch treth yn cael eu cofnodi yn erbyn eich enw chi’n unig.
+multi_option_incorrect_details.accordion.accordion3.1=Mae rhif Yswiriant Gwladol yn cynnwys llythrennau a rhifau ac nid yw byth yn newid. Er enghraifft, ‘QQ 12 34 56 C’. Mae’n sicrhau bod eich cyfraniadau Yswiriant Gwladol a’ch treth yn cael eu cofnodi yn erbyn eich enw chi’n unig.
 multi_option_incorrect_details.accordion.accordion3.2=Fel arfer, cewch eich rhif Yswiriant Gwladol yn awtomatig, yn y 3 mis cyn eich pen-blwydd yn 16 oed:
 multi_option_incorrect_details.accordion.accordion3.3=os ydych yn byw yn y DU
 multi_option_incorrect_details.accordion.accordion3.4=os yw rhiant wedi llenwi ffurflen hawlio <a href="https://www.gov.uk/child-benefit" class="govuk-link" target="_blank" rel="noopener noreferrer">Budd-dal Plant (yn agor tab newydd)</a> i chi
