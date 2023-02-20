@@ -37,6 +37,7 @@ class AppConfig @Inject()(val configuration: Configuration, servicesConfig: Serv
 
   //GA related configs
   lazy val platformAnalyticsUrl: String = servicesConfig.baseUrl("platform-analytics")
+  def analyticsToken: String = configuration.getOptional[String]("google-analytics.token").getOrElse("")
   lazy val originDimension: Int = configuration.get[Int]("google-analytics.origin-dimension")
 
   //logout related configs
