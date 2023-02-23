@@ -29,6 +29,8 @@ import scala.concurrent.ExecutionContext
 class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: AnalyticsConnector)
   extends EventHandler with Logging with AnalyticsRequestFactory{
 
+  override val analyticsToken: String = appConfig.analyticsToken
+
   override def handleEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     event match {
       case e:BeginPDV => sendEvent(serviceBegin)
@@ -64,49 +66,51 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
 
 trait AnalyticsRequestFactory {
 
+  val analyticsToken: String
+
   def serviceBegin(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "personal_detail_validation_result", "begin", dimensions)
-    AnalyticsRequest(clientId, Seq(gaEvent))
+    AnalyticsRequest(clientId, analyticsToken, Seq(gaEvent))
   }
 
   def serviceUnavailable(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv","personal_detail_validation_result",s"pdv_service_unavailable",dimensions)
-    AnalyticsRequest(clientId, Seq(gaEvent))
+    AnalyticsRequest(clientId, analyticsToken, Seq(gaEvent))
   }
 
   def timeoutContinue(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "pdv_modal_timeout", "continue", dimensions)
-    AnalyticsRequest(clientId, Seq(gaEvent))
+    AnalyticsRequest(clientId, analyticsToken, Seq(gaEvent))
   }
 
   def timeoutSignOut(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "pdv_modal_timeout", "end", dimensions)
-    AnalyticsRequest(clientId, Seq(gaEvent))
+    AnalyticsRequest(clientId, analyticsToken, Seq(gaEvent))
   }
 
   def signedOut(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "personal_detail_validation_result", "sign_out_pdv", dimensions)
-    AnalyticsRequest(clientId, Seq(gaEvent))
+    AnalyticsRequest(clientId, analyticsToken, Seq(gaEvent))
   }
 
   def underNinoAge(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv", "personal_detail_validation_result", "under_nino_age", dimensions)
-    AnalyticsRequest(clientId, Seq(gaEvent))
+    AnalyticsRequest(clientId, analyticsToken, Seq(gaEvent))
   }
 
   def pdvFailedAttempt(attemptsLeft: Int)(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv","pdv_locking",s"pdv_fail$attemptsLeft",dimensions)
-    AnalyticsRequest(clientId, Seq(gaEvent))
+    AnalyticsRequest(clientId, analyticsToken, Seq(gaEvent))
   }
 
   def pdvLockedOut(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv","pdv_locking","pdv_locked-out",dimensions)
-    AnalyticsRequest(clientId, Seq(gaEvent))
+    AnalyticsRequest(clientId, analyticsToken, Seq(gaEvent))
   }
 
   def pdvRetry(retryGuidanceText: String)(clientId: Option[String], dimensions: Seq[DimensionValue]): AnalyticsRequest = {
     val gaEvent = Event("sos_iv","pdv_locking",s"${retryGuidanceText}_retry",dimensions)
-    AnalyticsRequest(clientId, Seq(gaEvent))
+    AnalyticsRequest(clientId, analyticsToken, Seq(gaEvent))
   }
 
 }

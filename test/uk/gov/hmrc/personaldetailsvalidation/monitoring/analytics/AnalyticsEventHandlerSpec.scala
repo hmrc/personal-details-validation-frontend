@@ -39,7 +39,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     "send pdv_modal_timeout continue event when user clicks on stay signed in " in new Setup {
       dispatcher.dispatchEvent(TimeoutContinue())(request, hc, global)
       eventually {
-        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), gaToken, Seq(
           Event("sos_iv", "pdv_modal_timeout", "continue", dimensions)))
       }
     }
@@ -47,7 +47,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     "send pdv_modal_timeout ends event when user is not responded " in new Setup {
       dispatcher.dispatchEvent(TimedOut())(request, hc, global)
       eventually {
-        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), gaToken, Seq(
           Event("sos_iv", "pdv_modal_timeout", "end", dimensions)))
       }
     }
@@ -55,7 +55,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     "send PDVServiceUnavailable" in new Setup {
       dispatcher.dispatchEvent(PDVServiceUnavailable())(request, hc, global)
       eventually {
-        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), gaToken, Seq(
           Event("sos_iv", "personal_detail_validation_result", "pdv_service_unavailable", dimensions)))
       }
     }
@@ -63,7 +63,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     "send SignedOut" in new Setup {
       dispatcher.dispatchEvent(SignedOut())(request, hc, global)
       eventually {
-        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), gaToken, Seq(
           Event("sos_iv", "personal_detail_validation_result", "sign_out_pdv", dimensions)))
       }
     }
@@ -71,7 +71,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     "send UnderNinoAge" in new Setup {
       dispatcher.dispatchEvent(UnderNinoAge())(request, hc, global)
       eventually {
-        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), gaToken, Seq(
           Event("sos_iv", "personal_detail_validation_result", "under_nino_age", dimensions)))
       }
     }
@@ -79,7 +79,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     "send PdvFailedAttempt" in new Setup {
       dispatcher.dispatchEvent(PdvFailedAttempt(4, 5, "", "", ""))(request, hc, global)
       eventually{
-        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), gaToken, Seq(
           Event("sos_iv", "pdv_locking", "pdv_fail4", dimensions)))
       }
     }
@@ -87,7 +87,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     "send PdvRetry" in new Setup {
       dispatcher.dispatchEvent(PdvRetry("some-guidance-text"))(request, hc, global)
       eventually{
-        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), gaToken, Seq(
           Event("sos_iv", "pdv_locking", "some-guidance-text_retry", dimensions)))
       }
     }
@@ -95,7 +95,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
     "send pdvLockedOut" in new Setup {
       dispatcher.dispatchEvent(PdvLockedOut("", "", ""))(request, hc, global)
       eventually{
-        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), Seq(
+        analyticsRequests.head shouldBe AnalyticsRequest(Some(gaClientId), gaToken, Seq(
           Event("sos_iv", "pdv_locking", "pdv_locked-out", dimensions)))
       }
     }
@@ -109,6 +109,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
 
     val appConfg: AppConfig = app.injector.instanceOf[AppConfig]
     val mockHttpClient: HttpClient = mock[HttpClient]
+    val gaToken: String = appConfg.analyticsToken
 
     object TestConnector extends AnalyticsConnector(appConfg, mockHttpClient) {
       override def sendEvent(request: AnalyticsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Done] = {

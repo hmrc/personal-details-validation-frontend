@@ -70,11 +70,12 @@ class AnalyticsConnectorSpec extends UnitSpec with Eventually with GuiceOneAppPe
     val gaClientId: String = "GA1.1.283183975.1456746121"
     val hc: HeaderCarrier = HeaderCarrier()
 
-    val dimensions: Seq[DimensionValue] = Seq(DimensionValue(6, "unknown"))
-    val analyticsRequest: AnalyticsRequest = AnalyticsRequest(Some(gaClientId), Seq(Event("sos_iv", "pdv", "test", dimensions)))
-
     val appConfg: AppConfig = app.injector.instanceOf[AppConfig]
     val mockHttpClient: HttpClient = mock[HttpClient]
+    val gaToken: String = appConfg.analyticsToken
+
+    val dimensions: Seq[DimensionValue] = Seq(DimensionValue(6, "unknown"))
+    val analyticsRequest: AnalyticsRequest = AnalyticsRequest(Some(gaClientId), gaToken, Seq(Event("sos_iv", "pdv", "test", dimensions)))
 
     val analyticsConnector = new AnalyticsConnector(appConfg, mockHttpClient)
   }
