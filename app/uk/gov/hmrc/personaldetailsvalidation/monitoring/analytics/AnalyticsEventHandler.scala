@@ -59,8 +59,9 @@ class AnalyticsEventHandler @Inject()(appConfig: AppConfig, connector: Analytics
       logger.info("Unable to use users' cookies- No gaClientId found in request")
     }
 
+    val headerCarrier = hc.copy(extraHeaders = Seq(("_ga",s"${gaClientId.getOrElse("")}")))
     val analyticsRequest = reqCreator(gaClientId, dimensions)
-    connector.sendEvent(analyticsRequest)
+    connector.sendEvent(analyticsRequest)(headerCarrier, ec)
   }
 }
 
