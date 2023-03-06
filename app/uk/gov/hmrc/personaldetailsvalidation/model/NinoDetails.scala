@@ -30,7 +30,7 @@ object NinoDetailsForm {
   private def ninoValidation(): Mapping[Nino] = {
     mandatoryText("personal-details.nino.required")
       .verifying("personal-details.nino.invalid", nonEmptyString => Try(Nino(nonEmptyString.value.replace(" ", "").toUpperCase)).isSuccess)
-      .transform[Nino](validatedNonEmptyNino => Nino(validatedNonEmptyNino.value.toUpperCase), nino => NonEmptyString(nino.toString.toUpperCase))
+      .transform[Nino](validatedNonEmptyNino => Nino(validatedNonEmptyNino.value.replace(" ", "").toUpperCase), nino => NonEmptyString(nino.toString.toUpperCase))
   }
 
   val ninoForm: Form[NinoDetails] = Form(mapping(
