@@ -101,7 +101,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
       initialForm.bindFromRequest().fold (
         formWithErrors => {
           val tooYoung: Boolean = formWithErrors.errors.contains(FormError("dateOfBirth",List("personal-details.dateOfBirth.tooYoung"),List()))
-          if (tooYoung) Future.successful(Redirect(routes.PersonalDetailsCollectionController.weCannotCheckYourIdentity()))
+          if (tooYoung) Future.successful(Redirect(routes.PersonalDetailsCollectionController.weCannotCheckYourIdentity(completionUrl, failureUrl)))
           else Future.successful(Ok(enter_your_details(formWithErrors, completionUrl, isLoggedIn, failureUrl)))
         },
         mainDetails => {
@@ -245,9 +245,9 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     Future.successful(Ok("OK"))
   }
 
-  def weCannotCheckYourIdentity(): Action[AnyContent] = Action.async { implicit request =>
+  def weCannotCheckYourIdentity(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     eventDispatcher.dispatchEvent(UnderNinoAge())
-    Future.successful(Ok(weCannotCheckYourIdentityPage()))
+    Future.successful(Ok(weCannotCheckYourIdentityPage(completionUrl, failureUrl)))
   }
 
   def incorrectDetails(completionUrl: CompletionUrl, attemptsRemaining: Int, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>

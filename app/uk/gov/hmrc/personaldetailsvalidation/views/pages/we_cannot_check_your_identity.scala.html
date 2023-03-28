@@ -15,6 +15,8 @@
  *@
 
 @import uk.gov.hmrc.views.html.template.layout
+@import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
+@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.views.ViewConfig
 @this(
     mainTemplate: layout,
@@ -24,16 +26,15 @@
     govukButton: GovukButton
 )
 
-@()(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
+@(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl])(implicit request: Request[_], messages: Messages, viewConfig: ViewConfig)
 
 
 @mainTemplate(
  title = messages("we-cannot-check-your-identity.title")
  ) {
 
- <a id="identifiersBackLink" href="javascript:history.back()"
+ <a id="identifiersBackLink" href="@routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl).url"
  class="govuk-body govuk-back-link">@messages("button.back.text")</a>
-
 
  <h1 class="govuk-heading-l govuk-!-margin-bottom-5"> @messages("we-cannot-check-your-identity.header") </h1>
 

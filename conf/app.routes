@@ -17,7 +17,7 @@ POST       /what-is-your-national-insurance-number                  uk.gov.hmrc.
 GET        /what-is-your-postcode                                   uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl] ?= None)
 POST       /what-is-your-postcode                                   uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.submitYourPostCode(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl] ?= None)
 
-GET        /we-cannot-check-your-identity                           uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.weCannotCheckYourIdentity()
+GET        /we-cannot-check-your-identity                           uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.weCannotCheckYourIdentity(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl] ?= None)
 
 GET        /incorrect-details/deceased                              uk.gov.hmrc.personaldetailsvalidation.endpoints.PersonalDetailsCollectionController.redirectToHelplineServiceDeceasedPage()
 

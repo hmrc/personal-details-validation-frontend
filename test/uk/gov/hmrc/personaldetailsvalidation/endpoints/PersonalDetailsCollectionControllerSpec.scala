@@ -636,7 +636,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(UnderNinoAge(), *, *, *)
 
-      val result: Future[Result] = controller.weCannotCheckYourIdentity()(request)
+      val result: Future[Result] = controller.weCannotCheckYourIdentity(completionUrl, failureUrl)(request)
       status(result) shouldBe 200
       contentType(result) shouldBe Some(HTML)
       charset(result) shouldBe Some("utf-8")
