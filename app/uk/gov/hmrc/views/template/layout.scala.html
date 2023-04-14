@@ -19,7 +19,6 @@
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.includes.summaryErrors
-@import views.html.helper.CSPNonce
 @import uk.gov.hmrc.personaldetailsvalidation.model.LoginOriginHelper
 
 @this(
@@ -89,6 +88,5 @@
     isWelshTranslationAvailable = true,
     additionalHeadBlock = Some(headBlock),
     signOutUrl = if (loggedInUser) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None,
-    backLinkUrl = backLinkUrl,
-    nonce = CSPNonce.get
+    backLinkUrl = backLinkUrl
 )(contentSection)
