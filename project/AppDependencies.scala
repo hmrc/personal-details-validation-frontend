@@ -10,7 +10,7 @@ private object AppDependencies {
     "uk.gov.hmrc"   %% "bootstrap-frontend-play-28" % "7.15.0",
     "uk.gov.hmrc"   %% "domain" % "8.1.0-play-28",
     "uk.gov.hmrc"   %% "play-frontend-hmrc"  % "7.3.0-play-28",
-    "uk.gov.hmrc"   %% "reactive-circuit-breaker"  % "3.5.0"
+    "uk.gov.hmrc"   %% "reactive-circuit-breaker"  % "3.6.0"
   )
 
   private val test = Seq(

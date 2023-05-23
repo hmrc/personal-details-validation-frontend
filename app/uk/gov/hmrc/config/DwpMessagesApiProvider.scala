@@ -23,18 +23,16 @@ import play.api.{Configuration, Environment, Logging}
 import play.utils.Resources
 
 import java.net.URL
-import scala.collection.breakOut
-
 
 class DwpMessagesApiProvider @Inject()(environment: Environment, configuration: Configuration,
                                        langs: Langs, httpConfiguration: HttpConfiguration)
   extends DefaultMessagesApiProvider(environment, configuration, langs, httpConfiguration) with Logging {
 
   override protected def loadAllMessages: Map[String, Map[String, String]] = {
-    (langs.availables.map { lang =>
+    (langs.availables.view.map { lang =>
       val code = lang.code
       code -> loadMessages(s"messages.$code")
-    }(breakOut): Map[String, Map[String, String]])
+    }.toMap: Map[String, Map[String, String]])
       .+("default" -> (loadMessages("messages") ++ dwpLoadMessages("messages"))) + ("default.play" -> loadMessages("messages.default"))
   }
 
