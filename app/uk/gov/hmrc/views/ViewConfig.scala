@@ -36,10 +36,10 @@ class ViewConfig @Inject()(val configuration: Configuration,
 {
   lazy val retryLimit: Int = configuration.getOptional[Int]("retry.limit").getOrElse(5)
 
-  lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")
-  lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")
+  lazy val analyticsToken: String = configuration.loadMandatory("google-analytics.token")(stringValueFinder)
+  lazy val analyticsHost: String = configuration.loadMandatory("google-analytics.host")(stringValueFinder)
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
-  lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")
+  lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")(stringValueFinder)
   lazy val timeout: Int = configuration.get[Int]("timeoutDialog.timeout-seconds")
   lazy val timeoutCountdown: Int = configuration.get[Int]("timeoutDialog.timeout-countdown-seconds")
   lazy val lockoutPeriodEn: String = configuration.getOptional[String]("lockout.period.en").getOrElse("24 hours")
