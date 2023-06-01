@@ -67,7 +67,14 @@ private object LocalDateMapping {
                                      constraints: Seq[Constraint[LocalDate]])
                                     (errorKeyPrefix: => String) {
 
-    def bind(formData: Map[String, String]): Either[Seq[FormError], LocalDate] = Seq(
+    def spacesRemovedFromFormData(formData: Map[String, String]): Seq[String] = Seq(
+      "year".prependWithKey.findValueIn(formData).toString.replaceAll(" ",""),
+      "month".prependWithKey.findValueIn(formData).toString.replaceAll(" ",""),
+      "day".prependWithKey.findValueIn(formData).toString.replaceAll(" ","")
+    )
+
+    def bind(formData: Map[String, String]): Either[Seq[FormError], LocalDate] = {
+      Seq(
       "year".prependWithKey.findValueIn(formData).parseToInt.validateUsing(fourDigitsValidator),
       "month".prependWithKey.findValueIn(formData).parseToInt.validateUsing(MONTH_OF_YEAR),
       "day".prependWithKey.findValueIn(formData).parseToInt.validateUsing(DAY_OF_MONTH)
@@ -75,6 +82,7 @@ private object LocalDateMapping {
       .leftMap(toFormErrors)
       .checkConstraints
       .toEither
+    }
 
     implicit class PartNameOps(partName: String) {
 
