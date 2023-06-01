@@ -67,17 +67,19 @@ private object LocalDateMapping {
                                      constraints: Seq[Constraint[LocalDate]])
                                     (errorKeyPrefix: => String) {
 
-    def spacesRemovedFromFormData(formData: Map[String, String]): Seq[String] = Seq(
-      "year".prependWithKey.findValueIn(formData).toString.replaceAll(" ",""),
-      "month".prependWithKey.findValueIn(formData).toString.replaceAll(" ",""),
-      "day".prependWithKey.findValueIn(formData).toString.replaceAll(" ","")
-    )
+    // works on each element of the map
+    def removeSpacesFromValues(pair: (String, String)): (String, String) = {
+      val key = pair._1
+      val value = pair._2
+      (key, value.replaceAll(" ", ""))
+    }
 
     def bind(formData: Map[String, String]): Either[Seq[FormError], LocalDate] = {
+      val cleanedMap: Map[String, String] = formData.map(removeSpacesFromValues)
       Seq(
-      "year".prependWithKey.findValueIn(formData).parseToInt.validateUsing(fourDigitsValidator),
-      "month".prependWithKey.findValueIn(formData).parseToInt.validateUsing(MONTH_OF_YEAR),
-      "day".prependWithKey.findValueIn(formData).parseToInt.validateUsing(DAY_OF_MONTH)
+      "year".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(fourDigitsValidator),
+      "month".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(MONTH_OF_YEAR),
+      "day".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(DAY_OF_MONTH)
     ).toValidatedDate
       .leftMap(toFormErrors)
       .checkConstraints
