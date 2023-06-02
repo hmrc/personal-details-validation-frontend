@@ -67,14 +67,24 @@ private object LocalDateMapping {
                                      constraints: Seq[Constraint[LocalDate]])
                                     (errorKeyPrefix: => String) {
 
-    def bind(formData: Map[String, String]): Either[Seq[FormError], LocalDate] = Seq(
-      "year".prependWithKey.findValueIn(formData).parseToInt.validateUsing(fourDigitsValidator),
-      "month".prependWithKey.findValueIn(formData).parseToInt.validateUsing(MONTH_OF_YEAR),
-      "day".prependWithKey.findValueIn(formData).parseToInt.validateUsing(DAY_OF_MONTH)
+    // works on each element of the map
+    private def removeSpacesFromValues(pair: (String, String)): (String, String) = {
+      val key = pair._1
+      val value = pair._2
+      (key, value.replaceAll(" ", ""))
+    }
+
+    def bind(formData: Map[String, String]): Either[Seq[FormError], LocalDate] = {
+      val cleanedMap: Map[String, String] = formData.map(removeSpacesFromValues)
+      Seq(
+      "year".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(fourDigitsValidator),
+      "month".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(MONTH_OF_YEAR),
+      "day".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(DAY_OF_MONTH)
     ).toValidatedDate
       .leftMap(toFormErrors)
       .checkConstraints
       .toEither
+    }
 
     implicit class PartNameOps(partName: String) {
 
