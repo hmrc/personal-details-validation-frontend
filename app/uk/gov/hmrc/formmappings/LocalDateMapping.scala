@@ -68,7 +68,7 @@ private object LocalDateMapping {
                                     (errorKeyPrefix: => String) {
 
     // works on each element of the map
-    def removeSpacesFromValues(pair: (String, String)): (String, String) = {
+    private def removeSpacesFromValues(pair: (String, String)): (String, String) = {
       val key = pair._1
       val value = pair._2
       (key, value.replaceAll(" ", ""))
