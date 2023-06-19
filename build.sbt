@@ -1,6 +1,5 @@
 import play.sbt.PlayImport.PlayKeys.playDefaultPort
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "personal-details-validation-frontend"
@@ -28,7 +27,7 @@ lazy val scoverageSettings = {
         |.*views.*;
         |.*Routes.*;
         |.*RoutesPrefix.*;""".stripMargin,
-    ScoverageKeys.coverageMinimum := 80,
+    ScoverageKeys.coverageMinimumStmtTotal := 80,
     ScoverageKeys.coverageFailOnMinimum := false,
     ScoverageKeys.coverageHighlighting := true
   )}
@@ -38,7 +37,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(majorVersion := 1)
   .settings(scalaSettings: _*)
   .settings(playSettings ++ scoverageSettings: _*)
-  .settings(publishingSettings: _*)
   .settings(playDefaultPort := 9968)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(defaultSettings(): _*)
@@ -60,10 +58,10 @@ lazy val microservice = Project(appName, file("."))
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(
-    Keys.fork in IntegrationTest := false,
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value,
+    IntegrationTest / Keys.fork := false,
+    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest/ baseDirectory) (base => Seq(base / "it")).value,
     addTestReportOption(IntegrationTest, "int-test-reports"),
-    parallelExecution in IntegrationTest := false
+    IntegrationTest / parallelExecution := false
   )
   .settings(resolvers ++= Seq(
     Resolver.jcenterRepo

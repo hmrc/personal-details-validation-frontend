@@ -34,7 +34,7 @@ class AnalyticsEventHandlerSpec extends UnitSpec with Eventually with GuiceOneAp
 
   "dispatcher" should {
 
-    val dimensions: Seq[DimensionValue] = Seq(DimensionValue(6, "unknown"))
+    val dimensions: Seq[DimensionValue] = Seq(DimensionValue(4, "unknown"))
 
     "send pdv_modal_timeout continue event when user clicks on stay signed in " in new Setup {
       dispatcher.dispatchEvent(TimeoutContinue())(request, hc, global)
