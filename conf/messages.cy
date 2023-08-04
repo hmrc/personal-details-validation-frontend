@@ -1,7 +1,7 @@
 service.name=Rhowch wybod i ni pwy ydych
 continue.button.text=Yn eich blaen
 button.back.text=Yn ôl
-error.prefix=Gwall:
+error.prefix=Gwall
 error-summary.heading=Mae problem wedi codi
 title.suffix=- Rhowch wybod i ni pwy ydych - GOV.UK
 personal-details.title=Nodwch eich manylion

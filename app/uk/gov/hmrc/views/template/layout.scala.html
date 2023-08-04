@@ -77,7 +77,7 @@
 
 @pageTitle = @{
     if(formErrors.nonEmpty){
-        messages("error.prefix") + " " + title + " " + messages("title.suffix")
+        messages("error.prefix") + ": " + title + " " + messages("title.suffix")
     } else {
         title + " " + messages("title.suffix")
     }

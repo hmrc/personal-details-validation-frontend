@@ -47,6 +47,6 @@
             legend = Some(Legend(content = Text(messages(s"$fieldPrefix.$fieldName")), classes = "govuk-fieldset__legend--s")),
         )),
         hint = Some(Hint(content = Text(messages(s"$fieldPrefix.$fieldName.hint")))),
-        errorMessage = form(fieldName).error.map(err => ErrorMessage(content = Text(messages(s"${DateErrorMessage.getErrorMessage(form, fieldName)}", err.args))))
+        errorMessage = form(fieldName).error.map(err => ErrorMessage(content = Text(messages(s"${DateErrorMessage.getErrorMessage(form, fieldName)}", err.args)), visuallyHiddenText = Some(messages("error.prefix"))))
     ))
 </div>
