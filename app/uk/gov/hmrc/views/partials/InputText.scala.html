@@ -51,7 +51,7 @@
         hint = hint.map(h => Hint(content = Text(h))),
         value = field.value,
         errorMessage = field.error.map(formError =>
-            ErrorMessage(content = Text(msgs(formError.message, formError.args: _*)), visuallyHiddenText = Some(msgs("error-prefix")))
+            ErrorMessage(content = Text(msgs(formError.message, formError.args: _*)), visuallyHiddenText = Some(msgs("error.prefix")))
         ),
         classes = classes,
         spellcheck = spellcheck,
