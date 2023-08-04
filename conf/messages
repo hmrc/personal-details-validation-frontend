@@ -2,6 +2,7 @@ service.name=Tell us who you are
 continue.button.text=Continue
 button.back.text=Back
 error.prefix=Error:
+error-prefix=Error
 error-summary.heading=There is a problem
 title.suffix=- Tell us who you are - GOV.UK
 personal-details.title=Enter your details
