@@ -86,9 +86,7 @@ multi_option_incorrect_details.p1=Mae hyn yn golygu bod yr holl fanylion a nodwy
 multi_option_incorrect_details.p2=Os bydd eich manylion yn newid, mae gennych gyfrifoldeb cyfreithiol i ddiweddaru’ch dogfennau a’ch cofnodion gyda CThEM a sefydliadau eraill. Ni fyddwch yn gallu defnyddio dogfennau sy’n cynnwys gwybodaeth sydd wedi dyddio i gadarnhau pwy ydych.
 multi_option_incorrect_details.p3=Mae cymorth a chyngor manylach ar gadarnhau pwy ydych ar gael isod.
 
-multi_option_incorrect_details.accordion.helped=A yw hyn wedi’ch helpu?
-multi_option_incorrect_details.accordion.btn1=Iawn – rhowch gynnig arall arni
-multi_option_incorrect_details.accordion.btn2=Na
+multi_option_incorrect_details.accordion.helped=Cael help gan ein tîm cymorth technegol
 multi_option_incorrect_details.accordion.no.1=Os nad ydych yn credu y gallwch nodi’r wybodaeth hon yn gywir am ba bynnag rheswm, gallwch <a class="govuk-link" target="_blank" rel="noopener noreferrer" href="{0}">gysylltu â CThEM drwy ddefnyddio ein gwasanaeth cymorth technegol ar-lein (yn agor tab newydd)</a>.
 
 multi_option_incorrect_details.accordion.heading1=Enwau cyntaf ac olaf

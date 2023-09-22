@@ -88,9 +88,7 @@ multi_option_incorrect_details.p1=This means that some or all of the details you
 multi_option_incorrect_details.p2=If your details change, you have a legal responsibility to update your documents and records with HMRC and other organisations. You will not be able to use documents containing out of date information to confirm your identity.
 multi_option_incorrect_details.p3=More detailed help and advice on confirming your identity is available below.
 
-multi_option_incorrect_details.accordion.helped=Has this helped you?
-multi_option_incorrect_details.accordion.btn1=Yes, try again
-multi_option_incorrect_details.accordion.btn2=No
+multi_option_incorrect_details.accordion.helped=Get help from our technical support team
 multi_option_incorrect_details.accordion.no.1=If you do not think you are able to enter this information correctly for some reason, then you can <a class="govuk-link" target="_blank" rel="noopener noreferrer" href="{0}">contact HMRC using our online technical support service (opens in new tab)</a>.
 
 multi_option_incorrect_details.accordion.heading1=First and last names

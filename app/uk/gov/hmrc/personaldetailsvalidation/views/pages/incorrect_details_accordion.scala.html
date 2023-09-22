@@ -27,6 +27,7 @@
     a: link,
     ul: ul,
     accordion: accordion,
+    details: details,
     btn: button
 )
 
@@ -46,62 +47,16 @@
     }
 }
 
-@hiddenContent = {
-@p(Html(msgs("multi_option_incorrect_details.accordion.no.1", routes.PersonalDetailsCollectionController.contactTechnicalSupport(
-    ReportTechnicalProblemUrl(origin, routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attemptsRemaining, failureUrl))
-))).toString)
-}
-
-<script @{CSPNonce.attr}>
-        document.addEventListener('DOMContentLoaded', function () {
-
-            const secondaryButtons = document.getElementsByClassName('button-with-content');
-
-            function showHiddenDiv() {
-                let divToShow = this.id+"-content";
-                document.getElementById(divToShow).style.display = 'block';
-            }
-
-            for (let i = 0; i < secondaryButtons.length; i++) {
-                secondaryButtons[i].addEventListener('click', showHiddenDiv)
-            }
-        });
-</script>
-
 @section1Content = {
     @p(msgs("multi_option_incorrect_details.accordion.accordion1.1"))
     @p(msgs("multi_option_incorrect_details.accordion.accordion1.2"))
     @p(msgs("multi_option_incorrect_details.accordion.accordion1.3", "https://www.gov.uk/tell-hmrc-change-of-details"))
     @p(msgs("multi_option_incorrect_details.accordion.accordion1.4", "https://www.gov.uk/tell-hmrc-change-of-details/gender-change"))
-    @p(msgs("multi_option_incorrect_details.accordion.helped"))
-        <div class="govuk-button-group">
-            @a(classes = Some("govuk-button govuk-button--secondary"), key = "multi_option_incorrect_details.accordion.btn1", href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl, Some("first-last-name")).url)
-            @if(showExtraHelpContent) {
-                @btn(classes = "govuk-button--secondary button-with-content",  msgKey = "multi_option_incorrect_details.accordion.btn2", attrs = Map("aria-controls" -> "accordion1-content", "id" -> "accordion1"))
-            }
-        </div>
-    @if(showExtraHelpContent) {
-        <div id="accordion1-content" class="js-hide govuk-!-margin-top-0">
-        @hiddenContent
-        </div>
-    }
 }
 
 @section2Content = {
     @p(msgs("multi_option_incorrect_details.accordion.accordion2.1"))
     @p(msgs("multi_option_incorrect_details.accordion.accordion2.2"))
-    @p(msgs("multi_option_incorrect_details.accordion.helped"))
-        <div class="govuk-button-group">
-            @a(classes = Some("govuk-button govuk-button--secondary"), key = msgs("multi_option_incorrect_details.accordion.btn1"), href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl, Some("DOB")).url)
-            @if(showExtraHelpContent) {
-                @btn(classes = "govuk-button--secondary button-with-content", msgKey = "multi_option_incorrect_details.accordion.btn2", attrs = Map("aria-controls" -> "accordion2-content", "id" -> "accordion2"))
-            }
-        </div>
-    @if(showExtraHelpContent) {
-        <div id="accordion2-content" class="js-hide govuk-!-margin-top-0">
-        @hiddenContent
-        </div>
-    }
 }
 
 @section3Content = {
@@ -120,18 +75,6 @@
     ))
     @p(msgs("multi_option_incorrect_details.accordion.accordion3.10","https://www.gov.uk/lost-national-insurance-number"))
     @p(msgs("multi_option_incorrect_details.accordion.accordion3.11","https://www.gov.uk/apply-national-insurance-number"))
-    @p(msgs("multi_option_incorrect_details.accordion.helped"))
-        <div class="govuk-button-group">
-            @a(classes = Some("govuk-button govuk-button--secondary"), key = "multi_option_incorrect_details.accordion.btn1", href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl, Some("NINO")).url)
-            @if(showExtraHelpContent) {
-                @btn(classes = "govuk-button--secondary button-with-content", msgKey = "multi_option_incorrect_details.accordion.btn2", attrs = Map("aria-controls" -> "accordion3-content", "id" -> "accordion3"))
-            }
-        </div>
-    @if(showExtraHelpContent) {
-        <div id="accordion3-content" class="js-hide govuk-!-margin-top-0">
-        @hiddenContent
-        </div>
-    }
 }
 
 @section4Content = {
@@ -139,18 +82,12 @@
     @p(msgs("multi_option_incorrect_details.accordion.accordion4.2"))
     @p(msgs("multi_option_incorrect_details.accordion.accordion4.3"))
     @p(msgs("multi_option_incorrect_details.accordion.accordion4.4","https://www.gov.uk/tell-hmrc-change-address"))
-    @p(msgs("multi_option_incorrect_details.accordion.helped"))
-        <div class="govuk-button-group">
-            @a(classes = Some("govuk-button govuk-button--secondary"), key = "multi_option_incorrect_details.accordion.btn1", href = routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, false, failureUrl, Some("postcode")).url)
-            @if(showExtraHelpContent) {
-                @btn(classes = "govuk-button--secondary button-with-content", msgKey = "multi_option_incorrect_details.accordion.btn2", attrs = Map("aria-controls" -> "accordion4-content", "id" -> "accordion4"))
-            }
-        </div>
-    @if(showExtraHelpContent) {
-        <div id="accordion4-content" class="js-hide govuk-!-margin-top-0">
-        @hiddenContent
-        </div>
-    }
+}
+
+@detailsContent = {
+@p(Html(msgs("multi_option_incorrect_details.accordion.no.1", routes.PersonalDetailsCollectionController.contactTechnicalSupport(
+    ReportTechnicalProblemUrl(origin, routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attemptsRemaining, failureUrl))
+))).toString)
 }
 
 @accordion(Seq(
@@ -171,3 +108,7 @@
         content = HtmlContent(section4Content)
     )
 ))
+
+@if(showExtraHelpContent) {
+    @details(summary = "multi_option_incorrect_details.accordion.helped", content = detailsContent)
+}
