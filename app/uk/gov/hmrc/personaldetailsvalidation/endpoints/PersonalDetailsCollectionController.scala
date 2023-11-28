@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import play.api.data.{Form, FormError}
+import play.api.data.FormError
 import play.api.i18n.MessagesApi
-import play.api.mvc.{request, _}
+import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.language.DwpI18nSupport
