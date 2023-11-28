@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import play.api.data.FormError
+import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
-import play.api.mvc._
+import play.api.mvc.{request, _}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.language.DwpI18nSupport
@@ -26,6 +26,7 @@ import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConn
 import uk.gov.hmrc.personaldetailsvalidation.model.InitialPersonalDetailsForm.initialForm
 import uk.gov.hmrc.personaldetailsvalidation.model.NinoDetailsForm.ninoForm
 import uk.gov.hmrc.personaldetailsvalidation.model.PostcodeDetailsForm.postcodeForm
+import uk.gov.hmrc.personaldetailsvalidation.model.DoYouHaveYourNino
 import uk.gov.hmrc.personaldetailsvalidation.model._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
@@ -46,6 +47,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
                                                     what_is_your_postcode: what_is_your_postcode,
                                                     what_is_your_nino: what_is_your_nino,
                                                     enter_your_details: enter_your_details,
+                                                    do_you_have_your_nino: do_you_have_your_nino,
                                                     incorrect_details: incorrect_details,
                                                     locked_out: locked_out,
                                                     weCannotCheckYourIdentityPage : we_cannot_check_your_identity,
@@ -63,6 +65,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   private final val FIRST_NAME_KEY = "firstName"
   private final val LAST_NAME_KEY = "lastName"
   private final val DOB_KEY = "dob"
+  private final val HAS_NINO_KEY = "hasNino"
 
   private val pdvSessionKeys : List[String] = List("firstName", "lastName", "dob")
 
@@ -157,6 +160,27 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
               submitPersonalDetails(personalDetails, completionUrl, failureUrl)
             case _ => Future.successful(BadRequest)
           }
+        }
+      )
+    }
+  }
+
+  def showHaveYourNationalInsuranceNumber(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
+    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+      Future.successful(Ok(do_you_have_your_nino(DoYouHaveYourNino.apply(), completionUrl, isLoggedIn, failureUrl)))
+    }
+  }
+
+  def processHaveYourNationalInsuranceNumber(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
+    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+      DoYouHaveYourNino.apply().bindFromRequest().fold(
+        errors =>
+          Future.successful(BadRequest(do_you_have_your_nino(
+            errors, completionUrl, isLoggedIn, failureUrl
+          ))),
+        {
+          case UserHasNinoTrue => Future.successful(Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl)).withSession(Session(request.session.data ++ Map(HAS_NINO_KEY -> "yes"))))
+          case UserHasNinoFalse => Future.successful(Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl)).withSession(Session(request.session.data ++ Map(HAS_NINO_KEY -> "no"))))
         }
       )
     }

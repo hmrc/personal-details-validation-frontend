@@ -36,7 +36,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, UserAttemptsD
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, MonitoringEvent, PdvLockedOut}
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, service_temporarily_unavailable, we_cannot_check_your_identity, you_have_been_timed_out, you_have_been_timed_out_dwp}
-import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{enter_your_details, what_is_your_nino, what_is_your_postcode}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{do_you_have_your_nino, enter_your_details, what_is_your_nino, what_is_your_postcode}
 import uk.gov.hmrc.views.ViewConfig
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -90,7 +90,7 @@ class PDVControllerWithFailureUrlSpec extends UnitSpec with MockFactory with Sca
     implicit val mockViewConfig: ViewConfig = app.injector.instanceOf[ViewConfig]
 
     val stubMessagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
-
+    val do_you_have_your_nino: do_you_have_your_nino = app.injector.instanceOf[do_you_have_your_nino]
     val enter_your_details: enter_your_details = app.injector.instanceOf[enter_your_details]
     val incorrect_details: incorrect_details = app.injector.instanceOf[incorrect_details]
     val locked_out: locked_out = app.injector.instanceOf[locked_out]
@@ -119,6 +119,7 @@ class PDVControllerWithFailureUrlSpec extends UnitSpec with MockFactory with Sca
       what_is_your_postcode,
       what_is_your_nino,
       enter_your_details,
+      do_you_have_your_nino,
       incorrect_details,
       locked_out,
       we_cannot_check_your_identity,

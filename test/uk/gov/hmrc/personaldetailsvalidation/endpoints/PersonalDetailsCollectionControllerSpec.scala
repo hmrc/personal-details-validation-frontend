@@ -399,6 +399,63 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
   }
 
+  "showHaveYourNationalInsuranceNumber" should {
+    "return OK with the ability to confirm whether you have your Nino" in new Setup {
+
+      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+      val result: Future[Result] = controller.showHaveYourNationalInsuranceNumber(completionUrl, failureUrl)(req)
+
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+
+      document.select("main span[class='govuk-caption-l']").text() shouldBe messages("do_you_have_your_nino.h2")
+      document.select("h1").text() shouldBe messages("do_you_have_your_nino.h1")
+      document.select("main p").get(0).text() shouldBe messages("do_you_have_your_nino.p1")
+      document.select("main p").get(1).text() shouldBe messages("do_you_have_your_nino.p2")
+      document.select("main p").get(2).text() shouldBe messages("do_you_have_your_nino.p3")
+      document.select("main li").get(0).text() shouldBe messages("do_you_have_your_nino.li1")
+      document.select("main li").get(1).text() shouldBe messages("do_you_have_your_nino.li2")
+      document.select("main li").get(2).text() shouldBe messages("do_you_have_your_nino.li3")
+      document.select("details summary").text() shouldBe messages("do_you_have_your_nino.details")
+      document.select("div[class='govuk-details__text'] p").get(0).text() shouldBe messages("do_you_have_your_nino.details.p1")
+      document.select("div[class='govuk-details__text'] p").get(1).text() shouldBe "You can apply for a National Insurance number (opens in new tab) if you’ve never had one."
+      document.select("div[class='govuk-details__text'] p a").attr("href") shouldBe "https://www.gov.uk/apply-national-insurance-number/how-to-apply"
+      document.select("div[class='govuk-details__text'] p a").attr("rel") shouldBe "noreferrer noopener"
+      document.select("div[class='govuk-details__text'] p a").attr("target") shouldBe "_blank"
+      document.select("main fieldset legend").text() shouldBe messages("do_you_have_your_nino.legend")
+      document.select("#do_you_have_your_nino-hint").text() shouldBe messages("do_you_have_your_nino.hint")
+      document.select("label[for='do_you_have_your_nino']").text() shouldBe messages("do_you_have_your_nino.yes")
+      document.select("label[for='do_you_have_your_nino-2']").text() shouldBe messages("do_you_have_your_nino.no")
+    }
+
+    "display field validation error when question not answered" in new Setup with BindFromRequestTooling {
+
+      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      val result: Future[Result] = controller.processHaveYourNationalInsuranceNumber(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe BAD_REQUEST
+
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+
+      document.errorsSummary.heading shouldBe messages("validation.error-summary.heading")
+      document.errorsSummary.content shouldBe messages("do_you_have_your_nino.error")
+    }
+  }
+
   "submitNino" should {
     "succeed when given a valid Nino" in new Setup {
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
@@ -726,6 +783,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     val stubMessagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
     val enter_your_details: enter_your_details = app.injector.instanceOf[enter_your_details]
+    val do_you_have_your_nino: do_you_have_your_nino = app.injector.instanceOf[do_you_have_your_nino]
     val incorrect_details: incorrect_details = app.injector.instanceOf[incorrect_details]
     val locked_out: locked_out = app.injector.instanceOf[locked_out]
     val what_is_your_postcode: what_is_your_postcode = app.injector.instanceOf[what_is_your_postcode]
@@ -753,6 +811,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       what_is_your_postcode,
       what_is_your_nino,
       enter_your_details,
+      do_you_have_your_nino,
       incorrect_details,
       locked_out,
       we_cannot_check_your_identity,

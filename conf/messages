@@ -143,3 +143,20 @@ you_have_been_timed_out.p2=You can <a href="https://www.gov.uk" class="govuk-lin
 you_have_been_timed_out_dwp.header=For your security, we timed you out
 you_have_been_timed_out_dwp.p1=We have timed you out for security reasons after 15 minutes of inactivity.
 you_have_been_timed_out_dwp.button=Start again
+
+do_you_have_your_nino.h2=Check your identity
+do_you_have_your_nino.h1=We will ask you about your National Insurance number
+do_you_have_your_nino.p1=Your National Insurance number helps us check your identity. It is 9 characters like, ‘QQ 12 34 56 C’.
+do_you_have_your_nino.p2=You need to get your National Insurance number.
+do_you_have_your_nino.p3=You can find it on:
+do_you_have_your_nino.li1=your National Insurance number card or letter
+do_you_have_your_nino.li2=official letters about your tax, pensions or benefits
+do_you_have_your_nino.li3=your payslip or P60
+do_you_have_your_nino.details=I have never had a National Insurance number
+do_you_have_your_nino.details.p1=You must have a National Insurance number so we can check your identity.
+do_you_have_your_nino.details.p2=You can <a href={0} class="govuk-link" rel="noreferrer noopener" target="_blank">apply for a National Insurance number (opens in new tab)</a> if you’ve never had one.
+do_you_have_your_nino.legend=Do you have your National Insurance number?
+do_you_have_your_nino.hint=Select one option
+do_you_have_your_nino.yes=Yes, I have my National Insurance number
+do_you_have_your_nino.no=No, I have lost or forgotten my National Insurance number
+do_you_have_your_nino.error=Please select an option to continue
