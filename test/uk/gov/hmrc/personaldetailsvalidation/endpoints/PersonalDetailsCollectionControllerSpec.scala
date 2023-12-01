@@ -369,10 +369,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
 
       val fieldsets: Elements = document.select("form")
-
       val ninoFieldset: Element = fieldsets.first()
-      ninoFieldset.select("label[for=nino]").text() shouldBe "Check your identity What is your National Insurance number?"
 
+      ninoFieldset.select("label[for=nino]").text() shouldBe "Check your identity Enter your National Insurance number"
+      document.select("a[class='govuk-back-link']").attr("href") shouldBe routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl).url
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
   }
