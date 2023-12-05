@@ -176,11 +176,12 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
       DoYouHaveYourNino.apply().bindFromRequest().fold(
         errors =>
           Future.successful(BadRequest(do_you_have_your_nino(
-            errors, completionUrl, isLoggedIn, failureUrl
-          ))),
+            errors, completionUrl, isLoggedIn, failureUrl))),
         {
-          case UserHasNinoTrue => Future.successful(Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl)).withSession(Session(request.session.data ++ Map(HAS_NINO_KEY -> "yes"))))
-          case UserHasNinoFalse => Future.successful(Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl)).withSession(Session(request.session.data ++ Map(HAS_NINO_KEY -> "no"))))
+          case UserHasNinoTrue => Future.successful(Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl))
+            .withSession(Session(request.session.data ++ Map(HAS_NINO_KEY -> "yes"))))
+          case UserHasNinoFalse => Future.successful(Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl))
+            .withSession(Session(request.session.data ++ Map(HAS_NINO_KEY -> "no"))))
         }
       )
     }
