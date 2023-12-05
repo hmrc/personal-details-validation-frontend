@@ -141,3 +141,20 @@ you_have_been_timed_out.p2=Gallwch <a href="https://www.gov.uk" class="govuk-lin
 you_have_been_timed_out_dwp.header=Er eich diogelwch, rydym wedi dod â’ch sesiwn i ben
 you_have_been_timed_out_dwp.p1=Rydym wedi dod â’ch sesiwn i ben am resymau diogelwch ar ôl 15 munud o anweithgarwch.
 you_have_been_timed_out_dwp.button=Dechrau eto
+
+do_you_have_your_nino.h2=Check your identity
+do_you_have_your_nino.h1=Byddwn yn gofyn i chi am eich rhif Yswiriant Gwladol
+do_you_have_your_nino.p1=Mae eich rhif Yswiriant Gwladol yn ein helpu i wirio pwy ydych chi. Mae’n 9 o gymeriadau fel, ‘QQ 12 34 56 C’.
+do_you_have_your_nino.p2=You need to get your National Insurance number.
+do_you_have_your_nino.p3=Gallwch ddod o hyd iddo ar y canlynol:
+do_you_have_your_nino.li1=eich cerdyn neu lythyr rhif Yswiriant Gwladol
+do_you_have_your_nino.li2=llythyrau swyddogol ynghylch eich treth, pensiynau neu fudd-daliadau
+do_you_have_your_nino.li3=eich slip cyflog neu P60
+do_you_have_your_nino.details=Nid wyf wedi cael rhif Yswiriant Gwladol erioed o’r blaen
+do_you_have_your_nino.details.p1=Mae’n rhaid i chi gael rhif Yswiriant Gwladol fel y gallwn wirio pwy ydych chi.
+do_you_have_your_nino.details.p2=Gallwch <a href={0} class="govuk-link" rel="noreferrer noopener" target="_blank">wneud cais am rif Yswiriant Gwladol (yn agor mewn tab newydd)</a> os nad ydych wedi cael un erioed o’r blaen.
+do_you_have_your_nino.legend=A oes gennych eich rhif Yswiriant Gwladol?
+do_you_have_your_nino.hint=Dewiswch un opsiwn
+do_you_have_your_nino.yes=Iawn, gallaf ddod o hyd i’m rhif Yswiriant Gwladol
+do_you_have_your_nino.no=Na, ni allaf ddod o hyd i’m rhif Yswiriant Gwladol
+do_you_have_your_nino.error=Dewiswch opsiwn i fynd yn eich blaen
