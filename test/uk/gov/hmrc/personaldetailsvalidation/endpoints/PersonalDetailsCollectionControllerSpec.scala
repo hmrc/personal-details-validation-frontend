@@ -392,8 +392,14 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       val document: Document = Jsoup.parse(contentAsString(result))
 
-      document.select("h1.govuk-label-wrapper").text() shouldBe messages("personal-details.faded-heading") + " " + messages("what-is-your-postcode.postcode.label")
       document.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submitYourPostCode(completionUrl, failureUrl).url
+      document.select("main h2[class='govuk-caption-l']").text() shouldBe messages("what-is-your-postcode.h2")
+      document.select("h1").text() shouldBe messages("what-is-your-postcode.h1")
+      document.select("main p").get(0).text() shouldBe messages("what-is-your-postcode.p1")
+      document.select("main p").get(1).text() shouldBe messages("what-is-your-postcode.p2")
+      document.select("main label").text() shouldBe messages("what-is-your-postcode.label")
+      document.select("#postcode-hint").text() shouldBe messages("what-is-your-postcode.hint")
+      document.select("#postcode").attr("autocomplete") shouldBe messages("postal-code")
       document.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
@@ -414,7 +420,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       val document: Document = Jsoup.parse(contentAsString(result))
 
-      document.select("main span[class='govuk-caption-l']").text() shouldBe messages("do_you_have_your_nino.h2")
+      document.select("main h2[class='govuk-caption-l']").text() shouldBe messages("do_you_have_your_nino.h2")
       document.select("h1").text() shouldBe messages("do_you_have_your_nino.h1")
       document.select("main p").get(0).text() shouldBe messages("do_you_have_your_nino.p1")
       document.select("main p").get(1).text() shouldBe messages("do_you_have_your_nino.p2")

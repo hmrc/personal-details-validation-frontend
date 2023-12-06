@@ -30,10 +30,13 @@ what-is-your-national-insurance-number.nino.hint=Mae hwn ar eich cerdyn Yswirian
 what-is-your-national-insurance-number.nino.invalid=Rhowch eich rhif Yswiriant Gwladol
 what-is-your-national-insurance-number.nino.unavailable=Does dim rhif Yswiriant Gwladol gennyf, neu dwi wedi ei golli neu wedi’i anghofio
 
-what-is-your-postcode.postcode.title=Beth yw’ch cod post?
-what-is-your-postcode.postcode.label=Beth yw’ch cod post?
-what-is-your-postcode.postcode.hint=Er enghraifft SW1A 2AA
-what-is-your-postcode.postcode.invalid=Nodwch god post yn y DU sy’n ddilys
+what-is-your-postcode.h2=Cadarnhau pwy ydych
+what-is-your-postcode.h1=Byddwn yn gofyn i chi am eich cod post
+what-is-your-postcode.p1=Am resymau diogelwch, byddwn yn gofyn i chi nawr am eich cod post.
+what-is-your-postcode.p2=Rhaid i’r cod post rydych yn ei nodi gyd-fynd â’n cofnodion. Er enghraifft, cyfeiriad parhaol y byddech yn ei roi i gyflogwr.
+what-is-your-postcode.label=Nodwch eich cod post
+what-is-your-postcode.hint=Er enghraifft SW1A 2AA
+what-is-your-postcode.invalid=Nodwch god post yn y DU sy’n ddilys
 
 personal-details.dateOfBirth=Dyddiad geni
 personal-details.dateOfBirth.hint=Er enghraifft, 31 3 1980
