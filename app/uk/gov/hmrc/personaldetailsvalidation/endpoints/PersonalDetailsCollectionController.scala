@@ -114,7 +114,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             DOB_KEY -> mainDetails.dateOfBirth.toString
           )
           Future.successful(
-            Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl)).withSession(Session(updatedSessionData))
+            if(appConfig.findMyNino){
+              Redirect(routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl, failureUrl)).withSession(Session(updatedSessionData))
+            } else {
+              Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl)).withSession(Session(updatedSessionData))
+            }
           )
         }
       )
