@@ -24,8 +24,8 @@ personal-details.postcode=Postcode
 personal-details.postcode.hint=For example: AB12 3YZ
 personal-details.postcode.invalid=Enter a valid UK postcode
 
-what-is-your-national-insurance-number.nino.title=What is your National Insurance number?
-what-is-your-national-insurance-number.nino.label=What is your National Insurance number?
+what-is-your-national-insurance-number.nino.title=Enter your National Insurance number
+what-is-your-national-insurance-number.nino.label=Enter your National Insurance number
 what-is-your-national-insurance-number.nino.hint=It’s on your National Insurance card, benefit letter, payslip or P60. For example, ‘QQ 12 34 56 C’.
 what-is-your-national-insurance-number.nino.invalid=Enter your National Insurance number
 what-is-your-national-insurance-number.nino.unavailable=I do not have a National Insurance number, or have lost or forgotten it

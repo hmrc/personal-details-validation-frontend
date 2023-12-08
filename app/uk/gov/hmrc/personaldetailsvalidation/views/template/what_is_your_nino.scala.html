@@ -33,6 +33,7 @@
 
 @mainTemplate(
     title = msgs("what-is-your-national-insurance-number.nino.title"),
+    backLinkUrl = Some(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, failureUrl).url),
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
     formErrors = pageForm.errors,
