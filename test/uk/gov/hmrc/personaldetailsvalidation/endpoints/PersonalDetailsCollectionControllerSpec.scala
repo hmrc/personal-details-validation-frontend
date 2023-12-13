@@ -765,6 +765,61 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
   }
 
+  "incorrect-details" should {
+
+    "display the accordion" in new Setup {
+
+      val result: Future[Result] = controller.incorrectDetails(completionUrl, 2, failureUrl)(request)
+
+      status(result) shouldBe 200
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+      document.select("h1").text() shouldBe messages("multi_option_incorrect_details.h1")
+      document.select("main p").get(0).text() shouldBe messages("multi_option_incorrect_details.p1")
+      document.select("main p").get(1).text() shouldBe messages("multi_option_incorrect_details.p2")
+      document.select("main p").get(2).text() shouldBe messages("multi_option_incorrect_details.p3")
+      document.select("span[class='govuk-details__summary-text']").text() shouldBe messages("multi_option_incorrect_details.accordion.helped")
+      document.select("div[class='govuk-details__text']").text() shouldBe messages("If you do not think you are able to enter this information correctly for some reason, then you can contact HMRC using our online technical support service (opens in new tab).")
+      document.select("div[class='govuk-details__text'] a").attr("href") should include("personal-details-validation/contact-technical-support")
+      document.select("#accordion-incorrect-details-heading-1").text() shouldBe messages("multi_option_incorrect_details.accordion.heading1")
+      document.select("#accordion-incorrect-details-content-1 p").get(0).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion1.1")
+      document.select("#accordion-incorrect-details-content-1 p").get(1).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion1.2")
+      document.select("#accordion-incorrect-details-content-1 p").get(2).text() shouldBe "You must tell HMRC your name has changed (opens in new tab), for example if you have got married or divorced."
+      document.select("#accordion-incorrect-details-content-1 p").get(2).select("a").attr("href") shouldBe "https://www.gov.uk/tell-hmrc-change-of-details"
+      document.select("#accordion-incorrect-details-content-1 p").get(3).text() shouldBe "Your name will be updated automatically if you change gender (opens in new tab)."
+      document.select("#accordion-incorrect-details-content-1 p").get(3).select("a").attr("href") shouldBe "https://www.gov.uk/tell-hmrc-change-of-details/gender-change"
+      document.select("#accordion-incorrect-details-heading-2").text() shouldBe messages("multi_option_incorrect_details.accordion.heading2")
+      document.select("#accordion-incorrect-details-content-2 p").get(0).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion2.1")
+      document.select("#accordion-incorrect-details-content-2 p").get(1).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion2.2")
+      document.select("#accordion-incorrect-details-heading-3").text() shouldBe messages("multi_option_incorrect_details.accordion.heading3")
+      document.select("#accordion-incorrect-details-content-3 p").get(0).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion3.1")
+      document.select("#accordion-incorrect-details-content-3 p").get(1).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion3.2")
+      document.select("#accordion-incorrect-details-content-3 li").get(0).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion3.3")
+      document.select("#accordion-incorrect-details-content-3 li").get(1).text() shouldBe "a parent has filled in a Child Benefit (opens in new tab) claim form for you"
+      document.select("#accordion-incorrect-details-content-3 li").get(1).select("a").attr("href") shouldBe "https://www.gov.uk/child-benefit"
+      document.select("#accordion-incorrect-details-content-3 p").get(2).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion3.5")
+      document.select("#accordion-incorrect-details-content-3 li").get(2).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion3.6")
+      document.select("#accordion-incorrect-details-content-3 li").get(3).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion3.7")
+      document.select("#accordion-incorrect-details-content-3 li").get(4).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion3.8")
+      document.select("#accordion-incorrect-details-content-3 li").get(5).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion3.9")
+      document.select("#accordion-incorrect-details-content-3 li").get(6).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion3.10")
+      document.select("#accordion-incorrect-details-content-3 p").get(3).text() shouldBe "You must have a National Insurance number so we can check your identity. If you have never had one, apply for a National Insurance number (opens in new tab)."
+      document.select("#accordion-incorrect-details-content-3 p").get(3).select("a").attr("href") shouldBe "https://www.gov.uk/apply-national-insurance-number"
+      document.select("#accordion-incorrect-details-content-3 p").get(4).text() shouldBe "You can find your National Insurance number (opens in new tab) if you have lost or forgotten it."
+      document.select("#accordion-incorrect-details-content-3 p").get(4).select("a").attr("href") shouldBe "https://www.gov.uk/lost-national-insurance-number"
+      document.select("#accordion-incorrect-details-heading-4").text() shouldBe messages("multi_option_incorrect_details.accordion.heading4")
+      document.select("#accordion-incorrect-details-content-4 p").get(0).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion4.1")
+      document.select("#accordion-incorrect-details-content-4 p").get(1).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion4.2")
+      document.select("#accordion-incorrect-details-content-4 p").get(2).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion4.3")
+      document.select("#accordion-incorrect-details-content-4 p").get(3).text() shouldBe "Tell HMRC when you change your address (opens in new tab)."
+      document.select("#accordion-incorrect-details-content-4 p").get(3).select("a").attr("href") shouldBe "https://www.gov.uk/tell-hmrc-change-address"
+      document.select("main a[class='govuk-button']").text() shouldBe messages("multi_option_incorrect_details.button")
+    }
+
+  }
+
   private trait Setup {
 
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
