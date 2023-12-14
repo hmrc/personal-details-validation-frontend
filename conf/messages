@@ -111,9 +111,11 @@ multi_option_incorrect_details.accordion.accordion3.5=You can find your National
 multi_option_incorrect_details.accordion.accordion3.6=on your payslip
 multi_option_incorrect_details.accordion.accordion3.7=on your P60
 multi_option_incorrect_details.accordion.accordion3.8=on letters about your tax, pension or benefits
-multi_option_incorrect_details.accordion.accordion3.9=in the National Insurance section of your <a href="https://www.gov.uk/personal-tax-account" class="govuk-link" target="_blank" rel="noopener noreferrer">personal tax account (opens in new tab)</a>
-multi_option_incorrect_details.accordion.accordion3.10=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Find your National Insurance number (opens in new tab)</a> if you've lost it.
-multi_option_incorrect_details.accordion.accordion3.11=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Apply for a National Insurance number (opens in new tab)</a> if you do not have one.
+multi_option_incorrect_details.accordion.accordion3.9=in the National Insurance section of your personal tax account
+multi_option_incorrect_details.accordion.accordion3.10=in the HMRC app
+multi_option_incorrect_details.accordion.accordion3.11=I do not have a National Insurance number, or have lost or forgotten it
+multi_option_incorrect_details.accordion.accordion3.12=You must have a National Insurance number so we can check your identity. If you have never had one, <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">apply for a National Insurance number (opens in new tab)</a>.
+multi_option_incorrect_details.accordion.accordion3.13=You can <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">find your National Insurance number (opens in new tab)</a> if you have lost or forgotten it.
 multi_option_incorrect_details.accordion.heading4=Postcode
 multi_option_incorrect_details.accordion.accordion4.1=The postcode option will only work for UK addresses. For example SW1A 2AA.
 multi_option_incorrect_details.accordion.accordion4.2=You can enter your postcode in upper or lower case, with or without spaces.
