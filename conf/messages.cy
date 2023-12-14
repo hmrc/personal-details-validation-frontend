@@ -111,8 +111,9 @@ multi_option_incorrect_details.accordion.accordion3.7=ar eich P60
 multi_option_incorrect_details.accordion.accordion3.8=ar lythyrau ynghylch treth, pensiynau neu fudd-daliadau
 multi_option_incorrect_details.accordion.accordion3.9=yn yr adran Yswiriant Gwladol o’ch cyfrif treth personol
 multi_option_incorrect_details.accordion.accordion3.10=yn ap CThEF
-multi_option_incorrect_details.accordion.accordion3.11=Mae’n rhaid i chi gael rhif Yswiriant Gwladol fel y gallwn wirio pwy ydych chi. Gallwch <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">wneud cais am rif Yswiriant Gwladol (yn agor mewn tab newydd)</a> os nad ydych wedi cael un erioed o’r blaen.
-multi_option_incorrect_details.accordion.accordion3.12=Gallwch <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">ddod o hyd i’ch rhif Yswiriant Gwladol (yn agor mewn tab newydd)</a> os ydych chi wedi ei golli neu wedi’i anghofio.
+multi_option_incorrect_details.accordion.accordion3.11=Does dim rhif Yswiriant Gwladol gennyf, neu dwi wedi ei golli neu wedi’i anghofio
+multi_option_incorrect_details.accordion.accordion3.12=Mae’n rhaid i chi gael rhif Yswiriant Gwladol fel y gallwn wirio pwy ydych chi. Gallwch <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">wneud cais am rif Yswiriant Gwladol (yn agor mewn tab newydd)</a> os nad ydych wedi cael un erioed o’r blaen.
+multi_option_incorrect_details.accordion.accordion3.13=Gallwch <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">ddod o hyd i’ch rhif Yswiriant Gwladol (yn agor mewn tab newydd)</a> os ydych chi wedi ei golli neu wedi’i anghofio.
 multi_option_incorrect_details.accordion.heading4=Cod post
 multi_option_incorrect_details.accordion.accordion4.1=Bydd yr opsiwn cod post ond yn gweithio ar gyfer cyfeiriadau yn y DU. Er enghraifft SW1A 2AA.
 multi_option_incorrect_details.accordion.accordion4.2=Gallwch nodi’ch cod post mewn llythrennau mawr neu fach, gyda bylchau neu heb fylchau.
