@@ -43,8 +43,7 @@
     form = Some(pageForm),
     formErrors = pageForm.errors,
     loggedInUser = loggedInUser,
-    failureUrl = failureUrl,
-    backLinkUrl = Some(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, failureUrl).url)
+    failureUrl = failureUrl
 ) {
 
     @preH1("what-is-your-postcode.h2")
