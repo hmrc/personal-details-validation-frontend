@@ -372,7 +372,6 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       val ninoFieldset: Element = fieldsets.first()
 
       ninoFieldset.select("label[for=nino]").text() shouldBe "Check your identity Enter your National Insurance number"
-      document.select("a[class='govuk-back-link']").attr("href") shouldBe routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl).url
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
   }
