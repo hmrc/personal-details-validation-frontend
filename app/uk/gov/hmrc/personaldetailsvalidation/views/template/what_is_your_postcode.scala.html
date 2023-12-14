@@ -37,6 +37,7 @@
 
 @mainTemplate(
     title = msgs("what-is-your-postcode.postcode.title"),
+    backLinkUrl = if(viewConfig.findMyNino)Some(routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl, failureUrl).url) else None,
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
     formErrors = pageForm.errors,

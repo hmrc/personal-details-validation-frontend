@@ -26,14 +26,15 @@
       textbox: InputText,
       button: button,
       preH1: preH1,
-      a: link,
+      p: Paragraph,
       formWithCSRF: PlayFrontendFormWithCSRF)
+
 
 @(pageForm: Form[NinoDetails], completionUrl: CompletionUrl, loggedInUser: Boolean, failureUrl: Option[CompletionUrl])(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
     title = msgs("what-is-your-national-insurance-number.nino.title"),
-    backLinkUrl = Some(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, failureUrl).url),
+    backLinkUrl = if(viewConfig.findMyNino)Some(routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl, failureUrl).url) else None,
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
     formErrors = pageForm.errors,
@@ -56,9 +57,9 @@
             attributes = Map("spellcheck" -> "false"),
         )
 
-        <p class="govuk-body">
-            @a(href = routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl, failureUrl).url, key = "what-is-your-national-insurance-number.nino.unavailable", id = Some("nino-unknown"))
-        </p>
+        @if(!viewConfig.findMyNino) {
+            @p(key = msgs("what-is-your-national-insurance-number.nino.unavailable", routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl, failureUrl).url), id = Some("nino-unknown"))
+        }
 
         @button()
     }

@@ -45,6 +45,7 @@ class ViewConfig @Inject()(val configuration: Configuration,
   lazy val lockoutPeriodEn: String = configuration.getOptional[String]("lockout.period.en").getOrElse("24 hours")
   lazy val lockoutPeriodCy: String = configuration.getOptional[String]("lockout.period.cy").getOrElse("24 awr")
   lazy val isLocal: Boolean = configuration.getOptional[Boolean]("isLocal").getOrElse(false)
+  lazy val findMyNino: Boolean = configuration.getOptional[Boolean]("feature.find-my-nino.enabled").getOrElse(false)
 
   def addTaxesFrontendBaseUrl(): String =
     if (isLocal) servicesConfig.baseUrl("add-taxes-frontend") else ""

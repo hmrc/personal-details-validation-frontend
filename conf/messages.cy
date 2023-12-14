@@ -28,7 +28,7 @@ what-is-your-national-insurance-number.nino.title=Nodwch eich rhif Yswiriant Gwl
 what-is-your-national-insurance-number.nino.label=Nodwch eich rhif Yswiriant Gwladol
 what-is-your-national-insurance-number.nino.hint=Mae hwn ar eich cerdyn Yswiriant Gwladol, llythyr ynghylch budd-daliadau, slip cyflog neu P60. Er enghraifft, ‘QQ 12 34 56 C’.
 what-is-your-national-insurance-number.nino.invalid=Rhowch eich rhif Yswiriant Gwladol
-what-is-your-national-insurance-number.nino.unavailable=Does dim rhif Yswiriant Gwladol gennyf, neu dwi wedi ei golli neu wedi’i anghofio
+what-is-your-national-insurance-number.nino.unavailable=<a href="{0}" class="govuk-link">Does dim rhif Yswiriant Gwladol gennyf, neu dwi wedi ei golli neu wedi’i anghofio</a>
 
 what-is-your-postcode.postcode.title=Beth yw’ch cod post?
 what-is-your-postcode.postcode.label=Beth yw’ch cod post?
