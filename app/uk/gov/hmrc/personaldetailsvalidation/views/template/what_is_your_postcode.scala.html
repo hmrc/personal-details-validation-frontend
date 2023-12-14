@@ -27,6 +27,7 @@
       button: button,
       h1: h1,
       preH1: preH1,
+      p: Paragraph,
       formWithCSRF: PlayFrontendFormWithCSRF)
 
 @(pageForm: Form[PostcodeDetails],
@@ -36,28 +37,32 @@
 )(implicit request: Request[_], msgs: Messages, viewConfig: ViewConfig)
 
 @mainTemplate(
-    title = msgs("what-is-your-postcode.postcode.title"),
+    title = msgs("what-is-your-postcode.h1"),
     backLinkUrl = if(viewConfig.findMyNino)Some(routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl, failureUrl).url) else None,
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
     formErrors = pageForm.errors,
     loggedInUser = loggedInUser,
-    failureUrl = failureUrl
+    failureUrl = failureUrl,
+    backLinkUrl = Some(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, failureUrl).url)
 ) {
 
-    @formWithCSRF(
-        routes.PersonalDetailsCollectionController.submitYourPostCode(completionUrl, failureUrl),
-        'autocomplete -> "off",
-        'novalidate -> "novalidate") {
+    @preH1("what-is-your-postcode.h2")
+
+    @formWithCSRF(routes.PersonalDetailsCollectionController.submitYourPostCode(completionUrl, failureUrl),
+        Symbol("novalidate") -> "novalidate") {
+        @h1("what-is-your-postcode.h1")
+        @p("what-is-your-postcode.p1")
+        @p("what-is-your-postcode.p2")
 
         @textbox(
-            field =pageForm("postcode"),
-            label = "what-is-your-postcode.postcode.label",
-            caption = Some(msgs("personal-details-validation.faded-heading")),
-            labelIsHeading = true,
+            field = pageForm("postcode"),
+            label = "what-is-your-postcode.label",
+            labelClasses = "govuk-label--m govuk-!-margin-bottom-1",
+            labelIsHeading = false,
             classes = "govuk-input--width-10",
             autocomplete = Some("postal-code"),
-            hint = Some(msgs("what-is-your-postcode.postcode.hint"))
+            hint = Some(msgs("what-is-your-postcode.hint"))
         )
 
         @button()

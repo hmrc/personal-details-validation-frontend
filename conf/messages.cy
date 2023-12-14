@@ -30,10 +30,13 @@ what-is-your-national-insurance-number.nino.hint=Mae hwn ar eich cerdyn Yswirian
 what-is-your-national-insurance-number.nino.invalid=Rhowch eich rhif Yswiriant Gwladol
 what-is-your-national-insurance-number.nino.unavailable=<a href="{0}" class="govuk-link">Does dim rhif Yswiriant Gwladol gennyf, neu dwi wedi ei golli neu wedi’i anghofio</a>
 
-what-is-your-postcode.postcode.title=Beth yw’ch cod post?
-what-is-your-postcode.postcode.label=Beth yw’ch cod post?
-what-is-your-postcode.postcode.hint=Er enghraifft SW1A 2AA
-what-is-your-postcode.postcode.invalid=Nodwch god post yn y DU sy’n ddilys
+what-is-your-postcode.h2=Cadarnhau pwy ydych
+what-is-your-postcode.h1=Byddwn yn gofyn i chi am eich cod post
+what-is-your-postcode.p1=Am resymau diogelwch, byddwn yn gofyn i chi nawr am eich cod post.
+what-is-your-postcode.p2=Rhaid i’r cod post rydych yn ei nodi gyd-fynd â’n cofnodion. Er enghraifft, cyfeiriad parhaol y byddech yn ei roi i gyflogwr.
+what-is-your-postcode.label=Nodwch eich cod post
+what-is-your-postcode.hint=Er enghraifft SW1A 2AA
+what-is-your-postcode.invalid=Nodwch god post yn y DU sy’n ddilys
 
 personal-details.dateOfBirth=Dyddiad geni
 personal-details.dateOfBirth.hint=Er enghraifft, 31 3 1980
@@ -106,9 +109,11 @@ multi_option_incorrect_details.accordion.accordion3.5=Gallwch ddod o hyd i’ch 
 multi_option_incorrect_details.accordion.accordion3.6=ar eich slip cyflog
 multi_option_incorrect_details.accordion.accordion3.7=ar eich P60
 multi_option_incorrect_details.accordion.accordion3.8=ar lythyrau ynghylch treth, pensiynau neu fudd-daliadau
-multi_option_incorrect_details.accordion.accordion3.9=yn yr adran Yswiriant Gwladol o’ch <a href="https://www.gov.uk/personal-tax-account" class="govuk-link" target="_blank" rel="noopener noreferrer">cyfrif treth personol (yn agor tab newydd)</a>
-multi_option_incorrect_details.accordion.accordion3.10=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Dewch o hyd i’ch rhif Yswiriant Gwladol (yn agor tab newydd) os ydych chi wedi ei golli.
-multi_option_incorrect_details.accordion.accordion3.11=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Gwnewch gais am rif Yswiriant Gwladol (yn agor tab newydd) os nad oes gennych un.</a>
+multi_option_incorrect_details.accordion.accordion3.9=yn yr adran Yswiriant Gwladol o’ch cyfrif treth personol
+multi_option_incorrect_details.accordion.accordion3.10=yn ap CThEF
+multi_option_incorrect_details.accordion.accordion3.11=Does dim rhif Yswiriant Gwladol gennyf, neu dwi wedi ei golli neu wedi’i anghofio
+multi_option_incorrect_details.accordion.accordion3.12=Mae’n rhaid i chi gael rhif Yswiriant Gwladol fel y gallwn wirio pwy ydych chi. Gallwch <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">wneud cais am rif Yswiriant Gwladol (yn agor mewn tab newydd)</a> os nad ydych wedi cael un erioed o’r blaen.
+multi_option_incorrect_details.accordion.accordion3.13=Gallwch <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">ddod o hyd i’ch rhif Yswiriant Gwladol (yn agor mewn tab newydd)</a> os ydych chi wedi ei golli neu wedi’i anghofio.
 multi_option_incorrect_details.accordion.heading4=Cod post
 multi_option_incorrect_details.accordion.accordion4.1=Bydd yr opsiwn cod post ond yn gweithio ar gyfer cyfeiriadau yn y DU. Er enghraifft SW1A 2AA.
 multi_option_incorrect_details.accordion.accordion4.2=Gallwch nodi’ch cod post mewn llythrennau mawr neu fach, gyda bylchau neu heb fylchau.
