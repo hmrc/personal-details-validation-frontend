@@ -24,6 +24,7 @@ import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.Configuration
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.mvc.Results._
 import play.api.mvc._
@@ -41,10 +42,10 @@ import uk.gov.hmrc.personaldetailsvalidation.monitoring._
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, service_temporarily_unavailable, we_cannot_check_your_identity, you_have_been_timed_out, you_have_been_timed_out_dwp}
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.views.ViewConfig
 import java.time.LocalDate
 import java.util.UUID
-
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -83,6 +84,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "return enter-your-details page, containing data from session" in new Setup {
 
+      (mockViewConfig.isLoggedIn( _ : HeaderCarrier, _ : ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val result: Future[Result] = controller.enterYourDetails(completionUrl, withError = false, failureUrl)(request)
 
       status(result) shouldBe OK
@@ -97,6 +102,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
 
     "return enter-your-details page, containing data from session with retry" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
 
       (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *, *, *)
@@ -118,6 +127,11 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
   "submitMainDetails" should {
     "return PersonalDetails when data provided on the form is valid" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val expectedUrl: String = routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl).url
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
@@ -149,6 +163,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when firstname data is missing" in new Setup with BindFromRequestTooling {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "lastName" -> "Ferguson",
         "dateOfBirth.day" -> "01",
@@ -170,6 +188,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
 
     "display error field validation error when lastname data is missing" in new Setup with BindFromRequestTooling {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
 
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
@@ -193,6 +215,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when day data is missing" in new Setup with BindFromRequestTooling {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -214,6 +240,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
 
     "display error field validation error when month data is missing" in new Setup with BindFromRequestTooling {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
 
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
@@ -237,6 +267,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when year data is missing" in new Setup with BindFromRequestTooling {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -259,6 +293,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when all dob data is missing" in new Setup with BindFromRequestTooling {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson"
@@ -278,6 +316,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
 
     "display error field validation error when day data is invalid" in new Setup with BindFromRequestTooling {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
 
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
@@ -302,6 +344,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when month data is invalid" in new Setup with BindFromRequestTooling {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -325,6 +371,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
 
     "display error field validation error when year data is invalid" in new Setup with BindFromRequestTooling {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
 
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
@@ -351,6 +401,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
   "showNinoForm" should {
     "return OK with the ability to enter the Nino" in new Setup {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -374,16 +428,84 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       ninoFieldset.select("label[for=nino]").text() shouldBe "Check your identity Enter your National Insurance number"
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
-  }
 
-  "showPostCodeForm" should {
-    "return OK with the ability to enter the Post Code" in new Setup {
+    "include a back link when the findMyNino Feature Flag is set to true" in new Setup(true) {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
 
       val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
         "dob" -> "1939-09-01"
       )
+
+      val result: Future[Result] = controller.whatIsYourNino(completionUrl, failureUrl)(req)
+
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+      document.select("a[class='govuk-back-link']").attr("href") shouldBe routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl).url
+    }
+
+    "not include a back link when the findMyNino Feature Flag is false" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      val result: Future[Result] = controller.whatIsYourNino(completionUrl, failureUrl)(req)
+
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+      document.select("a[class='govuk-back-link']").size() shouldBe (0)
+    }
+
+    "include a link to the Postcode entry page when the findMyNino Feature Flag is false" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      val result: Future[Result] = controller.whatIsYourNino(completionUrl, failureUrl)(req)
+
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+      document.select("main a").get(0).attr("href") shouldBe routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl, failureUrl).url
+    }
+  }
+
+  "showPostCodeForm" should {
+    "return OK with the ability to enter the Post Code" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
       val result: Future[Result] = controller.whatIsYourPostCode(completionUrl, failureUrl)(req)
 
       contentType(result) shouldBe Some(HTML)
@@ -402,10 +524,56 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
+
+    "include a back link when the findMyNino Feature Flag is set to true" in new Setup(true) {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      val result: Future[Result] = controller.whatIsYourPostCode(completionUrl, failureUrl)(req)
+
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+      document.select("a[class='govuk-back-link']").attr("href") shouldBe routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl).url
+    }
+
+    "not include a back link when the findMyNino Feature Flag is false" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      val result: Future[Result] = controller.whatIsYourPostCode(completionUrl, failureUrl)(req)
+
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+      document.select("a[class='govuk-back-link']").size() shouldBe(0)
+    }
   }
 
   "showHaveYourNationalInsuranceNumber" should {
     "return OK with the ability to confirm whether you have your Nino" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
 
       val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
         "firstName" -> "Jim",
@@ -441,6 +609,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display field validation error when question not answered" in new Setup with BindFromRequestTooling {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -463,6 +635,11 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
   "submitNino" should {
     "succeed when given a valid Nino" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
       val expectedRedirect: Result = Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
 
@@ -492,9 +669,15 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(req)
 
       await(result) shouldBe expectedRedirect
+
     }
 
     "redirect to showPage if no details found" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
 
       val pdv : Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId, "", 0))
@@ -525,6 +708,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "Bad Request if the initial details are not present in the request" in new Setup {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(request.withFormUrlEncodedBody("nino" -> "AA000001A"))
 
       status(result) shouldBe BAD_REQUEST
@@ -533,6 +720,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
   "submitPostcode" should {
     "succeed when given a valid Postcode" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
 
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
       val expectedRedirect: Result = Redirect(completionUrl.value, Map("validationId" -> Seq(validationId.value)))
@@ -567,6 +758,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error nino missing" in new Setup with BindFromRequestTooling {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -588,6 +783,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error nino invalid" in new Setup with BindFromRequestTooling {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("postcode" -> "INVALID") .withSession(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -608,11 +807,21 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
 
     "Bad Request if the initial details are not present in the request" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(request.withFormUrlEncodedBody("postcode" -> "BN11 1NN"))
       status(result) shouldBe BAD_REQUEST
     }
 
     "redirect to showPage if no details found" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
 
       val pdv : Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId, "", 0))
@@ -642,6 +851,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
 
     "redirect to Helpline Service Deceased Page" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
 
       val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
       val expectedRedirect: String = "/personal-details-validation/incorrect-details/deceased"
@@ -713,6 +926,10 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "return 200 OK" in new Setup {
 
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
       val result: Future[Result] = controller.youHaveBeenTimedOut(Some(failureUrl.getOrElse("").toString))(request)
       status(result) shouldBe 200
       contentType(result) shouldBe Some(HTML)
@@ -720,6 +937,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       val document: Document = Jsoup.parse(contentAsString(result))
       document.select("h1").text() shouldBe messages("you_have_been_timed_out.header")
+
     }
 
   }
@@ -820,7 +1038,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
   }
 
-  private trait Setup {
+private class Setup(findMyNinoFlag: Boolean = false) {
 
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -839,7 +1057,16 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     val mockDataStreamAuditService: DataStreamAuditService = mock[DataStreamAuditService]
     val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
     val mockIVConnector: IdentityVerificationConnector = mock[IdentityVerificationConnector]
-    implicit val mockViewConfig: ViewConfig = app.injector.instanceOf[ViewConfig]
+    val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
+    private class ViewConfigWithValues extends ViewConfig(mock[Configuration], mock[ServicesConfig], mock[DwpMessagesApiProvider], mockAuthConnector) {
+      override lazy val findMyNino: Boolean = findMyNinoFlag
+      override lazy val retryLimit: Int = 5
+      override lazy val timeout: Int = 900
+      override lazy val timeoutCountdown: Int = 120
+    }
+
+    implicit val mockViewConfig: ViewConfig = mock[ViewConfigWithValues]
 
     val stubMessagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
