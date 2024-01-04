@@ -26,7 +26,7 @@
       textbox: InputText,
       button: button,
       preH1: preH1,
-      p: Paragraph,
+      a: link,
       formWithCSRF: PlayFrontendFormWithCSRF)
 
 
@@ -58,7 +58,7 @@
         )
 
         @if(!viewConfig.findMyNino) {
-            @p(key = msgs("what-is-your-national-insurance-number.nino.unavailable", routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl, failureUrl).url), id = Some("nino-unknown"))
+            @a(key = msgs("what-is-your-national-insurance-number.nino.unavailable"), href = routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl, failureUrl).url, id = Some("nino-unknown"), classes = Some("govuk-link govuk-body govuk-!-display-block govuk-!-margin-bottom-4"))
         }
 
         @button()
