@@ -114,7 +114,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             DOB_KEY -> mainDetails.dateOfBirth.toString
           )
           Future.successful(
-            if(appConfig.findMyNino){
+            if(viewConfig.findMyNino){
               Redirect(routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl, failureUrl)).withSession(Session(updatedSessionData))
             } else {
               Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl)).withSession(Session(updatedSessionData))
@@ -184,7 +184,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
         {
           case UserHasNinoTrue => Future.successful(Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl))
             .withSession(Session(request.session.data ++ Map(HAS_NINO_KEY -> "yes"))))
-          case UserHasNinoFalse => Future.successful(Redirect(routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl, failureUrl))
+          case UserHasNinoFalse => Future.successful(Redirect(routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl, failureUrl))
             .withSession(Session(request.session.data ++ Map(HAS_NINO_KEY -> "no"))))
         }
       )

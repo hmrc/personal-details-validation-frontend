@@ -31,7 +31,6 @@ class AppConfig @Inject()(val configuration: Configuration, servicesConfig: Serv
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
 
   lazy val enabledCircuitBreaker: Boolean = configuration.getOptional[Boolean]("circuit-breaker.enabled").getOrElse(false)
-  lazy val findMyNino: Boolean = configuration.getOptional[Boolean]("feature.find-my-nino.enabled").getOrElse(false)
 
   //Lockout
   lazy val retryLimit: Int = configuration.getOptional[Int]("retry.limit").getOrElse(5)

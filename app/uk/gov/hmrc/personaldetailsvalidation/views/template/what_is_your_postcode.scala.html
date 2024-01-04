@@ -38,12 +38,12 @@
 
 @mainTemplate(
     title = msgs("what-is-your-postcode.h1"),
+    backLinkUrl = if(viewConfig.findMyNino)Some(routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl, failureUrl).url) else None,
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
     formErrors = pageForm.errors,
     loggedInUser = loggedInUser,
-    failureUrl = failureUrl,
-    backLinkUrl = Some(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, failureUrl).url)
+    failureUrl = failureUrl
 ) {
 
     @preH1("what-is-your-postcode.h2")
