@@ -76,7 +76,11 @@
     ))
     @p(msgs("multi_option_incorrect_details.accordion.accordion3.11"), classes = Some("govuk-!-font-weight-bold"))
     @p(msgs("multi_option_incorrect_details.accordion.accordion3.12","https://www.gov.uk/apply-national-insurance-number"))
-    @p(msgs("multi_option_incorrect_details.accordion.accordion3.13","https://www.gov.uk/lost-national-insurance-number"))
+    @if(appConfig.findMyNino){
+        @p(msgs("multi_option_incorrect_details.accordion.accordion3.13", "/find-your-national-insurance-number/checkDetails?origin=PDV"))
+    } else {
+        @p(msgs("multi_option_incorrect_details.accordion.accordion3.13", "https://www.gov.uk/lost-national-insurance-number"))
+    }
 }
 
 @section4Content = {

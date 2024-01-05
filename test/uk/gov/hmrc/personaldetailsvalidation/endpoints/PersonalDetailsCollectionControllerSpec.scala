@@ -1036,6 +1036,17 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.select("main a[class='govuk-button']").text() shouldBe messages("multi_option_incorrect_details.button")
     }
 
+    "display the accordion with a link to find your Nino when the findMyNino Feature Flag is set to true" in new Setup(true) {
+
+      val result: Future[Result] = controller.incorrectDetails(completionUrl, 2, failureUrl)(request)
+
+      status(result) shouldBe 200
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+      document.select("#accordion-incorrect-details-content-3 p").get(5).select("a").attr("href") should include("/find-your-national-insurance-number/checkDetails?origin=PDV")
+    }
   }
 
 private class Setup(findMyNinoFlag: Boolean = false) {
