@@ -1093,9 +1093,7 @@ private class Setup(findMyNinoFlag: Boolean = false) {
 
     val we_cannot_check_your_identity: we_cannot_check_your_identity = app.injector.instanceOf[we_cannot_check_your_identity]
 
-    implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
-    implicit val authConnector: AuthConnector = app.injector.instanceOf[AuthConnector]
+    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
     implicit val ec: ExecutionContext = ExecutionContext.global
 
@@ -1117,7 +1115,7 @@ private class Setup(findMyNinoFlag: Boolean = false) {
       service_temporarily_unavailable,
       you_have_been_timed_out,
       you_have_been_timed_out_dwp,
-      mockIVConnector)
+      mockIVConnector)(mockAuthConnector, dwpMessagesApiProvider, mockViewConfig, ExecutionContext.Implicits.global, messagesApi)
   }
 
   private trait BindFromRequestTooling {
