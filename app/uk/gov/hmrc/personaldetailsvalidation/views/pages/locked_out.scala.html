@@ -38,7 +38,7 @@
 @main(title = msgs("multi_option_incorrect_details.locked_out.title"), hideDeskpro = true){
     @h1("multi_option_incorrect_details.locked_out.h1")
     @p(msgs("multi_option_incorrect_details.locked_out.p1", if(msgs.lang.code == "en")lockoutPeriodEn else lockoutPeriodCy))
-    @p(msgs("multi_option_incorrect_details.locked_out.p2", "https://www.tax.service.gov.uk/helpline/which-service-are-you-trying-to-access"))
+    @p(msgs("multi_option_incorrect_details.locked_out.p2", viewConfig.findHelplineFrontendUrl))
     @p(msgs("multi_option_incorrect_details.locked_out.p3"))
 }
 
