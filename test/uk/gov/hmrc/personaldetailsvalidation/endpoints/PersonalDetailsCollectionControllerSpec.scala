@@ -1075,6 +1075,7 @@ private class Setup(findMyNinoFlag: Boolean = false) {
       override lazy val retryLimit: Int = 5
       override lazy val timeout: Int = 900
       override lazy val timeoutCountdown: Int = 120
+      override lazy val findYourNinoFrontendUrl = "http://localhost:14033/find-your-national-insurance-number/checkDetails?origin=PDV"
     }
 
     implicit val mockViewConfig: ViewConfig = mock[ViewConfigWithValues]
