@@ -46,6 +46,7 @@ class ViewConfig @Inject()(val configuration: Configuration,
   lazy val lockoutPeriodCy: String = configuration.getOptional[String]("lockout.period.cy").getOrElse("24 awr")
   lazy val isLocal: Boolean = configuration.getOptional[Boolean]("isLocal").getOrElse(false)
   lazy val findHelplineFrontendUrl: String = configuration.getOptional[String]("helpline-frontend.host").getOrElse("") + "/helpline/which-service-are-you-trying-to-access"
+  lazy val findYourNinoFrontendUrl: String = configuration.getOptional[String]("find-your-national-insurance-number-frontend.host").getOrElse("") + "/find-your-national-insurance-number/checkDetails?origin=PDV"
   lazy val findMyNino: Boolean = configuration.get[Boolean]("feature.find-my-nino.enabled")
 
   def addTaxesFrontendBaseUrl(): String =
