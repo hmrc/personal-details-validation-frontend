@@ -60,7 +60,8 @@ class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: Pe
       case SuccessfulPersonalDetailsValidation(validationId, _) =>
         logger.info(s"Submission Success, validationId Stripped from completionUrl: ${s"""[?&]validationId=$UUIDRegex""".r.findFirstIn(completionUrl.value)} | " +
           s"validationId appended to completionUrl: ${validationId.value} | " +
-          s"validationId in session before it is replaced ${request.session.get(validationIdSessionKey)}")
+          s"validationId in session before it is replaced ${request.session.get(validationIdSessionKey)} | " +
+          s"new id different to session: ${!request.session.get(validationIdSessionKey).contains(validationId.value)}")
         Redirect(strippedCompletionUrl, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
       case _ => throw new scala.RuntimeException("Unable to redirect success validation")
     }
