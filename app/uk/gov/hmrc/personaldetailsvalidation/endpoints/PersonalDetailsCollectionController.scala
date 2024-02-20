@@ -144,8 +144,8 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             case (Some(fn), Some(ln), Some(dob)) =>
               val personalDetails = PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln),ninoForm.nino, LocalDate.parse(dob))
               submitPersonalDetails(personalDetails, completionUrl, failureUrl)
-            case _ =>
-              logger.warn(s"SUBMIT_NINO User with ${hc.sessionId} did not have required session attributes when submitting")
+            case missingDetails =>
+              logger.warn(s"SUBMIT_NINO User with ${hc.sessionId} did not have required session attributes when submitting. First name exists: ${missingDetails._1.isDefined}, Last name exists: ${missingDetails._2.isDefined}, DOB exists: ${missingDetails._3.isDefined}")
               Future.successful(BadRequest)
           }
         }
@@ -171,8 +171,8 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             case (Some(fn), Some(ln), Some(dob)) =>
               val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln), postCodeForm.postcode, LocalDate.parse(dob))
               submitPersonalDetails(personalDetails, completionUrl, failureUrl)
-            case _ =>
-              logger.warn(s"SUBMIT_POSTCODE User with ${hc.sessionId} did not have required session attributes when submitting")
+            case missingDetails =>
+              logger.warn(s"SUBMIT_POSTCODE User with ${hc.sessionId} did not have required session attributes when submitting. First name exists: ${missingDetails._1.isDefined}, Last name exists: ${missingDetails._2.isDefined}, DOB exists: ${missingDetails._3.isDefined}")
               Future.successful(BadRequest)
           }
         }
