@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
+import play.api.Logging
 import play.api.data.FormError
 import play.api.i18n.MessagesApi
 import play.api.mvc._
@@ -60,7 +61,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
                                                     viewConfig: ViewConfig,
                                                     ec: ExecutionContext,
                                                     messagesApi: MessagesApi)
-  extends DwpI18nSupport(appConfig, messagesApi) with FrontendBaseController with AuthorisedFunctions {
+  extends DwpI18nSupport(appConfig, messagesApi) with FrontendBaseController with AuthorisedFunctions with Logging {
 
   private final val FIRST_NAME_KEY = "firstName"
   private final val LAST_NAME_KEY = "lastName"
@@ -134,13 +135,18 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   def submitYourNino(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
       ninoForm.bindFromRequest().fold (
-        formWithErrors => Future.successful(Ok(what_is_your_nino(formWithErrors, completionUrl, isLoggedIn, failureUrl))),
+        formWithErrors => {
+          logger.info("SUBMIT_NINO user received a form error when submitting")
+          Future.successful(Ok(what_is_your_nino(formWithErrors, completionUrl, isLoggedIn, failureUrl)))
+        },
         ninoForm => {
           retrieveMainDetails match {
             case (Some(fn), Some(ln), Some(dob)) =>
               val personalDetails = PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln),ninoForm.nino, LocalDate.parse(dob))
               submitPersonalDetails(personalDetails, completionUrl, failureUrl)
-            case _ => Future.successful(BadRequest)
+            case _ =>
+              logger.warn(s"SUBMIT_NINO User with ${hc.sessionId} did not have required session attributes when submitting")
+              Future.successful(BadRequest)
           }
         }
       )
@@ -156,13 +162,18 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   def submitYourPostCode(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
       postcodeForm.bindFromRequest().fold (
-        formWithErrors => Future.successful(Ok(what_is_your_postcode(formWithErrors, completionUrl, isLoggedIn, failureUrl))),
+        formWithErrors => {
+          logger.info("SUBMIT_POSTCODE user received a form error when submitting")
+          Future.successful(Ok(what_is_your_postcode(formWithErrors, completionUrl, isLoggedIn, failureUrl)))
+        },
         postCodeForm => {
           retrieveMainDetails match {
             case (Some(fn), Some(ln), Some(dob)) =>
               val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln), postCodeForm.postcode, LocalDate.parse(dob))
               submitPersonalDetails(personalDetails, completionUrl, failureUrl)
-            case _ => Future.successful(BadRequest)
+            case _ =>
+              logger.warn(s"SUBMIT_POSTCODE User with ${hc.sessionId} did not have required session attributes when submitting")
+              Future.successful(BadRequest)
           }
         }
       )
@@ -198,6 +209,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
         case SuccessfulPersonalDetailsValidation(_, deceased) =>
           if (deceased) {
             val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
+            logger.info(s"Session keys wiped for ${hc.sessionId}")
             ivConnector.updateJourney(completionUrl.value, "Deceased")
             Redirect(routes.PersonalDetailsCollectionController.redirectToHelplineServiceDeceasedPage()).withSession(cleanedSession)
           } else {
@@ -206,8 +218,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
         case FailedPersonalDetailsValidation(_, maybeCredId, attempt) =>
           if (maybeCredId.nonEmpty) {
             val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
+            logger.info(s"Session keys wiped for ${hc.sessionId}")
             val attemptsRemaining = viewConfig.retryLimit - attempt
             val origin = request.session.get("origin").getOrElse("")
+            if(origin.isEmpty) logger.info(s"origin in session not present upon submission for ${hc.sessionId}")
+
             if (attempt < appConfig.retryLimit) {
               val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"
               val pdvFailedAttempt = PdvFailedAttempt(attempt, appConfig.retryLimit, personalDetails.journeyVersion, maybeCredId, origin)
@@ -227,6 +242,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
             }
           } else {
             val cleanedSession = pdvSessionKeys.foldLeft(request.session)(_.-(_))
+            logger.info(s"Session keys wiped for ${hc.sessionId}")
             Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, withError = true, failureUrl)).withSession(cleanedSession)
           }
       }
