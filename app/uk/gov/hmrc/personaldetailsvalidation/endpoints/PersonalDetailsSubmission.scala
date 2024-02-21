@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
+import play.api.Logging
 import play.api.mvc.Results._
 import play.api.mvc.{Request, Result}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: PersonalDetailsSender,
-                                          pdvMetrics: PdvMetrics)(implicit ec: ExecutionContext){
+                                          pdvMetrics: PdvMetrics)(implicit ec: ExecutionContext) extends Logging {
 
   val validationIdSessionKey = "ValidationId"
 
@@ -57,6 +58,13 @@ class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: Pe
     val strippedCompletionUrl = stripValidationId(completionUrl.value)
     personalDetailsValidation match {
       case SuccessfulPersonalDetailsValidation(validationId, _) =>
+
+        val currentSessionValidationId: Option[String] = request.session.get(validationIdSessionKey)
+        logger.info(s"Submission Success, validationId Stripped from completionUrl: ${s"""[?&]validationId=$UUIDRegex""".r.findFirstIn(completionUrl.value)} | " +
+          s"validationId appended to completionUrl: ${validationId.value} | " +
+          s"validationId in session before it is replaced $currentSessionValidationId | " +
+          s"${currentSessionValidationId.fold("")(current => "In session not equal to new validationId: " + !current.contains(validationId.value))}")
+
         Redirect(strippedCompletionUrl, validationId.toQueryParam).addingToSession(validationIdSessionKey -> validationId.value)
       case _ => throw new scala.RuntimeException("Unable to redirect success validation")
     }
