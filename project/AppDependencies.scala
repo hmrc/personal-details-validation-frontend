@@ -9,7 +9,7 @@ private object AppDependencies {
     "org.typelevel" %% "cats-core" % "2.0.0",
     "uk.gov.hmrc"   %% "bootstrap-frontend-play-28" % "7.15.0",
     "uk.gov.hmrc"   %% "domain" % "8.3.0-play-28",
-    "uk.gov.hmrc"   %% "play-frontend-hmrc"  % "7.7.0-play-28",
+    "uk.gov.hmrc"   %% "play-frontend-hmrc-play-28"  % "8.5.0",
     "uk.gov.hmrc"   %% "reactive-circuit-breaker"  % "4.1.0"
   )
 
