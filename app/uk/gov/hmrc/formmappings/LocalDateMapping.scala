@@ -24,7 +24,6 @@ import play.api.data.validation.{Constraint, ValidationError}
 import play.api.data.{FormError, Mapping, ObjectMapping}
 import uk.gov.hmrc.personaldetailsvalidation.model.DateErrorMessage
 
-import scala.language.implicitConversions
 import scala.util.{Failure, Success, Try}
 
 case class LocalDateMapping private[formmappings](key: String = "",

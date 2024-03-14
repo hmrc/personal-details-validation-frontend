@@ -37,7 +37,7 @@ class DwpMessagesApiProvider @Inject()(environment: Environment, configuration: 
   }
 
   def dwpLoadMessages(file: String): Map[String, String] = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
 
     val dwpMessagesPrefix = configuration.getOptional[String]("dwp.messages")
 

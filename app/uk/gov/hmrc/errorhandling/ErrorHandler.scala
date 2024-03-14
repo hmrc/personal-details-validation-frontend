@@ -28,7 +28,6 @@ import uk.gov.hmrc.views.ViewConfig
 import uk.gov.hmrc.views.html.template.error_template
 
 import scala.concurrent.Future
-import scala.language.implicitConversions
 
 @Singleton
 class ErrorHandler @Inject()(appConfig: AppConfig, error_template: error_template)

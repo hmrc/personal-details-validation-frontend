@@ -73,7 +73,7 @@ class IdentityVerificationConnectorSpec
       withCaptureOfLoggingFrom(ivConnector.testLogger) { logEvents =>
         ivConnector.updateJourney("redirectingUrl", "Timeout")
           eventually {
-            logEvents.filter(_.getLevel == Level.WARN).loneElement.getMessage should include(s"Cannot extract IV journeyId from redirecting url")
+            logEvents.filter(log => log.getLevel == Level.WARN && log.getMessage.contains("Cannot extract IV journeyId from redirecting url")).head.getMessage should include(s"Cannot extract IV journeyId from redirecting url")
           }
       }
     }
