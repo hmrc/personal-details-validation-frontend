@@ -1047,6 +1047,18 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       val document: Document = Jsoup.parse(contentAsString(result))
       document.select("#accordion-incorrect-details-content-3 p").get(5).select("a").attr("href") should include("/find-your-national-insurance-number/checkDetails?origin=PDV")
     }
+
+    "display the accordion with a link to lost Nino when the findMyNino Feature Flag is set to true and origin is DWP" in new Setup(true) {
+
+      val result: Future[Result] = controller.incorrectDetails(completionUrl, 2, failureUrl)(request.withSession(("origin","dwp-iv-standalone")))
+
+      status(result) shouldBe 200
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
+
+      val document: Document = Jsoup.parse(contentAsString(result))
+      document.select("#accordion-incorrect-details-content-3 p").get(5).select("a").attr("href") should include("https://www.gov.uk/lost-national-insurance-number")
+    }
   }
 
 private class Setup(findMyNinoFlag: Boolean = false) {
