@@ -63,7 +63,7 @@ personal-details.dateOfBirth.miss.year=Mae’n rhaid i’r dyddiad geni gynnwys 
 
 validation.error-summary.dwp-text=cadarnhewch pwy ydych gan ddefnyddio dull arall
 validation.error-summary.before-link-text=Nid oeddem yn gallu dod o hyd i unrhyw gofnodion sy’n cyd-fynd â’r manylion a nodwyd gennych. Rhowch gynnig arall arni, neu
-validation.error-summary.link-text=cysylltwch â CThEM
+validation.error-summary.link-text=cysylltwch â CThEF
 validation.error-summary.after-link-text=i gael help
 validation.error-summary.text=Nid oeddem yn gallu dod o hyd i unrhyw gofnodion sy’n cyd-fynd â’r manylion a nodwyd gennych. Rhowch gynnig arall arni.
 validation.error-summary.heading=Mae problem wedi codi
@@ -86,16 +86,16 @@ we-cannot-check-your-identity.ul.2= mae rhiant wedi llenwi ffurflen hawlio <a hr
 multi_option_incorrect_details.title=Nid yw’r wybodaeth a roesoch yn cyd-fynd â’n cofnodion
 multi_option_incorrect_details.h1=Nid yw’r wybodaeth a roesoch yn cyd-fynd â’n cofnodion
 multi_option_incorrect_details.p1=Mae hyn yn golygu bod yr holl fanylion a nodwyd gennych, neu rywfaint ohonynt, yn anghywir.
-multi_option_incorrect_details.p2=Os bydd eich manylion yn newid, mae gennych gyfrifoldeb cyfreithiol i ddiweddaru’ch dogfennau a’ch cofnodion gyda CThEM a sefydliadau eraill. Ni fyddwch yn gallu defnyddio dogfennau sy’n cynnwys gwybodaeth sydd wedi dyddio i gadarnhau pwy ydych.
+multi_option_incorrect_details.p2=Os bydd eich manylion yn newid, mae gennych gyfrifoldeb cyfreithiol i ddiweddaru’ch dogfennau a’ch cofnodion gyda CThEF a sefydliadau eraill. Ni fyddwch yn gallu defnyddio dogfennau sy’n cynnwys gwybodaeth sydd wedi dyddio i gadarnhau pwy ydych.
 multi_option_incorrect_details.p3=Mae cymorth a chyngor manylach ar gadarnhau pwy ydych ar gael isod.
 
 multi_option_incorrect_details.accordion.helped=Cael help gan ein tîm cymorth technegol
-multi_option_incorrect_details.accordion.no.1=Os nad ydych yn credu y gallwch nodi’r wybodaeth hon yn gywir am ba bynnag rheswm, gallwch <a class="govuk-link" target="_blank" rel="noopener noreferrer" href="{0}">gysylltu â CThEM drwy ddefnyddio ein gwasanaeth cymorth technegol ar-lein (yn agor tab newydd)</a>.
+multi_option_incorrect_details.accordion.no.1=Os nad ydych yn credu y gallwch nodi’r wybodaeth hon yn gywir am ba bynnag rheswm, gallwch <a class="govuk-link" target="_blank" rel="noopener noreferrer" href="{0}">gysylltu â CThEF drwy ddefnyddio ein gwasanaeth cymorth technegol ar-lein (yn agor tab newydd)</a>.
 
 multi_option_incorrect_details.accordion.heading1=Enwau cyntaf ac olaf
 multi_option_incorrect_details.accordion.accordion1.1=Mae angen i chi nodi’ch enw cyntaf a’ch enw olaf fel eu bod yn cyd-fynd â’n cofnodion.
 multi_option_incorrect_details.accordion.accordion1.2=Weithiau cyfeirir at enw cyntaf fel enw a roddwyd. Weithiau cyfeirir at enw olaf fel enw teuluol neu gyfenw.
-multi_option_incorrect_details.accordion.accordion1.3=Mae’n rhaid i chi <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">roi gwybod i CThEM os yw’ch enw wedi newid (yn agor tab newydd)</a>, er enghraifft os ydych wedi priodi neu ysgaru.
+multi_option_incorrect_details.accordion.accordion1.3=Mae’n rhaid i chi <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">roi gwybod i CThEF os yw’ch enw wedi newid (yn agor tab newydd)</a>, er enghraifft os ydych wedi priodi neu ysgaru.
 multi_option_incorrect_details.accordion.accordion1.4=Bydd eich enw’n cael ei ddiweddaru’n awtomatig <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">os byddwch yn newid eich rhywedd (yn agor tab newydd)</a>.
 multi_option_incorrect_details.accordion.heading2=Dyddiad geni
 multi_option_incorrect_details.accordion.accordion2.1=Mae’n rhaid nodi’ch dyddiad geni fel rhifau ac mae’n rhaid iddo gynnwys diwrnod, mis a blwyddyn. Er enghraifft, 31 3 1980.
@@ -117,8 +117,8 @@ multi_option_incorrect_details.accordion.accordion3.13=Gallwch <a href="{0}" cla
 multi_option_incorrect_details.accordion.heading4=Cod post
 multi_option_incorrect_details.accordion.accordion4.1=Bydd yr opsiwn cod post ond yn gweithio ar gyfer cyfeiriadau yn y DU. Er enghraifft SW1A 2AA.
 multi_option_incorrect_details.accordion.accordion4.2=Gallwch nodi’ch cod post mewn llythrennau mawr neu fach, gyda bylchau neu heb fylchau.
-multi_option_incorrect_details.accordion.accordion4.3=Os byddwch yn newid eich cyfeiriad, mae’n rhaid i chi wneud yn siŵr bod eich dogfennau a’ch cofnodion gyda CThEM a sefydliadau eraill yn gyfredol.
-multi_option_incorrect_details.accordion.accordion4.4=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Rhowch wybod i CThEM pan fyddwch chi’n newid eich cyfeiriad (yn agor tab newydd).</a>
+multi_option_incorrect_details.accordion.accordion4.3=Os byddwch yn newid eich cyfeiriad, mae’n rhaid i chi wneud yn siŵr bod eich dogfennau a’ch cofnodion gyda CThEF a sefydliadau eraill yn gyfredol.
+multi_option_incorrect_details.accordion.accordion4.4=<a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">Rhowch wybod i CThEF pan fyddwch chi’n newid eich cyfeiriad (yn agor tab newydd).</a>
 multi_option_incorrect_details.p4=<span class="govuk-!-font-weight-bold">Mae gennych {0} ymgais arall</span> i brofi pwy ydych.
 multi_option_incorrect_details.p4.sa=<span class="govuk-!-font-weight-bold">YMae gennych {0} ymgais arall</span> i brofi pwy ydych, neu gallwch <a href="{0}" class="govuk-link" target="_blank" rel="noopener noreferrer">ofyn am gael ‘pin’ diogel drwy’r post</a>.
 multi_option_incorrect_details.p4.last=<span class="govuk-!-font-weight-bold">Mae gennych 1 ymgais arall</span> i brofi pwy ydych.
@@ -134,7 +134,7 @@ multi_option_incorrect_details.locked_out.p3=Fodd bynnag, ni fyddant yn gallu’
 
 service_temporarily_unavailable.h1=Mae’n ddrwg gennym, nid yw’r gwasanaeth ar gael ar hyn o bryd
 service_temporarily_unavailable.p1=Byddwch yn gallu defnyddio’r gwasanaeth eto cyn bo hir.
-service_temporarily_unavailable.p2=Gallwch roi cynnig arall arni yn nes ymlaen neu, os yw’ch cais ar frys, <a href="{0}" class="govuk-link">cysylltwch â CThEM i gael help</a>.
+service_temporarily_unavailable.p2=Gallwch roi cynnig arall arni yn nes ymlaen neu, os yw’ch cais ar frys, <a href="{0}" class="govuk-link">cysylltwch â CThEF i gael help</a>.
 service_temporarily_unavailable.p2.sa=<a href="{0}" class="govuk-link">Gallwch ofyn am gael ‘pin’ diogel drwy’r post.</a>
 service_temporarily_unavailable.p2.dwp=Gallwch <a href="{0}" class="govuk-link">gadarnhau pwy ydych mewn ffordd aral</a>.
 
