@@ -1,6 +1,9 @@
+**This service was always designed to be used in conjunction with `identity-verification-frontend` and was never intended to be used as a standalone microservice for consumption.**
+
 # personal-details-validation-frontend
 
 personal-details-validation-frontend service is used to capture name, surname, date of birth and either nino or postcode of the user and make it available to all the services.
+
 
 
 ### Test
