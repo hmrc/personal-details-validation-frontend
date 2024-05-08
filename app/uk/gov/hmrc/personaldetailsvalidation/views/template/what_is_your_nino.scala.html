@@ -34,7 +34,7 @@
 
 @mainTemplate(
     title = msgs("what-is-your-national-insurance-number.nino.title"),
-    backLinkUrl = if(viewConfig.findMyNino)Some(routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl, failureUrl).url) else None,
+    backLinkUrl = Some(routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl, failureUrl).url),
     completionUrl = Some(completionUrl),
     form = Some(pageForm),
     formErrors = pageForm.errors,
@@ -56,10 +56,6 @@
             hint = Some(msgs("what-is-your-national-insurance-number.nino.hint")),
             attributes = Map("spellcheck" -> "false"),
         )
-
-        @if(!viewConfig.findMyNino) {
-            @p(key = msgs("what-is-your-national-insurance-number.nino.unavailable", routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl, failureUrl).url), id = Some("nino-unknown"))
-        }
 
         @button()
     }
