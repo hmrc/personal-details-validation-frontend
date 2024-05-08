@@ -132,7 +132,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         .expects(*, *)
         .returns(Future.successful(true))
 
-      val expectedUrl: String = routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl).url
+      val expectedUrl: String = routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl).url
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -963,7 +963,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.select("#accordion-incorrect-details-content-3 p").get(4).text() shouldBe "You must have a National Insurance number so we can check your identity. If you have never had one, apply for a National Insurance number (opens in new tab)."
       document.select("#accordion-incorrect-details-content-3 p").get(4).select("a").attr("href") shouldBe "https://www.gov.uk/apply-national-insurance-number"
       document.select("#accordion-incorrect-details-content-3 p").get(5).text() shouldBe "You can find your National Insurance number (opens in new tab) if you have lost or forgotten it."
-      document.select("#accordion-incorrect-details-content-3 p").get(5).select("a").attr("href") shouldBe "https://www.gov.uk/lost-national-insurance-number"
+      document.select("#accordion-incorrect-details-content-3 p").get(5).select("a").attr("href") should include("find-your-national-insurance-number/checkDetails?origin=PDV")
       document.select("#accordion-incorrect-details-heading-4").text() shouldBe messages("multi_option_incorrect_details.accordion.heading4")
       document.select("#accordion-incorrect-details-content-4 p").get(0).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion4.1")
       document.select("#accordion-incorrect-details-content-4 p").get(1).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion4.2")
