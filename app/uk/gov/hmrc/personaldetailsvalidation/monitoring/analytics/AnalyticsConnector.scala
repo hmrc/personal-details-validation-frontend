@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics
 
-import akka.Done
+import org.apache.pekko.Done
 import play.api.Logging
 import play.api.libs.json.{Json, OWrites}
 import uk.gov.hmrc.config.AppConfig
@@ -28,11 +28,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AnalyticsConnector @Inject() (appConfig: AppConfig, http: HttpClient) extends Logging {
-  def serviceUrl: String = appConfig.platformAnalyticsUrl
+  private def serviceUrl: String = appConfig.platformAnalyticsUrl
 
   private implicit val dimensionWrites: OWrites[DimensionValue] = Json.writes[DimensionValue]
-  private implicit val eventWrites = Json.writes[Event]
-  private implicit val analyticsWrites = Json.writes[AnalyticsRequest]
+  private implicit val eventWrites: OWrites[Event] = Json.writes[Event]
+  private implicit val analyticsWrites: OWrites[AnalyticsRequest] = Json.writes[AnalyticsRequest]
 
   def sendEvent(request: AnalyticsRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Done] = {
     val url = s"$serviceUrl/platform-analytics/event"

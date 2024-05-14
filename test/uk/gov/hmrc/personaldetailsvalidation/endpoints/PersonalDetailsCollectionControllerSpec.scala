@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import akka.actor.ActorSystem
-import akka.stream.Materializer
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.Materializer
 import support.Generators.Implicits._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}

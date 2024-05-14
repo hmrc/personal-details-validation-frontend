@@ -30,7 +30,7 @@ class LoggerSpec
     "delegate to the given logger" in new Setup {
       val error = ProcessingError("message")
 
-      underlyingLogger.expects('error)(argAssert {
+      underlyingLogger.expects(Symbol("error"))(argAssert {
         (message: () => String) =>
           message() shouldBe "message"
       }, *)

@@ -15,8 +15,8 @@
  */
 
 package support
-import akka.stream.Materializer
-import akka.util.ByteString
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.util.ByteString
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.HeaderNames._
@@ -40,7 +40,7 @@ abstract class UnitSpec extends AnyWordSpec with Matchers {
     case ResponseHeader(SEE_OTHER, headers, _) => headers.get(LOCATION)
     case ResponseHeader(TEMPORARY_REDIRECT, headers, _) => headers.get(LOCATION)
     case ResponseHeader(MOVED_PERMANENTLY, headers, _) => headers.get(LOCATION)
-    case ResponseHeader(_, _, _) => None
+    case _ => None
   }
 
 

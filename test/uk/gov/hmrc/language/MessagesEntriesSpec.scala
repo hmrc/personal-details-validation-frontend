@@ -72,7 +72,7 @@ class MessagesEntriesSpec extends UnitSpec with GuiceOneAppPerSuite {
     "footer.cookies.url"
   )
   private val excludedKeysSet: Set[String] =
-    keysForPendingTranslations ++: keysNotNeeded
+    keysForPendingTranslations ++ keysNotNeeded
 
   private val excludedKeys: ((String, String)) => Boolean = {
     case (k, _) => excludedKeysSet.contains(k)

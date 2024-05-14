@@ -19,7 +19,6 @@ package support
 import org.scalacheck.{Arbitrary, Gen}
 
 import java.time.{Instant, LocalDate, ZoneId, ZonedDateTime}
-import scala.language.implicitConversions
 
 trait Generators {
 

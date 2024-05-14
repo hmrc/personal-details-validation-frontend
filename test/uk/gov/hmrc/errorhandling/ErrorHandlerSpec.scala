@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.errorhandling
 
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import org.jsoup.nodes.Document
+import org.scalatest.Assertion
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
@@ -50,7 +51,7 @@ class ErrorHandlerSpec
 
     s"return BAD_REQUEST status with the Technical Problem page " +
       s"for BAD_REQUEST status and message not containing $bindingError" in new Setup {
-      val result = errorHandler.onClientError(request, BAD_REQUEST, "error-message").futureValue
+      val result: Result = errorHandler.onClientError(request, BAD_REQUEST, "error-message").futureValue
 
       status(result) shouldBe BAD_REQUEST
       verify(result).containsTechnicalErrorPage
@@ -58,7 +59,7 @@ class ErrorHandlerSpec
 
     s"return NOT_FOUND status with the Technical Problem page " +
       s"for BAD_REQUEST status and message containing $bindingError" in new Setup {
-      val result = errorHandler.onClientError(request, BAD_REQUEST, s"${bindingError}error-message").futureValue
+      val result: Result = errorHandler.onClientError(request, BAD_REQUEST, s"${bindingError}error-message").futureValue
 
       status(result) shouldBe NOT_FOUND
       verify(result).containsTechnicalErrorPage
@@ -80,12 +81,12 @@ class ErrorHandlerSpec
 
     implicit val materializer: Materializer = app.materializer
 
-    val mockAppConfig = mock[AppConfig]
+    private val appConfig = app.injector.instanceOf[AppConfig]
     implicit val dwpMessagesApi: DwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
-    
-    val errorHandler: ErrorHandler = new ErrorHandler(mockAppConfig, app.injector.instanceOf[error_template])
 
-    def verify(result: Result) = new {
+    val errorHandler: ErrorHandler = new ErrorHandler(appConfig, app.injector.instanceOf[error_template])
+
+    def verify(result: Result): Object {val containsTechnicalErrorPage: Assertion} = new {
       lazy val containsTechnicalErrorPage = {
         val html: Document = Html(bodyOf(result))
 
