@@ -132,7 +132,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         .expects(*, *)
         .returns(Future.successful(true))
 
-      val expectedUrl: String = routes.PersonalDetailsCollectionController.whatIsYourNino(completionUrl).url
+      val expectedUrl: String = routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl).url
       val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody(
         "firstName" -> "Jim",
         "lastName" -> "Ferguson",
@@ -429,7 +429,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
 
-    "include a back link when the findMyNino Feature Flag is set to true" in new Setup(true) {
+    "include a back link" in new Setup() {
 
       (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
@@ -448,48 +448,6 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       val document: Document = Jsoup.parse(contentAsString(result))
       document.select("a[class='govuk-back-link']").attr("href") shouldBe routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl).url
-    }
-
-    "not include a back link when the findMyNino Feature Flag is false" in new Setup {
-
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
-        .expects(*, *)
-        .returns(Future.successful(true))
-
-      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
-        "firstName" -> "Jim",
-        "lastName" -> "Ferguson",
-        "dob" -> "1939-09-01"
-      )
-
-      val result: Future[Result] = controller.whatIsYourNino(completionUrl, failureUrl)(req)
-
-      contentType(result) shouldBe Some(HTML)
-      charset(result) shouldBe Some("utf-8")
-
-      val document: Document = Jsoup.parse(contentAsString(result))
-      document.select("a[class='govuk-back-link']").size() shouldBe (0)
-    }
-
-    "include a link to the Postcode entry page when the findMyNino Feature Flag is false" in new Setup {
-
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
-        .expects(*, *)
-        .returns(Future.successful(true))
-
-      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
-        "firstName" -> "Jim",
-        "lastName" -> "Ferguson",
-        "dob" -> "1939-09-01"
-      )
-
-      val result: Future[Result] = controller.whatIsYourNino(completionUrl, failureUrl)(req)
-
-      contentType(result) shouldBe Some(HTML)
-      charset(result) shouldBe Some("utf-8")
-
-      val document: Document = Jsoup.parse(contentAsString(result))
-      document.select("main a").get(0).attr("href") shouldBe routes.PersonalDetailsCollectionController.whatIsYourPostCode(completionUrl, failureUrl).url
     }
   }
 
@@ -525,7 +483,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
     }
 
-    "include a back link when the findMyNino Feature Flag is set to true" in new Setup(true) {
+    "include a back link" in new Setup() {
 
       (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
@@ -544,27 +502,6 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       val document: Document = Jsoup.parse(contentAsString(result))
       document.select("a[class='govuk-back-link']").attr("href") shouldBe routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl).url
-    }
-
-    "not include a back link when the findMyNino Feature Flag is false" in new Setup {
-
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
-        .expects(*, *)
-        .returns(Future.successful(true))
-
-      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
-        "firstName" -> "Jim",
-        "lastName" -> "Ferguson",
-        "dob" -> "1939-09-01"
-      )
-
-      val result: Future[Result] = controller.whatIsYourPostCode(completionUrl, failureUrl)(req)
-
-      contentType(result) shouldBe Some(HTML)
-      charset(result) shouldBe Some("utf-8")
-
-      val document: Document = Jsoup.parse(contentAsString(result))
-      document.select("a[class='govuk-back-link']").size() shouldBe(0)
     }
   }
 
@@ -1026,7 +963,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.select("#accordion-incorrect-details-content-3 p").get(4).text() shouldBe "You must have a National Insurance number so we can check your identity. If you have never had one, apply for a National Insurance number (opens in new tab)."
       document.select("#accordion-incorrect-details-content-3 p").get(4).select("a").attr("href") shouldBe "https://www.gov.uk/apply-national-insurance-number"
       document.select("#accordion-incorrect-details-content-3 p").get(5).text() shouldBe "You can find your National Insurance number (opens in new tab) if you have lost or forgotten it."
-      document.select("#accordion-incorrect-details-content-3 p").get(5).select("a").attr("href") shouldBe "https://www.gov.uk/lost-national-insurance-number"
+      document.select("#accordion-incorrect-details-content-3 p").get(5).select("a").attr("href") should include("find-your-national-insurance-number/checkDetails?origin=PDV")
       document.select("#accordion-incorrect-details-heading-4").text() shouldBe messages("multi_option_incorrect_details.accordion.heading4")
       document.select("#accordion-incorrect-details-content-4 p").get(0).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion4.1")
       document.select("#accordion-incorrect-details-content-4 p").get(1).text() shouldBe messages("multi_option_incorrect_details.accordion.accordion4.2")
@@ -1036,19 +973,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.select("main a[class='govuk-button']").text() shouldBe messages("multi_option_incorrect_details.button")
     }
 
-    "display the accordion with a link to find your Nino when the findMyNino Feature Flag is set to true" in new Setup(true) {
-
-      val result: Future[Result] = controller.incorrectDetails(completionUrl, 2, failureUrl)(request)
-
-      status(result) shouldBe 200
-      contentType(result) shouldBe Some(HTML)
-      charset(result) shouldBe Some("utf-8")
-
-      val document: Document = Jsoup.parse(contentAsString(result))
-      document.select("#accordion-incorrect-details-content-3 p").get(5).select("a").attr("href") should include("/find-your-national-insurance-number/checkDetails?origin=PDV")
-    }
-
-    "display the accordion with a link to lost Nino when the findMyNino Feature Flag is set to true and origin is DWP" in new Setup(true) {
+    "display the accordion with a link to lost Nino when the origin is DWP" in new Setup() {
 
       val result: Future[Result] = controller.incorrectDetails(completionUrl, 2, failureUrl)(request.withSession(("origin","dwp-iv-standalone")))
 
@@ -1061,7 +986,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
   }
 
-private class Setup(findMyNinoFlag: Boolean = false) {
+private class Setup() {
 
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -1083,7 +1008,6 @@ private class Setup(findMyNinoFlag: Boolean = false) {
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
     private class ViewConfigWithValues extends ViewConfig(mock[Configuration], mock[ServicesConfig], mock[DwpMessagesApiProvider], mockAuthConnector) {
-      override lazy val findMyNino: Boolean = findMyNinoFlag
       override lazy val retryLimit: Int = 5
       override lazy val timeout: Int = 900
       override lazy val timeoutCountdown: Int = 120
