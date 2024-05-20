@@ -18,7 +18,6 @@ package setups.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalamock.scalatest.MockFactory
 import play.api.Application
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.mvc.AnyContentAsEmpty
@@ -26,7 +25,7 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import uk.gov.hmrc.views.ViewConfig
 
-abstract class ViewSetup(implicit app: Application) extends MockFactory {
+abstract class ViewSetup(implicit app: Application) {
 
   implicit val viewConfig: ViewConfig = app.injector.instanceOf[ViewConfig]
   implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.language
 
-import akka.stream.Materializer
-import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
@@ -25,9 +23,7 @@ import play.api.i18n.{DefaultLangs, Lang, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import setups.views.ViewConfigMockFactory
 import support.UnitSpec
-import uk.gov.hmrc.config.DwpMessagesApiProvider
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.views.ViewConfig
 
@@ -74,22 +70,18 @@ class ChangeLanguageEndpointSpec extends UnitSpec with ScalaFutures with GuiceOn
     }
   }
 
-  private trait Setup extends MockFactory {
+  private trait Setup {
 
-    implicit val materializer: Materializer = app.materializer
-
-    implicit val dwpMessagesApi: DwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
-    implicit val messagesApi: MessagesApi = dwpMessagesApi.get
+    val viewConfig: ViewConfig = app.injector.instanceOf[ViewConfig]
+    implicit val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
     val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-    val viewConfig: ViewConfig = ViewConfigMockFactory()
 
     lazy val testConfig: Map[String, Any] = Map(
       "dwp.originLabel" -> "dwp-iv",
       "play.i18n.langs" -> List("en", "cy"),
       "play.i18n.descriptions" -> Map("en" -> "english", "cy" -> "cymraeg")
     )
-
     val languageUtils = new LanguageUtils(new DefaultLangs(Seq(Lang("en"), Lang("cy"))), Configuration.from(testConfig))
 
     val controller = new ChangeLanguageEndpoint(viewConfig, languageUtils, stubControllerComponents())

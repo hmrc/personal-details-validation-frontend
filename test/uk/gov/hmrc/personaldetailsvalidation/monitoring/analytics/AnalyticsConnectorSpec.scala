@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.monitoring.analytics
 
-import akka.Done
+import org.apache.pekko.Done
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.Eventually
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite

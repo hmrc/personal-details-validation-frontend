@@ -18,7 +18,6 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 import ch.qos.logback.classic.Level
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
 import org.scalatest.concurrent.Eventually.eventually
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.Writes
