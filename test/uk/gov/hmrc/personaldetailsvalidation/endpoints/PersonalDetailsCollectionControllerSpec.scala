@@ -418,6 +418,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       val document: Document = Jsoup.parse(contentAsString(result))
 
+      document.select("h2.govuk-caption-l").text() shouldBe messages("personal-details-validation.faded-heading")
       document.select("h1.govuk-label-wrapper").text() shouldBe messages("what-is-your-national-insurance-number.nino.label")
       document.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submitYourNino(completionUrl).url
       document.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
