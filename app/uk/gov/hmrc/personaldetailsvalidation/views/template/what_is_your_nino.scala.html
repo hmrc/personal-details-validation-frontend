@@ -42,6 +42,8 @@
     failureUrl = failureUrl
 ) {
 
+    @preH1("personal-details-validation.faded-heading")
+
     @formWithCSRF(
         routes.PersonalDetailsCollectionController.submitYourNino(completionUrl, failureUrl),
         'autocomplete -> "off",
@@ -49,7 +51,6 @@
 
         @textbox(
             field = pageForm("nino"),
-            caption = Some(msgs("personal-details-validation.faded-heading")),
             label = "what-is-your-national-insurance-number.nino.label",
             labelIsHeading = true,
             classes = "govuk-input--width-10",
