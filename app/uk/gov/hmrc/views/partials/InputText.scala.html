@@ -23,7 +23,6 @@
     field: Field,
     inputType: String = "text",
     label: String,
-    caption: Option[String] = None,
     labelClasses: String = "",
     hint: Option[String] = None,
     classes: String = "",
@@ -41,11 +40,7 @@
         inputType = inputType,
         label = if(label != null) Label(
             classes = if(labelIsHeading) Constants.LABEL_H1_CLASS else labelClasses,
-            content = if (caption.isDefined) {
-                HtmlContent(
-                    s"""<span class="govuk-caption-l">${caption.get}</span>
-                    |${msgs(label)}""".stripMargin)
-            } else Text(msgs(label)),
+            content = Text(msgs(label)),
             isPageHeading = labelIsHeading
         ) else Label(),
         hint = hint.map(h => Hint(content = Text(h))),
