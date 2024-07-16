@@ -124,9 +124,15 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def whatIsYourNino(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
-      Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn, failureUrl)))
+      sessionKeyCheck(
+        Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn, failureUrl))),
+        completionUrl,
+        failureUrl
+      )
     }
   }
+
+
 
   def submitYourNino(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
@@ -151,7 +157,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def whatIsYourPostCode(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
-       Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn, failureUrl)))
+      sessionKeyCheck(
+        Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn, failureUrl))),
+        completionUrl,
+        failureUrl
+      )
     }
   }
 
@@ -173,6 +183,22 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
           }
         }
       )
+    }
+  }
+
+  private def sessionKeyCheck(result: Future[Result], completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl])(implicit request: MessagesRequest[AnyContent]): Future[Result] = {
+    val missingSessionKeys = List(FIRST_NAME_KEY, LAST_NAME_KEY, DOB_KEY).map(
+      key => (request.session.get(key), key)
+    ).filter(_._1.isEmpty)
+
+    if (missingSessionKeys.isEmpty) {
+      result
+    } else {
+      logger.warn("Missing session key(s): " +
+        s"${for (sessionKey <- missingSessionKeys.map(_._2).reduceLeft((x, y) => x + " & " + y)) yield sessionKey}. " +
+        "Redirecting to 'Enter you details' page."
+      )
+      Future(Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, withError = false, failureUrl)))
     }
   }
 
