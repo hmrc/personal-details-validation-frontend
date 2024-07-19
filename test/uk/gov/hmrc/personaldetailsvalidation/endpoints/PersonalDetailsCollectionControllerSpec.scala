@@ -683,7 +683,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       redirectLocation(await(result)).get.contains("/personal-details-validation/enter-your-details?completionUrl=") shouldBe true
     }
 
-    "Bad Request if the initial details are not present in the request" in new Setup {
+    "Redirect to 'Enter you details' page if the initial details are not present in the request" in new Setup {
 
       (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
@@ -691,7 +691,8 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(request.withFormUrlEncodedBody("nino" -> "AA000001A"))
 
-      status(result) shouldBe BAD_REQUEST
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)) shouldBe Some(s"/personal-details-validation/enter-your-details?completionUrl=${URLEncoder.encode(completionUrl.toString, "UTF-8")}")
     }
   }
 
@@ -783,14 +784,16 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.errorsSummary.content shouldBe messages("personal-details.postcode.invalid")
     }
 
-    "Bad Request if the initial details are not present in the request" in new Setup {
+    "Redirect to 'Enter you details' page if the initial details are not present in the request" in new Setup {
 
       (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
       val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(request.withFormUrlEncodedBody("postcode" -> "BN11 1NN"))
-      status(result) shouldBe BAD_REQUEST
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)) shouldBe Some(s"/personal-details-validation/enter-your-details?completionUrl=${URLEncoder.encode(completionUrl.toString, "UTF-8")}")
     }
 
     "redirect to showPage if no details found" in new Setup {
