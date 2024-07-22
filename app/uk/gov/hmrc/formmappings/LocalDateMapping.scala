@@ -66,6 +66,16 @@ private object LocalDateMapping {
                                      constraints: Seq[Constraint[LocalDate]])
                                     (errorKeyPrefix: => String) {
 
+    private val shortMonths = Map(
+      "JAN" -> 1, "FEB" -> 2, "MAR" -> 3, "APR" -> 4, "MAY" -> 5, "JUN" -> 6,
+      "JUL" -> 7, "AUG" -> 8, "SEP" -> 9, "OCT" -> 10, "NOV" -> 11, "DEC" -> 12
+    )
+
+    private val longMonths = Map(
+      "January" -> 1, "February" -> 2, "March" -> 3, "April" -> 4, "May" -> 5, "June" -> 6,
+      "July" -> 7, "August" -> 8, "September" -> 9, "October" -> 10, "November" -> 11, "December" -> 12
+    )
+
     // works on each element of the map
     private def removeSpacesFromValues(pair: (String, String)): (String, String) = {
       val key = pair._1
@@ -76,13 +86,13 @@ private object LocalDateMapping {
     def bind(formData: Map[String, String]): Either[Seq[FormError], LocalDate] = {
       val cleanedMap: Map[String, String] = formData.map(removeSpacesFromValues)
       Seq(
-      "year".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(fourDigitsValidator),
-      "month".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(MONTH_OF_YEAR),
-      "day".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(DAY_OF_MONTH)
-    ).toValidatedDate
-      .leftMap(toFormErrors)
-      .checkConstraints
-      .toEither
+        "year".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(fourDigitsValidator),
+        "month".prependWithKey.findValueIn(cleanedMap).validateMonthUsing(monthValidator),
+        "day".prependWithKey.findValueIn(cleanedMap).parseToInt.validateUsing(DAY_OF_MONTH)
+      ).toValidatedDate
+        .leftMap(toFormErrors)
+        .checkConstraints
+        .toEither
     }
 
     implicit class PartNameOps(partName: String) {
@@ -114,12 +124,16 @@ private object LocalDateMapping {
             case Failure(_) => Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
           }
       }
+
+      def validateMonthUsing(validate: ((String, String)) => ValidatedNel[String, Int]): ValidatedNel[String, Int] =
+        validatedPart flatMap validate
     }
 
     private implicit class ValidatedIntPartOps(validatedPart: ValidatedNel[String, (String, Int)]) {
 
       def validateUsing(validate: ((String, Int)) => ValidatedNel[String, Int]): ValidatedNel[String, Int] =
         validatedPart flatMap validate
+
     }
 
     private implicit def asTupleToValidated(field: ChronoField): ((String, Int)) => ValidatedNel[String, Int] = {
@@ -133,6 +147,19 @@ private object LocalDateMapping {
       case (partName, year) =>
         if (year > 999 && year < 9999) Validated.validNel(year)
         else Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
+    }
+
+    private val monthValidator: ((String, String)) => ValidatedNel[String, Int] = {
+      case (partName, month) =>
+        Try(month.toInt) match {
+          case Success(month) =>
+            if (month >= 1 && month <= 12) Validated.validNel(month)
+            else Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
+          case Failure(_) =>
+            if (shortMonths contains month.toUpperCase) Validated.validNel(shortMonths.getOrElse(month.toUpperCase, 0))
+            else if (longMonths contains month.toUpperCase) Validated.validNel(longMonths.getOrElse(month.toUpperCase, 0))
+            else Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
+        }
     }
 
     private implicit class ValidatedPartsOps(seqOfValidatedParts: Seq[ValidatedNel[String, Int]]) {

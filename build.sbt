@@ -57,4 +57,3 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions += s"-Wconf:src=${target.value}/.*:s"
   )
   .settings(A11yTest / unmanagedSourceDirectories += (baseDirectory.value / "accessibility"))
-  .settings(javacOptions ++= Seq("-source", "11", "-target", "11"))
