@@ -212,11 +212,11 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
       bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.tooYoung")))
     }
 
-    "accept an abbreviated month name" in new DateMappingSetup with DateMapping {
+    "accept an abbreviated month name including a mixture of case" in new DateMappingSetup with DateMapping {
 
       val partsWithAbbreviatedMonth: Map[String, String] = Map(
         s"$dateFieldName.year" -> "2000",
-        s"$dateFieldName.month" -> "JAN",
+        s"$dateFieldName.month" -> "jAn",
         s"$dateFieldName.day" -> "29"
       )
 
@@ -225,11 +225,11 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
       bindResult shouldBe Right(LocalDate.of(2000, 1, 29))
     }
 
-    "accept a full month name" in new DateMappingSetup with DateMapping {
+    "accept a full month name including a mixture of case" in new DateMappingSetup with DateMapping {
 
       val partsWithAbbreviatedMonth: Map[String, String] = Map(
         s"$dateFieldName.year" -> "2000",
-        s"$dateFieldName.month" -> "January",
+        s"$dateFieldName.month" -> "jAnuary",
         s"$dateFieldName.day" -> "29"
       )
 
