@@ -137,9 +137,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
           case `yearPartName` =>
             yearPartName -> Gen.oneOf(1000 - 1, 9999 + 1).generateOne.toString
           case `monthPartName` =>
-            monthPartName -> Gen.oneOf(-1, 0, 13).generateOne.toString
-          case `monthPartName` =>
-            monthPartName -> Gen.oneOf(-1, "notMonthString", 13).generateOne.toString
+            monthPartName -> Gen.oneOf(-1, 0, 13, "notMonthString").generateOne.toString
           case `dayPartName` =>
             dayPartName -> Gen.oneOf(-1, 0, 32).generateOne.toString
         }
