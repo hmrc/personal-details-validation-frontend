@@ -66,12 +66,12 @@ private object LocalDateMapping {
                                      constraints: Seq[Constraint[LocalDate]])
                                     (errorKeyPrefix: => String) {
 
-    private val shortMonths = Map(
+    private val abbrMonths = Map(
       "JAN" -> 1, "FEB" -> 2, "MAR" -> 3, "APR" -> 4, "MAY" -> 5, "JUN" -> 6,
       "JUL" -> 7, "AUG" -> 8, "SEP" -> 9, "OCT" -> 10, "NOV" -> 11, "DEC" -> 12
     )
 
-    private val longMonths = Map(
+    private val months = Map(
       "January" -> 1, "February" -> 2, "March" -> 3, "April" -> 4, "May" -> 5, "June" -> 6,
       "July" -> 7, "August" -> 8, "September" -> 9, "October" -> 10, "November" -> 11, "December" -> 12
     )
@@ -156,8 +156,8 @@ private object LocalDateMapping {
             if (month >= 1 && month <= 12) Validated.validNel(month)
             else Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
           case Failure(_) =>
-            if (shortMonths contains month.toUpperCase) Validated.validNel(shortMonths.getOrElse(month.toUpperCase, 0))
-            else if (longMonths contains month.toUpperCase) Validated.validNel(longMonths.getOrElse(month.toUpperCase, 0))
+            if (abbrMonths contains month.toUpperCase) Validated.validNel(abbrMonths.getOrElse(month.toUpperCase, 0))
+            else if (months contains month.toUpperCase) Validated.validNel(months.getOrElse(month.toUpperCase, 0))
             else Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
         }
     }
