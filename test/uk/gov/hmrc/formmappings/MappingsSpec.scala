@@ -138,6 +138,8 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
             yearPartName -> Gen.oneOf(1000 - 1, 9999 + 1).generateOne.toString
           case `monthPartName` =>
             monthPartName -> Gen.oneOf(-1, 0, 13).generateOne.toString
+          case `monthPartName` =>
+            monthPartName -> Gen.oneOf(-1, "notMonthString", 13).generateOne.toString
           case `dayPartName` =>
             dayPartName -> Gen.oneOf(-1, 0, 32).generateOne.toString
         }
@@ -156,7 +158,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
     "return the 'invalid' error if date parts forms invalid date" in new DateMappingSetup with DateMapping {
 
-      val partsWithInvalids = Map(
+      val partsWithInvalids: Map[String, String] = Map(
         s"$dateFieldName.year" -> "2017",
         s"$dateFieldName.month" -> "2",
         s"$dateFieldName.day" -> "29"
@@ -201,7 +203,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
     "return the 'tooYoung' error if date shows that the user is less than 15 years and 9 months old" in new DateMappingSetup with DateMapping {
 
-      val partsWithInvalids = Map(
+      val partsWithInvalids: Map[String, String] = Map(
         s"$dateFieldName.year" -> "2017",
         s"$dateFieldName.month" -> "2",
         s"$dateFieldName.day" -> "2"
@@ -210,6 +212,32 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
       val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(partsWithInvalids)
 
       bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.tooYoung")))
+    }
+
+    "accept an abbreviated month name" in new DateMappingSetup with DateMapping {
+
+      val partsWithAbbreviatedMonth: Map[String, String] = Map(
+        s"$dateFieldName.year" -> "2000",
+        s"$dateFieldName.month" -> "JAN",
+        s"$dateFieldName.day" -> "29"
+      )
+
+      val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(partsWithAbbreviatedMonth)
+
+      bindResult shouldBe Right(LocalDate.of(2000, 1, 29))
+    }
+
+    "accept a full month name" in new DateMappingSetup with DateMapping {
+
+      val partsWithAbbreviatedMonth: Map[String, String] = Map(
+        s"$dateFieldName.year" -> "2000",
+        s"$dateFieldName.month" -> "January",
+        s"$dateFieldName.day" -> "29"
+      )
+
+      val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(partsWithAbbreviatedMonth)
+
+      bindResult shouldBe Right(LocalDate.of(2000, 1, 29))
     }
 
   }
@@ -275,13 +303,13 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
     val yearPartName = s"$dateFieldName.year"
     val monthPartName = s"$dateFieldName.month"
     val dayPartName = s"$dateFieldName.day"
-    val partNames = Seq(yearPartName, monthPartName, dayPartName)
+    private val partNames = Seq(yearPartName, monthPartName, dayPartName)
     val generatedPartNames: Gen[String] = Gen.oneOf(partNames).suchThat(partNames.contains)
 
     val yearPartNameVariant = s"$dateFieldName-$dateFieldName.year"
     val monthPartNameVariant = s"$dateFieldName-$dateFieldName.month"
     val dayPartNameVariant = s"$dateFieldName-$dateFieldName.day"
-    val partNamesVariant = Seq(yearPartNameVariant, monthPartNameVariant, dayPartNameVariant)
+    private val partNamesVariant = Seq(yearPartNameVariant, monthPartNameVariant, dayPartNameVariant)
     val generatedPartNamesVariant: Gen[String] = Gen.oneOf(partNamesVariant).suchThat(partNamesVariant.contains)
 
     val validDateParts: Gen[Seq[(String, String)]] = for {

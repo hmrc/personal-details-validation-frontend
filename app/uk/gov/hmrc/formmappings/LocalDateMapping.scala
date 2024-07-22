@@ -72,8 +72,8 @@ private object LocalDateMapping {
     )
 
     private val months = Map(
-      "January" -> 1, "February" -> 2, "March" -> 3, "April" -> 4, "May" -> 5, "June" -> 6,
-      "July" -> 7, "August" -> 8, "September" -> 9, "October" -> 10, "November" -> 11, "December" -> 12
+      "JANUARY" -> 1, "FEBRUARY" -> 2, "MARCH" -> 3, "APRIL" -> 4, "MAY" -> 5, "JUNE" -> 6,
+      "JULY" -> 7, "AUGUST" -> 8, "SEPTEMBER" -> 9, "OCTOBER" -> 10, "NOVEMBER" -> 11, "DECEMBER" -> 12
     )
 
     // works on each element of the map
@@ -156,8 +156,8 @@ private object LocalDateMapping {
             if (month >= 1 && month <= 12) Validated.validNel(month)
             else Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
           case Failure(_) =>
-            if (abbrMonths contains month.toUpperCase) Validated.validNel(abbrMonths.getOrElse(month.toUpperCase, 0))
-            else if (months contains month.toUpperCase) Validated.validNel(months.getOrElse(month.toUpperCase, 0))
+            if (months contains month.toUpperCase) Validated.validNel(months.getOrElse(month.toUpperCase, 0))
+            else if (abbrMonths contains month.toUpperCase) Validated.validNel(abbrMonths.getOrElse(month.toUpperCase, 0))
             else Validated.invalidNel(s"$errorKeyPrefix.$partName.invalid")
         }
     }
@@ -230,7 +230,7 @@ private object LocalDateMapping {
       }
 
       private implicit class FormErrorsOps(formErrors: Seq[FormError]) {
-        def toValidated(date: LocalDate) = formErrors match {
+        def toValidated(date: LocalDate): Validated[Seq[FormError], LocalDate] = formErrors match {
           case Nil => Validated.valid(date)
           case errors => Validated.invalid(errors)
         }
