@@ -124,7 +124,10 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def whatIsYourNino(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
-      Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn, failureUrl)))
+      retrieveNamesAndDOB(completionUrl, failureUrl) match {
+        case Right(_) => Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn, failureUrl)))
+        case Left(redirect) => Future(redirect)
+      }
     }
   }
 
@@ -136,13 +139,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
           Future.successful(Ok(what_is_your_nino(formWithErrors, completionUrl, isLoggedIn, failureUrl)))
         },
         ninoForm => {
-          retrieveMainDetails match {
-            case (Some(fn), Some(ln), Some(dob)) =>
+          retrieveNamesAndDOB(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]) match {
+            case Right((fn,ln,dob)) =>
               val personalDetails = PersonalDetailsWithNino(NonEmptyString(fn), NonEmptyString(ln),ninoForm.nino, LocalDate.parse(dob))
               submitPersonalDetails(personalDetails, completionUrl, failureUrl)
-            case missingDetails =>
-              logger.warn(s"SUBMIT_NINO User with ${hc.sessionId} did not have required session attributes when submitting. First name exists: ${missingDetails._1.isDefined}, Last name exists: ${missingDetails._2.isDefined}, DOB exists: ${missingDetails._3.isDefined}")
-              Future.successful(BadRequest)
+            case Left(redirect) => Future(redirect)
           }
         }
       )
@@ -151,7 +152,10 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
 
   def whatIsYourPostCode(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
     viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
-       Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn, failureUrl)))
+      retrieveNamesAndDOB(completionUrl, failureUrl) match {
+        case Right(_) => Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn, failureUrl)))
+        case Left(redirect) => Future(redirect)
+      }
     }
   }
 
@@ -163,16 +167,26 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
           Future.successful(Ok(what_is_your_postcode(formWithErrors, completionUrl, isLoggedIn, failureUrl)))
         },
         postCodeForm => {
-          retrieveMainDetails match {
-            case (Some(fn), Some(ln), Some(dob)) =>
+          retrieveNamesAndDOB(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]) match {
+            case Right((fn, ln, dob)) =>
               val personalDetails = PersonalDetailsWithPostcode(NonEmptyString(fn), NonEmptyString(ln), postCodeForm.postcode, LocalDate.parse(dob))
               submitPersonalDetails(personalDetails, completionUrl, failureUrl)
-            case missingDetails =>
-              logger.warn(s"SUBMIT_POSTCODE User with ${hc.sessionId} did not have required session attributes when submitting. First name exists: ${missingDetails._1.isDefined}, Last name exists: ${missingDetails._2.isDefined}, DOB exists: ${missingDetails._3.isDefined}")
-              Future.successful(BadRequest)
+            case Left(redirect) => Future(redirect)
           }
         }
       )
+    }
+  }
+
+  private def retrieveNamesAndDOB(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl])(implicit request: MessagesRequest[AnyContent]): Either[Result, (String, String, String)] = {
+    (request.session.get(FIRST_NAME_KEY), request.session.get(LAST_NAME_KEY), request.session.get(DOB_KEY)) match {
+      case (Some(fn), Some(ln), Some(dob)) => Right((fn, ln, dob))
+      case (fn, ln, dob) =>
+        logger.warn("Missing values in session:" +
+          s"${if(fn.isEmpty){" firstName"}else{""}}" +
+          s"${if(ln.isEmpty){" lastName"}else{""}}" +
+          s"${if(dob.isEmpty){" dateOfBirth"}else{""}}")
+        Left(Redirect(routes.PersonalDetailsCollectionController.enterYourDetails(completionUrl, withError = false, failureUrl)))
     }
   }
 
@@ -255,8 +269,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
       }
   }
 
-  private def retrieveMainDetails(implicit request: Request[_]): (Option[String], Option[String], Option[String]) =
-    (request.session.get(FIRST_NAME_KEY), request.session.get(LAST_NAME_KEY), request.session.get(DOB_KEY))
+
 
   /**
     * redirect user to the completionUrl with a timeout status

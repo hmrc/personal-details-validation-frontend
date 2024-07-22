@@ -44,6 +44,8 @@ import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.views.ViewConfig
+
+import java.net.URLEncoder
 import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.duration._
@@ -398,7 +400,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
   }
 
-  "showNinoForm" should {
+  "whatIsYourNino" should {
     "return OK with the ability to enter the Nino" in new Setup {
 
       (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
@@ -449,6 +451,24 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       val document: Document = Jsoup.parse(contentAsString(result))
       document.select("a[class='govuk-back-link']").attr("href") shouldBe routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl).url
+    }
+
+    "redirect the user to the 'Enter your details' page when a session key is missing" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
+        "firstName" -> "Jim"
+      )
+
+      val result: Future[Result] = controller.whatIsYourNino(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)) shouldBe
+        Some(s"/personal-details-validation/enter-your-details?completionUrl=${URLEncoder.encode(completionUrl.toString, "UTF-8")}")
+
     }
   }
 
@@ -503,6 +523,25 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       val document: Document = Jsoup.parse(contentAsString(result))
       document.select("a[class='govuk-back-link']").attr("href") shouldBe routes.PersonalDetailsCollectionController.showHaveYourNationalInsuranceNumber(completionUrl).url
+    }
+
+    "redirect the user to the 'Enter your details' page when a session key is missing" in new Setup {
+
+      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val req: FakeRequest[AnyContentAsEmpty.type] = request.withSession(
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      val result: Future[Result] = controller.whatIsYourPostCode(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)) shouldBe
+        Some(s"/personal-details-validation/enter-your-details?completionUrl=${URLEncoder.encode(completionUrl.toString, "UTF-8")}")
+
     }
   }
 
@@ -644,7 +683,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       redirectLocation(await(result)).get.contains("/personal-details-validation/enter-your-details?completionUrl=") shouldBe true
     }
 
-    "Bad Request if the initial details are not present in the request" in new Setup {
+    "Redirect to 'Enter you details' page if the initial details are not present in the request" in new Setup {
 
       (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
@@ -652,7 +691,8 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(request.withFormUrlEncodedBody("nino" -> "AA000001A"))
 
-      status(result) shouldBe BAD_REQUEST
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)) shouldBe Some(s"/personal-details-validation/enter-your-details?completionUrl=${URLEncoder.encode(completionUrl.toString, "UTF-8")}")
     }
   }
 
@@ -744,14 +784,16 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.errorsSummary.content shouldBe messages("personal-details.postcode.invalid")
     }
 
-    "Bad Request if the initial details are not present in the request" in new Setup {
+    "Redirect to 'Enter you details' page if the initial details are not present in the request" in new Setup {
 
       (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
       val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(request.withFormUrlEncodedBody("postcode" -> "BN11 1NN"))
-      status(result) shouldBe BAD_REQUEST
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)) shouldBe Some(s"/personal-details-validation/enter-your-details?completionUrl=${URLEncoder.encode(completionUrl.toString, "UTF-8")}")
     }
 
     "redirect to showPage if no details found" in new Setup {

@@ -1,4 +1,5 @@
 import play.sbt.PlayImport.PlayKeys.playDefaultPort
+import play.sbt.routes.RoutesKeys
 import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
@@ -28,7 +29,7 @@ lazy val scoverageSettings = {
 }
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin): _*)
+  .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin): _*)
   .settings(majorVersion := 1)
   .settings(scalaSettings: _*)
   .settings(playSettings ++ scoverageSettings: _*)
@@ -57,3 +58,6 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions += s"-Wconf:src=${target.value}/.*:s"
   )
   .settings(A11yTest / unmanagedSourceDirectories += (baseDirectory.value / "accessibility"))
+  .settings(
+    RoutesKeys.routesImport += "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl"
+  )
