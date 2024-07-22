@@ -133,7 +133,6 @@ private object LocalDateMapping {
 
       def validateUsing(validate: ((String, Int)) => ValidatedNel[String, Int]): ValidatedNel[String, Int] =
         validatedPart flatMap validate
-
     }
 
     private implicit def asTupleToValidated(field: ChronoField): ((String, Int)) => ValidatedNel[String, Int] = {
