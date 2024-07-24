@@ -137,7 +137,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
           case `yearPartName` =>
             yearPartName -> Gen.oneOf(1000 - 1, 9999 + 1).generateOne.toString
           case `monthPartName` =>
-            monthPartName -> Gen.oneOf(-1, 0, 13, "notMonthString").generateOne.toString
+            monthPartName -> Gen.oneOf(-1, 0, 13).generateOne.toString
           case `dayPartName` =>
             dayPartName -> Gen.oneOf(-1, 0, 32).generateOne.toString
         }
@@ -165,6 +165,19 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
       val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(partsWithInvalids)
 
       bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.invalid")))
+    }
+
+    "not accept an invalid month name" in new DateMappingSetup with DateMapping {
+
+      val partsWithAbbreviatedMonth: Map[String, String] = Map(
+        s"$dateFieldName.year" -> "2000",
+        s"$dateFieldName.month" -> "notMonthString",
+        s"$dateFieldName.day" -> "29"
+      )
+
+      val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(partsWithAbbreviatedMonth)
+
+      bindResult shouldBe Left(List(FormError("date", List("error.key.date.month.invalid"), List())))
     }
 
     "return the 'invalid' error if date parts are invalid and there are additional constraints added" in new DateMappingSetup {
