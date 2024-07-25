@@ -38,7 +38,7 @@ class EventDispatcherSpec extends UnitSpec with MockFactory {
     val mockAppConfg: AppConfig = mock[AppConfig]
     val mockAnalyticsConnector: AnalyticsConnector = mock[AnalyticsConnector]
 
-    (mockAppConfg.analyticsToken _).expects().returns("UA-43414424-30")
+    (() => mockAppConfg.analyticsToken).expects().returns("UA-43414424-30")
 
     val workingEventDispatcher: AnalyticsEventHandler = new AnalyticsEventHandler(mockAppConfg, mockAnalyticsConnector) {
       override def handleEvent(event: MonitoringEvent)(implicit request: Request[_], hc: HeaderCarrier, ec: ExecutionContext): Unit =
