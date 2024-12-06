@@ -27,10 +27,8 @@ import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.{BeginPDV, EventDispatcher, MonitoringEvent}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class PersonalDetailsValidationStartControllerSpec extends UnitSpec with MockFactory with ScalaFutures with GuiceOneAppPerSuite {
 
@@ -40,10 +38,6 @@ class PersonalDetailsValidationStartControllerSpec extends UnitSpec with MockFac
 
       val redirect: Result = Redirect("some-url")
 
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(BeginPDV(), *, *, *)
-        .returns(())
-
       (journeyStart.findRedirect(_: CompletionUrl, _:Option[String], _: Option[CompletionUrl])(_: Request[_], _: HeaderCarrier))
         .expects(url, origin, *, *, *)
         .returning(Future.successful(redirect))
@@ -52,10 +46,6 @@ class PersonalDetailsValidationStartControllerSpec extends UnitSpec with MockFac
     }
 
     "throw an exception when fetchRedirect returns one" in new Setup {
-
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(BeginPDV(), *, *, *)
-        .returns(())
 
       (journeyStart.findRedirect(_: CompletionUrl, _:Option[String], _: Option[CompletionUrl])(_: Request[_], _: HeaderCarrier))
         .expects(url, origin, *, *, *)
@@ -70,7 +60,6 @@ class PersonalDetailsValidationStartControllerSpec extends UnitSpec with MockFac
     protected implicit val request: Request[AnyContentAsEmpty.type] = FakeRequest()
 
     val journeyStart: JourneyStart = mock[JourneyStart]
-    val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
 
     val url: CompletionUrl = ValuesGenerators.completionUrls.generateOne
     val failureUrl: Option[CompletionUrl] = None
@@ -79,6 +68,6 @@ class PersonalDetailsValidationStartControllerSpec extends UnitSpec with MockFac
 
     def stubMessagesControllerComponents() : MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
-    val controller = new PersonalDetailsValidationStartController(journeyStart, mockEventDispatcher, stubMessagesControllerComponents())
+    val controller = new PersonalDetailsValidationStartController(journeyStart, stubMessagesControllerComponents())
   }
 }

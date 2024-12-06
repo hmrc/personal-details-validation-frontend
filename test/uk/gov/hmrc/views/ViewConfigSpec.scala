@@ -31,29 +31,6 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFa
   val authConnector: AuthConnector = app.injector.instanceOf[AuthConnector]
   val servicesConfig: ServicesConfig = app.injector.instanceOf[ServicesConfig]
 
-  private val scenarios = Tables.Table(
-    ("propertyName",   "propertyAccessor",                            "configKey"),
-    ("analyticsHost",  (config: ViewConfig) => config.analyticsHost,  "google-analytics.host"),
-    ("analyticsToken", (config: ViewConfig) => config.analyticsToken, "google-analytics.token")
-  )
-
-  forAll(scenarios) { (propertyName, propertyAccessor, configKey) =>
-    s"$propertyName" should {
-
-      s"return value associated with '$configKey'" in new Setup {
-        whenConfigEntriesExists(configKey -> "some-value") { config =>
-          propertyAccessor(config) shouldBe "some-value"
-        }
-      }
-
-      s"throw a runtime exception when there's no value for '$configKey'" in new Setup {
-        whenConfigEntriesExists() { config =>
-          a[RuntimeException] should be thrownBy propertyAccessor(config)
-        }
-      }
-    }
-  }
-
   "languagesMap" should {
 
     "return a map of language descriptions associated with Lang objects" in new Setup {
@@ -95,7 +72,7 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFa
 
   private trait Setup extends ConfigSetup[ViewConfig] {
 
-    val configuration = Configuration.from(Map(
+    private val configuration = Configuration.from(Map(
       "play.i18n.langs" -> List("en", "cy"),
       "play.i18n.path" -> null,
       "play.i18n.langCookieName" -> "PLAY_LANG",
@@ -110,14 +87,14 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFa
 
     val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, servicesConfig, dwpMessagesApiProvider, authConnector)
 
-    def expectMessagesFilesExistsFor(codes: String*) = {
+    def expectMessagesFilesExistsFor(codes: String*): Map[String, Map[String, String]] = {
       dwpMessagesApiProvider.get.messages
     }
   }
 
   private trait Setup2 extends ConfigSetup[ViewConfig] {
 
-    val configuration = Configuration.from(Map(
+    private val configuration = Configuration.from(Map(
       "play.i18n.langs" -> List("default"),
       "play.i18n.path" -> null,
       "play.i18n.langCookieName" -> "PLAY_LANG",
@@ -132,7 +109,7 @@ class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFa
       new DefaultLangsProvider(configuration).get, HttpConfiguration())
     val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, servicesConfig, messagesApi, authConnector)
 
-    def expectMessagesFilesExistsFor(codes: String*) = {
+    def expectMessagesFilesExistsFor(codes: String*): Map[String, Map[String, String]] = {
       messagesApi.get.messages
     }
   }

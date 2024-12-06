@@ -43,7 +43,6 @@ import scala.concurrent.{ExecutionContext, Future}
 class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: PersonalDetailsSubmission,
                                                     appConfig: AppConfig,
                                                     dataStreamAuditService: DataStreamAuditService,
-                                                    val eventDispatcher: EventDispatcher,
                                                     val controllerComponents: MessagesControllerComponents,
                                                     what_is_your_postcode: what_is_your_postcode,
                                                     what_is_your_nino: what_is_your_nino,
@@ -90,7 +89,6 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     }
 
   def enterYourDetails(completionUrl: CompletionUrl, withError: Boolean = false, failureUrl: Option[CompletionUrl], maybeRetryGuidanceText: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
-    maybeRetryGuidanceText foreach (retryGuidanceText => eventDispatcher.dispatchEvent(PdvRetry(retryGuidanceText)))
     viewConfig.isLoggedIn.map { isLoggedIn: Boolean =>
       if (withError) {
         Ok(enter_your_details(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, loggedInUser = isLoggedIn, failureUrl))
@@ -237,13 +235,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
               val isSA = origin == "bta-sa" || origin == "pta-sa" || origin == "ssttp-sa"
               val pdvFailedAttempt = PdvFailedAttempt(attempt, appConfig.retryLimit, personalDetails.journeyVersion, maybeCredId, origin)
               dataStreamAuditService.audit(pdvFailedAttempt)
-              eventDispatcher.dispatchEvent(pdvFailedAttempt.copy(attempts = attemptsRemaining))
               if (isSA) Redirect(routes.PersonalDetailsCollectionController.incorrectDetailsForSa(completionUrl, attemptsRemaining, failureUrl)).withSession(cleanedSession)
               else Redirect(routes.PersonalDetailsCollectionController.incorrectDetails(completionUrl, attemptsRemaining, failureUrl)).withSession(cleanedSession)
             } else {
               val pdvLockedOut = PdvLockedOut(personalDetails.journeyVersion, maybeCredId, origin)
               dataStreamAuditService.audit(pdvLockedOut)
-              eventDispatcher.dispatchEvent(pdvLockedOut)
               if (failureUrl.isDefined) {
                 Redirect(failureUrl.get.value).withSession(cleanedSession)
               } else {
@@ -260,7 +256,6 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }.recover {
     case _: Exception =>
       if (appConfig.enabledCircuitBreaker) {
-        eventDispatcher.dispatchEvent(PDVServiceUnavailable())
         Redirect(routes.PersonalDetailsCollectionController.serviceTemporarilyUnavailable())
       }
       else {
@@ -275,7 +270,6 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     * redirect user to the completionUrl with a timeout status
     */
   def redirectAfterTimeout(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
-    eventDispatcher.dispatchEvent(TimedOut())
     ivConnector.updateJourney(completionUrl.value, "Timeout")
     val redirectUrl: String = if (failureUrl.isDefined) {failureUrl.get.value} else {completionUrl.value}
     Future.successful(Redirect(redirectUrl, Map("userTimeout" -> Seq(""))))
@@ -294,13 +288,11 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     * Endpoint which just has the side-effect of extending the Play session to avoid (the 15 min) timeout
     *
     * */
-  def keepAlive: Action[AnyContent] = Action.async { implicit request =>
-    eventDispatcher.dispatchEvent(TimeoutContinue())
+  def keepAlive: Action[AnyContent] = Action.async {
     Future.successful(Ok("OK"))
   }
 
   def weCannotCheckYourIdentity(): Action[AnyContent] = Action.async { implicit request =>
-    eventDispatcher.dispatchEvent(UnderNinoAge())
     Future.successful(Ok(weCannotCheckYourIdentityPage()))
   }
 

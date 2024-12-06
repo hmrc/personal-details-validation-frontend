@@ -30,7 +30,6 @@ import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.EventDispatcher
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
 import uk.gov.hmrc.personaldetailsvalidation.views.html.pages._
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{do_you_have_your_nino, enter_your_details, what_is_your_nino, what_is_your_postcode}
@@ -65,7 +64,7 @@ class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatch
 
     "return the enter your details page" in new Setup {
 
-      val result: Future[Result] = controller.enterYourDetails(url, false, failureUrl)(fakeRequest)
+      val result: Future[Result] = controller.enterYourDetails(url, withError = false, failureUrl)(fakeRequest)
       status(result) shouldBe Status.OK
       contentAsString(result) should passAccessibilityChecks
     }
@@ -75,13 +74,12 @@ class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatch
 
     lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
-    implicit val mockDwpMessagesApi = app.injector.instanceOf[DwpMessagesApiProvider]
-    implicit val authConnector = app.injector.instanceOf[AuthConnector]
-    implicit val executionContext = app.injector.instanceOf[ExecutionContext]
+    implicit val mockDwpMessagesApi: DwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
+    implicit val authConnector: AuthConnector = app.injector.instanceOf[AuthConnector]
+    implicit val executionContext: ExecutionContext = app.injector.instanceOf[ExecutionContext]
 
     private val personalDetailsSubmission: PersonalDetailsSubmission = app.injector.instanceOf[PersonalDetailsSubmission]
     private val dataStreamAuditService: DataStreamAuditService = app.injector.instanceOf[DataStreamAuditService]
-    private val eventDispatcher: EventDispatcher = app.injector.instanceOf[EventDispatcher]
     private val controllerComponents: DefaultMessagesControllerComponents = app.injector.instanceOf[DefaultMessagesControllerComponents]
     private val enter_your_details: enter_your_details = app.injector.instanceOf[enter_your_details]
     private val do_you_have_your_nino: do_you_have_your_nino = app.injector.instanceOf[do_you_have_your_nino]
@@ -100,7 +98,6 @@ class AllySpec extends UnitSpec with GuiceOneAppPerSuite with AccessibilityMatch
         personalDetailsSubmission,
         appConfig,
         dataStreamAuditService,
-        eventDispatcher,
         controllerComponents,
         what_is_your_postcode,
         what_is_your_nino,

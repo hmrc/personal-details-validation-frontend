@@ -18,29 +18,26 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Request, Result}
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents, Result}
 import play.api.test.FakeRequest
 import support.UnitSpec
 import uk.gov.hmrc.config.AppConfig
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.{EventDispatcher, MonitoringEvent, SignedOut}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class SignOutControllerSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite {
 
   val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
-  val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
 
-  val controller = new SignOutController(mcc, mockEventDispatcher)(appConfig, ExecutionContext.global)
+  val controller = new SignOutController(mcc)(appConfig)
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "SignOut Controller" should {
     "Redirect to logout" in {
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(SignedOut(), *, *, *)
 
       val result: Future[Result]  = controller.signOut().apply(request)
 
