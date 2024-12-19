@@ -35,11 +35,6 @@ class AppConfig @Inject()(val configuration: Configuration, servicesConfig: Serv
   //Lockout
   lazy val retryLimit: Int = configuration.getOptional[Int]("retry.limit").getOrElse(5)
 
-  //GA related configs
-  lazy val platformAnalyticsUrl: String = servicesConfig.baseUrl("platform-analytics")
-  def analyticsToken: String = configuration.getOptional[String]("google-analytics.token").getOrElse("")
-  lazy val originDimension: Int = configuration.get[Int]("google-analytics.origin-dimension")
-
   //logout related configs
   lazy val logoutPage: String = servicesConfig.getConfString("logoutPage", "https://www.access.service.gov.uk/logout")
   lazy val basGatewayUrl: String = servicesConfig.getConfString("auth.bas-gateway.url", throw new RuntimeException("Bas gateway url required"))

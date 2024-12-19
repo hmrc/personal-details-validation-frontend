@@ -19,14 +19,6 @@ package uk.gov.hmrc.personaldetailsvalidation.monitoring
 sealed trait MonitoringEvent
 
 
-case class BeginPDV() extends MonitoringEvent
-//Timeout events
-case class TimeoutContinue() extends MonitoringEvent
-case class TimedOut() extends MonitoringEvent
-case class SignedOut() extends MonitoringEvent
-case class UnderNinoAge() extends MonitoringEvent
 case class PdvFailedAttempt(attempts: Int, maxAttempts: Int, journeyVersion: String, credID: String, origin: String) extends MonitoringEvent
 case class PdvLockedOut(journeyVersion: String, credID: String, origin: String) extends MonitoringEvent
-case class PdvRetry(retryGuidanceText: String) extends MonitoringEvent
-case class PDVServiceUnavailable() extends MonitoringEvent
 

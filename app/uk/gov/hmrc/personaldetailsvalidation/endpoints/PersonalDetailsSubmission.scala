@@ -36,9 +36,7 @@ class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: Pe
                            (implicit request: Request[_],
                             headerCarrier: HeaderCarrier): Future[PersonalDetailsValidation] = {
     val origin = request.session.get("origin").getOrElse("Unknown-Origin")
-    val gaClientId: Option[String] = request.cookies.get("_ga").map(_.value)
-    val hc: HeaderCarrier = headerCarrier.copy(otherHeaders = Seq("_ga" -> gaClientId.getOrElse("")))
-    personalDetailsValidationConnector.submitValidationRequest(personalDetails, origin, hc)
+    personalDetailsValidationConnector.submitValidationRequest(personalDetails, origin, headerCarrier)
   }
 
   private val UUIDRegex = """[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}"""

@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.stream.Materializer
 import support.Generators.Implicits._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
@@ -108,10 +106,6 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
-
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext))
-        .expects(*, *, *, *)
-        .returns(())
 
       val result: Future[Result] = controller.enterYourDetails(completionUrl, withError = false, failureUrl, Some("retryText"))(request)
 
@@ -869,7 +863,6 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
   "keep-alive" should {
 
     "return 200 OK" in new Setup {
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(TimeoutContinue(), *, *, *)
       val result: Future[Result] = controller.keepAlive()(request)
       status(result) shouldBe 200
     }
@@ -888,8 +881,6 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
   "we-cannot-check-your-identity" should {
 
     "return 200 OK" in new Setup {
-
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(UnderNinoAge(), *, *, *)
 
       val result: Future[Result] = controller.weCannotCheckYourIdentity()(request)
       status(result) shouldBe 200
@@ -927,7 +918,6 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     "redirect user to continueUrl with userTimeout parameter" in new Setup {
 
       private val redirectUrl = s"${completionUrl.value}&userTimeout="
-      (mockEventDispatcher.dispatchEvent(_: MonitoringEvent)(_: Request[_], _: HeaderCarrier, _: ExecutionContext)).expects(TimedOut(), *, *, *)
       (mockIVConnector.updateJourney(_: String, _:String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
 
       private val result = controller.redirectAfterTimeout(completionUrl, failureUrl)(request)
@@ -1036,9 +1026,6 @@ private class Setup() {
     val completionUrl: CompletionUrl = ValuesGenerators.completionUrls.generateOne
     val failureUrl: Option[CompletionUrl] = None
 
-    implicit val system: ActorSystem = ActorSystem()
-    implicit val materializer: Materializer = Materializer.apply(system)
-
     implicit val dwpMessagesApiProvider: DwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
     implicit val lang: Lang = Lang("en-GB")
     implicit val messages: Messages = MessagesImpl(lang, dwpMessagesApiProvider.get)
@@ -1046,7 +1033,6 @@ private class Setup() {
     val personalDetailsSubmitterMock: PersonalDetailsSubmission = mock[PersonalDetailsSubmission]
     val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
     val mockDataStreamAuditService: DataStreamAuditService = mock[DataStreamAuditService]
-    val mockEventDispatcher: EventDispatcher = mock[EventDispatcher]
     val mockIVConnector: IdentityVerificationConnector = mock[IdentityVerificationConnector]
     val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
@@ -1083,7 +1069,6 @@ private class Setup() {
       personalDetailsSubmitterMock,
       appConfig,
       mockDataStreamAuditService,
-      mockEventDispatcher,
       stubMessagesControllerComponents,
       what_is_your_postcode,
       what_is_your_nino,
