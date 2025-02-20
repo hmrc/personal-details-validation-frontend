@@ -80,8 +80,8 @@ global.error.InternalServerError500.title=Sorry, we are experiencing technical d
 
 we-cannot-check-your-identity.title=We cannot check your identity
 we-cannot-check-your-identity.header=We cannot check your identity
-we-cannot-check-your-identity.para.1=You must be at least 15 years and 9 months old to check your identity online. This is the age you are able to get a National Insurance number.
-we-cannot-check-your-identity.para.2=You will normally be sent a National Insurance number automatically, in the 3 months before your 16th birthday if:
+we-cannot-check-your-identity.para.1=You will receive your National Insurance number just before your 16th birthday, this is the age you are able to get a National Insurance number. You can use it to check your identity online.
+we-cannot-check-your-identity.para.2=You will normally be sent a National Insurance number automatically within 3 months of your 16th birthday if:
 we-cannot-check-your-identity.ul.1=you live in the UK
 we-cannot-check-your-identity.ul.2=a parent has filled in a <a href="{0}" class="govuk-link">Child Benefit</a> claim form for you
 
@@ -104,7 +104,7 @@ multi_option_incorrect_details.accordion.accordion2.1=Details for your date of b
 multi_option_incorrect_details.accordion.accordion2.2=If you enter 9 or less for a month you do not need to include a leading zero.
 multi_option_incorrect_details.accordion.heading3=National Insurance number
 multi_option_incorrect_details.accordion.accordion3.1=A National Insurance number is made up of letters and numbers and never changes. For example, ‘QQ 12 34 56 C’. It makes sure your National Insurance contributions and tax are recorded against your name only.
-multi_option_incorrect_details.accordion.accordion3.2=You will normally be sent a National Insurance number automatically, in the 3 months before your 16th birthday if:
+multi_option_incorrect_details.accordion.accordion3.2=You will normally be sent a National Insurance number automatically within 3 months of your 16th birthday if:
 multi_option_incorrect_details.accordion.accordion3.3=you live in the UK
 multi_option_incorrect_details.accordion.accordion3.4=a parent has filled in a <a href="https://www.gov.uk/child-benefit" class="govuk-link" target="_blank" rel="noopener noreferrer">Child Benefit (opens in new tab)</a> claim form for you
 multi_option_incorrect_details.accordion.accordion3.5=You can find your National Insurance number:

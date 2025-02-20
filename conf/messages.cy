@@ -78,8 +78,8 @@ timeout-dialog.second=eiliad
 
 we-cannot-check-your-identity.title=Ni allwn wirio pwy ydych
 we-cannot-check-your-identity.header=Ni allwn wirio pwy ydych
-we-cannot-check-your-identity.para.1=Mae’n rhaid i chi fod yn 15 oed a 9 mis oed, o leiaf, i wirio pwy ydych ar-lein. Dyma’r oedran y gallwch gael rhif Yswiriant Gwladol.
-we-cannot-check-your-identity.para.2=Fel arfer, byddwch yn cael rhif Yswiriant Gwladol yn awtomatig, yn y 3 mis cyn eich pen-blwydd yn 16 oed os yw’r canlynol yn wir:
+we-cannot-check-your-identity.para.1=Byddwch yn cael eich rhif Yswiriant Gwladol ychydig cyn eich pen-blwydd yn 16 oed, dyma’r oedran y gallwch gael rhif Yswiriant Gwladol.  Gallwch ei ddefnyddio i wirio pwy ydych ar-lein.
+we-cannot-check-your-identity.para.2=Fel arfer, anfonir rhif Yswiriant Gwladol atoch yn awtomatig cyn pen 3 mis i’ch pen-blwydd yn 16 os yw’r canlynol yn wir:
 we-cannot-check-your-identity.ul.1=rydych yn byw yn y DU
 we-cannot-check-your-identity.ul.2= mae rhiant wedi llenwi ffurflen hawlio <a href="{0}" class="govuk-link">Budd-dal Plant</a> i chi
 
@@ -102,7 +102,7 @@ multi_option_incorrect_details.accordion.accordion2.1=Mae’n rhaid nodi’ch dy
 multi_option_incorrect_details.accordion.accordion2.2=Os ydych yn nodi’r ffigur 9 neu lai ar gyfer mis, nid oes angen i chi gynnwys sero ar flaen y rhif.
 multi_option_incorrect_details.accordion.heading3=Rhif Yswiriant Gwladol
 multi_option_incorrect_details.accordion.accordion3.1=Mae rhif Yswiriant Gwladol yn cynnwys llythrennau a rhifau ac nid yw byth yn newid. Er enghraifft, ‘QQ 12 34 56 C’. Mae’n sicrhau bod eich cyfraniadau Yswiriant Gwladol a’ch treth yn cael eu cofnodi yn erbyn eich enw chi’n unig.
-multi_option_incorrect_details.accordion.accordion3.2=Fel arfer, cewch eich rhif Yswiriant Gwladol yn awtomatig, yn y 3 mis cyn eich pen-blwydd yn 16 oed:
+multi_option_incorrect_details.accordion.accordion3.2=Fel arfer, anfonir rhif Yswiriant Gwladol atoch yn awtomatig cyn pen 3 mis i’ch pen-blwydd yn 16 os yw’r canlynol yn wir:
 multi_option_incorrect_details.accordion.accordion3.3=os ydych yn byw yn y DU
 multi_option_incorrect_details.accordion.accordion3.4=os yw rhiant wedi llenwi ffurflen hawlio <a href="https://www.gov.uk/child-benefit" class="govuk-link" target="_blank" rel="noopener noreferrer">Budd-dal Plant (yn agor tab newydd)</a> i chi
 multi_option_incorrect_details.accordion.accordion3.5=Gallwch ddod o hyd i’ch rhif Yswiriant Gwladol:
