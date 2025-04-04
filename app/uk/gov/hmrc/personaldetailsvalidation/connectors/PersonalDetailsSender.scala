@@ -18,7 +18,8 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.personaldetailsvalidation.model._
 
 import javax.inject.{Inject, Singleton}
@@ -26,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
 @Singleton
-class PersonalDetailsSender @Inject()(httpClient: HttpClient, connectorConfig: ConnectorConfig) {
+class PersonalDetailsSender @Inject()(httpClient: HttpClientV2, connectorConfig: ConnectorConfig) {
 
   import connectorConfig.personalDetailsValidationBaseUrl
 
@@ -35,7 +36,8 @@ class PersonalDetailsSender @Inject()(httpClient: HttpClient, connectorConfig: C
   def submitValidationRequest(personalDetails: PersonalDetails, origin: String, hc: HeaderCarrier)
                              (implicit executionContext: ExecutionContext): Future[PersonalDetailsValidation] = {
     implicit val headerCarrier: HeaderCarrier = hc
-    httpClient.POST[PersonalDetails, PersonalDetailsValidation](url, body = personalDetails, headers = List(("origin", origin)))
+
+    httpClient.post(url"$url").setHeader("origin" -> origin).withBody(Json.toJson(personalDetails)).execute[PersonalDetailsValidation]
   }
 
   implicit val personalDetailsWrites: Writes[PersonalDetails] = Writes[PersonalDetails] {
@@ -56,7 +58,8 @@ class PersonalDetailsSender @Inject()(httpClient: HttpClient, connectorConfig: C
   }
 
   def getUserAttempts()(implicit headerCarrier: HeaderCarrier, executionContext: ExecutionContext): Future[UserAttemptsDetails] = {
-    httpClient.GET[UserAttemptsDetails](url + "/get-user-attempts")
+
+    httpClient.get(url"$url/get-user-attempts").execute[UserAttemptsDetails]
   }
 
 }

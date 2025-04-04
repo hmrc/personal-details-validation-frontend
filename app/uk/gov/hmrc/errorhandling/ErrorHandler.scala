@@ -27,23 +27,23 @@ import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.views.ViewConfig
 import uk.gov.hmrc.views.html.template.error_template
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ErrorHandler @Inject()(appConfig: AppConfig, error_template: error_template)
-                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, viewConfig: ViewConfig, messagesApi: MessagesApi)
+                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, val ec: ExecutionContext, viewConfig: ViewConfig, messagesApi: MessagesApi)
   extends DwpI18nSupport(appConfig, messagesApi) {
 
   import ErrorHandler.bindingError
 
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html = {
-    error_template(pageTitle, heading, message)
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader): Future[Html] = {
+    Future.successful(error_template(pageTitle, heading, message))
   }
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
     statusCode match {
-      case BAD_REQUEST if message.startsWith(bindingError) => Future.successful(NotFound(internalServerErrorTemplate(request)))
-      case other => Future.successful(Results.Status(other)(internalServerErrorTemplate(request)))
+      case BAD_REQUEST if message.startsWith(bindingError) => internalServerErrorTemplate(request).map{ html => NotFound(html) }
+      case other => internalServerErrorTemplate(request).map{ html => Results.Status(other)(html) }
     }
   }
 

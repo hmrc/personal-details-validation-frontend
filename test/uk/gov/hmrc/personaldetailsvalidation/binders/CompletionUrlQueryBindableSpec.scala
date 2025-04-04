@@ -30,9 +30,11 @@ class CompletionUrlQueryBindableSpec extends UnitSpec {
     "return CompletionUrl if key is present in params" in {
       val url = "/foo/bar"
 
-      val Some(Right(completionUrl)) = completionUrlQueryBinder.bind(key, Map(key -> Seq(url.toString)))
+      completionUrlQueryBinder.bind(key, Map(key -> Seq(url))) match {
+        case Some(Right(completionUrl)) => completionUrl.value shouldBe url
+        case other => fail(s"Error bind returned unexpected value : $other")
+      }
 
-      completionUrl.value shouldBe url
     }
 
     "return None if key is not present" in {
@@ -42,9 +44,10 @@ class CompletionUrlQueryBindableSpec extends UnitSpec {
     "return error if key not a valid completion url" in {
       val url = "foo/bar"
 
-      val result = completionUrlQueryBinder.bind(key, Map(key -> Seq(url.toString)))
-
-      result shouldBe Some(Left(s"$url is not a relative url"))
+      completionUrlQueryBinder.bind(key, Map(key -> Seq(url.toString))) match {
+        case Some(Left(errMsg)) => errMsg shouldBe s"$url is not a relative url"
+        case other => fail(s"Error bind returned unexpected value : $other")
+      }
     }
   }
 
@@ -54,8 +57,11 @@ class CompletionUrlQueryBindableSpec extends UnitSpec {
 
     "return query param string" in {
       val url = "/foo/bar?param1=value1&param2=value2"
-      val Right(completionUrl) = CompletionUrl.completionUrl(url)
-      completionUrlQueryBinder.unbind(key, completionUrl) shouldBe s"$key=${URLEncoder.encode(url, "UTF-8")}"
+
+      CompletionUrl.completionUrl(url) match {
+        case Right(completionUrl) => completionUrlQueryBinder.unbind(key, completionUrl) shouldBe s"$key=${URLEncoder.encode(url, "UTF-8")}"
+        case _ => fail("Error : The Url is invalid")
+      }
     }
   }
 }

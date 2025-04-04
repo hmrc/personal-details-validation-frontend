@@ -41,13 +41,19 @@ class CompletionUrlSpecs extends UnitSpec with ScalaCheckDrivenPropertyChecks {
     }
 
     "not be instantiatable if the value neither starts with '/' nor 'http://localhost'" in {
-      val Left(exception) = completionUrl("foobar")
-      exception shouldBe a[IllegalArgumentException]
+
+      completionUrl("foobar") match {
+        case Left(exception) => exception shouldBe a[IllegalArgumentException]
+        case other => fail(s"Error : completionUrl returned unexpected result : $other")
+      }
     }
 
     "not be instantiatable if the value contains '//' and does not start with 'http://localhost'" in {
-      val Left(exception) = completionUrl("/foobar//baz")
-      exception shouldBe a[IllegalArgumentException]
+
+      completionUrl("/foobar//baz") match {
+        case Left(exception) => exception shouldBe a[IllegalArgumentException]
+        case other => fail(s"Error : completionUrl returned unexpected result : $other")
+      }
     }
   }
 }

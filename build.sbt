@@ -1,9 +1,13 @@
 import play.sbt.PlayImport.PlayKeys.playDefaultPort
 import play.sbt.routes.RoutesKeys
+import uk.gov.hmrc.DefaultBuildSettings
 import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 val appName = "personal-details-validation-frontend"
+
+ThisBuild / majorVersion := 1
+ThisBuild / scalaVersion := "2.13.16"
 
 lazy val playSettings: Seq[Setting[_]] = Seq(
   routesImport ++= Seq(
@@ -30,14 +34,12 @@ lazy val scoverageSettings = {
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin): _*)
-  .settings(majorVersion := 1)
   .settings(scalaSettings: _*)
   .settings(playSettings ++ scoverageSettings: _*)
   .settings(playDefaultPort := 9968)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(defaultSettings(): _*)
   .settings(
-    scalaVersion := "2.13.12",
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true
   )
@@ -61,3 +63,10 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     RoutesKeys.routesImport += "uk.gov.hmrc.play.bootstrap.binders.RedirectUrl"
   )
+
+lazy val it = project
+  .enablePlugins(PlayScala)
+  .settings(majorVersion := 1)
+  .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
+  .settings(DefaultBuildSettings.itSettings())
+  .settings(libraryDependencies ++= AppDependencies.test)
