@@ -58,7 +58,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
                                                    (implicit val authConnector: AuthConnector,
                                                     val dwpMessagesApiProvider: DwpMessagesApiProvider,
                                                     viewConfig: ViewConfig,
-                                                    ec: ExecutionContext,
+                                                    val ec: ExecutionContext,
                                                     messagesApi: MessagesApi)
   extends DwpI18nSupport(appConfig, messagesApi) with FrontendBaseController with AuthorisedFunctions with Logging {
 

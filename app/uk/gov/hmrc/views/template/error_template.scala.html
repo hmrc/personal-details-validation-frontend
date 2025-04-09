@@ -28,7 +28,7 @@
    pageTitle: String,
    heading: String,
    message: String
-)(implicit request: Request[_], messages: Messages, appConfig: ViewConfig)
+)(implicit request: RequestHeader, messages: Messages, appConfig: ViewConfig)
 
 @contentSection = {
   @h1(content = Text(heading))

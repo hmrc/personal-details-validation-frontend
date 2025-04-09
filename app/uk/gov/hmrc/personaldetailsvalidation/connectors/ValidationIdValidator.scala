@@ -17,14 +17,15 @@
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 import play.api.http.Status.{NOT_FOUND, OK}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ValidationIdValidator @Inject()(httpClient: HttpClient,connectorConfig: ConnectorConfig) {
+class ValidationIdValidator @Inject()(httpClient: HttpClientV2,connectorConfig: ConnectorConfig) {
 
   import connectorConfig.personalDetailsValidationBaseUrl
 
@@ -32,9 +33,7 @@ class ValidationIdValidator @Inject()(httpClient: HttpClient,connectorConfig: Co
                  (implicit headerCarrier: HeaderCarrier,
              executionContext: ExecutionContext): Future[Boolean] = {
 
-    val url = s"$personalDetailsValidationBaseUrl/personal-details-validation/${validationId.value}"
-
-    httpClient.GET[Boolean](url)
+    httpClient.get(url"$personalDetailsValidationBaseUrl/personal-details-validation/${validationId.value}").execute[Boolean]
   }
 
   private implicit val validationIdHttpReads: HttpReads[Boolean] = (_: String, _: String, response: HttpResponse) =>

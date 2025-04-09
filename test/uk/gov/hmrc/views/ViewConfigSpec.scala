@@ -17,7 +17,6 @@
 package uk.gov.hmrc.views
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.prop.{TableDrivenPropertyChecks, Tables}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.HttpConfiguration
 import play.api.i18n.{DefaultLangsProvider, Lang}
@@ -27,7 +26,7 @@ import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.DwpMessagesApiProvider
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-class ViewConfigSpec extends UnitSpec with TableDrivenPropertyChecks with MockFactory with GuiceOneAppPerSuite {
+class ViewConfigSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite {
   val authConnector: AuthConnector = app.injector.instanceOf[AuthConnector]
   val servicesConfig: ServicesConfig = app.injector.instanceOf[ServicesConfig]
 

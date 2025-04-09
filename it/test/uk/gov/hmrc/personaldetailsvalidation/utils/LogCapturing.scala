@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package setups
+package uk.gov.hmrc.personaldetailsvalidation.utils
 
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.classic.{Level, Logger => LogbackLogger}
@@ -38,4 +38,5 @@ trait LogCapturing {
   def withCaptureOfLoggingFrom(logger: LoggerLike, level: Level)(body: (=> List[ILoggingEvent]) => Unit): Unit = {
     withCaptureOfLoggingFrom(logger.logger.asInstanceOf[LogbackLogger], level)(body)
   }
+
 }

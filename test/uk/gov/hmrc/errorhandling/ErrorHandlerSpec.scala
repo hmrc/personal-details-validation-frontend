@@ -17,6 +17,7 @@
 package uk.gov.hmrc.errorhandling
 
 import org.apache.pekko.stream.Materializer
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.Assertion
 import org.scalatest.concurrent.ScalaFutures
@@ -31,6 +32,8 @@ import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
 import uk.gov.hmrc.views.html.template.error_template
 
+import scala.concurrent.ExecutionContext
+
 class ErrorHandlerSpec
   extends UnitSpec
     with GuiceOneAppPerSuite
@@ -39,11 +42,13 @@ class ErrorHandlerSpec
   "standardErrorTemplate" should {
 
     "error page with given title, heading and message" in new Setup {
-      val html: Document = errorHandler.standardErrorTemplate("title", "heading", "error-message")(request)
+      val html: Html = await(errorHandler.standardErrorTemplate("title", "heading", "error-message")(request))
 
-      html.title() shouldBe "title"
-      html.select("h1").text() shouldBe "heading"
-      html.select("p").get(0).text() shouldBe "error-message"
+      val doc: Document = Jsoup.parse(html.toString())
+
+      doc.title() shouldBe "title"
+      doc.select("h1").text() shouldBe "heading"
+      doc.select("p").get(0).text() shouldBe "error-message"
     }
   }
 
@@ -80,9 +85,10 @@ class ErrorHandlerSpec
   private trait Setup extends ViewSetup {
 
     implicit val materializer: Materializer = app.materializer
+    implicit val ec: ExecutionContext = ExecutionContext.global
+    implicit val dwpMessagesApi: DwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
 
     private val appConfig = app.injector.instanceOf[AppConfig]
-    implicit val dwpMessagesApi: DwpMessagesApiProvider = app.injector.instanceOf[DwpMessagesApiProvider]
 
     val errorHandler: ErrorHandler = new ErrorHandler(appConfig, app.injector.instanceOf[error_template])
 

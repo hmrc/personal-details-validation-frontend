@@ -18,16 +18,19 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
+import play.api.libs.json.Json
 import uk.gov.hmrc.config.AppConfig
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.personaldetailsvalidation.model.JourneyUpdate.format
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyUpdate
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class IdentityVerificationConnector @Inject()(appConfig: AppConfig,
-                                              httpClient: HttpClient) extends Logging {
+                                              httpClient: HttpClientV2) extends Logging {
 
   val mdtpUrl = "/mdtp/personal-details-validation-complete/"
 
@@ -35,11 +38,14 @@ class IdentityVerificationConnector @Inject()(appConfig: AppConfig,
 
     val journeyId = extractJourneyId(redirectingUrl)
     val status = JourneyUpdate(Some(journeyStatus))
+
     if (journeyId.isDefined) {
-      httpClient.PATCH[JourneyUpdate, HttpResponse](s"${appConfig.ivUrl}/identity-verification/journey/${journeyId.getOrElse("")}", status)
+
+      httpClient.patch(url"${appConfig.ivUrl}/identity-verification/journey/${journeyId.getOrElse("")}").withBody(Json.toJson(status)(format)).execute[HttpResponse]
         .recover {
         case ex: Exception => logger.warn(s"IV returns error ${ex.getMessage}, update IV journey might failed for ${journeyId.getOrElse("")}")
       }
+
     }
     else
       logger.warn(s"Cannot extract IV journeyId from redirecting url: $redirectingUrl")
