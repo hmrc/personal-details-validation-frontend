@@ -53,9 +53,6 @@ lazy val microservice = Project(appName, file("."))
       "-language:higherKinds"
     )
   )
-  .settings(resolvers ++= Seq(
-    Resolver.jcenterRepo
-  ))
   .settings(
     scalacOptions += s"-Wconf:src=${target.value}/.*:s"
   )
