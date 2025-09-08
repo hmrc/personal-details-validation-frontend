@@ -251,6 +251,46 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
       bindResult shouldBe Right(LocalDate.of(2000, 1, 29))
     }
 
+
+
+//Test for welshAbbrMonths names
+    "accept Welsh abbreviated month names (case-insensitive)" in new DateMappingSetup with DateMapping {
+
+      val welshAbbrMonths: Seq[(String, Int)] = Seq(
+        "ION" -> 1, "CHWEF" -> 2, "MAW" -> 3, "EBR" -> 4, "MAI" -> 5, "MEH" -> 6,
+        "GORFF" -> 7, "AWST" -> 8, "MEDI" -> 9, "HYD" -> 10, "TACH" -> 11, "RHAG" -> 12
+      )
+
+      val WelshAbbreviatedMonth: Map[String, String] = Map(
+        s"$dateFieldName.year" -> "2000",
+        s"$dateFieldName.month" -> "CHWEF",
+        s"$dateFieldName.day" -> "29"
+      )
+
+      val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(WelshAbbreviatedMonth)
+
+      bindResult shouldBe Right(LocalDate.of(2000, 2, 29))
+    }
+    //Test for welshFullMonths names
+
+    "accept a Welsh long month names (case-insensitive) " in new DateMappingSetup with DateMapping {
+
+      val WelshFullMonth: Seq[(String, Int)] = Seq(
+        "IONAWR" -> 1, "CHWEFROR" -> 2, "MAWRTH" -> 3, "EBRILL" -> 4, "MAI" -> 5, "MEHEFIN" -> 6,
+        "GORFFENNAF" -> 7, "AWST" -> 8, "MEDI" -> 9, "HYDREF" -> 10, "TACHWEDD" -> 11, "RHAGFYR" -> 12
+      )
+
+      val WelshFullMonths: Map[String, String] = Map(
+        s"$dateFieldName.year" -> "2000",
+        s"$dateFieldName.month" -> "Ionawr",
+        s"$dateFieldName.day" -> "29"
+      )
+
+      val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(WelshFullMonths)
+
+      bindResult shouldBe Right(LocalDate.of(2000, 1, 29))
+    }
+
   }
 
   "mandatoryLocalDate.unbind" should {
