@@ -68,12 +68,18 @@ private object LocalDateMapping {
 
     private val abbrMonths = Map(
       "JAN" -> 1, "FEB" -> 2, "MAR" -> 3, "APR" -> 4, "MAY" -> 5, "JUN" -> 6,
-      "JUL" -> 7, "AUG" -> 8, "SEP" -> 9, "OCT" -> 10, "NOV" -> 11, "DEC" -> 12
+      "JUL" -> 7, "AUG" -> 8, "SEP" -> 9, "OCT" -> 10, "NOV" -> 11, "DEC" -> 12,
+      // Short month names Welsh
+      "ION" -> 1, "CHWEF" -> 2, "MAW" -> 3, "EBR" -> 4, "MAI" -> 5, "MEH" -> 6,
+      "GORFF" -> 7, "AWST" -> 8, "MEDI" -> 9, "HYD" -> 10, "TACH" -> 11, "RHAG" -> 12
     )
 
     private val months = Map(
       "JANUARY" -> 1, "FEBRUARY" -> 2, "MARCH" -> 3, "APRIL" -> 4, "MAY" -> 5, "JUNE" -> 6,
-      "JULY" -> 7, "AUGUST" -> 8, "SEPTEMBER" -> 9, "OCTOBER" -> 10, "NOVEMBER" -> 11, "DECEMBER" -> 12
+      "JULY" -> 7, "AUGUST" -> 8, "SEPTEMBER" -> 9, "OCTOBER" -> 10, "NOVEMBER" -> 11, "DECEMBER" -> 12,
+      // Full month names Welsh
+      "IONAWR" -> 1, "CHWEFROR" -> 2, "MAWRTH" -> 3, "EBRILL" -> 4, "MAI" -> 5, "MEHEFIN" -> 6,
+      "GORFFENNAF" -> 7, "AWST" -> 8, "MEDI" -> 9, "HYDREF" -> 10, "TACHWEDD" -> 11, "RHAGFYR" -> 12
     )
 
     // works on each element of the map
