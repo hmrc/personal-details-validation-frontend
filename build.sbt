@@ -9,7 +9,7 @@ val appName = "personal-details-validation-frontend"
 ThisBuild / majorVersion := 1
 ThisBuild / scalaVersion := "2.13.16"
 
-lazy val playSettings: Seq[Setting[_]] = Seq(
+lazy val playSettings: Seq[Setting[?]] = Seq(
   routesImport ++= Seq(
     "uk.gov.hmrc.personaldetailsvalidation.binders._",
     "uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl"
@@ -22,23 +22,23 @@ TwirlKeys.templateImports ++= Seq(
 )
 
 lazy val scoverageSettings = {
-  import scoverage._
+  import scoverage.*
 
   Seq(
     ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;.*BuildInfo.*;.*views.*;.*Routes.*;.*RoutesPrefix.*;",
-    ScoverageKeys.coverageMinimumStmtTotal := 69,
+    ScoverageKeys.coverageMinimumStmtTotal := 74,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
   )
 }
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin): _*)
-  .settings(scalaSettings: _*)
-  .settings(playSettings ++ scoverageSettings: _*)
+  .enablePlugins(Seq(play.sbt.PlayScala, SbtDistributablesPlugin) *)
+  .settings(scalaSettings *)
+  .settings((playSettings ++ scoverageSettings) *)
   .settings(playDefaultPort := 9968)
   .disablePlugins(JUnitXmlReportPlugin)
-  .settings(defaultSettings(): _*)
+  .settings(defaultSettings() *)
   .settings(
     libraryDependencies ++= AppDependencies(),
     retrieveManaged := true

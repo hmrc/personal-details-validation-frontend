@@ -7,15 +7,20 @@ personal-details-validation-frontend service is used to capture name, surname, d
 
 
 ### Test
+You can use the dedicated test script to run all tests and generate coverage report:
 ```
-sbt test
+./test.sh
+```
+Which uses:
+```
+sbt coverage test it/test coverageReport dependencyUpdates
 ```
 
 # API
 
-| Path                                    | Description                              |
-|:--------------------------------------- |:---------------------------------------- |
-| GET /personal-details-validation/start?completionUrl=:completionUrl&origin=test&failureUrl=aFailureUrl | Start capturing user's personal details  |
+| Path                                                                                                   | Description                             |
+|:-------------------------------------------------------------------------------------------------------|:----------------------------------------|
+| GET /personal-details-validation/start?completionUrl=:completionUrl&origin=test&failureUrl=aFailureUrl | Start capturing user's personal details |
     
 ## GET /personal-details-validation/start?completionUrl=:completionUrl&origin=test
 Displays a page to capture user's details. After capturing user's details, these details are checked against citizen details database. 
@@ -27,19 +32,19 @@ If the user does not interact with the browser for 15 minutes, and they ignore t
 Also, if there is technical error in personal-details-validation component, then user is redirected to the completionUrl with `technicalError` query parameter.
 
 ### Parameters
-| Name          | Description                                   |
-|:------------- |:--------------------------------------------- |
-| completionUrl | Mandatory. Should be a url-encoded relative URL or starts with `http://localhost`.    |
-| origin        | Option. Reporting origin as a custom dimension in PDV GA events.    |
-| failureUrl    | Option. Redirect the user to the url when pdv failed 5 times, without this user will see a default lockout page.    |
+| Name          | Description                                                                                                      |
+|:--------------|:-----------------------------------------------------------------------------------------------------------------|
+| completionUrl | Mandatory. Should be a url-encoded relative URL or starts with `http://localhost`.                               |
+| origin        | Option. Reporting origin as a custom dimension in PDV GA events.                                                 |
+| failureUrl    | Option. Redirect the user to the url when pdv failed 5 times, without this user will see a default lockout page. |
     
 ### Example redirects
-| CompletionUrl                 | Redirect url                                                                  |
-|:----------------------------- |:----------------------------------------------------------------------------- |
-|/my-service/pdv-complete       | /my-service/pdv-complete?validationId=0018941f-fed3-47db-a05c-8b55e941324b       |
-|/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&validationId=0018941f-fed3-47db-a05c-8b55e941324b   |
-|/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&technicalError                                      |
-|/my-service/pdv-complete?a=b   | /my-service/pdv-complete?a=b&userTimeout                                         |
+| CompletionUrl                | Redirect url                                                                   |
+|:-----------------------------|:-------------------------------------------------------------------------------|
+| /my-service/pdv-complete     | /my-service/pdv-complete?validationId=0018941f-fed3-47db-a05c-8b55e941324b     |
+| /my-service/pdv-complete?a=b | /my-service/pdv-complete?a=b&validationId=0018941f-fed3-47db-a05c-8b55e941324b |
+| /my-service/pdv-complete?a=b | /my-service/pdv-complete?a=b&technicalError                                    |
+| /my-service/pdv-complete?a=b | /my-service/pdv-complete?a=b&userTimeout                                       |
 
 ## Test Repositories
 
