@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.views.ViewConfig
 @this(
     mainTemplate: layout,
+    govukBackLink: GovukBackLink,
     govukErrorSummary : GovukErrorSummary,
     govukInput: GovukInput,
     formWithCSRF: FormWithCSRF,
@@ -31,11 +32,9 @@
  title = messages("we-cannot-check-your-identity.title")
  ) {
 
- <a id="identifiersBackLink" href="javascript:history.back()"
- class="govuk-body govuk-back-link">@messages("button.back.text")</a>
+ @govukBackLink(BackLink.mimicsBrowserBackButtonViaJavaScript)
 
-
- <h1 class="govuk-heading-l govuk-!-margin-bottom-5"> @messages("we-cannot-check-your-identity.header") </h1>
+ <h1 class="govuk-heading-l govuk-!-margin-bottom-5 govuk-!-margin-top-7"> @messages("we-cannot-check-your-identity.header") </h1>
 
  <p class="govuk-body"> @messages("we-cannot-check-your-identity.para.1")</p>
 
