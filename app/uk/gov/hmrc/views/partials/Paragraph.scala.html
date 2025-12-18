@@ -22,5 +22,5 @@
 
 @cls = @{"govuk-body ".concat(classes.getOrElse(""))}
 
-<p class="@cls" @id.map(i=>{ s"id=${i}"})>@if(key){@Html(msgs(key))} else if(htmlContent != ""){@htmlContent}</p>
+<p class="@cls" @id.map(i=>{ s"id=${i}"})>@if(key){@Html(msgs(key))} else if(htmlContent != HtmlFormat.empty){@htmlContent}</p>
 

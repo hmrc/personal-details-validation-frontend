@@ -18,7 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidation.generators
 
 import org.scalacheck.Gen
 import org.scalacheck.Gen.oneOf
-import support.Generators._
+import support.Generators.*
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, NonEmptyString, ValidationId}

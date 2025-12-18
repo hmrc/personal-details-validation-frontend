@@ -32,5 +32,5 @@ object InitialPersonalDetailsForm {
     "firstName" -> mandatoryText("personal-details.firstname.required"),
     "lastName" -> mandatoryText("personal-details.lastname.required"),
     "dateOfBirth" -> mandatoryLocalDate("personal-details")
-  )(InitialPersonalDetails.apply)(InitialPersonalDetails.unapply))
+  )(InitialPersonalDetails.apply)(formData => Some(formData.firstName, formData.lastName, formData.dateOfBirth)))
 }

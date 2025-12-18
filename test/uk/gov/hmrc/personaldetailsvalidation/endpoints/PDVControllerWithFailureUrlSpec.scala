@@ -23,9 +23,9 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.http.Status.SEE_OTHER
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
-import play.api.mvc._
+import play.api.mvc.*
 import play.api.test.FakeRequest
-import support.Generators.Implicits._
+import support.Generators.Implicits.*
 import support.UnitSpec
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
@@ -33,9 +33,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, UserAttemptsDetails}
-import uk.gov.hmrc.personaldetailsvalidation.monitoring.{MonitoringEvent, PdvLockedOut}
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
-import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, service_temporarily_unavailable, we_cannot_check_your_identity, you_have_been_timed_out, you_have_been_timed_out_dwp}
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.{MonitoringEvent, PdvLockedOut}
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.*
 import uk.gov.hmrc.personaldetailsvalidation.views.html.template.{do_you_have_your_nino, enter_your_details, what_is_your_nino, what_is_your_postcode}
 import uk.gov.hmrc.views.ViewConfig
 
@@ -52,15 +52,15 @@ class PDVControllerWithFailureUrlSpec extends UnitSpec with MockFactory with Sca
 
     "Redirect to lockedOut page when user tried 5 times and there is a failureUrl" in new Setup {
 
-      (personalDetailsSubmitterMock.getUserAttempts()(_: HeaderCarrier))
+      (personalDetailsSubmitterMock.getUserAttempts()(using _: HeaderCarrier))
         .expects(*)
         .returns(Future.successful(UserAttemptsDetails(5, None)))
 
       val pdvLockedOut: PdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", "", "")
-      (mockDataStreamAuditService.audit(_: MonitoringEvent)(_: HeaderCarrier, _:ExecutionContext))
+      (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _:ExecutionContext))
         .expects(pdvLockedOut, *, *)
 
-      val result: Future[Result] = controller.showPage(completionUrl, None, failureUrl)(request)
+      val result: Future[Result] = controller.showPage(using completionUrl, None, failureUrl)(request)
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)).get shouldBe failureUrl.get.toString

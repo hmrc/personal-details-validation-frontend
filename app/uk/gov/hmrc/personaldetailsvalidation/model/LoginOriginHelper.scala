@@ -20,21 +20,21 @@ import play.api.mvc.Request
 
 object LoginOriginHelper {
 
-  def isDwp(implicit request: Request[_]): Boolean =
+  def isDwp(implicit request: Request[?]): Boolean =
     request.session.get("origin").fold(false)(isDwp)
 
-  def isDwp(loginOrigin: String): Boolean = loginOrigin.take(6) equalsIgnoreCase "dwp-iv"
+  def isDwp(loginOrigin: String): Boolean = loginOrigin.take(6).equalsIgnoreCase("dwp-iv")
 
-  def isNotDwp(implicit request: Request[_]): Boolean = !isDwp
+  def isNotDwp(implicit request: Request[?]): Boolean = !isDwp
 
   def isSa(loginOrigin: String): Boolean = loginOrigin.endsWith("-sa")
 
-  def isDwpOrSa(implicit request: Request[_]): Boolean =
+  def isDwpOrSa(implicit request: Request[?]): Boolean =
     request.session.get("origin").fold(false)(isDwpOrSa)
 
   def isDwpOrSa(loginOrigin: String): Boolean = isDwp(loginOrigin) || isSa(loginOrigin)
 
-  def isNotDwpOrSa(implicit request: Request[_]): Boolean = !isDwpOrSa
+  def isNotDwpOrSa(implicit request: Request[?]): Boolean = !isDwpOrSa
 
   def isDeskPro(loginOrigin : String) : Boolean =
     !(isDwp(loginOrigin) || Set("bta-sa", "pta-sa", "ssttp-sa")(loginOrigin))

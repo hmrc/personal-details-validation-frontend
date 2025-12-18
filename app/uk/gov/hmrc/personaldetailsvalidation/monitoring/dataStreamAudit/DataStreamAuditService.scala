@@ -34,7 +34,6 @@ class DataStreamAuditService @Inject()(auditConnector: AuditConnector) {
     event match {
       case e: PdvFailedAttempt => sendPdvFailedAttemptEvent(e)
       case e: PdvLockedOut => sendPdvLockedOutEvent(e)
-      case _ => Future.successful(AuditResult.Failure(s"Failed sending audit message, unknown auditType", None))
     }
   }
 

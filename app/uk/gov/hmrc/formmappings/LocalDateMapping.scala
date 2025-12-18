@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.formmappings
 
-import java.time.temporal.ChronoField._
-import java.time.temporal.{ChronoField, ChronoUnit}
-import java.time.{DateTimeException, LocalDate}
 import cats.data.{NonEmptyList, Validated, ValidatedNel}
 import play.api.data.validation.{Constraint, ValidationError}
 import play.api.data.{FormError, Mapping, ObjectMapping}
 import uk.gov.hmrc.personaldetailsvalidation.model.DateErrorMessage
 
+import java.time.temporal.ChronoField.*
+import java.time.temporal.{ChronoField, ChronoUnit}
+import java.time.{DateTimeException, LocalDate}
 import scala.util.{Failure, Success, Try}
 
 case class LocalDateMapping private[formmappings](key: String = "",
@@ -34,16 +34,16 @@ case class LocalDateMapping private[formmappings](key: String = "",
 
   private lazy val binder = LocalDateMapping.LocalDateBinder(key, constraints)(errorKeyPrefix)
 
-  import binder._
+  val mappings: Seq[Mapping[?]] = Seq(this)
 
-  val mappings: Seq[Mapping[_]] = Seq(this)
-
+  private def prefixed(partName: String): String = if (key.isEmpty) partName else s"$key.$partName"
+    
   def bind(formData: Map[String, String]): Seq[FormError] Either LocalDate = binder.bind(formData)
 
   def unbind(date: LocalDate): Map[String, String] = Map(
-    "year".prependWithKey -> date.getYear.toString,
-    "month".prependWithKey -> date.getMonthValue.toString,
-    "day".prependWithKey -> date.getDayOfMonth.toString
+    prefixed("year") -> date.getYear.toString,
+    prefixed("month") -> date.getMonthValue.toString,
+    prefixed("day") -> date.getDayOfMonth.toString
   )
 
   def unbindAndValidate(date: LocalDate): (Map[String, String], Seq[FormError]) =
@@ -60,7 +60,7 @@ case class LocalDateMapping private[formmappings](key: String = "",
 
 private object LocalDateMapping {
 
-  import cats.implicits._
+  import cats.implicits.*
 
   private case class LocalDateBinder(key: String,
                                      constraints: Seq[Constraint[LocalDate]])
@@ -132,13 +132,13 @@ private object LocalDateMapping {
       }
 
       def validateMonthUsing(validate: ((String, String)) => ValidatedNel[String, Int]): ValidatedNel[String, Int] =
-        validatedPart flatMap validate
+        validatedPart.flatMap(validate)
     }
 
     private implicit class ValidatedIntPartOps(validatedPart: ValidatedNel[String, (String, Int)]) {
 
       def validateUsing(validate: ((String, Int)) => ValidatedNel[String, Int]): ValidatedNel[String, Int] =
-        validatedPart flatMap validate
+        validatedPart.flatMap(validate)
     }
 
     private implicit def asTupleToValidated(field: ChronoField): ((String, Int)) => ValidatedNel[String, Int] = {
@@ -170,21 +170,16 @@ private object LocalDateMapping {
     private implicit class ValidatedPartsOps(seqOfValidatedParts: Seq[ValidatedNel[String, Int]]) {
 
       lazy val toValidatedDate: ValidatedNel[String, LocalDate] =
-        seqOfValidatedParts
-          .toValidatedSeqOfParts
-          .leftMap(toSingleErrorIfAllPartsMissing)
+        seqOfValidatedParts.foldLeft(Validated.validNel[String, List[Int]](Nil)) {
+            case (combinedParts, validatedPart) => combinedParts combine validatedPart.map(List(_))
+          }.leftMap(toSingleErrorIfAllPartsMissing)
           .flatMap(toDate)
           .flatMap(checkAge)
-
-      private[ValidatedPartsOps] lazy val toValidatedSeqOfParts: ValidatedNel[String, Seq[Int]] =
-        seqOfValidatedParts.foldLeft(Validated.validNel[String, List[Int]](Nil)) {
-          case (combinedParts, validatedPart) => combinedParts combine validatedPart.map(List(_))
-        }
 
       private val numberOfDateParts = 3
 
       private def toSingleErrorIfAllPartsMissing(errors: NonEmptyList[String]): NonEmptyList[String] =
-        errors.filter(_ endsWith ".required").size match {
+        errors.filter(_.endsWith(".required")).size match {
           case `numberOfDateParts` => NonEmptyList.of(dateFieldError(suffixed = "required"))
           case _ => errors
         }

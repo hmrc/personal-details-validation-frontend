@@ -28,15 +28,15 @@ package object ops {
 
     def loadMandatory[A](key: String)
                         (implicit finder: ConfigFinder[A]): A =
-      loadValidated(key)(finder).fold(throwRuntimeException, identity)
+      loadValidated(key)(using finder).fold(throwRuntimeException, identity)
 
     def load[A](key: String, default: => A)
                (implicit finder: ConfigFinder[A]): A =
-      loadValidated(key)(finder).fold(_ => default, identity)
+      loadValidated(key)(using finder).fold(_ => default, identity)
 
     def loadOptional[A](key: String)
                        (implicit finder: ConfigFinder[A]): Option[A] =
-      loadValidated(key)(finder).toOption
+      loadValidated(key)(using finder).toOption
 
     private [config] def loadValidated[A](key: String)
                                 (implicit finder: ConfigFinder[A]): ValidatedNel[String, A] =

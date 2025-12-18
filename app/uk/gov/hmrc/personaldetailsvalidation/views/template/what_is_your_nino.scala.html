@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.views.html.template.layout
+@import views.html.helper.Implicits.toAttributePair
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
@@ -46,8 +47,8 @@
 
     @formWithCSRF(
         routes.PersonalDetailsCollectionController.submitYourNino(completionUrl, failureUrl),
-        'autocomplete -> "off",
-        'novalidate -> "novalidate") {
+        "autocomplete" -> "off",
+        "novalidate" -> "novalidate") {
 
         @textbox(
             field = pageForm("nino"),

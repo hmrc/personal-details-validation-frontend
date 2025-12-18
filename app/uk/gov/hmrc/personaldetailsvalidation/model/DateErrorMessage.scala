@@ -21,9 +21,9 @@ import play.api.data.{Form, FormError}
 //VER-1008
 object DateErrorMessage {
 
-  def dateErrors(form: Form[_], fieldName: String): Seq[FormError] = form(fieldName).errors
+  def dateErrors(form: Form[?], fieldName: String): Seq[FormError] = form(fieldName).errors
 
-  def getErrorMessage(form: Form[_], fieldName: String): String = {
+  def getErrorMessage(form: Form[?], fieldName: String): String = {
     if (dateErrors(form, fieldName).length > 1 && form(fieldName).errors.map(_.message.contains("required")).length > 1) {
       dateMessageMaker(
         form(fieldName).errors.map(f => f.message).exists(_.contains("day.required")),

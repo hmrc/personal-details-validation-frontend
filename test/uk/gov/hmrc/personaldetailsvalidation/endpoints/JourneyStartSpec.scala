@@ -21,8 +21,8 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import support.Generators.Implicits._
+import play.api.test.Helpers.*
+import support.Generators.Implicits.*
 import support.UnitSpec
 import uk.gov.hmrc.errorhandling.ProcessingError
 import uk.gov.hmrc.http.HeaderCarrier
@@ -31,7 +31,7 @@ import uk.gov.hmrc.personaldetailsvalidation.connectors.ValidationIdValidator
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.{completionUrls, validationIds}
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, ValidationId}
 
-import scala.concurrent.ExecutionContext.Implicits.{global => executionContext}
+import scala.concurrent.ExecutionContext.Implicits.global as executionContext
 import scala.concurrent.{ExecutionContext, Future}
 
 class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactory {
@@ -50,7 +50,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
       "and it's valid" in new Setup {
       implicit val requestWithValidationId: FakeRequest[AnyContentAsEmpty.type] = request.withSession(validationIdSessionKey -> validationId.value)
 
-      (validationIdValidator.checkExists(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
+      (validationIdValidator.checkExists(_: ValidationId)(using _: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
         .returning(Future.successful(true))
 
@@ -62,7 +62,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
       "but it's not valid" in new Setup {
       implicit val requestWithValidationId: FakeRequest[AnyContentAsEmpty.type] = request.withSession(validationIdSessionKey -> validationId.value)
 
-      (validationIdValidator.checkExists(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
+      (validationIdValidator.checkExists(_: ValidationId)(using _: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
         .returning(Future.successful(false))
 
@@ -76,7 +76,7 @@ class JourneyStartSpec extends UnitSpec with GuiceOneAppPerSuite with MockFactor
 
       val validationError: ProcessingError = ProcessingError("some message")
 
-      (validationIdValidator.checkExists(_: ValidationId)(_: HeaderCarrier, _: ExecutionContext))
+      (validationIdValidator.checkExists(_: ValidationId)(using _: HeaderCarrier, _: ExecutionContext))
         .expects(validationId, headerCarrier, executionContext)
         .returning(Future.failed(new RuntimeException(validationError.message)))
 

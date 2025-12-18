@@ -33,7 +33,7 @@ class ViewConfigSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite 
   "languagesMap" should {
 
     "return a map of language descriptions associated with Lang objects" in new Setup {
-      expectMessagesFilesExistsFor("default", "cy")
+      expectMessagesFilesExistsFor()
 
       whenConfigEntriesExists(
         "play.i18n.langs" -> List("en", "cy"),
@@ -47,7 +47,7 @@ class ViewConfigSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite 
     }
 
     "throw a runtime exception when there's no messages file defined for a code from 'play.i18n.langs'" in new Setup2 {
-      expectMessagesFilesExistsFor("default")
+      expectMessagesFilesExistsFor()
 
       whenConfigEntriesExists(
         "play.i18n.langs" -> List("en", "cy"),
@@ -58,7 +58,7 @@ class ViewConfigSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite 
     }
 
     "throw a runtime exception when there's no language description defined for a code in 'play.i18n.langs'" in new Setup {
-      expectMessagesFilesExistsFor("default", "cy")
+      expectMessagesFilesExistsFor()
 
       whenConfigEntriesExists(
         "play.i18n.langs" -> List("en", "cy", "pl"),
@@ -86,7 +86,7 @@ class ViewConfigSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite 
 
     val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, servicesConfig, dwpMessagesApiProvider, authConnector)
 
-    def expectMessagesFilesExistsFor(codes: String*): Map[String, Map[String, String]] = {
+    def expectMessagesFilesExistsFor(): Map[String, Map[String, String]] = {
       dwpMessagesApiProvider.get.messages
     }
   }
@@ -104,11 +104,11 @@ class ViewConfigSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite 
     ))
 
 
-    val messagesApi = new DwpMessagesApiProvider(Environment.simple(), configuration,
+    private val messagesApi = new DwpMessagesApiProvider(Environment.simple(), configuration,
       new DefaultLangsProvider(configuration).get, HttpConfiguration())
     val newConfigObject: Configuration => ViewConfig = new ViewConfig(_, servicesConfig, messagesApi, authConnector)
 
-    def expectMessagesFilesExistsFor(codes: String*): Map[String, Map[String, String]] = {
+    def expectMessagesFilesExistsFor(): Map[String, Map[String, String]] = {
       messagesApi.get.messages
     }
   }

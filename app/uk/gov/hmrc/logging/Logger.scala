@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.logging
 
-import javax.inject.Singleton
-
-import play.api.{LoggerLike, Logger => PlayLogger}
+import play.api.{LoggerLike, Logger as PlayLogger}
 import uk.gov.hmrc.errorhandling.ProcessingError
+
+import javax.inject.Singleton
 
 @Singleton
 class Logger(logger: LoggerLike) {

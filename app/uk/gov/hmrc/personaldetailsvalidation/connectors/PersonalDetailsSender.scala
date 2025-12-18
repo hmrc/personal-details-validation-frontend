@@ -24,7 +24,7 @@ import uk.gov.hmrc.personaldetailsvalidation.model._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 
 @Singleton
 class PersonalDetailsSender @Inject()(httpClient: HttpClientV2, connectorConfig: ConnectorConfig) {

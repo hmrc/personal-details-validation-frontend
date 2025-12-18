@@ -16,18 +16,17 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
-import java.time.LocalDate
-import java.util.UUID
-
 import play.api.libs.json.Json
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators._
-import uk.gov.hmrc.personaldetailsvalidation.model.{FailedPersonalDetailsValidation, NonEmptyString, PersonalDetails, PersonalDetailsWithNino, PersonalDetailsWithPostcode, PersonalDetailsValidation, SuccessfulPersonalDetailsValidation, UserAttemptsDetails, ValidationId}
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.*
+import uk.gov.hmrc.personaldetailsvalidation.model.*
 import uk.gov.hmrc.personaldetailsvalidation.utils.ComponentSpecHelper
 import uk.gov.hmrc.personaldetailsvalidation.utils.PersonalDetailsHelper.personalDetailsWrites
 
+import java.time.LocalDate
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 class PersonalDetailsSenderISpec extends ComponentSpecHelper {
@@ -44,7 +43,7 @@ class PersonalDetailsSenderISpec extends ComponentSpecHelper {
 
       actual shouldBe expected
 
-      val expectedRequestBody: String = Json.toJson(testPersonalDetailsWithNino)(personalDetailsWrites).toString()
+      val expectedRequestBody: String = Json.toJson(testPersonalDetailsWithNino)(using personalDetailsWrites).toString()
 
       verifyPost(submitValidationRequestUrl, Some(expectedRequestBody))
     }
@@ -59,7 +58,7 @@ class PersonalDetailsSenderISpec extends ComponentSpecHelper {
 
       actual shouldBe expected
 
-      val expectedRequestBody: String = Json.toJson(testPersonalDetailsWithNino)(personalDetailsWrites).toString()
+      val expectedRequestBody: String = Json.toJson(testPersonalDetailsWithNino)(using personalDetailsWrites).toString()
 
       verifyPost(submitValidationRequestUrl, Some(expectedRequestBody))
     }
@@ -103,7 +102,7 @@ class PersonalDetailsSenderISpec extends ComponentSpecHelper {
 
       actual shouldBe expected
 
-      val expectedRequestBody: String = Json.toJson(testPersonalDetailsWithPostCode)(personalDetailsWrites).toString()
+      val expectedRequestBody: String = Json.toJson(testPersonalDetailsWithPostCode)(using personalDetailsWrites).toString()
 
       verifyPost(submitValidationRequestUrl, Some(expectedRequestBody))
     }
@@ -118,7 +117,7 @@ class PersonalDetailsSenderISpec extends ComponentSpecHelper {
 
       actual shouldBe expected
 
-      val expectedRequestBody: String = Json.toJson(testPersonalDetailsWithPostCode)(personalDetailsWrites).toString()
+      val expectedRequestBody: String = Json.toJson(testPersonalDetailsWithPostCode)(using personalDetailsWrites).toString()
 
       verifyPost(submitValidationRequestUrl, Some(expectedRequestBody))
     }

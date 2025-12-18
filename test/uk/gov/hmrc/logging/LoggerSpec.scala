@@ -18,8 +18,8 @@ package uk.gov.hmrc.logging
 
 import org.scalamock.scalatest.MixedMockFactory
 import play.api.LoggerLike
-import uk.gov.hmrc.errorhandling.ProcessingError
 import support.UnitSpec
+import uk.gov.hmrc.errorhandling.ProcessingError
 
 class LoggerSpec
   extends UnitSpec

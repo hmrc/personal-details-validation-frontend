@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.formmappings
 
-import java.time.LocalDate
-
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.Mapping
 import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
+
+import java.time.LocalDate
 
 object Mappings {
 

@@ -17,9 +17,9 @@
 package uk.gov.hmrc.personaldetailsvalidation.generators
 
 import org.scalacheck.Gen
-import support.Generators._
-import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators._
-import uk.gov.hmrc.personaldetailsvalidation.model._
+import support.Generators.*
+import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators.*
+import uk.gov.hmrc.personaldetailsvalidation.model.*
 
 object ObjectGenerators {
 

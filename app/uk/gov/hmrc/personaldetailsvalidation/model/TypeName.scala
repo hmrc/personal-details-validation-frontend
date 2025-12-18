@@ -22,7 +22,7 @@ trait TypeName {
     if (wasDollarFound) name -> true
     else char match {
       case c if c == '$' => name -> true
-      case c => s"$name$char" -> false
+      case _ => s"$name$char" -> false
     }
   }._1
 

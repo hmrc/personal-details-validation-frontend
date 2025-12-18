@@ -19,8 +19,8 @@ package uk.gov.hmrc.language
 import com.google.inject.Inject
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import play.twirl.api.Html
+import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 import scala.concurrent.Future

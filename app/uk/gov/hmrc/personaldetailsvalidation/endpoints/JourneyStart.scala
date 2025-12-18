@@ -50,7 +50,7 @@ class JourneyStart @Inject()(validationIdValidator: ValidationIdValidator,
     * If there are any exceptions thrown, redirect to failureUrl (if defined), otherwise completionUrl with a technicalError param
     */
   def findRedirect(completionUrl: CompletionUrl, origin: Option[String], failureUrl: Option[CompletionUrl])
-                  (implicit request: Request[_], headerCarrier: HeaderCarrier): Future[Result] =
+                  (implicit request: Request[?], headerCarrier: HeaderCarrier): Future[Result] =
     findValidationIdInSession match {
       case None =>
         Future.successful(Redirect(routes.PersonalDetailsCollectionController.showPage(completionUrl, origin, failureUrl)))
@@ -71,7 +71,7 @@ class JourneyStart @Inject()(validationIdValidator: ValidationIdValidator,
     * This effectively CACHES the the PDV journey info (IV seems to be trying to do PDV TWICE in some flows - we should fix this!!)
     * Also: when do we *remove* the validationId from the session??  Never?
     */
-  private def findValidationIdInSession(implicit request: Request[_]): Option[ValidationId] =
+  private def findValidationIdInSession(implicit request: Request[?]): Option[ValidationId] =
     request.session.get(validationIdSessionKey).map(ValidationId(_))
 
   private def findRedirectUsing(validationIdExists: Boolean, validationId: ValidationId,

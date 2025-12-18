@@ -26,7 +26,7 @@ object PostcodeDetailsForm {
 
   private def postcodeValidation(): Mapping[NonEmptyString] = {
     mandatoryText("personal-details.postcode.invalid").
-      verifying("personal-details.postcode.invalid", postcodeFormatValidation _)
+      verifying("personal-details.postcode.invalid", postcodeFormatValidation)
   }
 
   def postcodeFormatValidation(postcode: NonEmptyString): Boolean =
@@ -34,6 +34,6 @@ object PostcodeDetailsForm {
 
   val postcodeForm: Form[PostcodeDetails] = Form(mapping(
     "postcode" -> postcodeValidation()
-  )(PostcodeDetails.apply)(PostcodeDetails.unapply))
+  )(PostcodeDetails.apply)(pd => Some(pd.postcode)))
 
 }

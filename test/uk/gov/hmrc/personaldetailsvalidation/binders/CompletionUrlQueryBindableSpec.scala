@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.binders
 
-import java.net.URLEncoder
-
-import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 import support.UnitSpec
+import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
+
+import java.net.URLEncoder
 
 class CompletionUrlQueryBindableSpec extends UnitSpec {
 

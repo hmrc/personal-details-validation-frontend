@@ -16,23 +16,23 @@
 
 package uk.gov.hmrc.errorhandling
 
-import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.NotFound
-import play.api.mvc.{Request, RequestHeader, Result, Results}
-import play.mvc.Http.Status._
+import play.api.mvc.{RequestHeader, Result, Results}
+import play.mvc.Http.Status.*
 import play.twirl.api.Html
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
 import uk.gov.hmrc.language.DwpI18nSupport
 import uk.gov.hmrc.views.ViewConfig
 import uk.gov.hmrc.views.html.template.error_template
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ErrorHandler @Inject()(appConfig: AppConfig, error_template: error_template)
-                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, val ec: ExecutionContext, viewConfig: ViewConfig, messagesApi: MessagesApi)
-  extends DwpI18nSupport(appConfig, messagesApi) {
+                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, val ec: ExecutionContext, viewConfig: ViewConfig)
+  extends DwpI18nSupport(appConfig, dwpMessagesApiProvider.get()) {
 
   import ErrorHandler.bindingError
 
@@ -42,12 +42,12 @@ class ErrorHandler @Inject()(appConfig: AppConfig, error_template: error_templat
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
     statusCode match {
-      case BAD_REQUEST if message.startsWith(bindingError) => internalServerErrorTemplate(request).map{ html => NotFound(html) }
-      case other => internalServerErrorTemplate(request).map{ html => Results.Status(other)(html) }
+      case BAD_REQUEST if message.startsWith(bindingError) => internalServerErrorTemplate(using request).map{ html => NotFound(html) }
+      case other => internalServerErrorTemplate(using request).map{ html => Results.Status(other)(html) }
     }
   }
 
-  private implicit def rhToRequest(rh: RequestHeader): Request[_] = Request(rh, "")
+//  private implicit def rhToRequest(rh: RequestHeader): Request[_] = Request(rh, "")
 
   override def messagesApi: MessagesApi = dwpMessagesApiProvider.get
 }

@@ -20,8 +20,8 @@ import play.api.Configuration
 import play.api.i18n.Lang
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.config.DwpMessagesApiProvider
-import uk.gov.hmrc.config.implicits._
-import uk.gov.hmrc.config.ops._
+import uk.gov.hmrc.config.implicits.*
+import uk.gov.hmrc.config.ops.*
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
@@ -37,7 +37,7 @@ class ViewConfig @Inject()(val configuration: Configuration,
   lazy val retryLimit: Int = configuration.getOptional[Int]("retry.limit").getOrElse(5)
 
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
-  lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")(stringValueFinder)
+  lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")(using stringValueFinder)
   lazy val timeout: Int = configuration.get[Int]("timeoutDialog.timeout-seconds")
   lazy val timeoutCountdown: Int = configuration.get[Int]("timeoutDialog.timeout-countdown-seconds")
   lazy val lockoutPeriodEn: String = configuration.getOptional[String]("lockout.period.en").getOrElse("24 hours")

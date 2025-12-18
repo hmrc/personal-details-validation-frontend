@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-case class CompletionUrl private[CompletionUrl](value: String) extends StringValue
+case class CompletionUrl(value: String) extends StringValue
 
 object CompletionUrl {
 

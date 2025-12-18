@@ -35,7 +35,7 @@
 
 @contactLink = @{
     if(LoginOriginHelper.isSa(origin)){
-        p(msgs("service_temporarily_unavailable.p2.sa", s"${viewConfig.addTaxesFrontendBaseUrl}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin"))
+        p(msgs("service_temporarily_unavailable.p2.sa", s"${viewConfig.addTaxesFrontendBaseUrl()}/business-account/add-tax/self-assessment/try-pin-in-post?origin=$origin"))
     } else if (LoginOriginHelper.isDwp(origin)){
         p(msgs("service_temporarily_unavailable.p2.dwp", s"${viewConfig.dwpGetHelpUrl}/$journeyId"))
     } else {
