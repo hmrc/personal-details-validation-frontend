@@ -46,9 +46,7 @@ class ErrorHandler @Inject()(appConfig: AppConfig, error_template: error_templat
       case other => internalServerErrorTemplate(using request).map{ html => Results.Status(other)(html) }
     }
   }
-
-//  private implicit def rhToRequest(rh: RequestHeader): Request[_] = Request(rh, "")
-
+  
   override def messagesApi: MessagesApi = dwpMessagesApiProvider.get
 }
 
