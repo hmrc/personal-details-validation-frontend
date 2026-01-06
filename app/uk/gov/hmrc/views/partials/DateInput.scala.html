@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.dateinput.DateInput as DateInputViewModel
 @import uk.gov.hmrc.personaldetailsvalidation.model.DateErrorMessage
 
 @this(underlying: GovukDateInput)
@@ -36,8 +37,8 @@
 }
 
 <div class="govuk-form-group date-of-birth-wrapper @if(dayError || monthError || yearError || allError){govuk-form-group--error}">
-    @underlying(DateInput(
-        fieldName,
+    @underlying(DateInputViewModel(
+        id = fieldName,
         items = Seq(
             InputItem(name = s"$fieldName.day", classes = s"govuk-input--width-2 $dayError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.day")), value = form(s"$fieldName.day").value, autocomplete = if(fieldName == "dateOfBirth") Some("bday-day") else Some("")),
             InputItem(name = s"$fieldName.month", classes = s"govuk-input--width-2 $monthError $allError", label = Some(Messages(s"$fieldPrefix.$fieldName.month")), value = form(s"$fieldName.month").value, autocomplete = if(fieldName == "dateOfBirth") Some("bday-month") else Some("")),

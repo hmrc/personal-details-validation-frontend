@@ -18,6 +18,7 @@ package uk.gov.hmrc.personaldetailsvalidation.model
 
 import support.UnitSpec
 import uk.gov.hmrc.domain.Nino
+
 import scala.util.Try
 
 class NinoSpecs extends UnitSpec {

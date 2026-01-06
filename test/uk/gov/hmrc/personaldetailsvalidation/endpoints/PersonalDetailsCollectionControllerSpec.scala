@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.endpoints
 
-import support.Generators.Implicits._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
@@ -24,10 +23,11 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
-import play.api.mvc.Results._
-import play.api.mvc._
+import play.api.mvc.*
+import play.api.mvc.Results.*
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import support.Generators.Implicits.*
 import support.UnitSpec
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.config.{AppConfig, DwpMessagesApiProvider}
@@ -35,19 +35,20 @@ import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.connectors.IdentityVerificationConnector
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
-import uk.gov.hmrc.personaldetailsvalidation.model._
-import uk.gov.hmrc.personaldetailsvalidation.monitoring._
+import uk.gov.hmrc.personaldetailsvalidation.model.*
+import uk.gov.hmrc.personaldetailsvalidation.monitoring.*
 import uk.gov.hmrc.personaldetailsvalidation.monitoring.dataStreamAudit.DataStreamAuditService
-import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.{incorrect_details, locked_out, service_temporarily_unavailable, we_cannot_check_your_identity, you_have_been_timed_out, you_have_been_timed_out_dwp}
-import uk.gov.hmrc.personaldetailsvalidation.views.html.template._
+import uk.gov.hmrc.personaldetailsvalidation.views.html.pages.*
+import uk.gov.hmrc.personaldetailsvalidation.views.html.template.*
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.views.ViewConfig
 
 import java.net.URLEncoder
 import java.time.LocalDate
 import java.util.UUID
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.reflect.Selectable.reflectiveSelectable
 
 class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite {
 
@@ -55,15 +56,15 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "Redirect to lockedOut page when user tried 5 times and there is no failureUrl" in new Setup {
 
-      (personalDetailsSubmitterMock.getUserAttempts()(_: HeaderCarrier))
+      (personalDetailsSubmitterMock.getUserAttempts()(using _: HeaderCarrier))
         .expects(*)
         .returns(Future.successful(UserAttemptsDetails(5, None)))
 
       val pdvLockedOut: PdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", "", "")
-      (mockDataStreamAuditService.audit(_: MonitoringEvent)(_: HeaderCarrier, _:ExecutionContext))
+      (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _:ExecutionContext))
         .expects(pdvLockedOut, *, *)
 
-      val result: Future[Result] = controller.showPage(completionUrl, None, failureUrl)(request)
+      val result: Future[Result] = controller.showPage(using completionUrl, None, failureUrl)(request)
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)).get shouldBe "/personal-details-validation/incorrect-details/you-have-been-locked-out"
@@ -71,11 +72,11 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "Redirect to enter-your-details page when user call /personal-details" in new Setup {
 
-      (personalDetailsSubmitterMock.getUserAttempts()(_: HeaderCarrier))
+      (personalDetailsSubmitterMock.getUserAttempts()(using _: HeaderCarrier))
         .expects(*)
         .returns(Future.successful(UserAttemptsDetails(0, None)))
 
-      val result: Future[Result] = controller.showPage(completionUrl, None, failureUrl)(request)
+      val result: Future[Result] = controller.showPage(using   completionUrl, None, failureUrl)(request)
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)).get.contains("/personal-details-validation/enter-your-details?completionUrl=") shouldBe true
@@ -84,7 +85,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "return enter-your-details page, containing data from session" in new Setup {
 
-      (mockViewConfig.isLoggedIn( _ : HeaderCarrier, _ : ExecutionContext))
+      (mockViewConfig.isLoggedIn( using _ : HeaderCarrier, _ : ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -103,11 +104,11 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "return enter-your-details page, containing data from session with retry" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
-      val result: Future[Result] = controller.enterYourDetails(completionUrl, withError = false, failureUrl, Some("retryText"))(request)
+      val result: Future[Result] = controller.enterYourDetails(completionUrl, withError = false, failureUrl)(request)
 
       status(result) shouldBe OK
       contentType(result) shouldBe Some(HTML)
@@ -124,7 +125,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
   "submitMainDetails" should {
     "return PersonalDetails when data provided on the form is valid" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -140,7 +141,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       val result: Future[Result] = controller.submitYourDetails(completionUrl, failureUrl)(req)
 
       status(result) shouldBe SEE_OTHER
-      redirectLocation(await(result)(5 seconds)).get shouldBe expectedUrl
+      redirectLocation(await(result)(using 5.seconds)).get shouldBe expectedUrl
 
       val returnedSession: Session = session(result)
 
@@ -159,7 +160,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when firstname data is missing" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -185,7 +186,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when lastname data is missing" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -211,7 +212,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when day data is missing" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -237,7 +238,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when month data is missing" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -263,7 +264,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when year data is missing" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -289,7 +290,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when all dob data is missing" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -313,7 +314,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when day data is invalid" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -340,7 +341,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when month data is invalid" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -368,7 +369,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error when year data is invalid" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -397,7 +398,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
   "whatIsYourNino" should {
     "return OK with the ability to enter the Nino" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -428,7 +429,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "include a back link" in new Setup() {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -449,7 +450,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "redirect the user to the 'Enter your details' page when a session key is missing" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -469,7 +470,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
   "showPostCodeForm" should {
     "return OK with the ability to enter the Post Code" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -500,7 +501,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "include a back link" in new Setup() {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -521,7 +522,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "redirect the user to the 'Enter your details' page when a session key is missing" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -542,7 +543,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
   "showHaveYourNationalInsuranceNumber" should {
     "return OK with the ability to confirm whether you have your Nino" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -580,7 +581,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display field validation error when question not answered" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -607,7 +608,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
   "submitNino" should {
     "succeed when given a valid Nino" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -629,11 +630,11 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(_: Request[_], _: HeaderCarrier))
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(using _: Request[?], _: HeaderCarrier))
         .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
-      (personalDetailsSubmitterMock.successResult(_ : CompletionUrl, _ : PersonalDetailsValidation)(_: Request[_]))
+      (personalDetailsSubmitterMock.successResult(_ : CompletionUrl, _ : PersonalDetailsValidation)(using _: Request[?]))
         .expects(*, *, *)
         .returns(expectedRedirect)
 
@@ -645,7 +646,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "redirect to showPage if no details found" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -667,7 +668,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "journeyId" -> "1234567890"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(_: Request[_], _: HeaderCarrier))
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(using _: Request[?], _: HeaderCarrier))
         .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
@@ -679,7 +680,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "Redirect to 'Enter you details' page if the initial details are not present in the request" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -693,7 +694,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
   "submitPostcode" should {
     "succeed when given a valid Postcode" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -715,11 +716,11 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(_: Request[_], _: HeaderCarrier))
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(using _: Request[?], _: HeaderCarrier))
         .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
-      (personalDetailsSubmitterMock.successResult(_ : CompletionUrl, _ : PersonalDetailsValidation)(_: Request[_]))
+      (personalDetailsSubmitterMock.successResult(_ : CompletionUrl, _ : PersonalDetailsValidation)(using _: Request[?]))
         .expects(*, *, *)
         .returns(expectedRedirect)
 
@@ -730,7 +731,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error nino missing" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -755,7 +756,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display error field validation error nino invalid" in new Setup with BindFromRequestTooling {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -780,7 +781,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "Redirect to 'Enter you details' page if the initial details are not present in the request" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -792,7 +793,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "redirect to showPage if no details found" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -814,7 +815,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "journeyId" -> "1234567890"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(_: Request[_], _: HeaderCarrier))
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(using _: Request[?], _: HeaderCarrier))
         .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
@@ -826,7 +827,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "redirect to Helpline Service Deceased Page" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -848,11 +849,11 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
         "dob" -> "1939-09-01"
       )
 
-      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(_: Request[_], _: HeaderCarrier))
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(using _: Request[?], _: HeaderCarrier))
         .expects(expectedPersonalDetails, *, *)
         .returns(pdv)
 
-      (mockIVConnector.updateJourney(_: String, _: String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
+      (mockIVConnector.updateJourney(_: String, _: String)(using _: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
 
       val result: Future[Result] = controller.submitYourPostCode(completionUrl, failureUrl)(req)
 
@@ -897,7 +898,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "return 200 OK" in new Setup {
 
-      (mockViewConfig.isLoggedIn(_: HeaderCarrier, _: ExecutionContext))
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
         .expects(*, *)
         .returns(Future.successful(true))
 
@@ -918,7 +919,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     "redirect user to continueUrl with userTimeout parameter" in new Setup {
 
       private val redirectUrl = s"${completionUrl.value}&userTimeout="
-      (mockIVConnector.updateJourney(_: String, _:String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
+      (mockIVConnector.updateJourney(_: String, _:String)(using _: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
 
       private val result = controller.redirectAfterTimeout(completionUrl, failureUrl)(request)
       status(result) shouldBe 303
@@ -932,9 +933,9 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     "redirect user to continueUrl with userAborted parameter" in new Setup {
 
       private val redirectUrl = s"${completionUrl.value}&userAborted="
-      (mockIVConnector.updateJourney(_: String, _:String)(_: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
+      (mockIVConnector.updateJourney(_: String, _:String)(using _: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *)
 
-      private val result = controller.redirectAfterUserAborted(completionUrl, failureUrl)(request)
+      private val result = controller.redirectAfterUserAborted(completionUrl)(request)
       status(result) shouldBe 303
       redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
     }
@@ -1019,7 +1020,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     }
   }
 
-private class Setup() {
+  private class Setup() {
 
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
@@ -1031,10 +1032,10 @@ private class Setup() {
     implicit val messages: Messages = MessagesImpl(lang, dwpMessagesApiProvider.get)
 
     val personalDetailsSubmitterMock: PersonalDetailsSubmission = mock[PersonalDetailsSubmission]
-    val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+    private val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
     val mockDataStreamAuditService: DataStreamAuditService = mock[DataStreamAuditService]
     val mockIVConnector: IdentityVerificationConnector = mock[IdentityVerificationConnector]
-    val mockAuthConnector: AuthConnector = mock[AuthConnector]
+    private val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
     private class ViewConfigWithValues extends ViewConfig(mock[Configuration], mock[ServicesConfig], mock[DwpMessagesApiProvider], mockAuthConnector) {
       override lazy val retryLimit: Int = 5
@@ -1045,21 +1046,21 @@ private class Setup() {
 
     implicit val mockViewConfig: ViewConfig = mock[ViewConfigWithValues]
 
-    val stubMessagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
+    private val stubMessagesControllerComponents: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
 
-    val enter_your_details: enter_your_details = app.injector.instanceOf[enter_your_details]
-    val do_you_have_your_nino: do_you_have_your_nino = app.injector.instanceOf[do_you_have_your_nino]
-    val incorrect_details: incorrect_details = app.injector.instanceOf[incorrect_details]
-    val locked_out: locked_out = app.injector.instanceOf[locked_out]
-    val what_is_your_postcode: what_is_your_postcode = app.injector.instanceOf[what_is_your_postcode]
-    val what_is_your_nino: what_is_your_nino = app.injector.instanceOf[what_is_your_nino]
-    val service_temporarily_unavailable: service_temporarily_unavailable = app.injector.instanceOf[service_temporarily_unavailable]
-    val you_have_been_timed_out: you_have_been_timed_out = app.injector.instanceOf[you_have_been_timed_out]
-    val you_have_been_timed_out_dwp: you_have_been_timed_out_dwp = app.injector.instanceOf[you_have_been_timed_out_dwp]
+    private val enter_your_details: enter_your_details = app.injector.instanceOf[enter_your_details]
+    private val do_you_have_your_nino: do_you_have_your_nino = app.injector.instanceOf[do_you_have_your_nino]
+    private val incorrect_details: incorrect_details = app.injector.instanceOf[incorrect_details]
+    private val locked_out: locked_out = app.injector.instanceOf[locked_out]
+    private val what_is_your_postcode: what_is_your_postcode = app.injector.instanceOf[what_is_your_postcode]
+    private val what_is_your_nino: what_is_your_nino = app.injector.instanceOf[what_is_your_nino]
+    private val service_temporarily_unavailable: service_temporarily_unavailable = app.injector.instanceOf[service_temporarily_unavailable]
+    private val you_have_been_timed_out: you_have_been_timed_out = app.injector.instanceOf[you_have_been_timed_out]
+    private val you_have_been_timed_out_dwp: you_have_been_timed_out_dwp = app.injector.instanceOf[you_have_been_timed_out_dwp]
 
-    val we_cannot_check_your_identity: we_cannot_check_your_identity = app.injector.instanceOf[we_cannot_check_your_identity]
+    private val we_cannot_check_your_identity: we_cannot_check_your_identity = app.injector.instanceOf[we_cannot_check_your_identity]
 
-    val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+    private val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
     implicit val ec: ExecutionContext = ExecutionContext.global
 
@@ -1080,7 +1081,7 @@ private class Setup() {
       service_temporarily_unavailable,
       you_have_been_timed_out,
       you_have_been_timed_out_dwp,
-      mockIVConnector)(mockAuthConnector, dwpMessagesApiProvider, mockViewConfig, ExecutionContext.Implicits.global, messagesApi)
+      mockIVConnector)(using mockAuthConnector, dwpMessagesApiProvider, mockViewConfig, ExecutionContext.Implicits.global, messagesApi)
   }
 
   private trait BindFromRequestTooling {

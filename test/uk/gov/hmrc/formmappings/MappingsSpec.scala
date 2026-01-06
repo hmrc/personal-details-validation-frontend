@@ -20,7 +20,7 @@ import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 import play.api.data.Forms.mapping
 import play.api.data.{FormError, Mapping}
-import support.Generators.Implicits._
+import support.Generators.Implicits.*
 import support.{Generators, UnitSpec}
 import uk.gov.hmrc.personaldetailsvalidation.model.NonEmptyString
 
@@ -28,7 +28,7 @@ import java.time.LocalDate
 
 class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
-  import Mappings._
+  import Mappings.*
 
   "mandatoryText" should {
 
@@ -72,7 +72,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
     "bind successfully when given year, month and day are valid and the user is 15 years and 9 months old or above." in new DateMappingSetup with DateMapping {
 
-      legalLocalDates.map { date: LocalDate =>
+      legalLocalDates.map { (date: LocalDate) =>
 
         val bindResult = dateMapping.bind(Map(
           s"$dateFieldName.year" -> date.getYear.toString,
@@ -256,11 +256,6 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 //Test for welshAbbrMonths names
     "accept Welsh abbreviated month names (case-insensitive)" in new DateMappingSetup with DateMapping {
 
-      val welshAbbrMonths: Seq[(String, Int)] = Seq(
-        "ION" -> 1, "CHWEF" -> 2, "MAW" -> 3, "EBR" -> 4, "MAI" -> 5, "MEH" -> 6,
-        "GORFF" -> 7, "AWST" -> 8, "MEDI" -> 9, "HYD" -> 10, "TACH" -> 11, "RHAG" -> 12
-      )
-
       val WelshAbbreviatedMonth: Map[String, String] = Map(
         s"$dateFieldName.year" -> "2000",
         s"$dateFieldName.month" -> "CHWEF",
@@ -275,11 +270,6 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
     "accept a Welsh long month names (case-insensitive) " in new DateMappingSetup with DateMapping {
 
-      val WelshFullMonth: Seq[(String, Int)] = Seq(
-        "IONAWR" -> 1, "CHWEFROR" -> 2, "MAWRTH" -> 3, "EBRILL" -> 4, "MAI" -> 5, "MEHEFIN" -> 6,
-        "GORFFENNAF" -> 7, "AWST" -> 8, "MEDI" -> 9, "HYDREF" -> 10, "TACHWEDD" -> 11, "RHAGFYR" -> 12
-      )
-
       val WelshFullMonths: Map[String, String] = Map(
         s"$dateFieldName.year" -> "2000",
         s"$dateFieldName.month" -> "Ionawr",
@@ -288,7 +278,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
       val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(WelshFullMonths)
 
-      bindResult shouldBe Right(LocalDate.of(2000, 1, 29))
+      bindResult.shouldBe(Right(LocalDate.of(2000, 1, 29)))
     }
 
   }
@@ -297,7 +287,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
 
     "unbind the given LocalDate" in new DateMappingSetup with DateMapping {
 
-      forAll { localDate: LocalDate =>
+      forAll { (localDate: LocalDate) =>
 
         dateMapping.unbind(localDate) shouldBe Map(
           s"$dateFieldName.year" -> localDate.getYear.toString,
@@ -383,7 +373,7 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
       name => s"$errorKeyPrefix.$name.$suffix"
 
     def toErrorKeyDateSuffixed(suffix: String): String => String =
-      name => s"$errorKeyPrefix.date.$suffix"
+      _ => s"$errorKeyPrefix.date.$suffix"
 
     def toFormError(errorKey: String): FormError =
       FormError(dateFieldName, errorKey)

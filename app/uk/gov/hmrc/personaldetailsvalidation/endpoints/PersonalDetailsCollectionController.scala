@@ -88,8 +88,8 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
         }
     }
 
-  def enterYourDetails(completionUrl: CompletionUrl, withError: Boolean = false, failureUrl: Option[CompletionUrl], maybeRetryGuidanceText: Option[String] = None): Action[AnyContent] = Action.async { implicit request =>
-    viewConfig.isLoggedIn.map { isLoggedIn: Boolean =>
+  def enterYourDetails(completionUrl: CompletionUrl, withError: Boolean = false, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
+    viewConfig.isLoggedIn.map { (isLoggedIn: Boolean) =>
       if (withError) {
         Ok(enter_your_details(initialForm.withGlobalError("personal-details.validation.failed"), completionUrl, loggedInUser = isLoggedIn, failureUrl))
       } else {
@@ -99,7 +99,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }
 
   def submitYourDetails(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
-    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+    viewConfig.isLoggedIn.flatMap { (isLoggedIn: Boolean) =>
       initialForm.bindFromRequest().fold (
         formWithErrors => {
           val tooYoung: Boolean = formWithErrors.errors.contains(FormError("dateOfBirth",List("personal-details.dateOfBirth.tooYoung"),List()))
@@ -121,7 +121,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }
 
   def whatIsYourNino(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
-    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+    viewConfig.isLoggedIn.flatMap { (isLoggedIn: Boolean) =>
       retrieveNamesAndDOB(completionUrl, failureUrl) match {
         case Right(_) => Future.successful(Ok(what_is_your_nino(ninoForm, completionUrl, isLoggedIn, failureUrl)))
         case Left(redirect) => Future(redirect)
@@ -130,7 +130,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }
 
   def submitYourNino(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
-    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+    viewConfig.isLoggedIn.flatMap { (isLoggedIn: Boolean) =>
       ninoForm.bindFromRequest().fold (
         formWithErrors => {
           logger.info("SUBMIT_NINO user received a form error when submitting")
@@ -149,7 +149,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }
 
   def whatIsYourPostCode(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
-    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+    viewConfig.isLoggedIn.flatMap { (isLoggedIn: Boolean) =>
       retrieveNamesAndDOB(completionUrl, failureUrl) match {
         case Right(_) => Future.successful(Ok(what_is_your_postcode(postcodeForm, completionUrl, isLoggedIn, failureUrl)))
         case Left(redirect) => Future(redirect)
@@ -158,7 +158,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }
 
   def submitYourPostCode(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
-    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+    viewConfig.isLoggedIn.flatMap { (isLoggedIn: Boolean) =>
       postcodeForm.bindFromRequest().fold (
         formWithErrors => {
           logger.info("SUBMIT_POSTCODE user received a form error when submitting")
@@ -189,13 +189,13 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }
 
   def showHaveYourNationalInsuranceNumber(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
-    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+    viewConfig.isLoggedIn.flatMap { (isLoggedIn: Boolean) =>
       Future.successful(Ok(do_you_have_your_nino(DoYouHaveYourNino.apply(), completionUrl, isLoggedIn, failureUrl)))
     }
   }
 
   def processHaveYourNationalInsuranceNumber(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
-    viewConfig.isLoggedIn.flatMap { isLoggedIn: Boolean =>
+    viewConfig.isLoggedIn.flatMap { (isLoggedIn: Boolean) =>
       DoYouHaveYourNino.apply().bindFromRequest().fold(
         errors =>
           Future.successful(BadRequest(do_you_have_your_nino(
@@ -210,7 +210,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
     }
   }
 
-  private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl])(implicit request: Request[_]): Future[Result] = {
+  private def submitPersonalDetails(personalDetails: PersonalDetails, completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl])(implicit request: Request[?]): Future[Result] = {
     for {
       pdv <- personalDetailsSubmission.submitPersonalDetails(personalDetails)
       result = pdv match {
@@ -278,7 +278,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   /**
    * redirect user to the completionUrl with a userAborted status
    */
-  def redirectAfterUserAborted(completionUrl: CompletionUrl, failureUrl: Option[CompletionUrl]): Action[AnyContent] = Action.async { implicit request =>
+  def redirectAfterUserAborted(completionUrl: CompletionUrl): Action[AnyContent] = Action.async { implicit request =>
     ivConnector.updateJourney(completionUrl.value, "UserAborted")
     Future.successful(Redirect(completionUrl.value, Map("userAborted" -> Seq(""))))
   }
@@ -323,7 +323,7 @@ class PersonalDetailsCollectionController @Inject()(personalDetailsSubmission: P
   }
 
   def youHaveBeenTimedOut(failureUrl: Option[String]) : Action[AnyContent] = Action.async { implicit request =>
-    viewConfig.isLoggedIn.map { isLoggedIn: Boolean =>
+    viewConfig.isLoggedIn.map { (isLoggedIn: Boolean) =>
        if(failureUrl.isDefined) Ok(you_have_been_timed_out_dwp(loggedInUser = isLoggedIn, failureUrl))
        else Ok(you_have_been_timed_out(loggedInUser = isLoggedIn))
     }

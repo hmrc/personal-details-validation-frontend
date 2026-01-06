@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.language
 
-import javax.inject.{Inject, Singleton}
 import play.api.i18n.Lang
 import play.api.mvc.ControllerComponents
 import uk.gov.hmrc.play.language.{LanguageController, LanguageUtils}
 import uk.gov.hmrc.views.ViewConfig
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class ChangeLanguageEndpoint  @Inject()(viewConfig: ViewConfig,

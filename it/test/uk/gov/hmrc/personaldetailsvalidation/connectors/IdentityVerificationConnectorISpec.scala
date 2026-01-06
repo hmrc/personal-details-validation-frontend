@@ -17,16 +17,17 @@
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
 
-import java.util.UUID
 import ch.qos.logback.classic.Level
 import com.github.tomakehurst.wiremock.http.Fault
 import org.scalatest.LoneElement.convertToCollectionLoneElementWrapper
-import play.api.test.Helpers._
+import play.api.Logger
+import play.api.test.Helpers.*
 import uk.gov.hmrc.config.AppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.personaldetailsvalidation.utils.{ComponentSpecHelper, LogCapturing}
 
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
@@ -38,7 +39,7 @@ class IdentityVerificationConnectorISpec extends ComponentSpecHelper with LogCap
 
       stubPatch(backendUrl)(OK)
 
-      withCaptureOfLoggingFrom(identityVerificationConnector.testLogger, Level.WARN) {logEvents =>
+      withCaptureOfLoggingFrom(capturedLogger.get, Level.WARN) {logEvents =>
 
         val result: Any = identityVerificationConnector.updateJourney(redirectingUrl, timeout)
 
@@ -67,7 +68,7 @@ class IdentityVerificationConnectorISpec extends ComponentSpecHelper with LogCap
 
       stubPatch(backendUrl)(OK)
 
-      withCaptureOfLoggingFrom(identityVerificationConnector.testLogger, Level.WARN) {logEvents =>
+      withCaptureOfLoggingFrom(capturedLogger.get, Level.WARN) {logEvents =>
 
         val result: Any = identityVerificationConnector.updateJourney(redirectingUrl, userAborted)
 
@@ -96,7 +97,7 @@ class IdentityVerificationConnectorISpec extends ComponentSpecHelper with LogCap
 
       stubPatch(backendUrl)(NOT_FOUND)
 
-      withCaptureOfLoggingFrom(identityVerificationConnector.testLogger, Level.WARN) { logEvents =>
+      withCaptureOfLoggingFrom(capturedLogger.get, Level.WARN) { logEvents =>
 
         val result: Any = identityVerificationConnector.updateJourney(redirectingUrl, success)
 
@@ -124,7 +125,7 @@ class IdentityVerificationConnectorISpec extends ComponentSpecHelper with LogCap
 
       stubPatchFault(backendUrl)(Fault.MALFORMED_RESPONSE_CHUNK)
 
-      withCaptureOfLoggingFrom(identityVerificationConnector.testLogger, Level.WARN) { logEvents =>
+      withCaptureOfLoggingFrom(capturedLogger.get, Level.WARN) { logEvents =>
 
         identityVerificationConnector.updateJourney(redirectingUrl, success)
 
@@ -148,7 +149,7 @@ class IdentityVerificationConnectorISpec extends ComponentSpecHelper with LogCap
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val ec: ExecutionContext = ExecutionContext.global
 
-    val mdtpUrl: String = "/mdtp/personal-details-validation-complete"
+    private val mdtpUrl: String = "/mdtp/personal-details-validation-complete"
     val testJourneyId: String = UUID.randomUUID().toString
     val timeout: String = "Timeout"
     val userAborted: String = "UserAborted"
@@ -160,8 +161,9 @@ class IdentityVerificationConnectorISpec extends ComponentSpecHelper with LogCap
     val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
     val httpClient: HttpClientV2 = app.injector.instanceOf[HttpClientV2]
 
-    val identityVerificationConnector = new IdentityVerificationConnector(appConfig, httpClient){
-      val testLogger = logger
+    var capturedLogger:Option[Logger] = None
+    val identityVerificationConnector: IdentityVerificationConnector = new IdentityVerificationConnector(appConfig, httpClient) {
+      capturedLogger = Some(logger)
     }
   }
 

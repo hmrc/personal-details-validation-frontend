@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.connectors
 
-import java.util.UUID
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.model.ValidationId
 import uk.gov.hmrc.personaldetailsvalidation.utils.ComponentSpecHelper
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext
 
 class ValidationIdValidatorISpec extends ComponentSpecHelper {

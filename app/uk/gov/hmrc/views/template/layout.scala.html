@@ -15,11 +15,10 @@
  *@
 
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcReportTechnicalIssueHelper}
-@import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
+@import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, LoginOriginHelper}
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.includes.summaryErrors
-@import uk.gov.hmrc.personaldetailsvalidation.model.LoginOriginHelper
 
 @this(
     hmrcLayout: HmrcLayout,
@@ -68,7 +67,12 @@
                 countdown = Some(appConfig.timeoutCountdown),
                 keepAliveUrl = Some(routes.PersonalDetailsCollectionController.keepAlive().url),
                 signOutUrl = Some(routes.PersonalDetailsCollectionController.redirectAfterTimeout(CompletionUrl(completionUrl.getOrElse("").toString), failureUrl).url),
-                timeoutUrl = if(LoginOriginHelper.isDwp(request))Some(routes.PersonalDetailsCollectionController.youHaveBeenTimedOut(Some(failureUrl.getOrElse("").toString)).url) else Some(routes.PersonalDetailsCollectionController.youHaveBeenTimedOut().url),
+                timeoutUrl = {
+                    if (LoginOriginHelper.isDwp(request))
+                        Some(routes.PersonalDetailsCollectionController.youHaveBeenTimedOut(Some(failureUrl.getOrElse("").toString)).url)
+                    else
+                        Some(routes.PersonalDetailsCollectionController.youHaveBeenTimedOut().url)
+                },
                 language = Some(messages.lang.code)
             )
         )

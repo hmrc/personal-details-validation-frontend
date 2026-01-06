@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.config
 
-import java.time.Duration
-
-import cats.data.Validated._
+import cats.data.Validated.*
 import cats.data.ValidatedNel
-import cats.implicits._
+import cats.implicits.*
 import play.api.Configuration
 import uk.gov.hmrc.http.Host
+
+import java.time.Duration
 
 
 package object implicits {
 
-  import ops._
+  import ops.*
 
   implicit def stringValueFinder(key: String)(configuration: Configuration): ValidatedNel[String, String] =
     Option(configuration.get[String](key)).toValidated(key)

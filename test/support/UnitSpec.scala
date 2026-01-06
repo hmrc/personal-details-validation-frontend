@@ -19,14 +19,14 @@ import org.apache.pekko.stream.Materializer
 import org.apache.pekko.util.ByteString
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import play.api.http.HeaderNames._
-import play.api.http.Status._
+import play.api.http.HeaderNames.*
+import play.api.http.Status.*
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{ResponseHeader, Result}
 
 import java.nio.charset.Charset
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
+import scala.concurrent.duration.*
 import scala.concurrent.{Await, Future}
 
 abstract class UnitSpec extends AnyWordSpec with Matchers {

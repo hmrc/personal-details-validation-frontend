@@ -33,7 +33,7 @@ class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: Pe
   val validationIdSessionKey = "ValidationId"
 
   def submitPersonalDetails(personalDetails: PersonalDetails)
-                           (implicit request: Request[_],
+                           (implicit request: Request[?],
                             headerCarrier: HeaderCarrier): Future[PersonalDetailsValidation] = {
     val origin = request.session.get("origin").getOrElse("Unknown-Origin")
     personalDetailsValidationConnector.submitValidationRequest(personalDetails, origin, headerCarrier)
@@ -45,7 +45,7 @@ class PersonalDetailsSubmission @Inject()(personalDetailsValidationConnector: Pe
     redirectUrl.replaceAll(s"""[?&]validationId=$UUIDRegex""", "")
 
   def successResult(completionUrl: CompletionUrl, personalDetailsValidation: PersonalDetailsValidation)
-                   (implicit request: Request[_]): Result = {
+                   (implicit request: Request[?]): Result = {
     val strippedCompletionUrl = stripValidationId(completionUrl.value)
     personalDetailsValidation match {
       case SuccessfulPersonalDetailsValidation(validationId, _) =>

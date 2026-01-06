@@ -19,8 +19,9 @@ package uk.gov.hmrc.personaldetailsvalidation.connectors
 import javax.inject.{Inject, Singleton}
 import play.api.Logging
 import play.api.libs.json.Json
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.config.AppConfig
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.personaldetailsvalidation.model.JourneyUpdate.format
@@ -41,7 +42,7 @@ class IdentityVerificationConnector @Inject()(appConfig: AppConfig,
 
     if (journeyId.isDefined) {
 
-      httpClient.patch(url"${appConfig.ivUrl}/identity-verification/journey/${journeyId.getOrElse("")}").withBody(Json.toJson(status)(format)).execute[HttpResponse]
+      httpClient.patch(url"${appConfig.ivUrl}/identity-verification/journey/${journeyId.getOrElse("")}").withBody(Json.toJson(status)(using format)).execute[HttpResponse]
         .recover {
         case ex: Exception => logger.warn(s"IV returns error ${ex.getMessage}, update IV journey might failed for ${journeyId.getOrElse("")}")
       }

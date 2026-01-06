@@ -19,10 +19,10 @@ package uk.gov.hmrc.personaldetailsvalidation.endpoints
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
+import play.api.mvc.*
 import play.api.mvc.Results.Redirect
-import play.api.mvc._
 import play.api.test.FakeRequest
-import support.Generators.Implicits._
+import support.Generators.Implicits.*
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.personaldetailsvalidation.generators.ValuesGenerators
@@ -38,7 +38,7 @@ class PersonalDetailsValidationStartControllerSpec extends UnitSpec with MockFac
 
       val redirect: Result = Redirect("some-url")
 
-      (journeyStart.findRedirect(_: CompletionUrl, _:Option[String], _: Option[CompletionUrl])(_: Request[_], _: HeaderCarrier))
+      (journeyStart.findRedirect(_: CompletionUrl, _:Option[String], _: Option[CompletionUrl])(using _: Request[?], _: HeaderCarrier))
         .expects(url, origin, *, *, *)
         .returning(Future.successful(redirect))
 
@@ -47,7 +47,7 @@ class PersonalDetailsValidationStartControllerSpec extends UnitSpec with MockFac
 
     "throw an exception when fetchRedirect returns one" in new Setup {
 
-      (journeyStart.findRedirect(_: CompletionUrl, _:Option[String], _: Option[CompletionUrl])(_: Request[_], _: HeaderCarrier))
+      (journeyStart.findRedirect(_: CompletionUrl, _:Option[String], _: Option[CompletionUrl])(using _: Request[?], _: HeaderCarrier))
         .expects(url, origin, *, *, *)
         .returning(Future.failed(new RuntimeException("Unrecoverable error")))
 

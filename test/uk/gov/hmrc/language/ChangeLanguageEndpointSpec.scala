@@ -22,7 +22,7 @@ import play.api.Configuration
 import play.api.i18n.{DefaultLangs, Lang, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import support.UnitSpec
 import uk.gov.hmrc.play.language.LanguageUtils
 import uk.gov.hmrc.views.ViewConfig

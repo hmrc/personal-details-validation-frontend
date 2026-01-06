@@ -23,8 +23,9 @@ import org.scalatest.Assertion
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.Messages
-import play.api.mvc.Result
-import play.api.test.Helpers._
+import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers.*
 import play.twirl.api.Html
 import setups.views.ViewSetup
 import support.UnitSpec
@@ -33,16 +34,40 @@ import uk.gov.hmrc.errorhandling.ErrorHandler.bindingError
 import uk.gov.hmrc.views.html.template.error_template
 
 import scala.concurrent.ExecutionContext
+import scala.reflect.Selectable.reflectiveSelectable
 
 class ErrorHandlerSpec
   extends UnitSpec
     with GuiceOneAppPerSuite
     with ScalaFutures {
 
+  "DwpI18NSupport" should {
+
+    "return a DWP message when the origin is DWP-IV" in new Setup {
+
+      val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession("loginOrigin" -> "dwp-iv")
+
+      val selectedMessages: Messages = errorHandler.request2Messages(using fakeRequest)
+
+      selectedMessages("error.prefix") shouldBe "Error:"
+
+    }
+
+    "return a standard message when the origin is not DWP-IV" in new Setup {
+
+      val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession("loginOrigin" -> "ma")
+
+      val selectedMessages: Messages = errorHandler.request2Messages(using fakeRequest)
+
+      selectedMessages("error.prefix") shouldBe "Error"
+
+    }
+  }
+  
   "standardErrorTemplate" should {
 
     "error page with given title, heading and message" in new Setup {
-      val html: Html = await(errorHandler.standardErrorTemplate("title", "heading", "error-message")(request))
+      val html: Html = await(errorHandler.standardErrorTemplate("title", "heading", "error-message")(using request))
 
       val doc: Document = Jsoup.parse(html.toString())
 

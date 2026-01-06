@@ -77,7 +77,7 @@ trait Generators {
         arbitrary.arbitrary.retryUntil(generated => !values.contains(generated))
 
       def generateValueDifferentThan(values: T*): T =
-        exclude(values: _*)
+        exclude(values*)
           .sample.getOrElse {
           throw new IllegalArgumentException(s"Cannot generate value different than: ${values.mkString(", ")}")
         }

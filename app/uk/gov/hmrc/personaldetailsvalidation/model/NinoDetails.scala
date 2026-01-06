@@ -35,5 +35,5 @@ object NinoDetailsForm {
 
   val ninoForm: Form[NinoDetails] = Form(mapping(
     "nino" -> ninoValidation()
-  )(NinoDetails.apply)(NinoDetails.unapply))
+  )(NinoDetails.apply)(pd => Some(pd.nino)))
 }

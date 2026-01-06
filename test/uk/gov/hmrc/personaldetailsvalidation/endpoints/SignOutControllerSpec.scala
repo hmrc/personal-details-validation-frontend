@@ -31,7 +31,7 @@ class SignOutControllerSpec extends UnitSpec with MockFactory with GuiceOneAppPe
   val mcc: MessagesControllerComponents = app.injector.instanceOf[MessagesControllerComponents]
   val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
-  val controller = new SignOutController(mcc)(appConfig)
+  val controller = new SignOutController(mcc)(using appConfig)
 
   implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit val hc: HeaderCarrier = HeaderCarrier()
