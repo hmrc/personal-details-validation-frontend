@@ -31,8 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ErrorHandler @Inject()(appConfig: AppConfig, error_template: error_template)
-                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, val ec: ExecutionContext, viewConfig: ViewConfig)
-  extends DwpI18nSupport(appConfig, dwpMessagesApiProvider.get()) {
+                            (implicit val dwpMessagesApiProvider: DwpMessagesApiProvider, val ec: ExecutionContext, viewConfig: ViewConfig, nonDwpMessagesApi: MessagesApi)
+  extends DwpI18nSupport(appConfig, nonDwpMessagesApi) {
 
   import ErrorHandler.bindingError
 
