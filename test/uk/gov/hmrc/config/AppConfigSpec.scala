@@ -40,5 +40,29 @@ class AppConfigSpec extends UnitSpec with GuiceOneAppPerSuite {
     "return logoutPath." in new {
       appConfig.logoutPath shouldBe "/bas-gateway/sign-out-without-state"
     }
+
+    "return ggLogoutUrl as basGatewayUrl + logoutPath" in {
+      appConfig.ggLogoutUrl shouldBe s"${appConfig.basGatewayUrl}${appConfig.logoutPath}"
+    }
+
+    "return logoutCallback" in {
+      appConfig.logoutCallback should not be empty
+    }
+
+    "return originDwp defaulting to dwp-iv" in {
+      appConfig.originDwp should not be empty
+    }
+
+    "return retryLimit defaulting to 3" in {
+      appConfig.retryLimit shouldBe 3
+    }
+
+    "return enabledCircuitBreaker" in {
+      appConfig.enabledCircuitBreaker shouldBe false
+    }
+
+    "return ivUrl" in {
+      appConfig.ivUrl should not be empty
+    }
   }
 }

@@ -30,14 +30,14 @@ package object implicits {
   import ops.*
 
   implicit def stringValueFinder(key: String)(configuration: Configuration): ValidatedNel[String, String] =
-    Option(configuration.get[String](key)).toValidated(key)
+    configuration.getOptional[String](key).toValidated(key)
 
   implicit def stringValuesFinder(key: String)(configuration: Configuration): ValidatedNel[String, Seq[String]] = {
     configuration.getOptional[Seq[String]](key).map(_.toList).toValidated(key)
   }
 
   implicit def intValueFinder(key: String)(configuration: Configuration): ValidatedNel[String, Int] =
-    Option(configuration.get[Int](key)).toValidated(key)
+    configuration.getOptional[Int](key).toValidated(key)
 
 
   implicit def hostFinder(key: String)(configuration: Configuration): ValidatedNel[String, Host] = {
@@ -56,7 +56,7 @@ package object implicits {
   }
 
   implicit def durationFinder(key: String)(configuration: Configuration): ValidatedNel[String, Duration] =
-    configuration.loadOptional[String](key).map(Duration.parse).toValidated(key)
+    configuration.getOptional[String](key).map(Duration.parse).toValidated(key)
 
 
   private implicit class ValueOps[V](maybeV: Option[V]) {

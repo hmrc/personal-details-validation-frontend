@@ -83,6 +83,36 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     }
 
+    "store origin and failureUrl in session when origin is provided" in new Setup {
+
+      (personalDetailsSubmitterMock.getUserAttempts()(using _: HeaderCarrier))
+        .expects(*)
+        .returns(Future.successful(UserAttemptsDetails(0, None)))
+
+      val result: Future[Result] = controller.showPage(using completionUrl, Some("ma"), failureUrl)(request)
+
+      status(result) shouldBe SEE_OTHER
+      val returnedSession = session(result)
+      returnedSession.get("origin") shouldBe Some("ma")
+    }
+
+    "Redirect to failureUrl when user attempts exceed limit and failureUrl is defined" in new Setup {
+      val definedFailureUrl: Option[CompletionUrl] = Some(CompletionUrl("/failure/path"))
+
+      (personalDetailsSubmitterMock.getUserAttempts()(using _: HeaderCarrier))
+        .expects(*)
+        .returns(Future.successful(UserAttemptsDetails(5, Some("cred-abc"))))
+
+      val pdvLockedOut: PdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", "cred-abc", "")
+      (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _:ExecutionContext))
+        .expects(pdvLockedOut, *, *)
+
+      val result: Future[Result] = controller.showPage(using completionUrl, None, definedFailureUrl)(request)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get shouldBe "/failure/path"
+    }
+
     "return enter-your-details page, containing data from session" in new Setup {
 
       (mockViewConfig.isLoggedIn( using _ : HeaderCarrier, _ : ExecutionContext))
@@ -119,6 +149,19 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.select("form[method=POST]").attr("action") shouldBe routes.PersonalDetailsCollectionController.submitYourDetails(completionUrl).url
       document.select("#error-summary-display .js-error-summary-messages").isEmpty shouldBe true
       document.select("button[type=submit]").text() shouldBe messages("continue.button.text")
+    }
+
+    "return enter-your-details page with global error when withError is true" in new Setup {
+
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val result: Future[Result] = controller.enterYourDetails(completionUrl, withError = true, failureUrl)(request)
+
+      status(result) shouldBe OK
+      contentType(result) shouldBe Some(HTML)
+      charset(result) shouldBe Some("utf-8")
     }
   }
 
@@ -603,6 +646,36 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       document.errorsSummary.heading shouldBe messages("validation.error-summary.heading")
       document.errorsSummary.content shouldBe messages("do_you_have_your_nino.error")
     }
+
+    "redirect to whatIsYourNino when the user selects yes" in new Setup {
+
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("do_you_have_your_nino" -> "yes")
+
+      val result: Future[Result] = controller.processHaveYourNationalInsuranceNumber(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get should include("/personal-details-validation/what-is-your-national-insurance-number")
+      session(result).get("hasNino") shouldBe Some("yes")
+    }
+
+    "redirect to whatIsYourPostCode when the user selects no" in new Setup {
+
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("do_you_have_your_nino" -> "no")
+
+      val result: Future[Result] = controller.processHaveYourNationalInsuranceNumber(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get should include("/personal-details-validation/what-is-your-postcode")
+      session(result).get("hasNino") shouldBe Some("no")
+    }
   }
 
   "submitNino" should {
@@ -688,6 +761,142 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)) shouldBe Some(s"/personal-details-validation/enter-your-details?completionUrl=${URLEncoder.encode(completionUrl.toString, "UTF-8")}")
+    }
+
+    "redirect to incorrectDetails when FailedPersonalDetailsValidation has credId and attempt < retryLimit" in new Setup {
+
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
+      val pdv: Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId, "cred-abc", 1))
+
+      val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("nino" -> "AA000001A").withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      (personalDetailsSubmitterMock.submitPersonalDetails(_: PersonalDetails)(using _: Request[?], _: HeaderCarrier))
+        .expects(*, *, *)
+        .returns(pdv)
+
+      (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *)
+
+      val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get should include("/personal-details-validation/incorrect-details")
+    }
+
+    "redirect to incorrectDetailsForSa when FailedPersonalDetailsValidation has credId, SA origin, and attempt < retryLimit" in new Setup {
+
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
+      val pdv: Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId, "cred-abc", 1))
+
+      val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("nino" -> "AA000001A").withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01",
+        ("origin", "bta-sa")
+      )
+
+      (personalDetailsSubmitterMock.submitPersonalDetails(_: PersonalDetails)(using _: Request[?], _: HeaderCarrier))
+        .expects(*, *, *)
+        .returns(pdv)
+
+      (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *)
+
+      val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get should include("/personal-details-validation/incorrect-details/pin-in-the-post")
+    }
+
+    "redirect to lockedOut when FailedPersonalDetailsValidation has credId and attempt >= retryLimit" in new Setup {
+
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
+      val pdv: Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId, "cred-abc", 3))
+
+      val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("nino" -> "AA000001A").withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      (personalDetailsSubmitterMock.submitPersonalDetails(_: PersonalDetails)(using _: Request[?], _: HeaderCarrier))
+        .expects(*, *, *)
+        .returns(pdv)
+
+      (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *)
+
+      val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get shouldBe "/personal-details-validation/incorrect-details/you-have-been-locked-out"
+    }
+
+    "redirect to failureUrl when FailedPersonalDetailsValidation has credId, attempt >= retryLimit, and failureUrl is defined" in new Setup {
+
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val definedFailureUrl: Option[CompletionUrl] = Some(CompletionUrl("/failure/path"))
+      val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
+      val pdv: Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId, "cred-abc", 3))
+
+      val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("nino" -> "AA000001A").withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      (personalDetailsSubmitterMock.submitPersonalDetails(_: PersonalDetails)(using _: Request[?], _: HeaderCarrier))
+        .expects(*, *, *)
+        .returns(pdv)
+
+      (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *)
+
+      val result: Future[Result] = controller.submitYourNino(completionUrl, definedFailureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get shouldBe "/failure/path"
+    }
+
+    "redirect to completionUrl on exception when circuit breaker is disabled" in new Setup {
+
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("nino" -> "AA000001A").withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      (personalDetailsSubmitterMock.submitPersonalDetails(_: PersonalDetails)(using _: Request[?], _: HeaderCarrier))
+        .expects(*, *, *)
+        .returns(Future.failed(new RuntimeException("connector error")))
+
+      val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get shouldBe completionUrl.value
     }
   }
 
@@ -949,6 +1158,16 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       val result: Future[Result] = controller.redirectToHelplineServiceDeceasedPage()(request)
       status(result) shouldBe 303
       redirectLocation(Await.result(result, 5 seconds)) shouldBe Some(redirectUrl)
+    }
+
+  }
+
+  "contactTechnicalSupport" should {
+
+    "redirect to the provided URL" in new Setup {
+      val result: Future[Result] = controller.contactTechnicalSupport("/some/support/url")(request)
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)) shouldBe Some("/some/support/url")
     }
 
   }

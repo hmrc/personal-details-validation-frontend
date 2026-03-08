@@ -225,6 +225,26 @@ class MappingsSpec extends UnitSpec with ScalaCheckDrivenPropertyChecks {
       bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.tooYoung")))
     }
 
+    "return the 'mustInPast' error if the date is in the future" in new DateMappingSetup with DateMapping {
+
+      val partsWithFutureDate: Map[String, String] = Map(
+        s"$dateFieldName.year" -> "2099",
+        s"$dateFieldName.month" -> "1",
+        s"$dateFieldName.day" -> "1"
+      )
+
+      val bindResult: Either[Seq[FormError], LocalDate] = dateMapping.bind(partsWithFutureDate)
+
+      bindResult shouldBe Left(Seq(FormError(dateFieldName, s"$errorKeyPrefix.$dateFieldName.mustInPast")))
+    }
+
+    "return the 'required' error with just the prefix when the mapping is called directly without a field-name wrapper" in {
+
+      val bindResult: Either[Seq[FormError], LocalDate] = mandatoryLocalDate("error.key").bind(Map.empty)
+
+      bindResult shouldBe Left(Seq(FormError("", "error.key.required")))
+    }
+
     "accept an abbreviated month name including a mixture of case" in new DateMappingSetup with DateMapping {
 
       val partsWithAbbreviatedMonth: Map[String, String] = Map(
