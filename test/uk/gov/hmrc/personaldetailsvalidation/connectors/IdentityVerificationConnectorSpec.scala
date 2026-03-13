@@ -49,6 +49,31 @@ class IdentityVerificationConnectorSpec
     }
   }
 
+  "extractJourneyId" should {
+
+    "extract the journey ID when the URL contains the MDTP path" in new Setup {
+      val journeyId = "abc-123"
+      val url       = s"/mdtp/personal-details-validation-complete/$journeyId"
+
+      ivConnector.extractJourneyId(url) shouldBe Some(journeyId)
+    }
+
+    "return None when the URL does not contain the MDTP path" in new Setup {
+      ivConnector.extractJourneyId("/some/other/path/abc-123") shouldBe None
+    }
+
+    "return None for an empty URL" in new Setup {
+      ivConnector.extractJourneyId("") shouldBe None
+    }
+
+    "extract a UUID-style journey ID correctly" in new Setup {
+      val journeyId = "550e8400-e29b-41d4-a716-446655440000"
+      val url       = s"/mdtp/personal-details-validation-complete/$journeyId"
+
+      ivConnector.extractJourneyId(url) shouldBe Some(journeyId)
+    }
+  }
+
   private trait Setup {
     implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
     implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
