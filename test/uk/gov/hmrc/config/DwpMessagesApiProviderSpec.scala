@@ -30,7 +30,7 @@ class DwpMessagesApiProviderSpec
       val provider = app.injector.instanceOf[DwpMessagesApiProvider]
       val messagesApi: MessagesApi = provider.get
 
-      val msgEn = messagesApi("error.prefix")(Lang("en"))
+      val msgEn = messagesApi("error.prefix")(using Lang("en"))
 
       msgEn.nonEmpty shouldBe true
     }
@@ -39,7 +39,7 @@ class DwpMessagesApiProviderSpec
       val provider    = app.injector.instanceOf[DwpMessagesApiProvider]
       val messagesApi = provider.get
 
-      val msgCy = messagesApi("error.prefix")(Lang("cy"))
+      val msgCy = messagesApi("error.prefix")(using Lang("cy"))
 
       msgCy.nonEmpty shouldBe true
     }
@@ -63,7 +63,7 @@ class DwpMessagesApiProviderSpec
       val provider    = app.injector.instanceOf[DwpMessagesApiProvider]
       val messagesApi = provider.get
 
-      val serviceName = messagesApi("service.name")(Lang("en"))
+      val serviceName = messagesApi("service.name")(using Lang("en"))
 
       serviceName.nonEmpty shouldBe true
     }

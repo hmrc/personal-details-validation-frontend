@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.personaldetailsvalidation.model
 
-import play.api.libs.json.{JsResultException, Json}
+import play.api.libs.json.Json
 import support.UnitSpec
 
 class PersonalDetailsValidationSpec extends UnitSpec {
