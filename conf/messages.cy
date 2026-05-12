@@ -147,10 +147,10 @@ you_have_been_timed_out_dwp.header=Er eich diogelwch, rydym wedi dod â’ch ses
 you_have_been_timed_out_dwp.p1=Rydym wedi dod â’ch sesiwn i ben am resymau diogelwch ar ôl 15 munud o anweithgarwch.
 you_have_been_timed_out_dwp.button=Dechrau eto
 
-do_you_have_your_nino.h2=Check your identity
+do_you_have_your_nino.h2=Gwirio pwy ydych chi
 do_you_have_your_nino.h1=Byddwn yn gofyn i chi am eich rhif Yswiriant Gwladol
 do_you_have_your_nino.p1=Mae eich rhif Yswiriant Gwladol yn ein helpu i wirio pwy ydych chi. Mae’n 9 o gymeriadau fel, ‘QQ 12 34 56 C’.
-do_you_have_your_nino.p2=You need to get your National Insurance number.
+do_you_have_your_nino.p2=Mae angen i chi gael eich rhif Yswiriant Gwladol.
 do_you_have_your_nino.p3=Gallwch ddod o hyd iddo ar y canlynol:
 do_you_have_your_nino.li1=eich cerdyn neu lythyr rhif Yswiriant Gwladol
 do_you_have_your_nino.li2=llythyrau swyddogol ynghylch eich treth, pensiynau neu fudd-daliadau
