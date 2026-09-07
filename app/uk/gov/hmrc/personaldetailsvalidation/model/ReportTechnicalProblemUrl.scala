@@ -22,16 +22,21 @@ import java.net.URLEncoder
 
 object ReportTechnicalProblemUrl {
 
-  val host = "www.tax.service.gov.uk"
-  val original = s"https://$host/contact/report-technical-problem?service=government-gateway-identity-verification-frontend"
+  private val host = "www.tax.service.gov.uk"
+  private val serviceNavParam = "useServiceNavigation"
+  private val original: String = s"https://$host/contact/report-technical-problem?service=government-gateway-identity-verification-frontend"
 
   def apply(origin: String, call : Call) : String = {
-    if (LoginOriginHelper.isDeskPro(origin))
-      original + s"&referrerUrl=${URLEncoder.encode(
-        call.absoluteURL(true, host),
-        "UTF-8"
-      )}"
+    val url = if (LoginOriginHelper.isDeskPro(origin))
+      original + s"&referrerUrl=${
+        URLEncoder.encode(
+          call.absoluteURL(true, host),
+          "UTF-8"
+        )
+      }"
     else
       original
+
+    s"$url&$serviceNavParam"
   }
 }
