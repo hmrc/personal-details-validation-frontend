@@ -14,14 +14,16 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcReportTechnicalIssueHelper}
 @import uk.gov.hmrc.personaldetailsvalidation.endpoints.routes
 @import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, LoginOriginHelper}
 @import uk.gov.hmrc.views.ViewConfig
 @import uk.gov.hmrc.views.html.includes.summaryErrors
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardPage, HmrcReportTechnicalIssueHelper}
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.{HmrcStandardPageParams, TemplateOverrides, ServiceURLs}
+@import uk.gov.hmrc.govukfrontend.views.Aliases.BackLink
 
 @this(
-    hmrcLayout: HmrcLayout,
+    hmrcStandardPage: HmrcStandardPage,
     govukBackLink: GovukBackLink,
     hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
     govukErrorSummary: GovukErrorSummary,
@@ -87,11 +89,17 @@
     }
 }
 
-@hmrcLayout(
-    pageTitle = Some(pageTitle),
-    isWelshTranslationAvailable = true,
-    additionalHeadBlock = Some(headBlock),
-    signOutUrl = if (loggedInUser) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None,
-    backLinkUrl = backLinkUrl
+@hmrcStandardPage(
+    HmrcStandardPageParams(
+        pageTitle = Some(pageTitle),
+        isWelshTranslationAvailable = true,
+        backLink = backLinkUrl.map(href => BackLink(href)),
+        templateOverrides = TemplateOverrides(
+            additionalHeadBlock = Some(headBlock)
+        ),
+        serviceURLs = ServiceURLs(
+            signOutUrl = if (loggedInUser) Some(s"${uk.gov.hmrc.personaldetailsvalidation.endpoints.routes.SignOutController.signOut()}") else None
+        )
+    )
 )(contentSection)
 

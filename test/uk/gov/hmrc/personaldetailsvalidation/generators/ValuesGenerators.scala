@@ -19,7 +19,7 @@ package uk.gov.hmrc.personaldetailsvalidation.generators
 import org.scalacheck.Gen
 import org.scalacheck.Gen.oneOf
 import support.Generators.*
-import uk.gov.hmrc.domain.{Generator, Nino}
+import uk.gov.hmrc.domain.{NinoGenerator, Nino}
 import uk.gov.hmrc.personaldetailsvalidation.model.CompletionUrl.completionUrl
 import uk.gov.hmrc.personaldetailsvalidation.model.{CompletionUrl, NonEmptyString, ValidationId}
 
@@ -44,7 +44,7 @@ object ValuesGenerators {
     nonEmptyStrings.map(NonEmptyString.apply)
 
   implicit val ninos: Gen[Nino] = {
-    val ninoGenerator = new Generator()
+    val ninoGenerator = new NinoGenerator()
     Gen.identifier.map(_ => ninoGenerator.nextNino)
   }
 

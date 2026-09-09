@@ -22,6 +22,8 @@ import support.UnitSpec
 class ReportTechnicalProblemUrlSpec extends UnitSpec {
 
   private val baseUrl = "https://www.tax.service.gov.uk/contact/report-technical-problem?service=government-gateway-identity-verification-frontend"
+  private val serviceNavParam = "useServiceNavigation"
+  private val url = s"$baseUrl&$serviceNavParam"
 
   "ReportTechnicalProblemUrl.apply" should {
 
@@ -31,34 +33,35 @@ class ReportTechnicalProblemUrlSpec extends UnitSpec {
 
       result should startWith(baseUrl)
       result should include("referrerUrl=")
+      result should include(serviceNavParam)
     }
 
     "return just the base URL for a DWP origin (not DeskPro)" in {
       val call   = Call("GET", "/personal-details-validation/start")
       val result = ReportTechnicalProblemUrl("dwp-iv", call)
 
-      result shouldBe baseUrl
+      result shouldBe url
     }
 
     "return just the base URL for a bta-sa origin (not DeskPro)" in {
       val call   = Call("GET", "/personal-details-validation/start")
       val result = ReportTechnicalProblemUrl("bta-sa", call)
 
-      result shouldBe baseUrl
+      result shouldBe url
     }
 
     "return just the base URL for a pta-sa origin (not DeskPro)" in {
       val call   = Call("GET", "/personal-details-validation/start")
       val result = ReportTechnicalProblemUrl("pta-sa", call)
 
-      result shouldBe baseUrl
+      result shouldBe url
     }
 
     "return just the base URL for a ssttp-sa origin (not DeskPro)" in {
       val call   = Call("GET", "/personal-details-validation/start")
       val result = ReportTechnicalProblemUrl("ssttp-sa", call)
 
-      result shouldBe baseUrl
+      result shouldBe url
     }
 
     "URL-encode special characters in the referrerUrl for a DeskPro origin" in {
