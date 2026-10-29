@@ -34,7 +34,7 @@ class ViewConfig @Inject()(val configuration: Configuration,
                            protected val dwpMessagesApiProvider: DwpMessagesApiProvider,
                            val authConnector: AuthConnector) extends AuthorisedFunctions
 {
-  lazy val retryLimit: Int = configuration.getOptional[Int]("retry.limit").getOrElse(5)
+  lazy val retryLimit: Int = configuration.getOptional[Int]("retry.limit").getOrElse(3)
 
   lazy val originDwp: String = configuration.getOptional[String]("dwp.originLabel").getOrElse("dwp-iv")
   lazy val dwpGetHelpUrl: String = configuration.loadMandatory("dwp.getHelpUrl")(using stringValueFinder)

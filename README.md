@@ -32,11 +32,11 @@ If the user does not interact with the browser for 15 minutes, and they ignore t
 Also, if there is technical error in personal-details-validation component, then user is redirected to the completionUrl with `technicalError` query parameter.
 
 ### Parameters
-| Name          | Description                                                                                                      |
-|:--------------|:-----------------------------------------------------------------------------------------------------------------|
-| completionUrl | Mandatory. Should be a url-encoded relative URL or starts with `http://localhost`.                               |
-| origin        | Option. Reporting origin as a custom dimension in PDV GA events.                                                 |
-| failureUrl    | Option. Redirect the user to the url when pdv failed 5 times, without this user will see a default lockout page. |
+| Name          | Description                                                                                                                                                                          |
+|:--------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| completionUrl | Mandatory. Should be a url-encoded relative URL or starts with `http://localhost`.                                                                                                   |
+| origin        | Option. Reporting origin as a custom dimension in PDV GA events.                                                                                                                     |
+| failureUrl    | Option. Redirect the user to the url when pdv failed 3 times, without this user will see a default lockout page. The user is locked out for 24 hours after the third failed attempt. |
     
 ### Example redirects
 | CompletionUrl                | Redirect url                                                                   |

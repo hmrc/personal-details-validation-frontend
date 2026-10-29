@@ -44,17 +44,17 @@ import scala.concurrent.{ExecutionContext, Future}
 /*
  * Currently only iv will send failureURL to PDV for dwp and *-sa origins.
  * The failureUrl is optional.
- * Redirect the user to the url when pdv failed 5 times, without the url user will see a default lockout page (PersonalDetailsCollectionControllerSpec).
+ * Redirect the user to the url when pdv failed 3 times, without the url user will see a default lockout page (PersonalDetailsCollectionControllerSpec).
  */
 class PDVControllerWithFailureUrlSpec extends UnitSpec with MockFactory with ScalaFutures with GuiceOneAppPerSuite {
 
   "start" should {
 
-    "Redirect to lockedOut page when user tried 5 times and there is a failureUrl" in new Setup {
+    "Redirect to lockedOut page when user tried 3 times and there is a failureUrl" in new Setup {
 
       (personalDetailsSubmitterMock.getUserAttempts()(using _: HeaderCarrier))
         .expects(*)
-        .returns(Future.successful(UserAttemptsDetails(5, None)))
+        .returns(Future.successful(UserAttemptsDetails(3, None)))
 
       val pdvLockedOut: PdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", "", "")
       (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _:ExecutionContext))

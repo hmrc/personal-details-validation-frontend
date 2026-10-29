@@ -54,11 +54,11 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
   "showPage" should {
 
-    "Redirect to lockedOut page when user tried 5 times and there is no failureUrl" in new Setup {
+    "Redirect to lockedOut page when user tried 3 times and there is no failureUrl" in new Setup {
 
       (personalDetailsSubmitterMock.getUserAttempts()(using _: HeaderCarrier))
         .expects(*)
-        .returns(Future.successful(UserAttemptsDetails(5, None)))
+        .returns(Future.successful(UserAttemptsDetails(3, None)))
 
       val pdvLockedOut: PdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", "", "")
       (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _:ExecutionContext))
@@ -80,7 +80,6 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)).get.contains("/personal-details-validation/enter-your-details?completionUrl=") shouldBe true
-
     }
 
     "store origin and failureUrl in session when origin is provided" in new Setup {
@@ -101,7 +100,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       (personalDetailsSubmitterMock.getUserAttempts()(using _: HeaderCarrier))
         .expects(*)
-        .returns(Future.successful(UserAttemptsDetails(5, Some("cred-abc"))))
+        .returns(Future.successful(UserAttemptsDetails(3, Some("cred-abc"))))
 
       val pdvLockedOut: PdvLockedOut = PdvLockedOut("reattempt PDV within 24 hours", "cred-abc", "")
       (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _:ExecutionContext))
@@ -751,6 +750,39 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
       redirectLocation(await(result)).get.contains("/personal-details-validation/enter-your-details?completionUrl=") shouldBe true
     }
 
+    "treat a blocked-NINO failure without a CredID the same as an ordinary no-CredID failure" in new Setup {
+
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
+      val pdv : Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId, "", 1))
+
+      val expectedPersonalDetails: PersonalDetailsWithNino = PersonalDetailsWithNino(
+        NonEmptyString("Jim"),
+        NonEmptyString("Ferguson"),
+        Nino("AA000001A"),
+        LocalDate.parse("1939-09-01")
+      )
+
+      val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("nino" -> "AA000001A").withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01",
+        "journeyId" -> "1234567890"
+      )
+
+      (personalDetailsSubmitterMock.submitPersonalDetails(_ : PersonalDetails)(using _: Request[?], _: HeaderCarrier))
+        .expects(expectedPersonalDetails, *, *)
+        .returns(pdv)
+
+      val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get.contains("/personal-details-validation/enter-your-details?completionUrl=") shouldBe true
+    }
+
     "Redirect to 'Enter you details' page if the initial details are not present in the request" in new Setup {
 
       (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
@@ -818,6 +850,34 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
       status(result) shouldBe SEE_OTHER
       redirectLocation(await(result)).get should include("/personal-details-validation/incorrect-details/pin-in-the-post")
+    }
+
+    "redirect to incorrectDetails with 1 attempt remaining when FailedPersonalDetailsValidation has credId and attempt is the final attempt below retryLimit" in new Setup {
+
+      (mockViewConfig.isLoggedIn(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *)
+        .returns(Future.successful(true))
+
+      val validationId: ValidationId = ValidationId(UUID.randomUUID().toString)
+      val pdv: Future[PersonalDetailsValidation] = Future.successful(FailedPersonalDetailsValidation(validationId, "cred-abc", 2))
+
+      val req: FakeRequest[AnyContentAsFormUrlEncoded] = request.withFormUrlEncodedBody("nino" -> "AA000001A").withSession(
+        "firstName" -> "Jim",
+        "lastName" -> "Ferguson",
+        "dob" -> "1939-09-01"
+      )
+
+      (personalDetailsSubmitterMock.submitPersonalDetails(_: PersonalDetails)(using _: Request[?], _: HeaderCarrier))
+        .expects(*, *, *)
+        .returns(pdv)
+
+      (mockDataStreamAuditService.audit(_: MonitoringEvent)(using _: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *)
+
+      val result: Future[Result] = controller.submitYourNino(completionUrl, failureUrl)(req)
+
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(await(result)).get should include("/personal-details-validation/incorrect-details/1")
     }
 
     "redirect to lockedOut when FailedPersonalDetailsValidation has credId and attempt >= retryLimit" in new Setup {
@@ -1176,7 +1236,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display the accordion" in new Setup {
 
-      val result: Future[Result] = controller.incorrectDetails(completionUrl, 2, failureUrl)(request)
+      val result: Future[Result] = controller.incorrectDetails(completionUrl, 1, failureUrl)(request)
 
       status(result) shouldBe 200
       contentType(result) shouldBe Some(HTML)
@@ -1228,7 +1288,7 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
 
     "display the accordion with a link to lost Nino when the origin is DWP" in new Setup() {
 
-      val result: Future[Result] = controller.incorrectDetails(completionUrl, 2, failureUrl)(request.withSession(("origin","dwp-iv-standalone")))
+      val result: Future[Result] = controller.incorrectDetails(completionUrl, 1, failureUrl)(request.withSession(("origin","dwp-iv-standalone")))
 
       status(result) shouldBe 200
       contentType(result) shouldBe Some(HTML)
@@ -1257,9 +1317,11 @@ class PersonalDetailsCollectionControllerSpec extends UnitSpec with MockFactory 
     private val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
     private class ViewConfigWithValues extends ViewConfig(mock[Configuration], mock[ServicesConfig], mock[DwpMessagesApiProvider], mockAuthConnector) {
-      override lazy val retryLimit: Int = 5
+      override lazy val retryLimit: Int = 3
       override lazy val timeout: Int = 900
       override lazy val timeoutCountdown: Int = 120
+      override lazy val lockoutPeriodEn: String = "24 hours"
+      override lazy val lockoutPeriodCy: String = "24 awr"
       override lazy val findYourNinoFrontendUrl = "http://localhost:14033/find-your-national-insurance-number/checkDetails?origin=PDV"
     }
 
